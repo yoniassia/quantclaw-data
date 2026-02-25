@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { services, categories, Service } from "./services";
+import { services, categories, Service, getApiEndpoint } from "./services";
 import { phases, dataSources, ideaGeneration } from "./roadmap";
 import { installSteps, mcpConfig, cliReference, apiEndpoints } from "./install";
 
@@ -31,6 +31,18 @@ function ServiceCard({ s }: { s: Service }) {
                 python cli.py {c}
               </code>
             ))}
+          </div>
+          <div>
+            <p className="text-xs text-[#FF6B6B] font-mono mb-1">REST API</p>
+            <code className="block text-xs bg-black/40 rounded px-2 py-1 mb-1 text-white/80">
+              GET https://data.quantclaw.org{getApiEndpoint(s)}
+            </code>
+          </div>
+          <div>
+            <p className="text-xs text-[#FFD700] font-mono mb-1">Web UI</p>
+            <code className="block text-xs bg-black/40 rounded px-2 py-1 mb-1 text-white/80">
+              https://data.quantclaw.org/#modules/{s.category}
+            </code>
           </div>
           <div>
             <p className="text-xs text-[#C0E8FD] font-mono mb-1">MCP Tool</p>

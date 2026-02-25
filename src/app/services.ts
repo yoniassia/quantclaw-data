@@ -8,6 +8,15 @@ export interface Service {
   mcpTool: string;
   params: string;
   icon: string;
+  apiEndpoint?: string; // REST API path e.g. /api/v1/prices?ticker=AAPL
+}
+
+// Auto-generate apiEndpoint from service id if not explicitly set
+export function getApiEndpoint(s: Service): string {
+  if (s.apiEndpoint) return s.apiEndpoint;
+  const base = `/api/v1/${s.id.replace(/_/g, '-')}`;
+  const firstParam = s.params.split(',')[0]?.trim().replace('?','').replace('{}','').replace('[]','');
+  return firstParam ? `${base}?${firstParam}=AAPL` : base;
 }
 
 export const categories = [

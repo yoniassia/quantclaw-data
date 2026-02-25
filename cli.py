@@ -28,6 +28,10 @@ MODULES = {
         'file': 'monte_carlo.py',
         'commands': ['monte-carlo', 'var', 'scenario']
     },
+    'backtest': {
+        'file': 'backtesting_framework.py',
+        'commands': ['backtest', 'backtest-momentum', 'backtest-mean-reversion']
+    },
     'volatility_surface': {
         'file': 'volatility_surface.py',
         'commands': ['iv-smile', 'vol-arbitrage', 'straddle-scan', 'strangle-scan']
@@ -732,6 +736,11 @@ def print_help():
     print("  python cli.py monte-carlo SYMBOL [--simulations N] [--days N] [--method gbm|bootstrap]")
     print("  python cli.py var SYMBOL [--confidence 0.95 0.99] [--days N]")
     print("  python cli.py scenario SYMBOL [--days N]")
+    
+    print("\nBacktesting Framework (Phase 9):")
+    print("  python cli.py backtest SYMBOL1,SYMBOL2 --start YYYY-MM-DD --end YYYY-MM-DD [--strategy momentum|mean_reversion] [--capital 100000]")
+    print("  python cli.py backtest-momentum SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD [--lookback 20]")
+    print("  python cli.py backtest-mean-reversion SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD [--lookback 20] [--z-threshold 2.0]")
     
     print("\nWalk-Forward Optimization (Phase 37):")
     print("  python cli.py walk-forward SYMBOL [--strategy sma-crossover]")
