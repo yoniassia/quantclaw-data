@@ -1,0 +1,77 @@
+# Add to _register_tools() method around line 1200-1500:
+
+'options_flow_scan': {
+    'description': 'Scan a stock ticker for unusual options activity (sweeps, blocks, dark pool)',
+    'parameters': {
+        'symbol': {
+            'type': 'string',
+            'description': 'Stock ticker symbol (e.g., AAPL, TSLA)',
+            'required': True
+        },
+        'min_premium': {
+            'type': 'integer',
+            'description': 'Minimum premium in USD (default 50000)',
+            'required': False,
+            'default': 50000
+        }
+    },
+    'handler': self._options_flow_scan
+},
+'options_flow_market': {
+    'description': 'Scan multiple tickers for unusual options activity',
+    'parameters': {
+        'symbols': {
+            'type': 'array',
+            'description': 'List of ticker symbols',
+            'required': True
+        },
+        'min_premium': {
+            'type': 'integer',
+            'description': 'Minimum premium in USD (default 100000)',
+            'required': False,
+            'default': 100000
+        }
+    },
+    'handler': self._options_flow_market
+},
+'options_flow_darkpool': {
+    'description': 'Analyze dark pool activity proxy for a ticker',
+    'parameters': {
+        'symbol': {
+            'type': 'string',
+            'description': 'Stock ticker symbol',
+            'required': True
+        }
+    },
+    'handler': self._options_flow_darkpool
+},
+
+# Add handler methods around line 8200-8500:
+
+def _options_flow_scan(self, symbol: str, min_premium: int = 50000) -> Dict:
+    """Handler for options_flow_scan tool"""
+    from options_flow_scanner import OptionsFlowScanner
+    scanner = OptionsFlowScanner()
+    flows = scanner.scan_ticker(symbol, min_premium)
+    return {
+        'symbol': symbol,
+        'flows': [asdict(f) for f in flows],
+        'count': len(flows)
+    }
+
+def _options_flow_market(self, symbols: List[str], min_premium: int = 100000) -> Dict:
+    """Handler for options_flow_market tool"""
+    from options_flow_scanner import OptionsFlowScanner
+    scanner = OptionsFlowScanner()
+    flows = scanner.scan_market(symbols, min_premium)
+    return {
+        'flows': [asdict(f) for f in flows],
+        'count': len(flows),
+        'symbols_scanned': len(symbols)
+    }
+
+def _options_flow_darkpool(self, symbol: str) -> Dict:
+    """Handler for options_flow_darkpool tool"""
+    from options_flow_scanner import OptionsFlowScanner
+    scanner = OptionsFlowScanner()
+    return scanner.get_dark_pool_proxy(symbol)

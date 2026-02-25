@@ -56,6 +56,10 @@ MODULES = {
         'file': 'order_book.py',
         'commands': ['order-book', 'bid-ask', 'liquidity', 'imbalance', 'support-resistance']
     },
+    'options_flow': {
+        'file': 'options_flow_scanner.py',
+        'commands': ['options-flow-scan', 'options-flow-market', 'options-flow-darkpool']
+    },
     'alert_dsl': {
         'file': 'alert_dsl.py',
         'commands': ['dsl-eval', 'dsl-scan', 'dsl-help']
@@ -67,6 +71,22 @@ MODULES = {
     'commodity_futures': {
         'file': 'commodity_futures.py',
         'commands': ['futures-curve', 'contango', 'roll-yield', 'term-structure']
+    },
+    'industrial_metals': {
+        'file': 'industrial_metals.py',
+        'commands': ['copper-price', 'aluminum-price', 'zinc-price', 'nickel-price', 'metal-inventories', 'metals-snapshot', 'metals-correlation']
+    },
+    'crude_oil': {
+        'file': 'crude_oil_fundamentals.py',
+        'commands': ['stocks', 'cushing', 'spr', 'production', 'trade', 'refinery', 'opec-production', 'spare-capacity', 'us-vs-opec', 'dashboard', 'weekly-report']
+    },
+    'natural_gas': {
+        'file': 'natural_gas_supply_demand.py',
+        'commands': ['ng-storage', 'ng-production', 'ng-demand', 'ng-balance', 'ng-series', 'ng-list']
+    },
+    'lng_gas': {
+        'file': 'lng_gas.py',
+        'commands': ['lng-prices', 'lng-summary', 'lng-trade-flows', 'lng-exporters', 'lng-importers', 'lng-terminals', 'lng-terminal', 'lng-market-overview']
     },
     'satellite': {
         'file': 'satellite_proxies.py',
@@ -92,9 +112,25 @@ MODULES = {
         'file': 'central_bank_rates.py',
         'commands': ['cb-all-rates', 'cb-rate', 'cb-compare', 'cb-heatmap', 'cb-search', 'cb-differential', 'cb-list']
     },
+    'fx_carry_trade': {
+        'file': 'fx_carry_trade.py',
+        'commands': ['carry-opportunities', 'carry-differential', 'carry-dashboard', 'carry-funding', 'carry-investment']
+    },
+    'fx_volatility_surface': {
+        'file': 'fx_volatility_surface.py',
+        'commands': ['fx-vol-surface', 'fx-risk-reversal', 'fx-butterfly', 'fx-vol-summary']
+    },
+    'em_currency_crisis': {
+        'file': 'em_currency_crisis.py',
+        'commands': ['em-fx-reserves', 'em-current-account', 'em-reer', 'em-crisis-risk', 'em-regional-overview']
+    },
     'crypto_onchain': {
         'file': 'crypto_onchain.py',
         'commands': ['onchain', 'whale-watch', 'dex-volume', 'gas-fees', 'token-flows']
+    },
+    'nft_market': {
+        'file': 'nft_market.py',
+        'commands': ['collection-stats', 'top-collections', 'wash-trading', 'market-overview', 'compare-collections', 'collection-history']
     },
     'earnings_nlp': {
         'file': 'earnings_nlp.py',
@@ -111,6 +147,10 @@ MODULES = {
     'earnings_quality': {
         'file': 'earnings_quality.py',
         'commands': ['earnings-quality', 'accruals-trend', 'fraud-indicators']
+    },
+    'patent': {
+        'file': 'patent_tracking.py',
+        'commands': ['patent-search', 'patent-compare', 'patent-trends', 'industry-leaders']
     },
     'peer_network': {
         'file': 'peer_network.py',
@@ -143,6 +183,30 @@ MODULES = {
     'crypto_correlation': {
         'file': 'crypto_correlation.py',
         'commands': ['btc-dominance', 'altcoin-season', 'defi-tvl-correlation', 'crypto-equity-corr']
+    },
+    'defi_tvl_yield': {
+        'file': 'defi_tvl_yield.py',
+        'commands': ['global-tvl', 'protocol', 'all-protocols', 'chain', 'chains', 'yields', 'stable-yields', 'protocol-yields', 'rankings', 'dashboard']
+    },
+    'crypto_exchange_flow': {
+        'file': 'crypto_exchange_flow.py',
+        'commands': ['exchange-flows', 'exchange-netflow', 'whale-movements', 'exchange-tvl', 'exchange-dominance']
+    },
+    'crypto_derivatives': {
+        'file': 'crypto_derivatives.py',
+        'commands': ['funding', 'basis', 'oi', 'arb-scan', 'snapshot']
+    },
+    'cross_chain_bridge': {
+        'file': 'cross_chain_bridge_monitor.py',
+        'commands': ['bridge-list', 'bridge-details', 'bridge-volume', 'bridge-risk', 'bridge-flow', 'bridge-report']
+    },
+    'airport_traffic_aviation': {
+        'file': 'airport_traffic_aviation.py',
+        'commands': ['airport-operations', 'airline-capacity', 'flight-delays', 'regional-traffic', 'aviation-dashboard', 'airport-list']
+    },
+    'auto_sales_ev': {
+        'file': 'auto_sales_ev.py',
+        'commands': ['auto-sales', 'ev-registrations', 'auto-market', 'comprehensive-report']
     },
     'dividend_sustainability': {
         'file': 'dividend_sustainability.py',
@@ -425,6 +489,10 @@ MODULES = {
         'file': 'global_shipping.py',
         'commands': ['bdi', 'container-freight', 'port-congestion', 'shipping-dashboard']
     },
+    'container_port': {
+        'file': 'container_port_throughput.py',
+        'commands': ['port-all', 'port-shanghai', 'port-rotterdam', 'port-la-long-beach', 'port-compare', 'port-list', 'port-rankings']
+    },
     'global_debt': {
         'file': 'global_debt.py',
         'commands': ['country', 'compare', 'high-debt', 'trends', 'bis-countries', 'us-fred']
@@ -545,6 +613,70 @@ MODULES = {
     'sovereign_rating_tracker': {
         'file': 'sovereign_rating_tracker.py',
         'commands': ['sovereign-ratings', 'sovereign-downgrades', 'sovereign-upgrades', 'sovereign-watch', 'sovereign-ig-changes', 'sovereign-dashboard', 'sovereign-country']
+    },
+    'gold_precious_metals': {
+        'file': 'gold_precious_metals.py',
+        'commands': ['prices', 'etf-holdings', 'gold-silver-ratio', 'performance', 'wgc-summary', 'comprehensive-report']
+    },
+    'agricultural_commodities': {
+        'file': 'agricultural_commodities.py',
+        'commands': ['ag-futures', 'ag-grains', 'ag-softs', 'ag-usda', 'ag-dashboard', 'ag-list']
+    },
+    'carbon_credits': {
+        'file': 'carbon_credits.py',
+        'commands': ['eu-ets-price', 'global-prices', 'market-stats', 'emissions-by-sector', 'compare-markets', 'offset-projects']
+    },
+    'rare_earths': {
+        'file': 'rare_earths.py',
+        'commands': ['mineral-profile', 'supply-risk', 'risk-rankings', 'sector-exposure', 'country-profile', 'rare-earths-detailed', 'comprehensive-report', 'list-minerals', 'list-sectors']
+    },
+    'semiconductor_chip': {
+        'file': 'semiconductor_chip.py',
+        'commands': ['chip-sales', 'chip-forecast', 'fab-util', 'chip-summary']
+    },
+    'livestock_meat': {
+        'file': 'livestock_meat.py',
+        'commands': ['livestock-futures', 'livestock-cattle', 'livestock-hogs', 'livestock-slaughter', 'livestock-ams', 'livestock-dashboard', 'livestock-reports']
+    },
+    'opec': {
+        'file': 'opec.py',
+        'commands': ['opec-monitor', 'opec-summary', 'opec-country', 'opec-compliance', 'opec-quota-history', 'opec-dashboard']
+    },
+    'cftc_cot': {
+        'file': 'cftc_cot.py',
+        'commands': ['cot-latest', 'cot-contract', 'cot-extremes', 'cot-summary', 'cot-divergence', 'cot-dashboard']
+    },
+    'global_fx': {
+        'file': 'global_fx_rates.py',
+        'commands': ['fx-rate', 'fx-all', 'fx-cross', 'fx-matrix', 'fx-convert', 'fx-strongest', 'fx-currencies']
+    },
+    'stablecoin': {
+        'file': 'stablecoin_supply.py',
+        'commands': ['stablecoin-all', 'stablecoin-detail', 'stablecoin-chain', 'stablecoin-mint-burn', 'stablecoin-dominance']
+    },
+    'global_electricity': {
+        'file': 'global_electricity_demand.py',
+        'commands': ['entsoe-load', 'entsoe-forecast', 'europe-aggregate', 'eia-demand', 'us-generation-mix', 'caiso-load', 'caiso-renewables', 'global-dashboard', 'compare-regions']
+    },
+    'global_tourism': {
+        'file': 'global_tourism_statistics.py',
+        'commands': ['tourism-arrivals', 'tourism-receipts', 'tourism-country', 'tourism-global-overview', 'tourism-compare', 'hotel-occupancy', 'airline-passengers', 'tourism-recovery']
+    },
+    'bankruptcy_tracker': {
+        'file': 'bankruptcy_tracker.py',
+        'commands': ['bankruptcy-search', 'bankruptcy-tracker', 'bankruptcy-stats']
+    },
+    'pe_vc_deals': {
+        'file': 'pe_vc_deals.py',
+        'commands': ['vc-deals', 'pe-deals', 'form-d', 'deal-summary']
+    },
+    'health_impact': {
+        'file': 'health_impact.py',
+        'commands': ['health-outbreaks', 'pandemic-impact', 'health-monitor']
+    },
+    'academic_papers': {
+        'file': 'academic_papers.py',
+        'commands': ['papers-latest', 'papers-search', 'papers-trending', 'papers-by-author', 'papers-report']
     }
 }
 
@@ -668,6 +800,15 @@ def print_help():
     print("  python cli.py credit-quality         # High yield vs investment grade comparison")
     print("  python cli.py spread-history [DAYS] [SERIES_ID]  # Historical spread trends")
     print("  python cli.py em-report              # Comprehensive EM sovereign analysis")
+    
+    print("\nEM Currency Crisis Monitor (Phase 184):")
+    print("  python cli.py em-fx-reserves Brazil           # Get FX reserves data for EM country")
+    print("  python cli.py em-current-account Turkey       # Get current account balance data")
+    print("  python cli.py em-reer Argentina               # Get real effective exchange rate")
+    print("  python cli.py em-crisis-risk India            # Calculate comprehensive crisis risk score")
+    print("  python cli.py em-regional-overview latam      # Regional overview (all/latam/asia/emea)")
+    print("  Countries: Brazil, Mexico, Argentina, China, India, Indonesia, Thailand,")
+    print("            Philippines, Malaysia, Russia, Turkey, South Africa, Poland")
     
     print("\nCrypto On-Chain Analytics (Phase 43):")
     print("  python cli.py onchain ETH                          # Get Ethereum on-chain metrics")
@@ -1120,6 +1261,38 @@ def print_help():
     print("                                                    # Property price indices")
     print("  python cli.py country-profile GB                  # Comprehensive BIS profile")
     print("  python cli.py countries                           # List BIS reporting countries")
+    
+    print("\nCarbon Credits & Emissions (Phase 177):")
+    print("  python cli.py eu-ets-price [days]                 # EU ETS carbon allowance (EUA) price history")
+    print("  python cli.py global-prices                       # Current carbon prices across global compliance markets")
+    print("  python cli.py market-stats                        # Comprehensive carbon market statistics and trends")
+    print("  python cli.py emissions-by-sector [jurisdiction]  # Emissions breakdown by sector (EU, UK, USA)")
+    print("  python cli.py compare-markets [market1,market2]   # Compare carbon pricing mechanisms across jurisdictions")
+    print("  python cli.py offset-projects [type]              # Carbon offset project types and registries (forestry, renewable, etc.)")
+    
+    print("\nContainer Port Throughput (Phase 193):")
+    print("  python cli.py port-all                            # All major ports (Shanghai, Rotterdam, LA/Long Beach) summary")
+    print("  python cli.py port-shanghai                       # Shanghai port TEU volumes (world's largest)")
+    print("  python cli.py port-rotterdam                      # Rotterdam port TEU volumes (Europe's largest)")
+    print("  python cli.py port-la-long-beach                  # LA/Long Beach combined TEU volumes (US gateway)")
+    print("  python cli.py port-compare                        # Compare throughput across all tracked ports")
+    print("  python cli.py port-list                           # List all available ports with metadata")
+    print("  python cli.py port-rankings                       # Global top 20 container port rankings")
+    
+    print("\nAuto Sales & EV Registrations (Phase 196):")
+    print("  python cli.py auto-sales [--country US] [--months 12]")
+    print("                                                    # US monthly auto sales from FRED")
+    print("  python cli.py ev-registrations [--country US] [--months 12]")
+    print("                                                    # EV registration data by country (US, EU, CN, JP, DE, FR, UK, IT, ES)")
+    print("  python cli.py auto-market [--region US] [--months 12]")
+    print("                                                    # Auto market share by manufacturer (US, EU, CN)")
+    print("  python cli.py comprehensive-report [--months 12] # Complete auto sales & EV market report")
+    
+    print("\nBankruptcy & Default Tracker (Phase 197):")
+    print("  python cli.py bankruptcy-search [--days 30] [--limit 50]")
+    print("                                                    # Search recent SEC bankruptcy filings")
+    print("  python cli.py bankruptcy-tracker --ticker AAPL   # Track bankruptcy risk for specific company")
+    print("  python cli.py bankruptcy-stats [--year 2025]     # Bankruptcy statistics by period")
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))

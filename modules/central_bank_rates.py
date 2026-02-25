@@ -737,12 +737,12 @@ def main():
     
     command = sys.argv[1]
     
-    if command == "all-rates":
+    if command == "cb-all-rates":
         # Get all central bank rates
         data = get_all_central_bank_rates()
         print(json.dumps(data, indent=2))
         
-    elif command == "get-rate":
+    elif command == "cb-rate":
         # Get rate for specific central bank
         if len(sys.argv) < 3:
             print("Usage: cli.py cb-rate <BANK_CODE>", file=sys.stderr)
@@ -753,7 +753,7 @@ def main():
         data = get_central_bank_rate(bank_code)
         print(json.dumps(data, indent=2))
         
-    elif command == "compare":
+    elif command == "cb-compare":
         # Compare multiple central banks
         if len(sys.argv) < 3:
             print("Usage: cli.py cb-compare <BANK_CODE_1> <BANK_CODE_2> ...", file=sys.stderr)
@@ -764,12 +764,12 @@ def main():
         data = compare_central_banks(bank_codes)
         print(json.dumps(data, indent=2))
         
-    elif command == "heatmap":
+    elif command == "cb-heatmap":
         # Global rate heatmap
         data = get_global_rate_heatmap()
         print(json.dumps(data, indent=2))
         
-    elif command == "search":
+    elif command == "cb-search":
         # Search for central banks
         if len(sys.argv) < 3:
             print("Usage: cli.py cb-search <QUERY>", file=sys.stderr)
@@ -780,7 +780,7 @@ def main():
         data = search_central_banks(query)
         print(json.dumps(data, indent=2))
         
-    elif command == "differential":
+    elif command == "cb-differential":
         # Calculate rate differential
         if len(sys.argv) < 4:
             print("Usage: cli.py cb-differential <BANK_CODE_1> <BANK_CODE_2>", file=sys.stderr)
@@ -792,7 +792,7 @@ def main():
         data = get_rate_differential(bank_code_1, bank_code_2)
         print(json.dumps(data, indent=2))
         
-    elif command == "list":
+    elif command == "cb-list":
         # List all available banks
         data = list_all_banks()
         print(json.dumps(data, indent=2))
