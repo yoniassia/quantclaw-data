@@ -1,0 +1,182 @@
+{
+  "ticker": "AAPL",
+  "timestamp": "2026-02-25T02:06:08.301026",
+  "duration_minutes": 5,
+  "segments": 9,
+  "timeline": [
+    {
+      "segment": 1,
+      "text": "Thank you for joining us today. We're pleased to report strong quarterly results that exceeded our guidance.",
+      "signals": {
+        "segment": 1,
+        "timestamp": "2026-02-25T02:06:03.798825",
+        "sentiment_score": 5.88,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [
+          "strong"
+        ],
+        "negative_keywords": [],
+        "alerts": [
+          "\ud83d\udfe2 Strong positive sentiment detected",
+          "\u26a0\ufe0f Excessive hedging language",
+          "\ud83d\udcca Guidance mentioned"
+        ],
+        "word_count": 17
+      }
+    },
+    {
+      "segment": 2,
+      "text": "Revenue grew 25% year-over-year, driven by robust demand across all product lines.",
+      "signals": {
+        "segment": 2,
+        "timestamp": "2026-02-25T02:06:04.299046",
+        "sentiment_score": 8.33,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [
+          "robust"
+        ],
+        "negative_keywords": [],
+        "alerts": [
+          "\ud83d\udfe2 Strong positive sentiment detected",
+          "\u26a0\ufe0f Excessive hedging language",
+          "\ud83d\udcb0 Revenue discussed"
+        ],
+        "word_count": 12
+      }
+    },
+    {
+      "segment": 3,
+      "text": "Operating margins expanded significantly due to improved operational efficiency and scale advantages.",
+      "signals": {
+        "segment": 3,
+        "timestamp": "2026-02-25T02:06:04.799299",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language",
+          "\ud83d\udcc8 Margins mentioned"
+        ],
+        "word_count": 12
+      }
+    },
+    {
+      "segment": 4,
+      "text": "We're raising our full-year guidance and remain confident in our growth trajectory.",
+      "signals": {
+        "segment": 4,
+        "timestamp": "2026-02-25T02:06:05.299571",
+        "sentiment_score": 16.67,
+        "confidence_ratio": 1.0,
+        "positive_keywords": [
+          "confident",
+          "growth"
+        ],
+        "negative_keywords": [],
+        "alerts": [
+          "\ud83d\udfe2 Strong positive sentiment detected",
+          "\ud83d\udcaa High management confidence",
+          "\ud83d\udcca Guidance mentioned"
+        ],
+        "word_count": 12
+      }
+    },
+    {
+      "segment": 5,
+      "text": "Now I'll turn it over to questions from analysts.",
+      "signals": {
+        "segment": 5,
+        "timestamp": "2026-02-25T02:06:05.799809",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language"
+        ],
+        "word_count": 9
+      }
+    },
+    {
+      "segment": 6,
+      "text": "Question on competitive landscape and market share trends.",
+      "signals": {
+        "segment": 6,
+        "timestamp": "2026-02-25T02:06:06.300030",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language"
+        ],
+        "word_count": 8
+      }
+    },
+    {
+      "segment": 7,
+      "text": "We believe our innovation pipeline positions us well against competitors.",
+      "signals": {
+        "segment": 7,
+        "timestamp": "2026-02-25T02:06:06.800301",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language"
+        ],
+        "word_count": 10
+      }
+    },
+    {
+      "segment": 8,
+      "text": "Some near-term headwinds but long-term outlook remains positive.",
+      "signals": {
+        "segment": 8,
+        "timestamp": "2026-02-25T02:06:07.300535",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language",
+          "\ud83d\udd2e Outlook discussed"
+        ],
+        "word_count": 8
+      }
+    },
+    {
+      "segment": 9,
+      "text": "That concludes our prepared remarks. Thank you for your time.",
+      "signals": {
+        "segment": 9,
+        "timestamp": "2026-02-25T02:06:07.800796",
+        "sentiment_score": 0.0,
+        "confidence_ratio": 0.0,
+        "positive_keywords": [],
+        "negative_keywords": [],
+        "alerts": [
+          "\u26a0\ufe0f Excessive hedging language"
+        ],
+        "word_count": 10
+      }
+    }
+  ],
+  "summary": {
+    "avg_sentiment": 3.43,
+    "sentiment_trend": [
+      5.88,
+      8.33,
+      0.0,
+      16.67,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "total_alerts": 17
+  }
+}

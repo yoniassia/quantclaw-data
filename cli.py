@@ -116,6 +116,10 @@ MODULES = {
         'file': 'estimate_revision_tracker.py',
         'commands': ['recommendations', 'revisions', 'velocity', 'targets', 'summary']
     },
+    'analyst_targets': {
+        'file': 'analyst_target_price.py',
+        'commands': ['analyst-consensus', 'analyst-recs', 'analyst-revisions', 'analyst-summary', 'analyst-compare']
+    },
     'tax_loss_harvesting': {
         'file': 'tax_loss_harvesting.py',
         'commands': ['tlh-scan', 'wash-sale-check', 'tax-savings', 'tlh-replacements']
@@ -128,6 +132,10 @@ MODULES = {
         'file': 'dividend_sustainability.py',
         'commands': ['dividend-health', 'payout-ratio', 'fcf-coverage', 'dividend-cut-risk']
     },
+    'dividend_history': {
+        'file': 'dividend_history.py',
+        'commands': ['div-history', 'div-growth', 'div-calendar', 'div-project', 'div-aristocrat', 'div-compare']
+    },
     'share_buyback': {
         'file': 'share_buyback.py',
         'commands': ['buyback-analysis', 'share-count-trend', 'buyback-yield', 'dilution-impact']
@@ -136,13 +144,45 @@ MODULES = {
         'file': 'institutional_ownership.py',
         'commands': ['13f-changes', 'whale-accumulation', 'top-holders', 'smart-money']
     },
+    'insider_heatmap': {
+        'file': 'insider_transaction_heatmap.py',
+        'commands': ['insider-summary', 'insider-sector', 'insider-ticker']
+    },
+    'share_float': {
+        'file': 'share_float_and_ownership_structure.py',
+        'commands': ['ownership-summary', 'insider-detail', 'institutional-detail', 'float-analysis', 'compare', 'scan-low-float']
+    },
+    'index_reconstitution': {
+        'file': 'index_reconstitution_tracker.py',
+        'commands': ['sp500-changes', 'russell-calendar', 'russell-candidates', 'msci-schedule', 'analyze-opportunity', 'historical-stats']
+    },
+    'relative_valuation': {
+        'file': 'relative_valuation.py',
+        'commands': ['valuation-heatmap', 'valuation-sector', 'valuation-stock', 'valuation-peers', 'valuation-screen', 'valuation-sectors']
+    },
+    'adr_gdr': {
+        'file': 'adr_gdr_arbitrage.py',
+        'commands': ['adr-spread', 'adr-scan', 'adr-compare', 'adr-list']
+    },
     'short_squeeze': {
         'file': 'short_squeeze.py',
         'commands': ['squeeze-scan', 'squeeze-score', 'short-interest', 'days-to-cover']
     },
+    'stock_loan': {
+        'file': 'stock_loan_borrow_costs.py',
+        'commands': ['stock-loan', 'threshold-list', 'htb-scan', 'borrow-compare']
+    },
     'corporate_actions': {
         'file': 'corporate_actions.py',
         'commands': ['corporate-calendar', 'split-history', 'dividend-calendar', 'spinoff-tracker']
+    },
+    'stock_split_events': {
+        'file': 'stock_split_corporate_events.py',
+        'commands': ['stock-split-history', 'stock-split-impact', 'stock-corporate-actions', 'stock-compare-splits']
+    },
+    'etf_flow': {
+        'file': 'etf_flow_tracker.py',
+        'commands': ['etf-flows', 'flow-signals', 'top-flows', 'sector-flows']
     },
     'dark_pool': {
         'file': 'dark_pool.py',
@@ -197,6 +237,22 @@ MODULES = {
         'file': 'alert_dashboard.py',
         'commands': ['dashboard-backtest', 'dashboard-performance', 'dashboard-optimize', 'dashboard-report']
     },
+    'sec_xbrl': {
+        'file': 'sec_xbrl_financial_statements.py',
+        'commands': ['financials', 'compare', 'search', 'cik']
+    },
+    'dcf': {
+        'file': 'dcf_valuation.py',
+        'commands': ['dcf', 'dcf-sensitivity', 'dcf-compare', 'dcf-quick']
+    },
+    'comparable_companies': {
+        'file': 'comparable_companies.py',
+        'commands': ['comp-metrics', 'comps-table', 'comp-compare', 'comp-sector', 'peer-groups']
+    },
+    'earnings_surprise_history': {
+        'file': 'earnings_surprise_history.py',
+        'commands': ['earnings-history', 'surprise-patterns', 'whisper-numbers', 'post-earnings-drift', 'earnings-quality-score', 'compare-surprises']
+    },
     'pdf_exporter': {
         'file': 'pdf_exporter.py',
         'commands': ['export-pdf', 'batch-report', 'report-template']
@@ -208,6 +264,10 @@ MODULES = {
     'ai_earnings': {
         'file': 'ai_earnings_analyzer.py',
         'commands': ['earnings-tone', 'confidence-score', 'language-shift', 'hedging-detector']
+    },
+    'mutual_fund_flow': {
+        'file': 'mutual_fund_flow_analysis.py',
+        'commands': ['fund-flows', 'compare-flows', 'sector-rotation', 'smart-money', 'fund-performance', 'n-port-filings']
     },
     'smart_prefetch': {
         'file': 'smart_prefetch.py',
@@ -249,6 +309,10 @@ MODULES = {
         'file': 'worldbank.py',
         'commands': ['country-profile', 'countries', 'indicator', 'compare', 'search', 'regional', 'indicators']
     },
+    'global_pmi': {
+        'file': 'global_pmi.py',
+        'commands': ['pmi-country', 'pmi-global', 'pmi-compare', 'pmi-regional', 'pmi-divergence', 'pmi-search', 'pmi-list']
+    },
     'census': {
         'file': 'census.py',
         'commands': ['retail-sales', 'housing-starts', 'building-permits', 'trade-deficit', 'economic-snapshot']
@@ -269,6 +333,14 @@ MODULES = {
         'file': 'comtrade.py',
         'commands': ['reporters', 'partners', 'commodities', 'search-country', 'search-commodity', 'bilateral', 'top-partners', 'trade-balance', 'commodity-trade', 'concentration', 'dependencies']
     },
+    'inegi': {
+        'file': 'inegi.py',
+        'commands': ['mx-snapshot', 'mx-indicator', 'mx-gdp', 'mx-inflation', 'mx-employment', 'mx-remittances', 'mx-trade', 'mx-compare', 'mx-indicators', 'mx-states']
+    },
+    'turkish_institute': {
+        'file': 'turkish_institute.py',
+        'commands': ['tuik-indicator', 'tuik-inflation', 'tuik-gdp', 'tuik-trade', 'tuik-unemployment', 'tuik-monetary', 'tuik-fx', 'tuik-snapshot', 'tuik-indicators']
+    },
     'oecd': {
         'file': 'oecd.py',
         'commands': ['cli', 'housing', 'productivity', 'compare', 'snapshot', 'countries']
@@ -277,9 +349,142 @@ MODULES = {
         'file': 'boj.py',
         'commands': ['tankan', 'monetary-base', 'fx-reserves', 'rates', 'boj-watch', 'compare-fed', 'meeting-schedule']
     },
+    'rbi': {
+        'file': 'rbi.py',
+        'commands': ['gdp', 'wpi', 'cpi', 'fx-reserves', 'repo-rate', 'india-watch', 'mpc-calendar', 'compare-brics']
+    },
+    'bcb': {
+        'file': 'bcb.py',
+        'commands': ['brazil-selic', 'brazil-ipca', 'brazil-gdp', 'brazil-trade-balance', 'brazil-dashboard', 'brazil-exchange-rate']
+    },
+    'saudi_arabia_gastat': {
+        'file': 'saudi_arabia_gastat.py',
+        'commands': ['saudi-gdp', 'saudi-cpi', 'saudi-oil', 'saudi-diversification', 'saudi-dashboard', 'saudi-gcc-compare', 'saudi-indicators']
+    },
+    'ecb': {
+        'file': 'ecb.py',
+        'commands': ['ecb-indicator', 'ecb-rates', 'ecb-fx', 'ecb-dashboard', 'ecb-indicators', 'ecb-countries']
+    },
     'china_nbs': {
         'file': 'china_nbs.py',
         'commands': ['pmi', 'gdp', 'trade', 'fx-reserves', 'yuan', 'industrial', 'inflation', 'dashboard']
+    },
+    'kosis': {
+        'file': 'kosis.py',
+        'commands': ['korea-gdp', 'korea-cpi', 'korea-semiconductors', 'korea-trade', 'korea-bok-rate', 'korea-fx-reserves', 'korea-exchange-rate', 'korea-dashboard', 'korea-indicators', 'korea-semiconductor-breakdown']
+    },
+    'nigeria_nbs': {
+        'file': 'nigeria_nbs.py',
+        'commands': ['ng-snapshot', 'ng-gdp', 'ng-inflation', 'ng-oil', 'ng-trade', 'ng-indicator', 'ng-compare', 'ng-indicators']
+    },
+    'argentina_indec': {
+        'file': 'argentina_indec.py',
+        'commands': ['ar-snapshot', 'ar-indicator', 'ar-inflation', 'ar-gdp', 'ar-poverty', 'ar-trade', 'ar-employment', 'ar-production', 'ar-compare', 'ar-indicators']
+    },
+    'singapore_dos': {
+        'file': 'singapore_dos.py',
+        'commands': ['singapore-gdp', 'singapore-cpi', 'singapore-trade', 'singapore-mas', 'singapore-dashboard']
+    },
+    'fred_enhanced': {
+        'file': 'fred_enhanced.py',
+        'commands': ['fred-series', 'fred-yield-curve', 'fred-money-supply', 'fred-financial-conditions', 'fred-leading-indicators', 'fred-consumer-credit', 'fred-category', 'fred-snapshot', 'fred-categories', 'fred-search']
+    },
+    'global_bonds': {
+        'file': 'global_bonds.py',
+        'commands': ['list-countries', 'yield', 'compare', 'spreads', 'us-curve', 'us-real', 'us-breakeven', 'comprehensive']
+    },
+    'eia_energy': {
+        'file': 'eia_energy.py',
+        'commands': ['crude-inventories', 'spr', 'natgas-storage', 'refinery-util', 'gasoline', 'distillate', 'weekly-report', 'dashboard']
+    },
+    'swf': {
+        'file': 'swf_tracker.py',
+        'commands': ['swf-list', 'swf-country', 'swf-details', 'swf-top', 'swf-allocations', 'swf-sec-filers', 'swf-by-source', 'swf-compare', 'swf-search', 'swf-stats']
+    },
+    'central_bank': {
+        'file': 'central_bank_balance.py',
+        'commands': ['cb-fed', 'cb-ecb', 'cb-boj', 'cb-pboc', 'cb-global', 'cb-reserves']
+    },
+    'global_shipping': {
+        'file': 'global_shipping.py',
+        'commands': ['bdi', 'container-freight', 'port-congestion', 'shipping-dashboard']
+    },
+    'global_debt': {
+        'file': 'global_debt.py',
+        'commands': ['country', 'compare', 'high-debt', 'trends', 'bis-countries', 'us-fred']
+    },
+    'global_real_estate': {
+        'file': 'global_real_estate.py',
+        'commands': ['re-country', 're-compare', 're-list', 're-search', 're-snapshot']
+    },
+    'bis_banking': {
+        'file': 'bis_banking.py',
+        'commands': ['dataflows', 'cross-border', 'derivatives', 'derivatives-by-type', 'fx-turnover', 'fx-centers', 'global-liquidity', 'debt-securities', 'property-prices', 'country-profile', 'countries']
+    },
+    'ilo_labor': {
+        'file': 'ilo_labor.py',
+        'commands': ['labor-profile', 'labor-unemployment', 'labor-employment', 'labor-force', 'youth-unemployment', 'working-poverty', 'informal-employment', 'labor-compare', 'labor-countries', 'labor-search', 'labor-indicators']
+    },
+    'treasury_auctions': {
+        'file': 'treasury_auctions.py',
+        'commands': ['treasury-recent', 'treasury-upcoming', 'treasury-tic', 'treasury-debt', 'treasury-performance', 'treasury-dashboard']
+    },
+    'usda_agriculture': {
+        'file': 'usda_agriculture.py',
+        'commands': ['crop-production', 'livestock', 'farm-prices', 'wasde-summary', 'ag-dashboard', 'list-commodities']
+    },
+    'wto': {
+        'file': 'wto_trade.py',
+        'commands': ['members', 'tariff', 'compare-tariffs', 'antidumping', 'disputes', 'dispute-detail', 'agreements', 'tpr']
+    },
+    'abs': {
+        'file': 'abs.py',
+        'commands': ['abs-gdp', 'abs-cpi', 'abs-employment', 'abs-housing', 'abs-cash-rate', 'abs-building', 'abs-retail', 'abs-snapshot', 'abs-list']
+    },
+    'south_africa': {
+        'file': 'south_africa_reserve_bank.py',
+        'commands': ['south-africa', 'sa-snapshot', 'sa-indicator', 'sa-repo-rate', 'sa-zar-rate', 'sa-mining', 'sa-brics-compare', 'sa-indicators']
+    },
+    'israel_cbs': {
+        'file': 'israel_cbs.py',
+        'commands': ['israel-gdp', 'israel-cpi', 'israel-housing', 'israel-tech-exports', 'israel-dashboard']
+    },
+    'poland_gus': {
+        'file': 'poland_gus.py',
+        'commands': ['poland-indicator', 'poland-gdp', 'poland-inflation', 'poland-employment', 
+                     'poland-industrial', 'poland-trade', 'poland-dashboard', 'poland-indicators', 
+                     'poland-voivodeships']
+    },
+    'switzerland_snb': {
+        'file': 'switzerland_snb.py',
+        'commands': ['swiss-gdp', 'swiss-cpi', 'swiss-fx-reserves', 'swiss-sight-deposits', 
+                     'swiss-rates', 'swiss-trade', 'swiss-dashboard']
+    },
+    'global_inflation': {
+        'file': 'global_inflation.py',
+        'commands': ['inflation-country', 'inflation-compare', 'inflation-heatmap', 
+                     'inflation-divergence', 'inflation-search', 'inflation-countries']
+    },
+    'equity_screener': {
+        'file': 'equity_screener.py',
+        'commands': ['screen', 'preset', 'rank', 'factors', 'presets']
+    },
+    'global_stock_exchange_holidays': {
+        'file': 'global_stock_exchange_holidays.py',
+        'commands': ['exchange-holidays', 'exchange-info', 'is-trading-day', 'next-trading-day',
+                     'month-calendar', 'global-holidays-today', 'compare-holidays', 'list-exchanges']
+    },
+    'spac_lifecycle': {
+        'file': 'spac_lifecycle.py',
+        'commands': ['spac-list', 'spac-trust', 'spac-timeline', 'spac-redemptions', 'spac-arbitrage', 'spac-search']
+    },
+    'secondary_offering': {
+        'file': 'secondary_offering_monitor.py',
+        'commands': ['secondary-recent', 'secondary-by-ticker', 'secondary-shelf-status', 'secondary-impact', 'secondary-upcoming', 'secondary-search']
+    },
+    'global_index_returns': {
+        'file': 'global_equity_index_returns.py',
+        'commands': ['daily-returns', 'performance', 'regional', 'correlation', 'compare', 'list']
     }
 }
 
@@ -468,6 +673,11 @@ def print_help():
     print("  python cli.py top-holders TICKER [--limit 20]     # Get top institutional holders and concentration metrics")
     print("  python cli.py smart-money TICKER                  # Track famous investor (Buffett, Ackman, Burry) positions")
     
+    print("\nInsider Transaction Heatmap (Phase 137):")
+    print("  python cli.py insider-summary [--days 7]          # Sector-wide insider buying/selling patterns")
+    print("  python cli.py insider-sector SECTOR [--days 30]   # Deep dive: insider clusters in specific sector")
+    print("  python cli.py insider-ticker TICKER [--days 90]   # Insider transaction history for a ticker")
+    
     print("\nConvertible Bond Arbitrage (Phase 64):")
     print("  python cli.py convertible-scan                    # Scan for convertible bond opportunities")
     print("  python cli.py conversion-premium TSLA             # Conversion premium analysis")
@@ -509,6 +719,12 @@ def print_help():
     print("  python cli.py split-history TICKER                # Stock split history with price impact analysis")
     print("  python cli.py dividend-calendar [TICKERS]         # Upcoming dividend ex-dates across watchlist")
     print("  python cli.py spinoff-tracker                     # Recent/upcoming spin-offs and special distributions")
+    
+    print("\nStock Split & Corporate Events (Phase 146):")
+    print("  python cli.py stock-split-history TICKER [--years N]           # Complete split history with cumulative factors")
+    print("  python cli.py stock-split-impact TICKER [--date YYYY-MM-DD]    # Pre/post split price impact analysis")
+    print("  python cli.py stock-corporate-actions TICKER [--years N]       # All corporate actions with impact metrics")
+    print("  python cli.py stock-compare-splits TICKER1,TICKER2,... [--days N]  # Compare split performance across tickers")
     
     print("\n13D/13G Filing Alerts (Phase 68):")
     print("  python cli.py filing-alerts-recent [--hours 24] [--type 'SC 13D']    # Recent activist filings")
@@ -605,6 +821,14 @@ def print_help():
     print("  python cli.py prediction-confidence TSLA          # Uncertainty quantification with CI")
     print("  python cli.py model-comparison NVDA               # Compare LSTM vs statistical models")
     print("  python cli.py prediction-backtest MSFT --years 1  # Historical prediction accuracy")
+    
+    print("\nSPAC Lifecycle Tracker (Phase 148):")
+    print("  python cli.py spac-list [--status searching|announced|completed]  # List tracked SPACs")
+    print("  python cli.py spac-trust TICKER                                   # Calculate trust value per share")
+    print("  python cli.py spac-timeline TICKER                                # Show deal timeline")
+    print("  python cli.py spac-redemptions TICKER                             # Estimate redemption risk")
+    print("  python cli.py spac-arbitrage                                      # Find arbitrage opportunities")
+    print("  python cli.py spac-search [KEYWORD]                               # Search for SPACs")
     
     print("\nExamples:")
     print("  python cli.py cointegration KO PEP")
@@ -732,6 +956,31 @@ def print_help():
     print("  python cli.py search United")
     print("  python cli.py regional EAS --indicator GDP_GROWTH")
     print("  python cli.py indicators")
+    print("  python cli.py spac-list --status announced")
+    print("  python cli.py spac-trust DWAC")
+    print("  python cli.py spac-timeline LCID")
+    print("  python cli.py spac-redemptions DWAC")
+    print("  python cli.py spac-arbitrage")
+    print("  python cli.py spac-search lucid")
+    
+    print("\nGlobal PMI Aggregator (Phase 106):")
+    print("  python cli.py pmi-country USA                     # US Manufacturing & Services PMI")
+    print("  python cli.py pmi-country CHN --type both         # China PMI (both sectors)")
+    print("  python cli.py pmi-global manufacturing            # Global PMI snapshot (30+ countries)")
+    print("  python cli.py pmi-compare USA,CHN,DEU,JPN        # Compare PMI across major economies")
+    print("  python cli.py pmi-regional Europe --type services # European services PMI")
+    print("  python cli.py pmi-divergence --months 12          # Mfg vs Services divergence")
+    print("  python cli.py pmi-list                            # List all 30+ countries")
+    
+    print("\nCentral Bank Balance Sheets (Phase 109):")
+    print("  python cli.py cb-fed                              # Federal Reserve H.4.1 balance sheet (weekly)")
+    print("  python cli.py cb-ecb                              # European Central Bank balance sheet (weekly)")
+    print("  python cli.py cb-boj                              # Bank of Japan balance sheet (monthly)")
+    print("  python cli.py cb-pboc                             # People's Bank of China balance sheet (monthly)")
+    print("  python cli.py cb-global                           # Compare all major central banks (QE/QT status)")
+    print("  python cli.py cb-reserves                         # Fed reserve balances detail (liquidity analysis)")
+    print("  python cli.py cb-fed --api-key YOUR_KEY          # Use FRED API key for real-time data")
+    
     print("  python cli.py pmi")
     print("  python cli.py gdp")
     print("  python cli.py trade")
@@ -747,6 +996,47 @@ def print_help():
     print("  python cli.py cia-factbook-trade Germany")
     print("  python cli.py cia-factbook-resources Brazil")
     print("  python cli.py cia-factbook-scan --output factbook_all.json")
+    
+    print("\nUS Treasury Auctions & Debt (Phase 118):")
+    print("  python cli.py treasury-recent [days] [type]       # Recent auction results (default: 30 days)")
+    print("  python cli.py treasury-upcoming [days]            # Upcoming auction schedule")
+    print("  python cli.py treasury-tic [country]              # Foreign holdings of US Treasuries")
+    print("  python cli.py treasury-debt                       # Current US debt outstanding")
+    print("  python cli.py treasury-performance [days]         # Auction performance analysis")
+    print("  python cli.py treasury-dashboard                  # Comprehensive dashboard")
+    print("  Types: Bill, Note, Bond, TIPS, FRN")
+    
+    print("\nRelative Valuation Matrix (Phase 143):")
+    print("  python cli.py valuation-heatmap [--format text|json]    # Cross-sector valuation comparison heatmap")
+    print("  python cli.py valuation-sector Technology               # Get valuation metrics for all stocks in a sector")
+    print("  python cli.py valuation-stock AAPL                      # Comprehensive valuation metrics for single stock")
+    print("  python cli.py valuation-peers AAPL MSFT GOOGL           # Compare peer group valuation")
+    print("  python cli.py valuation-screen pe_trailing 15           # Screen for stocks with P/E below 15")
+    print("  python cli.py valuation-screen peg_ratio 1.5 --comparison above  # Find stocks with high PEG")
+    print("  python cli.py valuation-sectors                         # List all available sectors")
+    
+    print("\nADR/GDR Arbitrage Monitor (Phase 147):")
+    print("  python cli.py adr-spread BP                             # Calculate arbitrage spread for BP ADR vs London ordinary shares")
+    print("  python cli.py adr-scan [--min-spread 50] [--sort-by spread|volume|alpha]")
+    print("                                                          # Scan all ADRs for arbitrage opportunities")
+    print("  python cli.py adr-compare BABA JD BIDU                  # Compare Chinese ADR spreads side-by-side")
+    print("  python cli.py adr-list [--currency JPY]                 # List all known ADR/GDR pairs, optionally filter by currency")
+    
+    print("\nBIS Global Banking Statistics (Phase 117):")
+    print("  python cli.py dataflows                           # List all BIS datasets")
+    print("  python cli.py cross-border --reporting US --counterparty CN")
+    print("                                                    # Cross-border banking positions")
+    print("  python cli.py derivatives                         # OTC derivatives statistics")
+    print("  python cli.py derivatives-by-type                 # Derivatives by instrument type")
+    print("  python cli.py fx-turnover --year 2022             # FX market turnover (Triennial)")
+    print("  python cli.py fx-centers --countries GB,US,SG     # Compare FX market centers")
+    print("  python cli.py global-liquidity                    # Global liquidity indicators")
+    print("  python cli.py debt-securities --sector financial --currency USD")
+    print("                                                    # International debt securities")
+    print("  python cli.py property-prices US --type residential")
+    print("                                                    # Property price indices")
+    print("  python cli.py country-profile GB                  # Comprehensive BIS profile")
+    print("  python cli.py countries                           # List BIS reporting countries")
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))

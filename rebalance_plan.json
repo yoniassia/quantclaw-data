@@ -1,0 +1,57 @@
+{
+  "trades": [
+    {
+      "ticker": "MSFT",
+      "action": "BUY",
+      "shares": 52.82776349614396,
+      "current_price": 389.0,
+      "trade_value": 20550.0,
+      "tax_impact": 0,
+      "holding_type": null,
+      "wash_sale_risk": false
+    },
+    {
+      "ticker": "AMZN",
+      "action": "BUY",
+      "shares": 47.94783331923734,
+      "current_price": 208.55999755859375,
+      "trade_value": 10000.0,
+      "tax_impact": 0,
+      "holding_type": null,
+      "wash_sale_risk": false
+    },
+    {
+      "ticker": "AAPL",
+      "action": "BUY",
+      "shares": 10.237371886509692,
+      "current_price": 272.1400146484375,
+      "trade_value": 2785.99853515625,
+      "tax_impact": 0,
+      "holding_type": null,
+      "wash_sale_risk": false
+    },
+    {
+      "ticker": "GOOGL",
+      "action": "SELL",
+      "shares": 10.6706323813596,
+      "current_price": 310.8999938964844,
+      "trade_value": 3317.499542236328,
+      "tax_impact": 407.4047312946352,
+      "holding_type": "long-term",
+      "wash_sale_risk": false
+    }
+  ],
+  "total_tax_liability": 407.4047312946352,
+  "net_rebalancing_cost": 407.4047312946352,
+  "current_allocation": {
+    "AAPL": "27.21%",
+    "MSFT": "19.45%",
+    "GOOGL": "23.32%"
+  },
+  "target_allocation": {
+    "AAPL": "30.00%",
+    "MSFT": "40.00%",
+    "GOOGL": "20.00%",
+    "AMZN": "10.00%"
+  }
+}
