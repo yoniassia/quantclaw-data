@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { services, categories, Service } from "./services";
 import { phases, dataSources, ideaGeneration } from "./roadmap";
 import { installSteps, mcpConfig, cliReference, apiEndpoints } from "./install";
+
+type Tab = "dashboard" | "modules" | "roadmap" | "install";
+const VALID_TABS: Tab[] = ["dashboard", "modules", "roadmap", "install"];
 
 function ServiceCard({ s }: { s: Service }) {
   const [open, setOpen] = useState(false);
@@ -48,9 +51,48 @@ const roadmapCategories = [...new Set(phases.map(p => p.category))];
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "modules" | "roadmap" | "install">("dashboard");
+  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
   const [roadmapFilter, setRoadmapFilter] = useState<string | null>(null);
+
+  // Sync tab/category with URL hash for shareable links
+  // Format: #tab or #tab/category
+  const updateHash = useCallback((tab: Tab, category?: string | null) => {
+    const hash = category ? `${tab}/${encodeURIComponent(category)}` : tab;
+    window.history.replaceState(null, "", `#${hash}`);
+  }, []);
+
+  useEffect(() => {
+    const parseHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      const [tab, ...rest] = hash.split("/");
+      const cat = rest.length ? decodeURIComponent(rest.join("/")) : null;
+      if (VALID_TABS.includes(tab as Tab)) {
+        setActiveTab(tab as Tab);
+        if (tab === "modules" && cat) setActiveCategory(cat);
+        if (tab === "roadmap" && cat) setRoadmapFilter(cat);
+      }
+    };
+    parseHash();
+    window.addEventListener("hashchange", parseHash);
+    return () => window.removeEventListener("hashchange", parseHash);
+  }, []);
+
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab);
+    updateHash(tab);
+  };
+
+  const handleCategoryChange = (cat: string | null) => {
+    setActiveCategory(cat);
+    updateHash("modules", cat);
+  };
+
+  const handleRoadmapFilter = (cat: string | null) => {
+    setRoadmapFilter(cat);
+    updateHash("roadmap", cat);
+  };
 
   const filtered = services.filter(s => {
     if (activeCategory && s.category !== activeCategory) return false;
@@ -89,7 +131,7 @@ export default function Home() {
       <nav className="border-b border-white/10 px-6">
         <div className="max-w-6xl mx-auto flex gap-1">
           {(["dashboard", "modules", "install", "roadmap"] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
+            <button key={tab} onClick={() => handleTabChange(tab)}
               className={`px-6 py-3 text-sm font-medium border-b-2 transition ${activeTab === tab ? "border-[#13C636] text-[#13C636]" : "border-transparent text-white/50 hover:text-white/80"}`}>
               {tab === "dashboard" ? "📊 Dashboard" : tab === "modules" ? "🔌 API Modules" : tab === "install" ? "⚡ Install & Use" : "🗺️ Roadmap"}
             </button>
@@ -185,7 +227,7 @@ export default function Home() {
                 className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-[#13C636] focus:outline-none" />
             </div>
             <div className="flex flex-wrap gap-2 mb-8">
-              <button onClick={() => setActiveCategory(null)}
+              <button onClick={() => handleCategoryChange(null)}
                 className={`px-4 py-2 rounded-full text-sm transition ${!activeCategory ? "bg-[#13C636] text-black font-semibold" : "bg-white/5 text-white/60 hover:bg-white/10"}`}>
                 All ({services.length})
               </button>
@@ -193,7 +235,7 @@ export default function Home() {
                 const count = services.filter(s => s.category === c.id).length;
                 if (!count) return null;
                 return (
-                  <button key={c.id} onClick={() => setActiveCategory(activeCategory === c.id ? null : c.id)}
+                  <button key={c.id} onClick={() => handleCategoryChange(activeCategory === c.id ? null : c.id)}
                     className={`px-4 py-2 rounded-full text-sm transition ${activeCategory === c.id ? "bg-[#13C636] text-black font-semibold" : "bg-white/5 text-white/60 hover:bg-white/10"}`}>
                     {c.icon} {c.name} ({count})
                   </button>
@@ -218,12 +260,12 @@ export default function Home() {
 
             {/* Category Filter */}
             <div className="flex flex-wrap gap-2 mb-6">
-              <button onClick={() => setRoadmapFilter(null)}
+              <button onClick={() => handleRoadmapFilter(null)}
                 className={`px-3 py-1.5 rounded-full text-xs transition ${!roadmapFilter ? "bg-[#13C636] text-black font-semibold" : "bg-white/5 text-white/60 hover:bg-white/10"}`}>
                 All ({phases.length})
               </button>
               {roadmapCategories.map(cat => (
-                <button key={cat} onClick={() => setRoadmapFilter(roadmapFilter === cat ? null : cat)}
+                <button key={cat} onClick={() => handleRoadmapFilter(roadmapFilter === cat ? null : cat)}
                   className={`px-3 py-1.5 rounded-full text-xs transition ${roadmapFilter === cat ? "bg-[#13C636] text-black font-semibold" : "bg-white/5 text-white/60 hover:bg-white/10"}`}>
                   {cat} ({phases.filter(p => p.category === cat).length})
                 </button>

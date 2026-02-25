@@ -59,6 +59,26 @@ MODULES = {
     'alert_backtest': {
         'file': 'alert_backtest.py',
         'commands': ['alert-backtest', 'signal-quality', 'alert-potential']
+    },
+    'commodity_futures': {
+        'file': 'commodity_futures.py',
+        'commands': ['futures-curve', 'contango', 'roll-yield', 'term-structure']
+    },
+    'satellite': {
+        'file': 'satellite_proxies.py',
+        'commands': ['satellite-proxy', 'shipping-index', 'construction-activity', 'foot-traffic', 'economic-index']
+    },
+    'fed_policy': {
+        'file': 'fed_policy.py',
+        'commands': ['fed-watch', 'rate-probability', 'fomc-calendar', 'dot-plot', 'yield-curve', 'current-rate']
+    },
+    'crypto_onchain': {
+        'file': 'crypto_onchain.py',
+        'commands': ['onchain', 'whale-watch', 'dex-volume', 'gas-fees', 'token-flows']
+    },
+    'earnings_nlp': {
+        'file': 'earnings_nlp.py',
+        'commands': ['earnings-tone', 'confidence-score', 'dodge-detect']
     }
 }
 
@@ -155,6 +175,34 @@ def print_help():
     print("  python cli.py dsl-scan \"EXPRESSION\" [--universe SP500] [--limit N]")
     print("  python cli.py dsl-help")
     
+    print("\nCommodity Futures Curves (Phase 44):")
+    print("  python cli.py futures-curve SYMBOL [--limit N]")
+    print("  python cli.py contango")
+    print("  python cli.py roll-yield SYMBOL [--lookback DAYS]")
+    print("  python cli.py term-structure SYMBOL")
+    
+    print("\nSatellite Imagery Proxies (Phase 46):")
+    print("  python cli.py satellite-proxy TICKER")
+    print("  python cli.py shipping-index")
+    print("  python cli.py construction-activity")
+    print("  python cli.py foot-traffic TICKER")
+    print("  python cli.py economic-index")
+    
+    print("\nFed Policy Prediction (Phase 45):")
+    print("  python cli.py fed-watch              # Comprehensive Fed policy analysis")
+    print("  python cli.py rate-probability       # Calculate rate hike/cut probabilities")
+    print("  python cli.py fomc-calendar          # Show upcoming FOMC meeting dates")
+    print("  python cli.py dot-plot               # Dot plot consensus analysis")
+    print("  python cli.py yield-curve            # Treasury yield curve analysis")
+    print("  python cli.py current-rate           # Current fed funds rate & target range")
+    
+    print("\nCrypto On-Chain Analytics (Phase 43):")
+    print("  python cli.py onchain ETH                          # Get Ethereum on-chain metrics")
+    print("  python cli.py whale-watch BTC [--min 100]          # Track Bitcoin whale wallets")
+    print("  python cli.py dex-volume [--protocol uniswap] [--chain ethereum]")
+    print("  python cli.py gas-fees                             # Current Ethereum gas fees")
+    print("  python cli.py token-flows USDT [--hours 24]        # Track token transfer volumes")
+    
     print("\nExamples:")
     print("  python cli.py cointegration KO PEP")
     print("  python cli.py pairs-scan beverage --limit 5")
@@ -179,6 +227,15 @@ def print_help():
     print("  python cli.py dsl-eval AAPL \"price > 200 AND rsi < 30\"")
     print("  python cli.py dsl-scan \"rsi < 25\" --universe SP500 --limit 10")
     print("  python cli.py dsl-eval TSLA \"sma(20) crosses_above sma(50)\"")
+    print("  python cli.py futures-curve CL --limit 6")
+    print("  python cli.py contango")
+    print("  python cli.py roll-yield GC --lookback 90")
+    print("  python cli.py term-structure NG")
+    print("  python cli.py satellite-proxy WMT")
+    print("  python cli.py shipping-index")
+    print("  python cli.py construction-activity")
+    print("  python cli.py foot-traffic AAPL")
+    print("  python cli.py economic-index")
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
