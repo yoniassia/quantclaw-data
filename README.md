@@ -9,6 +9,16 @@
 
 ---
 
+## 📦 Install via ClawHub (for OpenClaw agents)
+
+```bash
+clawhub install quantclaw-data
+```
+
+Or manually:
+
+---
+
 ## ⚡ Quick Start
 
 ```bash
