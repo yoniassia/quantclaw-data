@@ -28,6 +28,10 @@ MODULES = {
         'file': 'monte_carlo.py',
         'commands': ['monte-carlo', 'var', 'scenario']
     },
+    'volatility_surface': {
+        'file': 'volatility_surface.py',
+        'commands': ['iv-smile', 'vol-arbitrage', 'straddle-scan', 'strangle-scan']
+    },
     'black_litterman': {
         'file': 'black_litterman.py',
         'commands': ['black-litterman', 'equilibrium-returns', 'portfolio-optimize']
@@ -78,7 +82,204 @@ MODULES = {
     },
     'earnings_nlp': {
         'file': 'earnings_nlp.py',
-        'commands': ['earnings-tone', 'confidence-score', 'dodge-detect']
+        'commands': ['dodge-detect']
+    },
+    'product_launches': {
+        'file': 'product_launches.py',
+        'commands': ['launch-summary', 'buzz-tracking', 'reddit-sentiment', 'news-coverage', 'preorder-velocity', 'trending-products']
+    },
+    'revenue_quality': {
+        'file': 'revenue_quality.py',
+        'commands': ['revenue-quality', 'dso-trends', 'channel-stuffing', 'cash-flow-divergence']
+    },
+    'earnings_quality': {
+        'file': 'earnings_quality.py',
+        'commands': ['earnings-quality', 'accruals-trend', 'fraud-indicators']
+    },
+    'peer_network': {
+        'file': 'peer_network.py',
+        'commands': ['peer-network', 'compare-networks', 'map-dependencies']
+    },
+    'political_risk': {
+        'file': 'political_risk.py',
+        'commands': ['geopolitical-events', 'sanctions-search', 'regulatory-changes', 'country-risk']
+    },
+    'executive_comp': {
+        'file': 'exec_compensation.py',
+        'commands': ['exec-comp', 'pay-performance', 'comp-peer-compare', 'shareholder-alignment']
+    },
+    'peer_earnings': {
+        'file': 'peer_earnings.py',
+        'commands': ['peer-earnings', 'beat-miss-history', 'guidance-tracker', 'estimate-dispersion']
+    },
+    'estimate_revision': {
+        'file': 'estimate_revision_tracker.py',
+        'commands': ['recommendations', 'revisions', 'velocity', 'targets', 'summary']
+    },
+    'tax_loss_harvesting': {
+        'file': 'tax_loss_harvesting.py',
+        'commands': ['tlh-scan', 'wash-sale-check', 'tax-savings', 'tlh-replacements']
+    },
+    'crypto_correlation': {
+        'file': 'crypto_correlation.py',
+        'commands': ['btc-dominance', 'altcoin-season', 'defi-tvl-correlation', 'crypto-equity-corr']
+    },
+    'dividend_sustainability': {
+        'file': 'dividend_sustainability.py',
+        'commands': ['dividend-health', 'payout-ratio', 'fcf-coverage', 'dividend-cut-risk']
+    },
+    'share_buyback': {
+        'file': 'share_buyback.py',
+        'commands': ['buyback-analysis', 'share-count-trend', 'buyback-yield', 'dilution-impact']
+    },
+    'institutional_ownership': {
+        'file': 'institutional_ownership.py',
+        'commands': ['13f-changes', 'whale-accumulation', 'top-holders', 'smart-money']
+    },
+    'short_squeeze': {
+        'file': 'short_squeeze.py',
+        'commands': ['squeeze-scan', 'squeeze-score', 'short-interest', 'days-to-cover']
+    },
+    'corporate_actions': {
+        'file': 'corporate_actions.py',
+        'commands': ['corporate-calendar', 'split-history', 'dividend-calendar', 'spinoff-tracker']
+    },
+    'dark_pool': {
+        'file': 'dark_pool.py',
+        'commands': ['dark-pool-volume', 'block-trades', 'institutional-accumulation', 'off-exchange-ratio']
+    },
+    'market_regime': {
+        'file': 'market_regime.py',
+        'commands': ['market-regime', 'regime-history', 'risk-dashboard', 'correlation-regime']
+    },
+    'correlation_anomaly': {
+        'file': 'correlation_anomaly.py',
+        'commands': ['corr-breakdown', 'corr-scan', 'corr-regime', 'corr-arbitrage']
+    },
+    'convertible_bonds': {
+        'file': 'convertible_bonds.py',
+        'commands': ['convertible-scan', 'conversion-premium', 'convertible-arb', 'convertible-greeks']
+    },
+    'slb': {
+        'file': 'slb.py',
+        'commands': ['slb-market', 'slb-issuer', 'slb-kpi-tracker', 'slb-coupon-forecast']
+    },
+    'filing_alerts': {
+        'file': 'filing_alerts.py',
+        'commands': ['filing-alerts-recent', 'filing-alerts-search', 'filing-alerts-activists', 'filing-alerts-watch']
+    },
+    'proxy_fights': {
+        'file': 'proxy_fights.py',
+        'commands': ['proxy-filings', 'proxy-contests', 'proxy-voting', 'proxy-advisory', 'proxy-summary']
+    },
+    'activist_success': {
+        'file': 'activist_success_predictor.py',
+        'commands': ['activist-predict', 'activist-scan', 'activist-historical', 'activist-13d', 
+                     'activist-history', 'activist-targets', 'governance-score']
+    },
+    'climate_risk': {
+        'file': 'climate_risk.py',
+        'commands': ['climate-risk', 'physical-risk', 'transition-risk', 'carbon-scenario']
+    },
+    'factor_timing': {
+        'file': 'factor_timing.py',
+        'commands': ['factor-timing', 'factor-rotation', 'factor-performance', 'factor-regime-history']
+    },
+    'ml_factor_discovery': {
+        'file': 'ml_factor_discovery.py',
+        'commands': ['discover-factors', 'factor-ic', 'factor-backtest', 'feature-importance']
+    },
+    'cross_exchange_arb': {
+        'file': 'cross_exchange_arb.py',
+        'commands': ['arb-scan', 'arb-spread', 'arb-history', 'exchange-latency']
+    },
+    'alert_dashboard': {
+        'file': 'alert_dashboard.py',
+        'commands': ['dashboard-backtest', 'dashboard-performance', 'dashboard-optimize', 'dashboard-report']
+    },
+    'pdf_exporter': {
+        'file': 'pdf_exporter.py',
+        'commands': ['export-pdf', 'batch-report', 'report-template']
+    },
+    'regulatory_calendar': {
+        'file': 'regulatory_calendar.py',
+        'commands': ['econ-calendar', 'event-reaction', 'event-volatility', 'event-backtest']
+    },
+    'ai_earnings': {
+        'file': 'ai_earnings_analyzer.py',
+        'commands': ['earnings-tone', 'confidence-score', 'language-shift', 'hedging-detector']
+    },
+    'smart_prefetch': {
+        'file': 'smart_prefetch.py',
+        'commands': ['prefetch-stats', 'prefetch-warmup', 'cache-status', 'prefetch-config']
+    },
+    'data_reconciliation': {
+        'file': 'data_reconciliation.py',
+        'commands': ['reconcile-price', 'data-quality-report', 'source-reliability', 'discrepancy-log']
+    },
+    'live_earnings': {
+        'file': 'live_earnings.py',
+        'commands': ['calendar', 'status', 'simulate', 'transcribe']
+    },
+    'live_transcription': {
+        'file': 'live_transcription.py',
+        'commands': ['earnings-schedule', 'transcript-signals', 'earnings-countdown', 'transcript-compare']
+    },
+    'portfolio_construction': {
+        'file': 'portfolio_construction.py',
+        'commands': ['mpt-optimize', 'efficient-frontier', 'rebalance-plan', 'portfolio-risk']
+    },
+    'neural_prediction': {
+        'file': 'neural_prediction.py',
+        'commands': ['predict-price', 'prediction-confidence', 'model-comparison', 'prediction-backtest']
+    },
+    'deep_learning_sentiment': {
+        'file': 'deep_learning_sentiment.py',
+        'commands': ['finbert-earnings', 'finbert-sec', 'finbert-news', 'finbert-trend', 'finbert-compare']
+    },
+    'transaction_cost': {
+        'file': 'transaction_cost.py',
+        'commands': ['tca-spread', 'tca-impact', 'tca-shortfall', 'tca-optimize', 'tca-compare']
+    },
+    'imf_weo': {
+        'file': 'imf_weo.py',
+        'commands': ['imf-country', 'imf-compare', 'imf-global', 'imf-group', 'imf-projections', 'imf-search']
+    },
+    'worldbank': {
+        'file': 'worldbank.py',
+        'commands': ['country-profile', 'countries', 'indicator', 'compare', 'search', 'regional', 'indicators']
+    },
+    'census': {
+        'file': 'census.py',
+        'commands': ['retail-sales', 'housing-starts', 'building-permits', 'trade-deficit', 'economic-snapshot']
+    },
+    'eurostat': {
+        'file': 'eurostat.py',
+        'commands': ['eu-country-profile', 'eu-countries', 'eu-indicator', 'eu-compare', 'eu27-aggregate', 'eu-search', 'eu-indicators']
+    },
+    'bls': {
+        'file': 'bls.py',
+        'commands': ['cpi', 'ppi', 'employment', 'nfp', 'wages', 'productivity', 'inflation-summary', 'employment-summary', 'bls-dashboard']
+    },
+    'cia_factbook': {
+        'file': 'cia_factbook.py',
+        'commands': ['cia-factbook', 'cia-factbook-compare', 'cia-factbook-scan', 'cia-factbook-demographics', 'cia-factbook-military', 'cia-factbook-trade', 'cia-factbook-resources']
+    },
+    'comtrade': {
+        'file': 'comtrade.py',
+        'commands': ['reporters', 'partners', 'commodities', 'search-country', 'search-commodity', 'bilateral', 'top-partners', 'trade-balance', 'commodity-trade', 'concentration', 'dependencies']
+    },
+    'oecd': {
+        'file': 'oecd.py',
+        'commands': ['cli', 'housing', 'productivity', 'compare', 'snapshot', 'countries']
+    },
+    'boj': {
+        'file': 'boj.py',
+        'commands': ['tankan', 'monetary-base', 'fx-reserves', 'rates', 'boj-watch', 'compare-fed', 'meeting-schedule']
+    },
+    'china_nbs': {
+        'file': 'china_nbs.py',
+        'commands': ['pmi', 'gdp', 'trade', 'fx-reserves', 'yuan', 'industrial', 'inflation', 'dashboard']
     }
 }
 
@@ -203,6 +404,208 @@ def print_help():
     print("  python cli.py gas-fees                             # Current Ethereum gas fees")
     print("  python cli.py token-flows USDT [--hours 24]        # Track token transfer volumes")
     
+    print("\nPeer Network Analysis (Phase 48):")
+    print("  python cli.py peer-network TICKER                  # Analyze company relationships")
+    print("  python cli.py compare-networks AAPL,MSFT,GOOGL    # Compare multiple companies")
+    print("  python cli.py map-dependencies TICKER              # Map revenue dependencies")
+    
+    print("\nPolitical Risk Scoring (Phase 49):")
+    print("  python cli.py geopolitical-events [--country COUNTRY] [--keywords KEYWORDS] [--hours HOURS]")
+    print("  python cli.py sanctions-search [--entity NAME] [--type country|individual|entity]")
+    print("  python cli.py regulatory-changes [--sector SECTOR] [--country COUNTRY] [--days DAYS]")
+    print("  python cli.py country-risk COUNTRY_CODE            # Get World Bank governance indicators")
+    
+    print("\nRevenue Quality Analysis (Phase 52):")
+    print("  python cli.py revenue-quality TICKER              # Comprehensive revenue quality analysis")
+    print("  python cli.py dso-trends TICKER                   # Days Sales Outstanding trend analysis")
+    print("  python cli.py channel-stuffing TICKER             # Detect channel stuffing red flags")
+    print("  python cli.py cash-flow-divergence TICKER         # CFO vs net income divergence")
+    
+    print("\nEarnings Quality Metrics (Phase 59):")
+    print("  python cli.py earnings-quality TICKER             # Accruals ratio, Beneish M-Score, Altman Z-Score")
+    print("  python cli.py accruals-trend TICKER               # Accruals ratio trend over 4 periods")
+    print("  python cli.py fraud-indicators TICKER             # Quick fraud/distress red flags summary")
+    
+    print("\nExecutive Compensation (Phase 51):")
+    print("  python cli.py exec-comp TICKER                    # Executive compensation breakdown (CEO, CFO, top officers)")
+    print("  python cli.py pay-performance TICKER              # Pay-for-performance correlation analysis")
+    print("  python cli.py comp-peer-compare TICKER            # Peer compensation comparison with percentile rankings")
+    print("  python cli.py shareholder-alignment TICKER        # Shareholder alignment metrics and insider ownership")
+    
+    print("\nShare Buyback Analysis (Phase 56):")
+    print("  python cli.py buyback-analysis TICKER             # Full buyback report: authorization vs execution, dilution, ROI")
+    print("  python cli.py share-count-trend TICKER            # Shares outstanding history and quarter-over-quarter changes")
+    print("  python cli.py buyback-yield TICKER                # Buyback yield calculation (buybacks/market cap)")
+    print("  python cli.py dilution-impact TICKER              # Stock-based compensation dilution vs buyback offset")
+    
+    print("\nPeer Earnings Comparison (Phase 53):")
+    print("  python cli.py peer-earnings TICKER                # Compare earnings patterns across sector peers")
+    print("  python cli.py beat-miss-history TICKER            # Detailed beat/miss pattern analysis")
+    print("  python cli.py guidance-tracker TICKER             # Track management guidance and analyst trends")
+    print("  python cli.py estimate-dispersion TICKER          # Analyze analyst estimate spread and uncertainty")
+    
+    print("\nTax Loss Harvesting (Phase 55):")
+    print("  python cli.py tlh-scan AAPL,TSLA,MSFT,AMZN,META  # Scan portfolio for TLH opportunities")
+    print("  python cli.py wash-sale-check TSLA 2025-01-15    # Check wash sale rule window (30 days)")
+    print("  python cli.py tax-savings AAPL --cost-basis 180 --shares 100  # Estimate tax savings")
+    print("  python cli.py tlh-replacements TSLA              # Suggest sector replacement securities")
+    
+    print("\nDividend Sustainability (Phase 57):")
+    print("  python cli.py dividend-health TICKER              # Comprehensive dividend sustainability report")
+    print("  python cli.py payout-ratio TICKER                 # Payout ratio trend analysis")
+    print("  python cli.py fcf-coverage TICKER                 # Free cash flow dividend coverage analysis")
+    print("  python cli.py dividend-cut-risk TICKER            # Probability of dividend cut score (0-100)")
+    
+    print("\nCrypto Correlation Indicators (Phase 54):")
+    print("  python cli.py btc-dominance                       # BTC dominance trend and altcoin season signal")
+    print("  python cli.py altcoin-season                      # Altcoin season index (% of top 50 outperforming BTC)")
+    print("  python cli.py defi-tvl-correlation                # DeFi TVL correlation with NASDAQ/tech stocks")
+    print("  python cli.py crypto-equity-corr                  # Crypto-equity correlation matrix (BTC/ETH/BNB vs FAANG)")
+    
+    print("\nInstitutional Ownership (Phase 58):")
+    print("  python cli.py 13f-changes TICKER                  # Track institutional 13F changes (new/increased/decreased/exited)")
+    print("  python cli.py whale-accumulation TICKER           # Detect whale accumulation or distribution patterns")
+    print("  python cli.py top-holders TICKER [--limit 20]     # Get top institutional holders and concentration metrics")
+    print("  python cli.py smart-money TICKER                  # Track famous investor (Buffett, Ackman, Burry) positions")
+    
+    print("\nConvertible Bond Arbitrage (Phase 64):")
+    print("  python cli.py convertible-scan                    # Scan for convertible bond opportunities")
+    print("  python cli.py conversion-premium TSLA             # Conversion premium analysis")
+    print("  python cli.py convertible-arb MSTR                # Arbitrage opportunity analysis")
+    print("  python cli.py convertible-greeks COIN             # Delta/gamma for convertible positions")
+    
+    print("\nSustainability-Linked Bonds (Phase 71):")
+    print("  python cli.py slb-market                          # Overall SLB market dashboard")
+    print("  python cli.py slb-issuer ENEL                     # Issuer SLB analysis")
+    print("  python cli.py slb-kpi-tracker                     # Track upcoming KPI measurement dates")
+    print("  python cli.py slb-coupon-forecast                 # Forecast potential coupon step-ups")
+    
+    print("\nShort Squeeze Detector (Phase 65):")
+    print("  python cli.py squeeze-scan [--tickers GME,AMC]    # Scan market for high short interest squeeze candidates")
+    print("  python cli.py squeeze-score GME                   # Calculate squeeze probability score (0-100)")
+    print("  python cli.py short-interest TSLA                 # Detailed short interest analysis")
+    print("  python cli.py days-to-cover AMC                   # Days to cover & borrow cost estimate")
+    
+    print("\nDark Pool Tracker (Phase 61):")
+    print("  python cli.py dark-pool-volume TICKER             # Estimate dark pool volume percentage (OTC vs lit)")
+    print("  python cli.py block-trades TICKER                 # Detect large block trades (institutional activity)")
+    print("  python cli.py institutional-accumulation TICKER [--period DAYS]  # Accumulation/distribution pattern")
+    print("  python cli.py off-exchange-ratio TICKER [--period DAYS]          # Off-exchange vs lit exchange ratio trend")
+    
+    print("\nMarket Regime Detection (Phase 66):")
+    print("  python cli.py market-regime                       # Current market regime classification (risk-on/off/crisis)")
+    print("  python cli.py regime-history                      # Regime timeline over last 60 days")
+    print("  python cli.py risk-dashboard                      # Comprehensive risk-on/off dashboard with volatility & correlations")
+    print("  python cli.py correlation-regime                  # Cross-asset correlation state and breakdown detection")
+    
+    print("\nCorrelation Anomaly Detector (Phase 87):")
+    print("  python cli.py corr-breakdown --ticker1 AAPL --ticker2 MSFT  # Detect correlation breakdown between two assets")
+    print("  python cli.py corr-scan --tickers SPY,TLT,GLD,QQQ           # Scan correlation matrix for anomalies")
+    print("  python cli.py corr-regime --tickers SPY,TLT,GLD,DBC         # Detect market regime shifts via correlation structure")
+    print("  python cli.py corr-arbitrage --tickers XLF,XLK,XLE          # Find statistical arbitrage opportunities from correlation breakdowns")
+    
+    print("\nCorporate Action Calendar (Phase 63):")
+    print("  python cli.py corporate-calendar TICKER           # Upcoming corporate actions (dividends, splits, special events)")
+    print("  python cli.py split-history TICKER                # Stock split history with price impact analysis")
+    print("  python cli.py dividend-calendar [TICKERS]         # Upcoming dividend ex-dates across watchlist")
+    print("  python cli.py spinoff-tracker                     # Recent/upcoming spin-offs and special distributions")
+    
+    print("\n13D/13G Filing Alerts (Phase 68):")
+    print("  python cli.py filing-alerts-recent [--hours 24] [--type 'SC 13D']    # Recent activist filings")
+    print("  python cli.py filing-alerts-search TESLA [--type '13D']              # Search company filings")
+    print("  python cli.py filing-alerts-activists [--min-filings 3]              # Active filers with multiple campaigns")
+    print("  python cli.py filing-alerts-watch [--interval 15] [--iterations 4]   # Monitor for new filings")
+    
+    print("\nProxy Fight Tracker (Phase 69):")
+    print("  python cli.py proxy-filings TICKER [--years 3]    # Fetch proxy-related filings (DEF 14A, DEFA14A, 8-K)")
+    print("  python cli.py proxy-contests TICKER               # Detect proxy contests (PREC14A, DEFC14A)")
+    print("  python cli.py proxy-voting TICKER                 # Fetch voting results from 8-K Item 5.07")
+    print("  python cli.py proxy-advisory TICKER               # Information on ISS/Glass Lewis data sources")
+    print("  python cli.py proxy-summary TICKER                # Comprehensive proxy fight analysis with risk score")
+    
+    print("\nActivist Success Predictor (Phase 67):")
+    print("  python cli.py activist-predict TICKER             # Predict activist campaign success probability")
+    print("  python cli.py activist-history                    # Historical activist campaign outcomes and patterns")
+    print("  python cli.py activist-targets [--sector SECTOR]  # Scan for likely activist targets")
+    print("  python cli.py governance-score TICKER             # Company governance quality score (0-100)")
+    
+    print("\nClimate Risk Scoring (Phase 72):")
+    print("  python cli.py climate-risk TICKER                 # Composite climate risk score (physical + transition)")
+    print("  python cli.py physical-risk TICKER                # Physical risk exposure (floods, hurricanes, drought, wildfire)")
+    print("  python cli.py transition-risk TICKER              # Carbon transition risk (pricing, regulation, stranded assets)")
+    print("  python cli.py carbon-scenario TICKER              # Scenario analysis (1.5°C vs 2°C vs 3°C pathways)")
+    
+    print("\nFactor Timing Model (Phase 73):")
+    print("  python cli.py factor-timing                       # Current factor regime and recommended allocation")
+    print("  python cli.py factor-rotation                     # Adaptive factor rotation signals (STRONG_BUY, OVERWEIGHT, etc.)")
+    print("  python cli.py factor-performance [PERIOD]         # Factor returns comparison (1y, 6m, 3m)")
+    print("  python cli.py factor-regime-history [--days N]    # Historical regime timeline (RISK_ON, RISK_OFF, NEUTRAL)")
+    
+    print("\nML Factor Discovery (Phase 74):")
+    print("  python cli.py discover-factors TICKERS            # Auto-discover predictive factors (price, volume, fundamentals)")
+    print("  python cli.py factor-ic [--top-n 20]              # Information Coefficient rankings for all factors")
+    print("  python cli.py factor-backtest FACTOR_NAME         # Walk-forward backtest of specific factor")
+    print("  python cli.py feature-importance [--top-n 20]     # ML ensemble feature importance (RF, GBM, Lasso)")
+    
+    print("\nAI Earnings Call Analyzer (Phase 76):")
+    print("  python cli.py earnings-tone TICKER                # Real-time tone detection with LLM-style analysis")
+    print("  python cli.py confidence-score TICKER             # Executive confidence scoring via multi-factor analysis")
+    print("  python cli.py language-shift TICKER               # Quarter-over-quarter language change detection")
+    print("  python cli.py hedging-detector TICKER             # Advanced hedging language detection with examples")
+    
+    print("\nRegulatory Event Calendar (Phase 78):")
+    print("  python cli.py econ-calendar                       # Upcoming economic events (FOMC, CPI, GDP, NFP)")
+    print("  python cli.py event-reaction CPI [--years 5]      # Historical market reaction to CPI releases")
+    print("  python cli.py event-volatility FOMC               # Volatility forecast around next FOMC meeting")
+    print("  python cli.py event-backtest NFP --years 5        # Backtest NFP employment report reactions")
+    
+    print("\nAlert Backtesting Dashboard (Phase 80):")
+    print("  python cli.py dashboard-backtest rsi --ticker AAPL [--years 3] [--hold-days 5]  # Backtest RSI alerts")
+    print("  python cli.py dashboard-backtest volume --ticker TSLA [--years 3]                # Backtest volume spike alerts")
+    print("  python cli.py dashboard-backtest breakout --ticker NVDA [--years 3]              # Backtest price breakout alerts")
+    print("  python cli.py dashboard-performance [--years 3]       # Compare all alert types across tickers")
+    print("  python cli.py dashboard-optimize TICKER [--alert-type rsi] [--years 3]           # Optimize alert parameters")
+    print("  python cli.py dashboard-report [--output report.json]  # Generate comprehensive performance report")
+    
+    print("\nPDF Report Exporter (Phase 79):")
+    print("  python cli.py export-pdf AAPL --modules all                        # Full PDF report")
+    print("  python cli.py export-pdf TSLA --modules earnings,technicals        # Selective modules")
+    print("  python cli.py batch-report AAPL,MSFT,GOOGL                         # Batch reports")
+    print("  python cli.py report-template list                                 # Available templates")
+    
+    print("\nSmart Data Prefetching (Phase 83):")
+    print("  python cli.py prefetch-stats                      # Show usage patterns and predictions")
+    print("  python cli.py prefetch-warmup                     # Warm cache with predicted data")
+    print("  python cli.py cache-status                        # Show cache hit rates and statistics")
+    print("  python cli.py prefetch-config --top 20            # Configure prefetch pool size")
+    print("  python cli.py prefetch-config --confidence 0.6    # Set minimum confidence threshold")
+    print("  python cli.py prefetch-config --enable true       # Enable/disable prefetching")
+    
+    print("\nMulti-Source Data Reconciliation (Phase 84):")
+    print("  python cli.py reconcile-price SYMBOL              # Compare price across Yahoo/CoinGecko/FRED")
+    print("  python cli.py data-quality-report                 # Overall data quality metrics and discrepancies")
+    print("  python cli.py source-reliability                  # Source reliability rankings with confidence scores")
+    print("  python cli.py discrepancy-log [--hours 24]        # Recent data discrepancies across sources")
+    print("  python cli.py discrepancy-log --symbol AAPL       # Filter discrepancies by symbol")
+    
+    print("\nLive Earnings Transcription (Phase 82):")
+    print("  python cli.py earnings-schedule [DAYS]            # Upcoming earnings this week/period")
+    print("  python cli.py transcript-signals TICKER           # Extract trading signals from latest transcript")
+    print("  python cli.py earnings-countdown TICKER           # Days until next earnings report")
+    print("  python cli.py transcript-compare TICKER           # Compare latest vs prior quarter transcript")
+    
+    print("\nCross-Exchange Arbitrage (Phase 77):")
+    print("  python cli.py arb-scan [SYMBOLS]                  # Scan for price discrepancies across exchanges")
+    print("  python cli.py arb-spread SYMBOL                   # Detailed cross-exchange spread analysis")
+    print("  python cli.py arb-history SYMBOL [--days N]       # Historical arbitrage profitability")
+    print("  python cli.py exchange-latency                    # Exchange execution speed comparison")
+    
+    print("\nNeural Price Prediction (Phase 85):")
+    print("  python cli.py predict-price AAPL --horizon 5d    # LSTM price forecast (1d/5d/20d)")
+    print("  python cli.py prediction-confidence TSLA          # Uncertainty quantification with CI")
+    print("  python cli.py model-comparison NVDA               # Compare LSTM vs statistical models")
+    print("  python cli.py prediction-backtest MSFT --years 1  # Historical prediction accuracy")
+    
     print("\nExamples:")
     print("  python cli.py cointegration KO PEP")
     print("  python cli.py pairs-scan beverage --limit 5")
@@ -236,6 +639,114 @@ def print_help():
     print("  python cli.py construction-activity")
     print("  python cli.py foot-traffic AAPL")
     print("  python cli.py economic-index")
+    print("  python cli.py country-risk USA")
+    print("  python cli.py geopolitical-events --country Russia --hours 24")
+    print("  python cli.py sanctions-search --entity Iran")
+    print("  python cli.py regulatory-changes --sector finance --days 30")
+    print("  python cli.py buyback-analysis AAPL")
+    print("  python cli.py share-count-trend MSFT")
+    print("  python cli.py buyback-yield GOOGL")
+    print("  python cli.py dilution-impact META")
+    print("  python cli.py 13f-changes AAPL")
+    print("  python cli.py whale-accumulation TSLA")
+    print("  python cli.py top-holders NVDA --limit 20")
+    print("  python cli.py smart-money GOOGL")
+    print("  python cli.py squeeze-scan --min-score 50 --limit 10")
+    print("  python cli.py squeeze-score GME")
+    print("  python cli.py short-interest TSLA")
+    print("  python cli.py days-to-cover AMC")
+    print("  python cli.py corporate-calendar AAPL")
+    print("  python cli.py split-history TSLA")
+    print("  python cli.py dividend-calendar AAPL,MSFT,JNJ,KO")
+    print("  python cli.py spinoff-tracker")
+    print("  python cli.py dark-pool-volume AAPL")
+    print("  python cli.py block-trades TSLA")
+    print("  python cli.py institutional-accumulation NVDA --period 30")
+    print("  python cli.py off-exchange-ratio SPY --period 20")
+    print("  python cli.py market-regime")
+    print("  python cli.py regime-history")
+    print("  python cli.py risk-dashboard")
+    print("  python cli.py correlation-regime")
+    print("  python cli.py corr-breakdown --ticker1 AAPL --ticker2 MSFT")
+    print("  python cli.py corr-scan --tickers SPY,TLT,GLD,QQQ")
+    print("  python cli.py corr-regime --tickers SPY,TLT,GLD,DBC")
+    print("  python cli.py corr-arbitrage --tickers XLF,XLK,XLE")
+    print("  python cli.py filing-alerts-recent --hours 48")
+    print("  python cli.py filing-alerts-search TESLA")
+    print("  python cli.py filing-alerts-activists --min-filings 3")
+    print("  python cli.py activist-predict AAPL")
+    print("  python cli.py activist-history")
+    print("  python cli.py activist-targets --sector Technology")
+    print("  python cli.py governance-score MSFT")
+    print("  python cli.py climate-risk AAPL")
+    print("  python cli.py physical-risk XOM")
+    print("  python cli.py transition-risk BP")
+    print("  python cli.py carbon-scenario TSLA")
+    print("  python cli.py factor-timing")
+    print("  python cli.py factor-rotation")
+    print("  python cli.py factor-performance 6m")
+    print("  python cli.py factor-regime-history --days 90")
+    print("  python cli.py discover-factors AAPL,MSFT,GOOGL,AMZN,META")
+    print("  python cli.py factor-ic --top-n 30")
+    print("  python cli.py factor-backtest momentum_3m")
+    print("  python cli.py feature-importance --horizon 5d")
+    print("  python cli.py earnings-tone AAPL")
+    print("  python cli.py confidence-score TSLA")
+    print("  python cli.py language-shift MSFT")
+    print("  python cli.py hedging-detector NVDA")
+    print("  python cli.py econ-calendar")
+    print("  python cli.py event-reaction CPI --years 3")
+    print("  python cli.py event-volatility FOMC")
+    print("  python cli.py event-backtest NFP --years 5")
+    print("  python cli.py arb-scan AAPL TSLA NVDA")
+    print("  python cli.py arb-spread AAPL")
+    print("  python cli.py arb-history TSLA --days 60")
+    print("  python cli.py exchange-latency")
+    print("  python cli.py dashboard-backtest rsi --ticker AAPL --years 3")
+    print("  python cli.py dashboard-backtest volume --ticker TSLA --hold-days 7")
+    print("  python cli.py dashboard-performance")
+    print("  python cli.py dashboard-optimize NVDA --alert-type breakout")
+    print("  python cli.py dashboard-report --output alert_performance.json")
+    print("  python cli.py export-pdf AAPL --modules all")
+    print("  python cli.py export-pdf TSLA --modules earnings,technicals")
+    print("  python cli.py batch-report AAPL,MSFT,GOOGL")
+    print("  python cli.py report-template list")
+    print("  python cli.py prefetch-stats")
+    print("  python cli.py prefetch-warmup")
+    print("  python cli.py cache-status")
+    print("  python cli.py prefetch-config --top 20 --confidence 0.6")
+    print("  python cli.py reconcile-price AAPL")
+    print("  python cli.py reconcile-price BTC --type crypto")
+    print("  python cli.py data-quality-report")
+    print("  python cli.py source-reliability")
+    print("  python cli.py discrepancy-log --hours 48 --symbol TSLA")
+    print("  python cli.py predict-price AAPL --horizon 5d")
+    print("  python cli.py prediction-confidence TSLA")
+    print("  python cli.py model-comparison NVDA")
+    print("  python cli.py prediction-backtest MSFT --years 1")
+    print("  python cli.py country-profile USA")
+    print("  python cli.py country-profile CHN --indicators GDP,INFLATION,FDI")
+    print("  python cli.py countries --region EAS")
+    print("  python cli.py indicator USA GDP")
+    print("  python cli.py compare USA,CHN,JPN,DEU,GBR --indicator GDP")
+    print("  python cli.py search United")
+    print("  python cli.py regional EAS --indicator GDP_GROWTH")
+    print("  python cli.py indicators")
+    print("  python cli.py pmi")
+    print("  python cli.py gdp")
+    print("  python cli.py trade")
+    print("  python cli.py fx-reserves")
+    print("  python cli.py yuan")
+    print("  python cli.py industrial")
+    print("  python cli.py inflation")
+    print("  python cli.py dashboard")
+    print("  python cli.py cia-factbook 'United States'")
+    print("  python cli.py cia-factbook-compare China 'United States' Russia")
+    print("  python cli.py cia-factbook-demographics India")
+    print("  python cli.py cia-factbook-military Israel")
+    print("  python cli.py cia-factbook-trade Germany")
+    print("  python cli.py cia-factbook-resources Brazil")
+    print("  python cli.py cia-factbook-scan --output factbook_all.json")
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
