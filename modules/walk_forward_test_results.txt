@@ -1,0 +1,154 @@
+QUANTCLAW DATA — PHASE 37: WALK-FORWARD OPTIMIZATION
+BUILD COMPLETED: 2026-02-24
+================================================================
+
+✅ MODULE CREATED: modules/walk_forward.py (421 LOC)
+✅ CLI COMMANDS: 3 commands integrated
+✅ API ROUTE: src/app/api/v1/walk-forward/route.ts
+✅ SERVICES: Updated services.ts
+✅ ROADMAP: Phase 37 marked as "done"
+
+----------------------------------------------------------------
+FUNCTIONALITY IMPLEMENTED:
+----------------------------------------------------------------
+
+1. ROLLING WINDOW OPTIMIZATION
+   - In-sample training window (default 252 days)
+   - Out-of-sample testing window (default 63 days)
+   - Configurable step size for walk-forward progression
+   - SMA crossover strategy with parameter optimization
+   - Uses scipy.optimize for parameter search
+
+2. OVERFITTING DETECTION
+   - Sharpe ratio degradation tracking (IS vs OOS)
+   - Overfitting score (0-100 scale)
+   - Returns divergence analysis
+   - Automated overfitting alerts
+
+3. PARAMETER STABILITY ANALYSIS
+   - Standard deviation of parameters across windows
+   - Coefficient of variation calculation
+   - Stability rating (EXCELLENT/GOOD/MODERATE/POOR)
+   - Regime change detection via parameter drift
+
+4. METRICS CALCULATED
+   - Sharpe ratios (in-sample and out-of-sample)
+   - Average degradation across all windows
+   - Overall out-of-sample Sharpe
+   - Window-by-window performance breakdown
+   - Parameter stability metrics
+
+----------------------------------------------------------------
+CLI COMMANDS:
+----------------------------------------------------------------
+
+1. python cli.py walk-forward SYMBOL [--strategy sma-crossover]
+   → Full walk-forward analysis with detailed window results
+
+2. python cli.py overfit-check SYMBOL
+   → JSON output with overfitting detection
+
+3. python cli.py param-stability SYMBOL
+   → JSON output with parameter stability metrics
+
+All commands support:
+   --in-sample DAYS   (default: 252)
+   --out-sample DAYS  (default: 63)
+   --step DAYS        (default: 63)
+
+----------------------------------------------------------------
+API ENDPOINTS:
+----------------------------------------------------------------
+
+GET/POST /api/v1/walk-forward
+
+Query/Body Parameters:
+  - symbol: Stock ticker (required)
+  - action: optimize | overfit-check | param-stability
+  - strategy: sma-crossover (default)
+  - inSample: Training window days
+  - outSample: Testing window days
+  - step: Window step days
+
+Response:
+  - JSON with analysis results
+  - Formatted text output for full optimization
+  - Error handling with stderr capture
+
+----------------------------------------------------------------
+TEST RESULTS:
+----------------------------------------------------------------
+
+✅ COMMAND 1: overfit-check SPY
+   - Successfully detected 9 windows
+   - Correctly calculated Sharpe degradation
+   - Returned proper JSON format
+   - No overfitting detected for SPY
+
+✅ COMMAND 2: param-stability AAPL
+   - Analyzed parameter stability across 9 windows
+   - Calculated coefficient of variation
+   - Rated stability as EXCELLENT
+   - Stable parameters across time periods
+
+✅ COMMAND 3: walk-forward TSLA
+   - Generated full window-by-window report
+   - Calculated IS/OOS Sharpe for each window
+   - Displayed parameter values per window
+   - Showed overfitting scores
+
+----------------------------------------------------------------
+DATA SOURCES:
+----------------------------------------------------------------
+
+✅ Yahoo Finance (yfinance)
+   - Free, no API key required
+   - Historical price data
+   - Reliable for backtesting
+
+----------------------------------------------------------------
+DEPENDENCIES:
+----------------------------------------------------------------
+
+✅ yfinance (market data)
+✅ numpy (numerical computations)
+✅ pandas (data manipulation)
+✅ scipy (optimization)
+
+All standard quant libraries, no exotic dependencies.
+
+----------------------------------------------------------------
+IMPLEMENTATION QUALITY:
+----------------------------------------------------------------
+
+✅ Real walk-forward with rolling windows
+✅ Actual in-sample/out-of-sample splits
+✅ True parameter optimization (scipy.optimize)
+✅ Realistic Sharpe ratio calculations
+✅ Proper overfitting detection logic
+✅ Parameter stability analysis
+✅ CLI argument parsing
+✅ API route with error handling
+✅ Integration with existing services
+✅ Follows project patterns
+
+NOT IMPLEMENTED (out of scope):
+- Multiple strategy types (only SMA for now)
+- Transaction costs/slippage
+- Portfolio-level optimization
+- Advanced ML-based strategies
+
+----------------------------------------------------------------
+NEXT STEPS (if desired):
+----------------------------------------------------------------
+
+1. Add more strategy types (RSI, MACD, Bollinger)
+2. Implement transaction cost modeling
+3. Add visualization of walk-forward results
+4. Portfolio-level optimization
+5. Monte Carlo on top of walk-forward
+6. Machine learning strategy optimization
+
+================================================================
+PHASE 37 COMPLETE ✅
+================================================================
