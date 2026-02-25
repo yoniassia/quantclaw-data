@@ -76,6 +76,10 @@ MODULES = {
         'file': 'fed_policy.py',
         'commands': ['fed-watch', 'rate-probability', 'fomc-calendar', 'dot-plot', 'yield-curve', 'current-rate']
     },
+    'em_sovereign_spreads': {
+        'file': 'em_sovereign_spreads.py',
+        'commands': ['embi-global', 'regional-spreads', 'credit-quality', 'spread-history', 'em-report']
+    },
     'crypto_onchain': {
         'file': 'crypto_onchain.py',
         'commands': ['onchain', 'whale-watch', 'dex-volume', 'gas-fees', 'token-flows']
@@ -425,9 +429,21 @@ MODULES = {
         'file': 'ilo_labor.py',
         'commands': ['labor-profile', 'labor-unemployment', 'labor-employment', 'labor-force', 'youth-unemployment', 'working-poverty', 'informal-employment', 'labor-compare', 'labor-countries', 'labor-search', 'labor-indicators']
     },
+    'muni_bonds': {
+        'file': 'muni_bonds.py',
+        'commands': ['muni-search', 'muni-trades', 'muni-issuer', 'muni-events', 'muni-state', 'muni-curve', 'muni-compare']
+    },
     'treasury_auctions': {
         'file': 'treasury_auctions.py',
         'commands': ['treasury-recent', 'treasury-upcoming', 'treasury-tic', 'treasury-debt', 'treasury-performance', 'treasury-dashboard']
+    },
+    'corporate_bond_spreads': {
+        'file': 'corporate_bond_spreads.py',
+        'commands': ['ig-spreads', 'hy-spreads', 'sector-spreads', 'ig-vs-hy', 'spreads-by-maturity', 'credit-dashboard', 'spread-trends']
+    },
+    'treasury_curve': {
+        'file': 'treasury_curve.py',
+        'commands': ['yield-curve', 'yield-history', 'yield-analyze', 'yield-compare', 'yield-maturity']
     },
     'usda_agriculture': {
         'file': 'usda_agriculture.py',
@@ -485,6 +501,10 @@ MODULES = {
     'global_index_returns': {
         'file': 'global_equity_index_returns.py',
         'commands': ['daily-returns', 'performance', 'regional', 'correlation', 'compare', 'list']
+    },
+    'high_yield_bonds': {
+        'file': 'high_yield_bonds.py',
+        'commands': ['hy-spreads', 'distressed-debt', 'default-rates', 'hy-dashboard']
     }
 }
 
@@ -601,6 +621,13 @@ def print_help():
     print("  python cli.py dot-plot               # Dot plot consensus analysis")
     print("  python cli.py yield-curve            # Treasury yield curve analysis")
     print("  python cli.py current-rate           # Current fed funds rate & target range")
+    
+    print("\nEM Sovereign Spread Monitor (Phase 158):")
+    print("  python cli.py embi-global            # JPMorgan EMBI Global spread (main benchmark)")
+    print("  python cli.py regional-spreads       # Regional breakdown (LatAm, Asia, Europe, MENA)")
+    print("  python cli.py credit-quality         # High yield vs investment grade comparison")
+    print("  python cli.py spread-history [DAYS] [SERIES_ID]  # Historical spread trends")
+    print("  python cli.py em-report              # Comprehensive EM sovereign analysis")
     
     print("\nCrypto On-Chain Analytics (Phase 43):")
     print("  python cli.py onchain ETH                          # Get Ethereum on-chain metrics")
@@ -1005,6 +1032,13 @@ def print_help():
     print("  python cli.py treasury-performance [days]         # Auction performance analysis")
     print("  python cli.py treasury-dashboard                  # Comprehensive dashboard")
     print("  Types: Bill, Note, Bond, TIPS, FRN")
+    
+    print("\nTreasury Yield Curve (Phase 154):")
+    print("  python cli.py yield-curve                         # Current yield curve (1M to 30Y)")
+    print("  python cli.py yield-history [days]                # Historical curves (default: 90 days)")
+    print("  python cli.py yield-analyze                       # Curve shape analysis & inversions")
+    print("  python cli.py yield-compare [days]                # Compare curves (default: 30 days)")
+    print("  python cli.py yield-maturity 10Y [days]           # Specific maturity time series")
     
     print("\nRelative Valuation Matrix (Phase 143):")
     print("  python cli.py valuation-heatmap [--format text|json]    # Cross-sector valuation comparison heatmap")

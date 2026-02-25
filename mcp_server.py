@@ -87,6 +87,14 @@ from boj import (
 
 import china_nbs
 
+from em_sovereign_spreads import (
+    get_embi_global,
+    get_regional_spreads,
+    get_credit_quality_spreads,
+    get_spread_history,
+    get_comprehensive_em_report
+)
+
 from sec_xbrl_financial_statements import (
     get_financial_statements,
     compare_financial_statements,
@@ -197,6 +205,34 @@ from global_equity_index_returns import (
     calculate_correlation_matrix,
     compare_indices,
     list_available_indices
+)
+
+from corporate_bond_spreads import (
+    get_ig_spreads,
+    get_hy_spreads,
+    get_sector_spreads,
+    compare_ig_vs_hy,
+    get_spreads_by_maturity,
+    get_credit_risk_dashboard,
+    analyze_spread_trends
+)
+
+from muni_bonds import (
+    search_muni_bonds,
+    get_recent_trades,
+    get_issuer_profile,
+    get_credit_events,
+    get_state_summary,
+    get_yield_curve,
+    compare_spreads
+)
+
+from treasury_curve import (
+    get_current_curve,
+    get_historical_curve,
+    analyze_curve_shape,
+    compare_curves,
+    get_specific_maturity
 )
 
 
@@ -766,6 +802,46 @@ class MCPServer:
                 'description': 'List all available Eurostat indicators',
                 'parameters': {},
                 'handler': self._eurostat_indicators
+            },
+            
+            # EM Sovereign Spread Monitor Tools (Phase 158)
+            'em_embi_global': {
+                'description': 'Get JPMorgan EMBI Global Diversified spread - main benchmark for emerging market sovereign debt',
+                'parameters': {},
+                'handler': self._em_embi_global
+            },
+            'em_regional_spreads': {
+                'description': 'Get regional EMBI spreads for Latin America, Asia, Europe, and Middle East/Africa',
+                'parameters': {},
+                'handler': self._em_regional_spreads
+            },
+            'em_credit_quality': {
+                'description': 'Compare high yield vs investment grade emerging market spreads',
+                'parameters': {},
+                'handler': self._em_credit_quality
+            },
+            'em_spread_history': {
+                'description': 'Get historical spread data for charting and trend analysis',
+                'parameters': {
+                    'series_id': {
+                        'type': 'string',
+                        'description': 'FRED series ID (default: BAMLEMRECRPIUSEYGEY for EMBI Global)',
+                        'required': False,
+                        'default': 'BAMLEMRECRPIUSEYGEY'
+                    },
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days of history to fetch (default: 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._em_spread_history
+            },
+            'em_comprehensive_report': {
+                'description': 'Get comprehensive emerging market sovereign spread analysis including global, regional, and credit quality metrics',
+                'parameters': {},
+                'handler': self._em_comprehensive_report
             },
             
             # IMF World Economic Outlook Tools (Phase 95)
@@ -2364,6 +2440,343 @@ class MCPServer:
                     }
                 },
                 'handler': self._index_list_available
+            },
+            
+            # Corporate Bond Spreads (Phase 156)
+            'corporate_ig_spreads': {
+                'description': 'Get Investment Grade corporate bond spreads by rating (AAA, AA, A, BBB)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_ig_spreads
+            },
+            'corporate_hy_spreads': {
+                'description': 'Get High Yield corporate bond spreads by rating (BB, B, CCC)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_hy_spreads
+            },
+            'corporate_sector_spreads': {
+                'description': 'Get sector-specific corporate bond spreads',
+                'parameters': {
+                    'sector': {
+                        'type': 'string',
+                        'description': 'Sector name (financials, energy, utilities, etc.)',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_sector_spreads
+            },
+            'corporate_ig_vs_hy': {
+                'description': 'Compare Investment Grade vs High Yield corporate bond spreads',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_ig_vs_hy
+            },
+            'corporate_spreads_by_maturity': {
+                'description': 'Get corporate bond spreads segmented by maturity buckets',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_spreads_by_maturity
+            },
+            'corporate_credit_dashboard': {
+                'description': 'Comprehensive corporate bond credit risk dashboard',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._corporate_credit_dashboard
+            },
+            'corporate_spread_trends': {
+                'description': 'Analyze recent corporate bond spread trends and market signals',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to analyze (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._corporate_spread_trends
+            },
+            
+            # High Yield Bond Tracker (Phase 157)
+            'hy_spreads': {
+                'description': 'Get current high yield bond spreads by rating tier (Overall HY, BB, B, CCC)',
+                'parameters': {},
+                'handler': self._hy_spreads
+            },
+            'distressed_debt': {
+                'description': 'Track distressed debt signals (CCC and below spreads, default risk)',
+                'parameters': {},
+                'handler': self._distressed_debt
+            },
+            'default_rates': {
+                'description': 'Track high yield default rate indicators and estimates',
+                'parameters': {},
+                'handler': self._default_rates
+            },
+            'hy_dashboard': {
+                'description': 'Comprehensive high yield bond dashboard with spreads, distressed debt, and defaults',
+                'parameters': {},
+                'handler': self._hy_dashboard
+            },
+            
+            # Municipal Bond Monitor (Phase 155)
+            'muni_search': {
+                'description': 'Search for municipal bonds by issuer, state, or CUSIP',
+                'parameters': {
+                    'issuer_name': {
+                        'type': 'string',
+                        'description': 'Name of issuing entity (e.g., "New York City")',
+                        'required': False
+                    },
+                    'state': {
+                        'type': 'string',
+                        'description': 'Two-letter state code (e.g., "NY")',
+                        'required': False
+                    },
+                    'cusip': {
+                        'type': 'string',
+                        'description': 'Specific CUSIP identifier',
+                        'required': False
+                    },
+                    'min_size': {
+                        'type': 'number',
+                        'description': 'Minimum issue size in millions',
+                        'required': False
+                    }
+                },
+                'handler': self._muni_search
+            },
+            'muni_trades': {
+                'description': 'Get recent municipal bond trades with pricing and yield data',
+                'parameters': {
+                    'cusip': {
+                        'type': 'string',
+                        'description': 'Specific CUSIP to query',
+                        'required': False
+                    },
+                    'state': {
+                        'type': 'string',
+                        'description': 'Filter by state code',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to look back (default 7)',
+                        'required': False,
+                        'default': 7
+                    },
+                    'min_trade_size': {
+                        'type': 'number',
+                        'description': 'Minimum trade size in thousands',
+                        'required': False
+                    }
+                },
+                'handler': self._muni_trades
+            },
+            'muni_issuer': {
+                'description': 'Get comprehensive issuer profile including credit ratings and outstanding debt',
+                'parameters': {
+                    'issuer_name': {
+                        'type': 'string',
+                        'description': 'Name of the issuing entity',
+                        'required': True
+                    }
+                },
+                'handler': self._muni_issuer
+            },
+            'muni_credit_events': {
+                'description': 'Get recent credit events (rating changes, defaults, material events)',
+                'parameters': {
+                    'state': {
+                        'type': 'string',
+                        'description': 'Filter by state code',
+                        'required': False
+                    },
+                    'event_type': {
+                        'type': 'string',
+                        'description': 'Type of event: rating_change, default, material_event',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to look back (default 30)',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._muni_credit_events
+            },
+            'muni_state_summary': {
+                'description': 'Get comprehensive summary of municipal bonds for a specific state',
+                'parameters': {
+                    'state_code': {
+                        'type': 'string',
+                        'description': 'Two-letter state code (e.g., "NY", "CA")',
+                        'required': True
+                    }
+                },
+                'handler': self._muni_state_summary
+            },
+            'muni_yield_curve': {
+                'description': 'Get municipal bond yield curve across maturities',
+                'parameters': {
+                    'state': {
+                        'type': 'string',
+                        'description': 'Optional state filter',
+                        'required': False
+                    },
+                    'rating': {
+                        'type': 'string',
+                        'description': 'Credit rating: AAA, AA, A, BBB (default AAA)',
+                        'required': False,
+                        'default': 'AAA'
+                    }
+                },
+                'handler': self._muni_yield_curve
+            },
+            'muni_compare_spreads': {
+                'description': 'Compare yield spreads between two states',
+                'parameters': {
+                    'state1': {
+                        'type': 'string',
+                        'description': 'First state code',
+                        'required': True
+                    },
+                    'state2': {
+                        'type': 'string',
+                        'description': 'Second state code',
+                        'required': True
+                    },
+                    'maturity_years': {
+                        'type': 'integer',
+                        'description': 'Maturity to compare in years (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._muni_compare_spreads
+            },
+            
+            # Treasury Yield Curve Tools (Phase 154)
+            'treasury_yield_curve': {
+                'description': 'Get current US Treasury yield curve from 1 Month to 30 Years',
+                'parameters': {
+                    'format_table': {
+                        'type': 'boolean',
+                        'description': 'Include ASCII table format in output',
+                        'required': False,
+                        'default': False
+                    }
+                },
+                'handler': self._treasury_yield_curve
+            },
+            'treasury_yield_history': {
+                'description': 'Get historical yield curve data across time',
+                'parameters': {
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (YYYY-MM-DD format)',
+                        'required': False
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (YYYY-MM-DD format)',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to look back if dates not specified (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._treasury_yield_history
+            },
+            'treasury_yield_analyze': {
+                'description': 'Analyze yield curve shape and detect inversions (recession signals)',
+                'parameters': {
+                    'curve_data': {
+                        'type': 'object',
+                        'description': 'Optional pre-fetched curve data',
+                        'required': False
+                    }
+                },
+                'handler': self._treasury_yield_analyze
+            },
+            'treasury_yield_compare': {
+                'description': 'Compare yield curves between two dates to detect shifts',
+                'parameters': {
+                    'date1': {
+                        'type': 'string',
+                        'description': 'First date (YYYY-MM-DD format, default today)',
+                        'required': False
+                    },
+                    'date2': {
+                        'type': 'string',
+                        'description': 'Second date (YYYY-MM-DD format)',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Days back for second date if not specified (default 30)',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._treasury_yield_compare
+            },
+            'treasury_yield_maturity': {
+                'description': 'Get historical time series for a specific maturity',
+                'parameters': {
+                    'maturity': {
+                        'type': 'string',
+                        'description': 'Maturity code (e.g., 10Y, 2Y, 3M)',
+                        'required': True
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Historical lookback period in days (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._treasury_yield_maturity
             }
         }
     
@@ -2524,6 +2937,27 @@ class MCPServer:
     def _eurostat_indicators(self) -> Dict:
         """Handler for eurostat_indicators tool"""
         return eurostat_list_indicators()
+    
+    # EM Sovereign Spread Monitor handlers (Phase 158)
+    def _em_embi_global(self) -> Dict:
+        """Handler for em_embi_global tool"""
+        return get_embi_global()
+    
+    def _em_regional_spreads(self) -> Dict:
+        """Handler for em_regional_spreads tool"""
+        return get_regional_spreads()
+    
+    def _em_credit_quality(self) -> Dict:
+        """Handler for em_credit_quality tool"""
+        return get_credit_quality_spreads()
+    
+    def _em_spread_history(self, series_id: str = "BAMLEMRECRPIUSEYGEY", days: int = 365) -> Dict:
+        """Handler for em_spread_history tool"""
+        return get_spread_history(series_id, days)
+    
+    def _em_comprehensive_report(self) -> Dict:
+        """Handler for em_comprehensive_report tool"""
+        return get_comprehensive_em_report()
     
     # SPAC Lifecycle Tracker handlers (Phase 148)
     def _spac_list(self, status: Optional[str] = None) -> Dict:
@@ -2838,6 +3272,117 @@ class MCPServer:
         if 'error' in result:
             return {'success': False, 'error': result['error']}
         return {'success': True, 'data': result}
+    
+    # Phase 156 handlers - Corporate Bond Spreads
+    def _corporate_ig_spreads(self, days_back: int = 365) -> Dict:
+        """Handler for corporate_ig_spreads tool"""
+        return get_ig_spreads(days_back=days_back)
+    
+    def _corporate_hy_spreads(self, days_back: int = 365) -> Dict:
+        """Handler for corporate_hy_spreads tool"""
+        return get_hy_spreads(days_back=days_back)
+    
+    def _corporate_sector_spreads(self, sector: Optional[str] = None, days_back: int = 365) -> Dict:
+        """Handler for corporate_sector_spreads tool"""
+        return get_sector_spreads(sector=sector, days_back=days_back)
+    
+    def _corporate_ig_vs_hy(self, days_back: int = 365) -> Dict:
+        """Handler for corporate_ig_vs_hy tool"""
+        return compare_ig_vs_hy(days_back=days_back)
+    
+    def _corporate_spreads_by_maturity(self, days_back: int = 365) -> Dict:
+        """Handler for corporate_spreads_by_maturity tool"""
+        return get_spreads_by_maturity(days_back=days_back)
+    
+    def _corporate_credit_dashboard(self, days_back: int = 365) -> Dict:
+        """Handler for corporate_credit_dashboard tool"""
+        return get_credit_risk_dashboard(days_back=days_back)
+    
+    def _corporate_spread_trends(self, days_back: int = 90) -> Dict:
+        """Handler for corporate_spread_trends tool"""
+        return analyze_spread_trends(days_back=days_back)
+    
+    # Phase 157 handlers
+    def _hy_spreads(self) -> Dict:
+        """Handler for hy_spreads tool"""
+        from modules.high_yield_bonds import get_hy_spreads
+        result = get_hy_spreads()
+        return {'success': True, 'data': result}
+    
+    def _distressed_debt(self) -> Dict:
+        """Handler for distressed_debt tool"""
+        from modules.high_yield_bonds import get_distressed_debt
+        result = get_distressed_debt()
+        return {'success': True, 'data': result}
+    
+    def _default_rates(self) -> Dict:
+        """Handler for default_rates tool"""
+        from modules.high_yield_bonds import get_default_rates
+        result = get_default_rates()
+        return {'success': True, 'data': result}
+    
+    def _hy_dashboard(self) -> Dict:
+        """Handler for hy_dashboard tool"""
+        from modules.high_yield_bonds import get_hy_dashboard
+        result = get_hy_dashboard()
+        return {'success': True, 'data': result}
+    
+    # Municipal Bond Monitor Handler Methods (Phase 155)
+    def _muni_search(self, issuer_name: Optional[str] = None, state: Optional[str] = None,
+                     cusip: Optional[str] = None, min_size: Optional[float] = None) -> Dict:
+        """Handler for muni_search tool"""
+        return search_muni_bonds(issuer_name=issuer_name, state=state, cusip=cusip, min_size=min_size)
+    
+    def _muni_trades(self, cusip: Optional[str] = None, state: Optional[str] = None,
+                     days_back: int = 7, min_trade_size: Optional[float] = None) -> Dict:
+        """Handler for muni_trades tool"""
+        return get_recent_trades(cusip=cusip, state=state, days_back=days_back, min_trade_size=min_trade_size)
+    
+    def _muni_issuer(self, issuer_name: str) -> Dict:
+        """Handler for muni_issuer tool"""
+        return get_issuer_profile(issuer_name)
+    
+    def _muni_credit_events(self, state: Optional[str] = None, event_type: Optional[str] = None,
+                            days_back: int = 30) -> Dict:
+        """Handler for muni_credit_events tool"""
+        return get_credit_events(state=state, event_type=event_type, days_back=days_back)
+    
+    def _muni_state_summary(self, state_code: str) -> Dict:
+        """Handler for muni_state_summary tool"""
+        return get_state_summary(state_code)
+    
+    def _muni_yield_curve(self, state: Optional[str] = None, rating: str = 'AAA') -> Dict:
+        """Handler for muni_yield_curve tool"""
+        return get_yield_curve(state=state, rating=rating)
+    
+    def _muni_compare_spreads(self, state1: str, state2: str, maturity_years: int = 10) -> Dict:
+        """Handler for muni_compare_spreads tool"""
+        return compare_spreads(state1, state2, maturity_years)
+    
+    # Treasury Yield Curve Handlers (Phase 154)
+    def _treasury_yield_curve(self, format_table: bool = False) -> Dict:
+        """Handler for treasury_yield_curve tool"""
+        return get_current_curve(format_table=format_table)
+    
+    def _treasury_yield_history(self, start_date: Optional[str] = None, 
+                               end_date: Optional[str] = None, 
+                               days_back: int = 90) -> Dict:
+        """Handler for treasury_yield_history tool"""
+        return get_historical_curve(start_date=start_date, end_date=end_date, days_back=days_back)
+    
+    def _treasury_yield_analyze(self, curve_data: Optional[Dict] = None) -> Dict:
+        """Handler for treasury_yield_analyze tool"""
+        return analyze_curve_shape(curve_data=curve_data)
+    
+    def _treasury_yield_compare(self, date1: Optional[str] = None, 
+                               date2: Optional[str] = None, 
+                               days_back: int = 30) -> Dict:
+        """Handler for treasury_yield_compare tool"""
+        return compare_curves(date1=date1, date2=date2, days_back=days_back)
+    
+    def _treasury_yield_maturity(self, maturity: str, days_back: int = 365) -> Dict:
+        """Handler for treasury_yield_maturity tool"""
+        return get_specific_maturity(maturity=maturity, days_back=days_back)
     
     def list_tools(self) -> Dict:
         """List all available tools"""

@@ -172,11 +172,11 @@ export const phases: Phase[] = [
   { id: 153, name: "Global Equity Index Returns", description: "Daily returns for 50+ global indices (S&P, FTSE, DAX, Nikkei, etc). Daily.", status: "done", category: "Equity", loc: 769 },
 
   // ============ FIXED INCOME (154-168) — Bloomberg FI Killer ============
-  { id: 154, name: "Treasury Yield Curve (Full)", description: "Daily US Treasury curve from 1M to 30Y via treasury.gov. Daily.", status: "planned", category: "Fixed Income" },
-  { id: 155, name: "Municipal Bond Monitor", description: "Muni bond trades, yields, credit events from EMMA (emma.msrb.org). Daily.", status: "planned", category: "Fixed Income" },
-  { id: 156, name: "Corporate Bond Spreads", description: "IG/HY OAS from FRED (ICE BofA indices), sector spreads. Daily.", status: "planned", category: "Fixed Income" },
-  { id: 157, name: "High Yield Bond Tracker", description: "HY spreads, distressed debt, default rates from FRED. Daily.", status: "planned", category: "Fixed Income" },
-  { id: 158, name: "EM Sovereign Spread Monitor", description: "Emerging market bond spreads (EMBI) from FRED + JPMorgan. Daily.", status: "planned", category: "Fixed Income" },
+  { id: 154, name: "Treasury Yield Curve (Full)", description: "Daily US Treasury curve from 1M to 30Y via treasury.gov. Daily.", status: "done", category: "Fixed Income", loc: 627 },
+  { id: 155, name: "Municipal Bond Monitor", description: "Muni bond trades, yields, credit events from EMMA (emma.msrb.org). Daily.", status: "done", category: "Fixed Income", loc: 684 },
+  { id: 156, name: "Corporate Bond Spreads", description: "IG/HY OAS from FRED (ICE BofA indices), sector spreads. Daily.", status: "done", category: "Fixed Income", loc: 599 },
+  { id: 157, name: "High Yield Bond Tracker", description: "HY spreads, distressed debt, default rates from FRED. Daily.", status: "done", category: "Fixed Income", loc: 391 },
+  { id: 158, name: "EM Sovereign Spread Monitor", description: "Emerging market bond spreads (EMBI) from FRED + JPMorgan. Daily.", status: "done", category: "Fixed Income", loc: 356 },
   { id: 159, name: "TIPS & Breakeven Inflation", description: "Real yields, breakeven rates, inflation expectations from FRED. Daily.", status: "planned", category: "Fixed Income" },
   { id: 160, name: "Swap Rate Curves", description: "Interest rate swap curves from FRED + ECB. Daily.", status: "planned", category: "Fixed Income" },
   { id: 161, name: "Repo Rate Monitor", description: "SOFR, repo rates, reverse repo from NY Fed. Daily.", status: "planned", category: "Fixed Income" },
