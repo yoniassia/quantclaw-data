@@ -80,6 +80,18 @@ MODULES = {
         'file': 'em_sovereign_spreads.py',
         'commands': ['embi-global', 'regional-spreads', 'credit-quality', 'spread-history', 'em-report']
     },
+    'tips_breakeven': {
+        'file': 'tips_breakeven.py',
+        'commands': ['tips-current', 'breakeven-curve', 'real-yield-history', 'tips-vs-nominal', 'inflation-expectations', 'breakeven-changes']
+    },
+    'inflation_linked_bonds': {
+        'file': 'inflation_linked_bonds.py',
+        'commands': ['global-summary', 'us-tips', 'euro-linkers', 'uk-gilts', 'compare', 'history', 'trends']
+    },
+    'central_bank_rates': {
+        'file': 'central_bank_rates.py',
+        'commands': ['cb-all-rates', 'cb-rate', 'cb-compare', 'cb-heatmap', 'cb-search', 'cb-differential', 'cb-list']
+    },
     'crypto_onchain': {
         'file': 'crypto_onchain.py',
         'commands': ['onchain', 'whale-watch', 'dex-volume', 'gas-fees', 'token-flows']
@@ -433,9 +445,25 @@ MODULES = {
         'file': 'muni_bonds.py',
         'commands': ['muni-search', 'muni-trades', 'muni-issuer', 'muni-events', 'muni-state', 'muni-curve', 'muni-compare']
     },
+    'mmf_flows': {
+        'file': 'mmf_flows.py',
+        'commands': ['mmf-flows', 'mmf-filings', 'mmf-parse', 'mmf-yields', 'mmf-concentration', 'mmf-compare']
+    },
+    'repo_rate_monitor': {
+        'file': 'repo_rate_monitor.py',
+        'commands': ['sofr', 'repo', 'reverse-repo', 'overnight', 'compare', 'stress']
+    },
     'treasury_auctions': {
         'file': 'treasury_auctions.py',
         'commands': ['treasury-recent', 'treasury-upcoming', 'treasury-tic', 'treasury-debt', 'treasury-performance', 'treasury-dashboard']
+    },
+    'commercial_paper': {
+        'file': 'commercial_paper.py',
+        'commands': ['cp-current', 'cp-history', 'cp-spreads', 'cp-compare', 'cp-dashboard']
+    },
+    'bond_new_issue': {
+        'file': 'bond_new_issue.py',
+        'commands': ['bond-upcoming', 'bond-issuer', 'bond-company', 'bond-analyze', 'bond-dashboard']
     },
     'corporate_bond_spreads': {
         'file': 'corporate_bond_spreads.py',
@@ -444,6 +472,10 @@ MODULES = {
     'treasury_curve': {
         'file': 'treasury_curve.py',
         'commands': ['yield-curve', 'yield-history', 'yield-analyze', 'yield-compare', 'yield-maturity']
+    },
+    'swap_rate_curves': {
+        'file': 'swap_rate_curves.py',
+        'commands': ['usd-curve', 'eur-curve', 'compare-curves', 'swap-spread', 'inversion-signal']
     },
     'usda_agriculture': {
         'file': 'usda_agriculture.py',
@@ -505,6 +537,14 @@ MODULES = {
     'high_yield_bonds': {
         'file': 'high_yield_bonds.py',
         'commands': ['hy-spreads', 'distressed-debt', 'default-rates', 'hy-dashboard']
+    },
+    'clo_abs': {
+        'file': 'clo_abs.py',
+        'commands': ['clo-overview', 'abs-asset-class', 'cmbs-market', 'issuance-trends', 'delinquency-rates', 'abs-liquidity', 'clo-abs-dashboard', 'credit-quality', 'nport-holdings']
+    },
+    'sovereign_rating_tracker': {
+        'file': 'sovereign_rating_tracker.py',
+        'commands': ['sovereign-ratings', 'sovereign-downgrades', 'sovereign-upgrades', 'sovereign-watch', 'sovereign-ig-changes', 'sovereign-dashboard', 'sovereign-country']
     }
 }
 
@@ -1039,6 +1079,15 @@ def print_help():
     print("  python cli.py yield-analyze                       # Curve shape analysis & inversions")
     print("  python cli.py yield-compare [days]                # Compare curves (default: 30 days)")
     print("  python cli.py yield-maturity 10Y [days]           # Specific maturity time series")
+    
+    print("\nSovereign Rating Tracker (Phase 164):")
+    print("  python cli.py sovereign-ratings [days]            # All rating changes across S&P/Moody's/Fitch")
+    print("  python cli.py sovereign-country <name>            # Ratings for a specific country")
+    print("  python cli.py sovereign-downgrades [days]         # Recent sovereign downgrades")
+    print("  python cli.py sovereign-upgrades [days]           # Recent sovereign upgrades")
+    print("  python cli.py sovereign-watch                     # Countries on negative watch/outlook")
+    print("  python cli.py sovereign-ig-changes [days]         # Investment grade transitions (fallen angels/rising stars)")
+    print("  python cli.py sovereign-dashboard                 # Comprehensive rating dashboard")
     
     print("\nRelative Valuation Matrix (Phase 143):")
     print("  python cli.py valuation-heatmap [--format text|json]    # Cross-sector valuation comparison heatmap")

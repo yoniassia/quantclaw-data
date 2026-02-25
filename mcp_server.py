@@ -95,6 +95,16 @@ from em_sovereign_spreads import (
     get_comprehensive_em_report
 )
 
+from central_bank_rates import (
+    get_central_bank_rate,
+    get_all_central_bank_rates,
+    compare_central_banks,
+    get_global_rate_heatmap,
+    search_central_banks,
+    get_rate_differential,
+    list_all_banks
+)
+
 from sec_xbrl_financial_statements import (
     get_financial_statements,
     compare_financial_statements,
@@ -217,6 +227,18 @@ from corporate_bond_spreads import (
     analyze_spread_trends
 )
 
+from clo_abs import (
+    get_clo_market_overview,
+    get_abs_spreads_by_asset_class,
+    get_cmbs_market_metrics,
+    get_structured_finance_issuance,
+    get_delinquency_rates,
+    get_abs_liquidity_indicators,
+    get_comprehensive_clo_abs_dashboard,
+    analyze_abs_credit_quality,
+    get_sec_nport_clo_abs_holdings
+)
+
 from muni_bonds import (
     search_muni_bonds,
     get_recent_trades,
@@ -227,12 +249,65 @@ from muni_bonds import (
     compare_spreads
 )
 
+from mmf_flows import (
+    get_mmf_aggregate_flows,
+    get_sec_mmf_filings,
+    parse_nmfp_filing,
+    get_mmf_yields,
+    get_mmf_concentration_risk,
+    compare_mmf_categories
+)
+
+from repo_rate_monitor import (
+    get_sofr_rates,
+    get_repo_rates,
+    get_reverse_repo_operations,
+    get_overnight_rates_dashboard,
+    compare_money_market_rates,
+    get_funding_stress_indicators
+)
+
 from treasury_curve import (
     get_current_curve,
     get_historical_curve,
     analyze_curve_shape,
     compare_curves,
     get_specific_maturity
+)
+
+from tips_breakeven import (
+    get_current_tips_data,
+    analyze_breakeven_curve,
+    get_real_yield_history,
+    compare_tips_vs_nominal,
+    get_inflation_expectations_summary,
+    track_breakeven_changes
+)
+
+from inflation_linked_bonds import (
+    get_global_linker_summary,
+    get_us_tips_yields,
+    get_euro_linker_yields,
+    get_uk_gilt_yields,
+    compare_linker_yields,
+    get_linker_history,
+    analyze_real_yield_trends
+)
+
+from commercial_paper import (
+    get_current_rates,
+    get_rate_history,
+    analyze_spreads,
+    get_rate_comparison,
+    get_cp_dashboard
+)
+
+from bond_new_issue import (
+    get_upcoming_issues,
+    get_issuer_history,
+    get_company_filings,
+    analyze_filing_content,
+    get_bond_dashboard
 )
 
 
@@ -2555,6 +2630,131 @@ class MCPServer:
                 'handler': self._hy_dashboard
             },
             
+            # CLO/ABS Market Monitor (Phase 163)
+            'clo_market_overview': {
+                'description': 'Get CLO market overview including spreads, leveraged loan indicators, and collateral health',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._clo_market_overview
+            },
+            'abs_spreads_by_asset_class': {
+                'description': 'Get ABS spreads and metrics by asset class (auto, credit_card, student_loan, cmbs)',
+                'parameters': {
+                    'asset_class': {
+                        'type': 'string',
+                        'description': 'Asset class: auto, credit_card, student_loan, cmbs (optional - defaults to all)',
+                        'required': False
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._abs_spreads_by_asset_class
+            },
+            'cmbs_market_metrics': {
+                'description': 'Get Commercial Mortgage-Backed Securities (CMBS) market metrics',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._cmbs_market_metrics
+            },
+            'structured_finance_issuance': {
+                'description': 'Get structured finance new issuance trends (CLO, ABS, CMBS)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 730 for 2 years)',
+                        'required': False,
+                        'default': 730
+                    }
+                },
+                'handler': self._structured_finance_issuance
+            },
+            'abs_delinquency_rates': {
+                'description': 'Get delinquency rates across all ABS asset classes',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._abs_delinquency_rates
+            },
+            'abs_liquidity_indicators': {
+                'description': 'Get ABS market liquidity indicators (ABCP, commercial paper)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._abs_liquidity_indicators
+            },
+            'clo_abs_dashboard': {
+                'description': 'Comprehensive CLO/ABS market dashboard with all metrics',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._clo_abs_dashboard
+            },
+            'abs_credit_quality': {
+                'description': 'Analyze credit quality trends for specific ABS asset class',
+                'parameters': {
+                    'asset_class': {
+                        'type': 'string',
+                        'description': 'Asset class to analyze: auto, credit_card, student_loan, cmbs',
+                        'required': True
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 365)',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._abs_credit_quality
+            },
+            'nport_clo_abs_holdings': {
+                'description': 'Get CLO/ABS holdings from SEC N-PORT institutional filings',
+                'parameters': {
+                    'cik': {
+                        'type': 'string',
+                        'description': 'Specific fund CIK to query (optional)',
+                        'required': False
+                    },
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Maximum number of filings to fetch (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._nport_clo_abs_holdings
+            },
+            
             # Municipal Bond Monitor (Phase 155)
             'muni_search': {
                 'description': 'Search for municipal bonds by issuer, state, or CUSIP',
@@ -2693,6 +2893,46 @@ class MCPServer:
                 'handler': self._muni_compare_spreads
             },
             
+            # Swap Rate Curves (Phase 160)
+            'usd_swap_curve': {
+                'description': 'Get USD interest rate swap curve with spreads over Treasuries',
+                'parameters': {},
+                'handler': self._usd_swap_curve
+            },
+            'eur_swap_curve': {
+                'description': 'Get EUR interest rate swap curve from ECB',
+                'parameters': {},
+                'handler': self._eur_swap_curve
+            },
+            'compare_swap_curves': {
+                'description': 'Compare USD and EUR swap curves with policy divergence analysis',
+                'parameters': {},
+                'handler': self._compare_swap_curves
+            },
+            'swap_spread': {
+                'description': 'Get swap spread for specific tenor and currency',
+                'parameters': {
+                    'tenor': {
+                        'type': 'string',
+                        'description': 'Tenor like "2Y", "5Y", "10Y", "30Y" (default "10Y")',
+                        'required': False,
+                        'default': '10Y'
+                    },
+                    'currency': {
+                        'type': 'string',
+                        'description': 'Currency: "USD" or "EUR" (default "USD")',
+                        'required': False,
+                        'default': 'USD'
+                    }
+                },
+                'handler': self._swap_spread
+            },
+            'swap_inversion_signal': {
+                'description': 'Detect yield curve inversions in USD and EUR swap markets (recession signals)',
+                'parameters': {},
+                'handler': self._swap_inversion_signal
+            },
+            
             # Treasury Yield Curve Tools (Phase 154)
             'treasury_yield_curve': {
                 'description': 'Get current US Treasury yield curve from 1 Month to 30 Years',
@@ -2777,6 +3017,415 @@ class MCPServer:
                     }
                 },
                 'handler': self._treasury_yield_maturity
+            },
+            
+            # Repo Rate Monitor Tools (Phase 161)
+            'repo_sofr_rates': {
+                'description': 'Get SOFR rates including daily rate and moving averages (30d, 90d, 180d)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._repo_sofr_rates
+            },
+            'repo_rates': {
+                'description': 'Get repo and reverse repo rates from NY Fed',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._repo_rates
+            },
+            'repo_reverse_repo_operations': {
+                'description': 'Get Fed reverse repo facility operations with volumes and rates',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of data (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._repo_reverse_repo_operations
+            },
+            'repo_overnight_rates_dashboard': {
+                'description': 'Get comprehensive overnight rates dashboard (SOFR, Fed Funds, OBFR, TGCR, BGCR)',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._repo_overnight_rates_dashboard
+            },
+            'repo_compare_money_market_rates': {
+                'description': 'Compare all major money market rates and calculate spreads',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to analyze (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._repo_compare_money_market_rates
+            },
+            'repo_funding_stress_indicators': {
+                'description': 'Calculate funding stress indicators from money market rates',
+                'parameters': {},
+                'handler': self._repo_funding_stress_indicators
+            },
+            
+            # TIPS & Breakeven Inflation Tools (Phase 159)
+            'tips_current': {
+                'description': 'Get current TIPS (real) yields, breakeven inflation rates, and nominal yields across all maturities',
+                'parameters': {
+                    'include_inflation': {
+                        'type': 'boolean',
+                        'description': 'Include actual inflation measures (CPI, PCE) for comparison',
+                        'required': False,
+                        'default': True
+                    }
+                },
+                'handler': self._tips_current
+            },
+            'breakeven_curve': {
+                'description': 'Analyze the breakeven inflation curve shape, trends, and compare to actual inflation',
+                'parameters': {
+                    'format_table': {
+                        'type': 'boolean',
+                        'description': 'Include formatted ASCII table in output',
+                        'required': False,
+                        'default': False
+                    }
+                },
+                'handler': self._breakeven_curve
+            },
+            'real_yield_history': {
+                'description': 'Get historical TIPS real yield data for a specific maturity',
+                'parameters': {
+                    'maturity': {
+                        'type': 'string',
+                        'description': 'Maturity (5Y, 7Y, 10Y, 20Y, 30Y)',
+                        'required': False,
+                        'default': '10Y'
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Historical lookback period in days',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._real_yield_history
+            },
+            'tips_vs_nominal': {
+                'description': 'Compare TIPS (real) yields vs nominal Treasury yields to show implied inflation expectations',
+                'parameters': {
+                    'maturity': {
+                        'type': 'string',
+                        'description': 'Maturity to compare (5Y, 7Y, 10Y, 20Y, 30Y)',
+                        'required': False,
+                        'default': '10Y'
+                    }
+                },
+                'handler': self._tips_vs_nominal
+            },
+            'inflation_expectations': {
+                'description': 'Get comprehensive summary of market inflation expectations including breakeven rates, forward expectations, and actual inflation',
+                'parameters': {},
+                'handler': self._inflation_expectations
+            },
+            'breakeven_changes': {
+                'description': 'Track how breakeven inflation rates have changed over a period',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Period to analyze in days',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._breakeven_changes
+            },
+            
+            # Inflation-Linked Bonds Tools (Phase 167)
+            'global_linker_summary': {
+                'description': 'Get comprehensive summary of global inflation-linked bond markets (US TIPS, Euro linkers, UK gilts)',
+                'parameters': {},
+                'handler': self._global_linker_summary
+            },
+            'us_tips_yields': {
+                'description': 'Get current US TIPS (Treasury Inflation-Protected Securities) yields across maturities',
+                'parameters': {
+                    'maturities': {
+                        'type': 'array',
+                        'description': 'List of maturities to fetch (5Y, 7Y, 10Y, 20Y, 30Y). None = all',
+                        'required': False
+                    }
+                },
+                'handler': self._us_tips_yields
+            },
+            'euro_linker_yields': {
+                'description': 'Get Eurozone inflation-linked bond yields from ECB',
+                'parameters': {},
+                'handler': self._euro_linker_yields
+            },
+            'uk_gilt_yields': {
+                'description': 'Get UK index-linked gilt yields from Bank of England',
+                'parameters': {},
+                'handler': self._uk_gilt_yields
+            },
+            'compare_linker_yields': {
+                'description': 'Compare inflation-linked bond yields across regions',
+                'parameters': {
+                    'region1': {
+                        'type': 'string',
+                        'description': 'First region (US, EURO, UK)',
+                        'required': False,
+                        'default': 'US'
+                    },
+                    'region2': {
+                        'type': 'string',
+                        'description': 'Second region (US, EURO, UK)',
+                        'required': False,
+                        'default': 'EURO'
+                    }
+                },
+                'handler': self._compare_linker_yields
+            },
+            'linker_history': {
+                'description': 'Get historical inflation-linked bond yields for a specific region and maturity',
+                'parameters': {
+                    'region': {
+                        'type': 'string',
+                        'description': 'Region code (US, EURO, UK)',
+                        'required': False,
+                        'default': 'US'
+                    },
+                    'maturity': {
+                        'type': 'string',
+                        'description': 'Maturity (5Y, 7Y, 10Y, 20Y, 30Y)',
+                        'required': False,
+                        'default': '10Y'
+                    },
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Historical lookback period in days',
+                        'required': False,
+                        'default': 365
+                    }
+                },
+                'handler': self._linker_history
+            },
+            'real_yield_trends': {
+                'description': 'Analyze recent trends in real yields across all major linker markets',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Period to analyze in days',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._real_yield_trends
+            },
+            
+            # Commercial Paper Rates Tools (Phase 162)
+            'cp_current_rates': {
+                'description': 'Get current AA-rated commercial paper rates for financial and nonfinancial issuers across all maturities',
+                'parameters': {},
+                'handler': self._cp_current_rates
+            },
+            'cp_rate_history': {
+                'description': 'Get historical commercial paper rates',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days of history (default 90)',
+                        'required': False,
+                        'default': 90
+                    },
+                    'category': {
+                        'type': 'string',
+                        'description': 'Filter by category: Financial or Nonfinancial',
+                        'required': False
+                    }
+                },
+                'handler': self._cp_rate_history
+            },
+            'cp_spread_analysis': {
+                'description': 'Analyze spreads between financial and nonfinancial commercial paper rates',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days to analyze (default 90)',
+                        'required': False,
+                        'default': 90
+                    }
+                },
+                'handler': self._cp_spread_analysis
+            },
+            'cp_rate_comparison': {
+                'description': 'Side-by-side comparison of financial vs nonfinancial CP rates across maturities',
+                'parameters': {},
+                'handler': self._cp_rate_comparison
+            },
+            'cp_dashboard': {
+                'description': 'Comprehensive commercial paper market dashboard with current rates, spreads, and trends',
+                'parameters': {},
+                'handler': self._cp_dashboard
+            },
+            
+            # Bond New Issue Calendar Tools (Phase 165)
+            'bond_upcoming_issues': {
+                'description': 'Get calendar of upcoming bond issuances from SEC EDGAR filings',
+                'parameters': {
+                    'days_back': {
+                        'type': 'integer',
+                        'description': 'Number of days to search back (default 30)',
+                        'required': False,
+                        'default': 30
+                    },
+                    'min_amount_millions': {
+                        'type': 'number',
+                        'description': 'Minimum principal amount in millions (default 100)',
+                        'required': False,
+                        'default': 100
+                    }
+                },
+                'handler': self._bond_upcoming_issues
+            },
+            'bond_issuer_history': {
+                'description': 'Get historical bond issuance for a specific company by CIK',
+                'parameters': {
+                    'ticker_or_cik': {
+                        'type': 'string',
+                        'description': 'Company ticker or CIK number',
+                        'required': True
+                    },
+                    'years': {
+                        'type': 'integer',
+                        'description': 'Years of history to retrieve (default 2)',
+                        'required': False,
+                        'default': 2
+                    }
+                },
+                'handler': self._bond_issuer_history
+            },
+            'bond_company_filings': {
+                'description': 'Get recent bond-related filings for a specific company',
+                'parameters': {
+                    'cik': {
+                        'type': 'string',
+                        'description': 'Company CIK number',
+                        'required': True
+                    },
+                    'count': {
+                        'type': 'integer',
+                        'description': 'Number of filings to retrieve (default 20)',
+                        'required': False,
+                        'default': 20
+                    }
+                },
+                'handler': self._bond_company_filings
+            },
+            'bond_analyze_filing': {
+                'description': 'Analyze a specific SEC filing for bond issuance details',
+                'parameters': {
+                    'cik': {
+                        'type': 'string',
+                        'description': 'Company CIK number',
+                        'required': True
+                    },
+                    'accession_number': {
+                        'type': 'string',
+                        'description': 'SEC accession number',
+                        'required': True
+                    }
+                },
+                'handler': self._bond_analyze_filing
+            },
+            'bond_dashboard': {
+                'description': 'Comprehensive bond new issue dashboard with recent filings and issuance trends',
+                'parameters': {},
+                'handler': self._bond_dashboard
+            },
+            
+            # Central Bank Rate Decisions Tools (Phase 166)
+            'central_bank_rate': {
+                'description': 'Get current policy rate for a specific central bank (40+ banks worldwide)',
+                'parameters': {
+                    'bank_code': {
+                        'type': 'string',
+                        'description': 'Central bank code (e.g., FED, ECB, BOJ, BOE, RBA, PBOC, RBI, etc.)',
+                        'required': True
+                    }
+                },
+                'handler': self._central_bank_rate
+            },
+            'central_bank_all_rates': {
+                'description': 'Get current policy rates for all 40+ central banks worldwide',
+                'parameters': {},
+                'handler': self._central_bank_all_rates
+            },
+            'central_bank_compare': {
+                'description': 'Compare policy rates across multiple central banks with statistics',
+                'parameters': {
+                    'bank_codes': {
+                        'type': 'array',
+                        'description': 'List of central bank codes to compare',
+                        'required': True
+                    }
+                },
+                'handler': self._central_bank_compare
+            },
+            'central_bank_heatmap': {
+                'description': 'Global central bank rate change heatmap showing synchronized tightening/easing cycles',
+                'parameters': {},
+                'handler': self._central_bank_heatmap
+            },
+            'central_bank_search': {
+                'description': 'Search for central banks by name, country, or currency',
+                'parameters': {
+                    'query': {
+                        'type': 'string',
+                        'description': 'Search query (e.g., "japan", "euro", "GBP")',
+                        'required': True
+                    }
+                },
+                'handler': self._central_bank_search
+            },
+            'central_bank_differential': {
+                'description': 'Calculate interest rate differential between two central banks (useful for carry trade analysis)',
+                'parameters': {
+                    'bank_code_1': {
+                        'type': 'string',
+                        'description': 'First central bank code',
+                        'required': True
+                    },
+                    'bank_code_2': {
+                        'type': 'string',
+                        'description': 'Second central bank code',
+                        'required': True
+                    }
+                },
+                'handler': self._central_bank_differential
+            },
+            'central_bank_list': {
+                'description': 'List all available central banks with codes and details',
+                'parameters': {},
+                'handler': self._central_bank_list
             }
         }
     
@@ -3327,6 +3976,43 @@ class MCPServer:
         result = get_hy_dashboard()
         return {'success': True, 'data': result}
     
+    # CLO/ABS Market Monitor Handler Methods (Phase 163)
+    def _clo_market_overview(self, days_back: int = 365) -> Dict:
+        """Handler for clo_market_overview tool"""
+        return get_clo_market_overview(days_back=days_back)
+    
+    def _abs_spreads_by_asset_class(self, asset_class: Optional[str] = None, days_back: int = 365) -> Dict:
+        """Handler for abs_spreads_by_asset_class tool"""
+        return get_abs_spreads_by_asset_class(asset_class=asset_class, days_back=days_back)
+    
+    def _cmbs_market_metrics(self, days_back: int = 365) -> Dict:
+        """Handler for cmbs_market_metrics tool"""
+        return get_cmbs_market_metrics(days_back=days_back)
+    
+    def _structured_finance_issuance(self, days_back: int = 730) -> Dict:
+        """Handler for structured_finance_issuance tool"""
+        return get_structured_finance_issuance(days_back=days_back)
+    
+    def _abs_delinquency_rates(self, days_back: int = 365) -> Dict:
+        """Handler for abs_delinquency_rates tool"""
+        return get_delinquency_rates(days_back=days_back)
+    
+    def _abs_liquidity_indicators(self, days_back: int = 365) -> Dict:
+        """Handler for abs_liquidity_indicators tool"""
+        return get_abs_liquidity_indicators(days_back=days_back)
+    
+    def _clo_abs_dashboard(self, days_back: int = 365) -> Dict:
+        """Handler for clo_abs_dashboard tool"""
+        return get_comprehensive_clo_abs_dashboard(days_back=days_back)
+    
+    def _abs_credit_quality(self, asset_class: str, days_back: int = 365) -> Dict:
+        """Handler for abs_credit_quality tool"""
+        return analyze_abs_credit_quality(asset_class=asset_class, days_back=days_back)
+    
+    def _nport_clo_abs_holdings(self, cik: Optional[str] = None, limit: int = 10) -> Dict:
+        """Handler for nport_clo_abs_holdings tool"""
+        return get_sec_nport_clo_abs_holdings(cik=cik, limit=limit)
+    
     # Municipal Bond Monitor Handler Methods (Phase 155)
     def _muni_search(self, issuer_name: Optional[str] = None, state: Optional[str] = None,
                      cusip: Optional[str] = None, min_size: Optional[float] = None) -> Dict:
@@ -3359,6 +4045,101 @@ class MCPServer:
         """Handler for muni_compare_spreads tool"""
         return compare_spreads(state1, state2, maturity_years)
     
+    # Money Market Fund Flows Handler Methods (Phase 168)
+    def _mmf_aggregate_flows(self, months_back: int = 12) -> Dict:
+        """Handler for mmf_aggregate_flows tool"""
+        return get_mmf_aggregate_flows(months_back=months_back)
+    
+    def _mmf_sec_filings(self, cik: Optional[str] = None, fund_family: Optional[str] = None,
+                         count: int = 20) -> Dict:
+        """Handler for mmf_sec_filings tool"""
+        return get_sec_mmf_filings(cik=cik, fund_family=fund_family, count=count)
+    
+    def _mmf_parse_filing(self, accession_number: str) -> Dict:
+        """Handler for mmf_parse_filing tool"""
+        return parse_nmfp_filing(accession_number)
+    
+    def _mmf_current_yields(self, fund_type: Optional[str] = None) -> Dict:
+        """Handler for mmf_current_yields tool"""
+        return get_mmf_yields(fund_type=fund_type)
+    
+    def _mmf_concentration_risk(self) -> Dict:
+        """Handler for mmf_concentration_risk tool"""
+        return get_mmf_concentration_risk()
+    
+    def _mmf_category_comparison(self, months_back: int = 6) -> Dict:
+        """Handler for mmf_category_comparison tool"""
+        return compare_mmf_categories(months_back=months_back)
+    
+    # Sovereign Rating Tracker Handler Methods (Phase 164)
+    def _sovereign_ratings(self, days: int = 180) -> Dict:
+        """Handler for sovereign_ratings tool"""
+        from modules.sovereign_rating_tracker import get_all_ratings
+        result = get_all_ratings(days)
+        return {'success': True, 'data': result}
+    
+    def _sovereign_country(self, country: str) -> Dict:
+        """Handler for sovereign_country tool"""
+        from modules.sovereign_rating_tracker import get_country_ratings
+        result = get_country_ratings(country)
+        return {'success': True, 'data': result}
+    
+    def _sovereign_downgrades(self, days: int = 90) -> Dict:
+        """Handler for sovereign_downgrades tool"""
+        from modules.sovereign_rating_tracker import get_downgrades
+        result = get_downgrades(days)
+        return {'success': True, 'data': result}
+    
+    def _sovereign_upgrades(self, days: int = 90) -> Dict:
+        """Handler for sovereign_upgrades tool"""
+        from modules.sovereign_rating_tracker import get_upgrades
+        result = get_upgrades(days)
+        return {'success': True, 'data': result}
+    
+    def _sovereign_watch_list(self) -> Dict:
+        """Handler for sovereign_watch_list tool"""
+        from modules.sovereign_rating_tracker import get_watch_list
+        result = get_watch_list()
+        return {'success': True, 'data': result}
+    
+    def _sovereign_ig_changes(self, days: int = 180) -> Dict:
+        """Handler for sovereign_ig_changes tool"""
+        from modules.sovereign_rating_tracker import get_investment_grade_changes
+        result = get_investment_grade_changes(days)
+        return {'success': True, 'data': result}
+    
+    def _sovereign_dashboard(self) -> Dict:
+        """Handler for sovereign_dashboard tool"""
+        from modules.sovereign_rating_tracker import get_rating_dashboard
+        result = get_rating_dashboard()
+        return {'success': True, 'data': result}
+    
+    # Swap Rate Curves Handler Methods (Phase 160)
+    def _usd_swap_curve(self) -> Dict:
+        """Handler for usd_swap_curve tool"""
+        from modules.swap_rate_curves import get_usd_swap_curve
+        return get_usd_swap_curve()
+    
+    def _eur_swap_curve(self) -> Dict:
+        """Handler for eur_swap_curve tool"""
+        from modules.swap_rate_curves import get_eur_swap_curve
+        return get_eur_swap_curve()
+    
+    def _compare_swap_curves(self) -> Dict:
+        """Handler for compare_swap_curves tool"""
+        from modules.swap_rate_curves import compare_usd_eur_curves
+        return compare_usd_eur_curves()
+    
+    def _swap_spread(self, tenor: str = "10Y", currency: str = "USD") -> Dict:
+        """Handler for swap_spread tool"""
+        from modules.swap_rate_curves import get_swap_spread
+        return get_swap_spread(tenor, currency)
+    
+    def _swap_inversion_signal(self) -> Dict:
+        """Handler for swap_inversion_signal tool"""
+        from modules.swap_rate_curves import get_curve_inversion_signal
+        return get_curve_inversion_signal()
+    
     # Treasury Yield Curve Handlers (Phase 154)
     def _treasury_yield_curve(self, format_table: bool = False) -> Dict:
         """Handler for treasury_yield_curve tool"""
@@ -3383,6 +4164,127 @@ class MCPServer:
     def _treasury_yield_maturity(self, maturity: str, days_back: int = 365) -> Dict:
         """Handler for treasury_yield_maturity tool"""
         return get_specific_maturity(maturity=maturity, days_back=days_back)
+    
+    # TIPS & Breakeven Inflation Handlers (Phase 159)
+    def _tips_current(self, include_inflation: bool = True) -> Dict:
+        """Handler for tips_current tool"""
+        return get_current_tips_data(include_inflation=include_inflation)
+    
+    def _breakeven_curve(self, format_table: bool = False) -> Dict:
+        """Handler for breakeven_curve tool"""
+        return analyze_breakeven_curve(format_table=format_table)
+    
+    def _real_yield_history(self, maturity: str = '10Y', days_back: int = 365) -> Dict:
+        """Handler for real_yield_history tool"""
+        return get_real_yield_history(maturity=maturity, days_back=days_back)
+    
+    def _tips_vs_nominal(self, maturity: str = '10Y') -> Dict:
+        """Handler for tips_vs_nominal tool"""
+        return compare_tips_vs_nominal(maturity=maturity)
+    
+    def _inflation_expectations(self) -> Dict:
+        """Handler for inflation_expectations tool"""
+        return get_inflation_expectations_summary()
+    
+    def _breakeven_changes(self, days_back: int = 30) -> Dict:
+        """Handler for breakeven_changes tool"""
+        return track_breakeven_changes(days_back=days_back)
+    
+    # Commercial Paper Rates Handlers (Phase 162)
+    def _cp_current_rates(self) -> Dict:
+        """Handler for cp_current_rates tool"""
+        return get_current_rates()
+    
+    def _cp_rate_history(self, days: int = 90, category: Optional[str] = None) -> Dict:
+        """Handler for cp_rate_history tool"""
+        return get_rate_history(days=days, category=category)
+    
+    def _cp_spread_analysis(self, days: int = 90) -> Dict:
+        """Handler for cp_spread_analysis tool"""
+        return analyze_spreads(days=days)
+    
+    def _cp_rate_comparison(self) -> Dict:
+        """Handler for cp_rate_comparison tool"""
+        return get_rate_comparison()
+    
+    def _cp_dashboard(self) -> Dict:
+        """Handler for cp_dashboard tool"""
+        return get_cp_dashboard()
+    
+    # Bond New Issue Calendar Handlers (Phase 165)
+    def _bond_upcoming_issues(self, days_back: int = 30, min_amount_millions: float = 100) -> Dict:
+        """Handler for bond_upcoming_issues tool"""
+        return get_upcoming_issues(days_back=days_back, min_amount_millions=min_amount_millions)
+    
+    def _bond_issuer_history(self, ticker_or_cik: str, years: int = 2) -> Dict:
+        """Handler for bond_issuer_history tool"""
+        return get_issuer_history(ticker_or_cik=ticker_or_cik, years=years)
+    
+    def _bond_company_filings(self, cik: str, count: int = 20) -> Dict:
+        """Handler for bond_company_filings tool"""
+        return get_company_filings(cik=cik, count=count)
+    
+    def _bond_analyze_filing(self, cik: str, accession_number: str) -> Dict:
+        """Handler for bond_analyze_filing tool"""
+        return analyze_filing_content(cik=cik, accession_number=accession_number)
+    
+    def _bond_dashboard(self) -> Dict:
+        """Handler for bond_dashboard tool"""
+        return get_bond_dashboard()
+    
+    # Central Bank Rate Decisions Handlers (Phase 166)
+    def _central_bank_rate(self, bank_code: str) -> Dict:
+        """Handler for central_bank_rate tool"""
+        return get_central_bank_rate(bank_code.upper())
+    
+    def _central_bank_all_rates(self) -> Dict:
+        """Handler for central_bank_all_rates tool"""
+        return get_all_central_bank_rates()
+    
+    def _central_bank_compare(self, bank_codes: List[str]) -> Dict:
+        """Handler for central_bank_compare tool"""
+        return compare_central_banks([code.upper() for code in bank_codes])
+    
+    def _central_bank_heatmap(self) -> Dict:
+        """Handler for central_bank_heatmap tool"""
+        return get_global_rate_heatmap()
+    
+    def _central_bank_search(self, query: str) -> Dict:
+        """Handler for central_bank_search tool"""
+        return search_central_banks(query)
+    
+    def _central_bank_differential(self, bank_code_1: str, bank_code_2: str) -> Dict:
+        """Handler for central_bank_differential tool"""
+        return get_rate_differential(bank_code_1.upper(), bank_code_2.upper())
+    
+    def _central_bank_list(self) -> Dict:
+        """Handler for central_bank_list tool"""
+        return list_all_banks()
+    
+    # Repo Rate Monitor Handlers (Phase 161)
+    def _repo_sofr_rates(self, days_back: int = 90) -> Dict:
+        """Handler for repo_sofr_rates tool"""
+        return get_sofr_rates(days_back=days_back)
+    
+    def _repo_rates(self, days_back: int = 90) -> Dict:
+        """Handler for repo_rates tool"""
+        return get_repo_rates(days_back=days_back)
+    
+    def _repo_reverse_repo_operations(self, days_back: int = 90) -> Dict:
+        """Handler for repo_reverse_repo_operations tool"""
+        return get_reverse_repo_operations(days_back=days_back)
+    
+    def _repo_overnight_rates_dashboard(self, days_back: int = 90) -> Dict:
+        """Handler for repo_overnight_rates_dashboard tool"""
+        return get_overnight_rates_dashboard(days_back=days_back)
+    
+    def _repo_compare_money_market_rates(self, days_back: int = 90) -> Dict:
+        """Handler for repo_compare_money_market_rates tool"""
+        return compare_money_market_rates(days_back=days_back)
+    
+    def _repo_funding_stress_indicators(self) -> Dict:
+        """Handler for repo_funding_stress_indicators tool"""
+        return get_funding_stress_indicators()
     
     def list_tools(self) -> Dict:
         """List all available tools"""
@@ -4323,6 +5225,106 @@ def main():
         result = server.list_tools()
         print(json.dumps(result, indent=2))
         return 0
+    
+    elif command == 'call':
+        # Call a specific tool
+        if len(sys.argv) < 3:
+            print("Error: call requires tool name", file=sys.stderr)
+            print("Usage: python mcp_server.py call <TOOL_NAME> <JSON_PARAMS>", file=sys.stderr)
+            return 1
+        
+        tool_name = sys.argv[2]
+        
+        # Parse JSON parameters
+        if len(sys.argv) >= 4:
+            try:
+                params = json.loads(sys.argv[3])
+            except json.JSONDecodeError as e:
+                print(f"Error: Invalid JSON parameters: {e}", file=sys.stderr)
+                return 1
+        else:
+            params = {}
+        
+        result = server.call_tool(tool_name, params)
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    elif command == 'serve':
+        # Start MCP server (stdin/stdout protocol)
+        print("Starting QuantClaw Data MCP Server...", file=sys.stderr)
+        
+        while True:
+            try:
+                line = sys.stdin.readline()
+                if not line:
+                    break
+                
+                request = json.loads(line)
+                response = server.handle_request(request)
+                
+                print(json.dumps(response))
+                sys.stdout.flush()
+            
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                error_response = {
+                    'success': False,
+                    'error': str(e)
+                }
+                print(json.dumps(error_response))
+                sys.stdout.flush()
+        
+        return 0
+    
+    else:
+        print(f"Error: Unknown command '{command}'", file=sys.stderr)
+        print_help(server)
+        return 1
+
+
+def print_help(server: Optional[MCPServer] = None):
+    """Print CLI help"""
+    print("""
+QuantClaw Data MCP Server
+
+Commands:
+  python mcp_server.py list-tools
+                                    # List all available MCP tools
+  
+  python mcp_server.py call <TOOL_NAME> '<JSON_PARAMS>'
+                                    # Call a specific tool
+  
+  python mcp_server.py serve        # Start MCP server (stdin/stdout protocol)
+
+Examples:
+  # List all tools
+  python mcp_server.py list-tools
+  
+  # Get country profile
+  python mcp_server.py call worldbank_country_profile '{"country_code": "USA"}'
+  
+  # Compare countries
+  python mcp_server.py call worldbank_compare '{"country_codes": ["USA", "CHN", "JPN"], "indicator_key": "GDP"}'
+  
+  # Search countries
+  python mcp_server.py call worldbank_search '{"query": "United"}'
+  
+  # Start server
+  python mcp_server.py serve
+""")
+    
+    if server:
+        print("\nAvailable Tools:")
+        tools = server.list_tools()
+        for tool in tools['tools']:
+            print(f"\n  {tool['name']}")
+            print(f"    {tool['description']}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+ 0
     
     elif command == 'call':
         # Call a specific tool
