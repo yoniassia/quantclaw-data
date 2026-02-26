@@ -626,6 +626,14 @@ from shanghai_stock_exchange import (
     get_northbound_flow
 )
 
+from flight_data import (
+    FlightDataTracker,
+    cmd_live_count,
+    cmd_traffic_index,
+    cmd_regional,
+    cmd_report
+)
+
 
 class MCPServer:
     """MCP Server for QuantClaw Data"""
@@ -5959,6 +5967,42 @@ class MCPServer:
                 },
                 'handler': self._nighttime_lights_trend
             }
+,
+            
+            # Flight Data Tools (Phase 690)
+            'flight_live_count': {
+                'description': 'Get current global flight count as economic activity indicator',
+                'parameters': {
+                    'bounds': {
+                        'type': 'object',
+                        'description': 'Optional geographic bounds {"lat_min", "lat_max", "lon_min", "lon_max"}',
+                        'required': False
+                    }
+                },
+                'handler': self._flight_live_count
+            },
+            'flight_traffic_index': {
+                'description': 'Calculate air traffic index vs baseline year (2019 = 100)',
+                'parameters': {
+                    'baseline_year': {
+                        'type': 'integer',
+                        'description': 'Baseline year for comparison (default 2019)',
+                        'required': False,
+                        'default': 2019
+                    }
+                },
+                'handler': self._flight_traffic_index
+            },
+            'flight_regional': {
+                'description': 'Get flight counts by major economic regions (North America, Europe, Asia-Pacific)',
+                'parameters': {},
+                'handler': self._flight_regional
+            },
+            'flight_report': {
+                'description': 'Generate comprehensive flight traffic economic indicator report',
+                'parameters': {},
+                'handler': self._flight_report
+            }
         }
     
     # Handler methods
@@ -9362,6 +9406,44 @@ class MCPServer:
         except Exception as e:
             return {'success': False, 'error': str(e)}
     
+
+    # Flight Data Handlers (Phase 690)
+    def _flight_live_count(self, bounds: Optional[Dict] = None) -> Dict:
+        """Handler for flight_live_count tool"""
+        try:
+            tracker = FlightDataTracker()
+            result = tracker.get_live_flight_count(bounds)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _flight_traffic_index(self, baseline_year: int = 2019) -> Dict:
+        """Handler for flight_traffic_index tool"""
+        try:
+            tracker = FlightDataTracker()
+            result = tracker.get_traffic_index(baseline_year)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _flight_regional(self) -> Dict:
+        """Handler for flight_regional tool"""
+        try:
+            tracker = FlightDataTracker()
+            result = tracker.get_regional_traffic()
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _flight_report(self) -> Dict:
+        """Handler for flight_report tool"""
+        try:
+            tracker = FlightDataTracker()
+            report = tracker.generate_report()
+            return {'success': True, 'report': report}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
     def handle_request(self, request: Dict) -> Dict:
         """Handle MCP request"""
         method = request.get('method')

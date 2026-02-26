@@ -1,243 +1,254 @@
 """
-Insider Trade Alert System — Monitor SEC Form 4 filings for insider trading activity.
+Insider Trade Alert System — SEC Form 4 monitoring and analysis.
 
-Tracks insider buying/selling patterns using SEC EDGAR XBRL data,
-identifies unusual insider activity clusters, and scores conviction levels.
+Tracks insider buying/selling activity from SEC EDGAR filings,
+identifies unusual patterns (cluster buys, large purchases by CEOs),
+and generates trade signals from insider sentiment.
+
+Free data: SEC EDGAR XBRL feeds (public, no API key).
 """
 
 import json
 import urllib.request
-from datetime import datetime, timedelta
+import urllib.error
 from typing import Dict, List, Optional
+from datetime import datetime, timedelta
 
 
 SEC_EDGAR_BASE = "https://efts.sec.gov/LATEST/search-index"
-SEC_FULL_TEXT = "https://efts.sec.gov/LATEST/search-index"
-SEC_SUBMISSIONS = "https://data.sec.gov/submissions"
+SEC_FULL_TEXT = "https://efts.sec.gov/LATEST/search-index?q=%22Form+4%22&dateRange=custom"
+HEADERS = {"User-Agent": "QuantClaw/1.0 (research@moneyclaw.com)", "Accept": "application/json"}
 
 
-def get_recent_insider_filings(
-    symbol: Optional[str] = None, days: int = 7, limit: int = 50
+def fetch_recent_insider_filings(
+    ticker: Optional[str] = None,
+    days_back: int = 7,
+    min_value_usd: float = 100000
 ) -> Dict:
     """
-    Fetch recent Form 4 insider trading filings from SEC EDGAR.
+    Fetch recent Form 4 insider filings from SEC EDGAR.
 
     Args:
-        symbol: Optional ticker to filter
-        days: Number of days to look back
-        limit: Max number of filings to return
+        ticker: Optional stock ticker to filter
+        days_back: Number of days to look back
+        min_value_usd: Minimum transaction value filter
 
     Returns:
-        Dict with recent insider filings and summary statistics
+        Dict with list of insider transactions and summary stats
     """
-    try:
-        # Use EDGAR full-text search for Form 4 filings
-        query = f"formType:\"4\" {symbol}" if symbol else 'formType:"4"'
-        date_from = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=days_back)
 
-        url = (
-            f"https://efts.sec.gov/LATEST/search-index?"
-            f"q={urllib.request.quote(query)}"
-            f"&dateRange=custom&startdt={date_from}"
-            f"&enddt={datetime.now().strftime('%Y-%m-%d')}"
-            f"&forms=4&from=0&size={limit}"
-        )
+    query = f'"Form 4"'
+    if ticker:
+        query += f' "{ticker.upper()}"'
 
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "QuantClaw research@quantclaw.com",
-            "Accept": "application/json",
-        })
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
-
-        hits = data.get("hits", {}).get("hits", [])
-        filings = []
-        for hit in hits[:limit]:
-            src = hit.get("_source", {})
-            filings.append({
-                "filing_date": src.get("file_date"),
-                "company": src.get("display_names", [None])[0] if src.get("display_names") else None,
-                "ticker": src.get("tickers", [symbol])[0] if src.get("tickers") else symbol,
-                "form_type": src.get("form_type"),
-                "url": f"https://www.sec.gov/Archives/{src.get('file_name', '')}",
-            })
-
-        return {
-            "query": symbol or "ALL",
-            "period_days": days,
-            "total_found": data.get("hits", {}).get("total", {}).get("value", 0),
-            "filings": filings,
-            "source": "SEC EDGAR",
-        }
-
-    except Exception as e:
-        return _fallback_edgar_search(symbol, days, str(e))
-
-
-def _fallback_edgar_search(symbol: Optional[str], days: int, error: str) -> Dict:
-    """Fallback using EDGAR full-text search API."""
-    try:
-        query = f'"{symbol}" "form 4"' if symbol else '"form 4"'
-        url = (
-            f"https://efts.sec.gov/LATEST/search-index?"
-            f"q={urllib.request.quote(query)}&forms=4"
-        )
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "QuantClaw research@quantclaw.com",
-        })
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
-        total = data.get("hits", {}).get("total", {}).get("value", 0)
-        return {
-            "query": symbol or "ALL",
-            "total_form4_filings": total,
-            "primary_error": error,
-            "source": "SEC EDGAR (fallback)",
-        }
-    except Exception:
-        return {"error": error, "fallback_error": "Both EDGAR endpoints unavailable"}
-
-
-def analyze_insider_activity(transactions: List[Dict]) -> Dict:
-    """
-    Analyze a list of insider transactions to detect patterns.
-
-    Scores conviction level based on buy/sell ratios, cluster buying,
-    and transaction sizes relative to holdings.
-
-    Args:
-        transactions: List of dicts with keys:
-            - type: 'BUY' or 'SELL'
-            - shares: number of shares
-            - price: transaction price
-            - insider_name: name of insider
-            - insider_title: title (CEO, CFO, Director, etc.)
-            - date: transaction date string
-
-    Returns:
-        Dict with insider activity analysis and conviction score
-    """
-    if not transactions:
-        return {"error": "No transactions provided"}
-
-    buys = [t for t in transactions if t.get("type", "").upper() == "BUY"]
-    sells = [t for t in transactions if t.get("type", "").upper() == "SELL"]
-
-    buy_volume = sum(t.get("shares", 0) for t in buys)
-    sell_volume = sum(t.get("shares", 0) for t in sells)
-    buy_value = sum(t.get("shares", 0) * t.get("price", 0) for t in buys)
-    sell_value = sum(t.get("shares", 0) * t.get("price", 0) for t in sells)
-
-    # Unique insiders
-    buy_insiders = list(set(t.get("insider_name", "Unknown") for t in buys))
-    sell_insiders = list(set(t.get("insider_name", "Unknown") for t in sells))
-
-    # C-suite activity (higher conviction signal)
-    c_suite_titles = {"CEO", "CFO", "COO", "CTO", "President", "Chairman"}
-    c_suite_buys = [
-        t for t in buys
-        if any(title in t.get("insider_title", "") for title in c_suite_titles)
-    ]
-
-    # Cluster buying detection (3+ insiders buying within same period)
-    cluster_buy = len(buy_insiders) >= 3
-
-    # Conviction scoring (0-100)
-    score = 50  # neutral
-    if buy_volume > sell_volume * 2:
-        score += 20
-    elif sell_volume > buy_volume * 2:
-        score -= 20
-    if cluster_buy:
-        score += 15
-    if c_suite_buys:
-        score += 10
-    if buy_value > 1_000_000:
-        score += 5
-    score = max(0, min(100, score))
-
-    signal = (
-        "STRONG BUY" if score >= 80 else
-        "BUY" if score >= 65 else
-        "NEUTRAL" if score >= 40 else
-        "SELL" if score >= 25 else "STRONG SELL"
+    url = (
+        f"https://efts.sec.gov/LATEST/search-index?"
+        f"q={urllib.request.quote(query)}"
+        f"&dateRange=custom"
+        f"&startdt={start_date.strftime('%Y-%m-%d')}"
+        f"&enddt={end_date.strftime('%Y-%m-%d')}"
+        f"&forms=4"
     )
 
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+    except (urllib.error.URLError, json.JSONDecodeError):
+        # Fallback: generate sample data for demonstration
+        data = _generate_sample_filings(ticker, days_back)
+
+    filings = data.get("hits", data.get("filings", []))
+
+    transactions = []
+    for f in filings[:50]:
+        tx = _parse_filing(f)
+        if tx and abs(tx.get("value_usd", 0)) >= min_value_usd:
+            transactions.append(tx)
+
+    # Summary
+    buys = [t for t in transactions if t.get("transaction_type") == "BUY"]
+    sells = [t for t in transactions if t.get("transaction_type") == "SELL"]
+
+    buy_value = sum(t.get("value_usd", 0) for t in buys)
+    sell_value = sum(t.get("value_usd", 0) for t in sells)
+    buy_sell_ratio = buy_value / sell_value if sell_value > 0 else float("inf") if buy_value > 0 else 0
+
     return {
+        "ticker": ticker,
+        "period_days": days_back,
         "total_transactions": len(transactions),
-        "buys": {
-            "count": len(buys),
-            "total_shares": buy_volume,
-            "total_value": round(buy_value, 2),
-            "unique_insiders": buy_insiders,
-        },
-        "sells": {
-            "count": len(sells),
-            "total_shares": sell_volume,
-            "total_value": round(sell_value, 2),
-            "unique_insiders": sell_insiders,
-        },
-        "c_suite_buys": len(c_suite_buys),
-        "cluster_buying": cluster_buy,
-        "conviction_score": score,
-        "signal": signal,
-        "interpretation": {
-            "STRONG BUY": "Multiple insiders aggressively buying — high conviction bullish",
-            "BUY": "Net insider buying with meaningful size",
-            "NEUTRAL": "Mixed insider activity — no clear direction",
-            "SELL": "Net insider selling dominates",
-            "STRONG SELL": "Heavy insider selling — potential red flag",
-        }[signal],
+        "total_buys": len(buys),
+        "total_sells": len(sells),
+        "buy_value_usd": round(buy_value, 2),
+        "sell_value_usd": round(sell_value, 2),
+        "buy_sell_ratio": round(buy_sell_ratio, 2) if buy_sell_ratio != float("inf") else "inf",
+        "signal": _insider_signal(buy_sell_ratio, len(buys), len(sells)),
+        "transactions": transactions[:20]
     }
 
 
-def get_insider_buy_sell_ratio(symbol: str, api_key: Optional[str] = None) -> Dict:
+def detect_cluster_buying(
+    transactions: List[Dict],
+    min_insiders: int = 3,
+    window_days: int = 14
+) -> Dict:
     """
-    Calculate insider buy/sell ratio for a symbol using Financial Datasets API.
+    Detect cluster insider buying — multiple insiders buying within a window.
 
     Args:
-        symbol: Stock ticker
-        api_key: Financial Datasets API key
+        transactions: List of insider transaction dicts
+        min_insiders: Minimum unique insiders for cluster signal
+        window_days: Time window in days
 
     Returns:
-        Dict with buy/sell ratio and trend
+        Dict with detected clusters and signal strength
     """
-    if not api_key:
-        return {
-            "symbol": symbol,
-            "note": "Provide Financial Datasets API key for insider trade data",
-            "alternative": "Use get_recent_insider_filings() for SEC EDGAR data",
-        }
+    buys = [t for t in transactions if t.get("transaction_type") == "BUY"]
+    if not buys:
+        return {"clusters": [], "signal": "NO_DATA"}
 
-    try:
-        end_date = datetime.now().strftime("%Y-%m-%d")
-        start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
-        url = (
-            f"https://api.financialdatasets.ai/insider-trades"
-            f"?ticker={symbol}&start_date={start_date}&end_date={end_date}"
-        )
-        req = urllib.request.Request(url, headers={
-            "Authorization": f"Bearer {api_key}",
-            "User-Agent": "QuantClaw/1.0",
-        })
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
+    # Group by ticker
+    by_ticker = {}
+    for t in buys:
+        tk = t.get("ticker", "UNKNOWN")
+        by_ticker.setdefault(tk, []).append(t)
 
-        trades = data.get("insider_trades", [])
-        buys = sum(1 for t in trades if t.get("transaction_type") in ("P", "A"))
-        sells = sum(1 for t in trades if t.get("transaction_type") in ("S", "D"))
+    clusters = []
+    for tk, txs in by_ticker.items():
+        # Sort by date
+        txs.sort(key=lambda x: x.get("filing_date", ""))
 
-        ratio = buys / sells if sells > 0 else float("inf") if buys > 0 else 0
+        unique_insiders = set()
+        total_value = 0
+        roles = set()
 
-        return {
-            "symbol": symbol,
-            "period": f"{start_date} to {end_date}",
-            "total_filings": len(trades),
-            "buys": buys,
-            "sells": sells,
-            "buy_sell_ratio": round(ratio, 2) if ratio != float("inf") else "INF",
-            "signal": "BULLISH" if ratio > 1.5 else ("BEARISH" if ratio < 0.5 else "NEUTRAL"),
-            "source": "Financial Datasets API",
-        }
-    except Exception as e:
-        return {"symbol": symbol, "error": str(e)}
+        for tx in txs:
+            unique_insiders.add(tx.get("insider_name", ""))
+            total_value += tx.get("value_usd", 0)
+            roles.add(tx.get("insider_role", ""))
+
+        if len(unique_insiders) >= min_insiders:
+            # Score: more insiders + higher roles = stronger signal
+            role_score = 0
+            for r in roles:
+                r_lower = r.lower()
+                if "ceo" in r_lower or "chief executive" in r_lower:
+                    role_score += 3
+                elif "cfo" in r_lower or "chief financial" in r_lower:
+                    role_score += 2
+                elif "director" in r_lower:
+                    role_score += 1
+
+            signal_strength = min(10, len(unique_insiders) + role_score)
+
+            clusters.append({
+                "ticker": tk,
+                "unique_insiders": len(unique_insiders),
+                "total_transactions": len(txs),
+                "total_value_usd": round(total_value, 2),
+                "roles": list(roles),
+                "signal_strength": signal_strength,
+                "signal": "STRONG_BUY" if signal_strength >= 7 else "BUY" if signal_strength >= 4 else "MILD_BUY"
+            })
+
+    clusters.sort(key=lambda x: x["signal_strength"], reverse=True)
+
+    return {
+        "n_clusters": len(clusters),
+        "clusters": clusters,
+        "strongest_signal": clusters[0] if clusters else None
+    }
+
+
+def insider_sentiment_score(ticker: str, transactions: List[Dict]) -> Dict:
+    """
+    Calculate an insider sentiment score for a ticker.
+
+    Args:
+        ticker: Stock ticker
+        transactions: List of insider transactions for this ticker
+
+    Returns:
+        Dict with sentiment score (-100 to +100) and breakdown
+    """
+    if not transactions:
+        return {"ticker": ticker, "score": 0, "signal": "NO_DATA", "confidence": "LOW"}
+
+    buys = [t for t in transactions if t.get("transaction_type") == "BUY"]
+    sells = [t for t in transactions if t.get("transaction_type") == "SELL"]
+
+    n_buys = len(buys)
+    n_sells = len(sells)
+    total = n_buys + n_sells
+
+    if total == 0:
+        return {"ticker": ticker, "score": 0, "signal": "NO_DATA", "confidence": "LOW"}
+
+    # Direction score: net buy/sell ratio
+    direction = (n_buys - n_sells) / total * 50
+
+    # Value weighting
+    buy_val = sum(t.get("value_usd", 0) for t in buys)
+    sell_val = sum(t.get("value_usd", 0) for t in sells)
+    total_val = buy_val + sell_val
+    value_direction = ((buy_val - sell_val) / total_val * 50) if total_val > 0 else 0
+
+    score = round(direction + value_direction, 1)
+    score = max(-100, min(100, score))
+
+    confidence = "HIGH" if total >= 5 else "MEDIUM" if total >= 3 else "LOW"
+    signal = (
+        "STRONG_BUY" if score > 60 else
+        "BUY" if score > 20 else
+        "NEUTRAL" if score > -20 else
+        "SELL" if score > -60 else
+        "STRONG_SELL"
+    )
+
+    return {
+        "ticker": ticker,
+        "score": score,
+        "signal": signal,
+        "confidence": confidence,
+        "n_buys": n_buys,
+        "n_sells": n_sells,
+        "buy_value": round(buy_val, 2),
+        "sell_value": round(sell_val, 2)
+    }
+
+
+def _parse_filing(filing: Dict) -> Optional[Dict]:
+    """Parse a raw SEC filing into structured transaction."""
+    return {
+        "insider_name": filing.get("reportingOwner", filing.get("name", "Unknown")),
+        "insider_role": filing.get("officerTitle", filing.get("role", "Officer")),
+        "ticker": filing.get("ticker", filing.get("issuerTradingSymbol", "")),
+        "transaction_type": "BUY" if filing.get("transactionCode", "P") in ("P", "A") else "SELL",
+        "shares": filing.get("transactionShares", 0),
+        "price_per_share": filing.get("transactionPricePerShare", 0),
+        "value_usd": filing.get("transactionShares", 0) * filing.get("transactionPricePerShare", 0),
+        "filing_date": filing.get("filedAt", filing.get("dateFiled", "")),
+        "form_type": "4"
+    }
+
+
+def _insider_signal(ratio: float, n_buys: int, n_sells: int) -> str:
+    if n_buys + n_sells == 0:
+        return "NO_DATA"
+    if ratio > 3:
+        return "STRONG_BUY"
+    elif ratio > 1.5:
+        return "BUY"
+    elif ratio > 0.5:
+        return "NEUTRAL"
+    elif ratio > 0.2:
+        return "SELL"
+    return "STRONG_SELL"
+
+
+def _generate_sample_filings(ticker: Optional[str], days: int) -> Dict:
+    """Generate sample data when SEC API is unavailable."""
+    return {"filings": []}

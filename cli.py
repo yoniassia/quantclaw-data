@@ -701,6 +701,10 @@ MODULES = {
     'sse': {
         'file': 'shanghai_stock_exchange.py',
         'commands': ['sse-index', 'sse-margin', 'sse-northbound']
+    },
+    'flight': {
+        'file': 'flight_data.py',
+        'commands': ['flight-live', 'flight-index', 'flight-regional', 'flight-report']
     }
 }
 
