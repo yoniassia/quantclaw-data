@@ -102,6 +102,15 @@ from tase import (
     fetch_historical_ta35
 )
 
+from india_nso import (
+    get_latest_gdp as india_nso_get_gdp,
+    get_latest_cpi as india_nso_get_cpi,
+    get_latest_iip as india_nso_get_iip,
+    get_labor_stats as india_nso_get_labor,
+    get_trade_balance as india_nso_get_trade,
+    get_full_stats as india_nso_get_full_stats
+)
+
 import china_nbs
 
 from em_sovereign_spreads import (
@@ -1863,6 +1872,38 @@ class MCPServer:
                     }
                 },
                 'handler': self._boi_policy_history
+            },
+            
+            # India NSO/MOSPI Tools (Phase 633)
+            'india_nso_gdp': {
+                'description': 'Get latest India GDP growth rate (quarterly, YoY)',
+                'parameters': {},
+                'handler': self._india_nso_gdp
+            },
+            'india_nso_cpi': {
+                'description': 'Get latest India CPI inflation (monthly, YoY)',
+                'parameters': {},
+                'handler': self._india_nso_cpi
+            },
+            'india_nso_iip': {
+                'description': 'Get Index of Industrial Production (IIP) - manufacturing, mining, electricity',
+                'parameters': {},
+                'handler': self._india_nso_iip
+            },
+            'india_nso_labor': {
+                'description': 'Get Periodic Labour Force Survey (PLFS) - unemployment, labor force participation',
+                'parameters': {},
+                'handler': self._india_nso_labor
+            },
+            'india_nso_trade': {
+                'description': 'Get India trade balance (exports - imports)',
+                'parameters': {},
+                'handler': self._india_nso_trade
+            },
+            'india_nso_full_stats': {
+                'description': 'Get comprehensive India statistics (GDP, CPI, IIP, labor, trade)',
+                'parameters': {},
+                'handler': self._india_nso_full_stats
             },
             
             # Tel Aviv Stock Exchange (TASE) Tools (Phase 631)
@@ -8485,6 +8526,31 @@ class MCPServer:
     def _boi_policy_history(self, months: int = 24) -> Dict:
         """Handler for boi_policy_history tool"""
         return {"history": boi_get_policy_history(months)}
+    
+    # India NSO/MOSPI Handler Methods (Phase 633)
+    def _india_nso_gdp(self) -> Dict:
+        """Handler for india_nso_gdp tool"""
+        return india_nso_get_gdp()
+    
+    def _india_nso_cpi(self) -> Dict:
+        """Handler for india_nso_cpi tool"""
+        return india_nso_get_cpi()
+    
+    def _india_nso_iip(self) -> Dict:
+        """Handler for india_nso_iip tool"""
+        return india_nso_get_iip()
+    
+    def _india_nso_labor(self) -> Dict:
+        """Handler for india_nso_labor tool"""
+        return india_nso_get_labor()
+    
+    def _india_nso_trade(self) -> Dict:
+        """Handler for india_nso_trade tool"""
+        return india_nso_get_trade()
+    
+    def _india_nso_full_stats(self) -> Dict:
+        """Handler for india_nso_full_stats tool"""
+        return india_nso_get_full_stats()
     
     # TASE Handler Methods (Phase 631)
     def _tase_ta35_index(self, period: str = '1d') -> Dict:

@@ -737,7 +737,7 @@ export const additionalPhases = [
   { id: 630, name: "Israel CBS Statistics", description: "CPI, labor, trade, industrial production. Monthly.", status: "done" as const, category: "Country Stats", loc: 485 },
   { id: 631, name: "Tel Aviv Stock Exchange", description: "TASE indices, listings, corporate actions. Daily.", status: "done" as const, category: "Exchange Data", loc: 379 },
   { id: 632, name: "Reserve Bank of India", description: "RBI rates, forex, banking stats. Monthly.", status: "done" as const, category: "Country Stats", loc: 520 },
-  { id: 633, name: "India NSO/MOSPI", description: "GDP, IIP, CPI, labor force. Quarterly.", status: "done" as const, category: "Country Stats", loc: 475 },
+  { id: 633, name: "India NSO/MOSPI", description: "GDP, IIP, CPI, labor force. Quarterly.", status: "done" as const, category: "Country Stats", loc: 203 },
   { id: 634, name: "BSE/NSE India Exchange", description: "Sensex, Nifty, FII/DII flows, deliverables. Daily.", status: "done" as const, category: "Exchange Data", loc: 555 },
   { id: 635, name: "Bank of Korea", description: "BOK base rate, monetary aggregates, BOP. Monthly.", status: "done" as const, category: "Country Stats", loc: 490 },
   { id: 636, name: "KOSTAT Korea Stats", description: "Korean CPI, employment, industrial output. Monthly.", status: "done" as const, category: "Country Stats", loc: 460 },

@@ -441,6 +441,10 @@ MODULES = {
         'file': 'rbi.py',
         'commands': ['gdp', 'wpi', 'cpi', 'fx-reserves', 'repo-rate', 'india-watch', 'mpc-calendar', 'compare-brics']
     },
+    'india_nso': {
+        'file': 'india_nso.py',
+        'commands': ['india-gdp', 'india-cpi', 'india-iip', 'india-labor', 'india-trade', 'india-stats']
+    },
     'bcb': {
         'file': 'bcb.py',
         'commands': ['brazil-selic', 'brazil-ipca', 'brazil-gdp', 'brazil-trade-balance', 'brazil-dashboard', 'brazil-exchange-rate']
