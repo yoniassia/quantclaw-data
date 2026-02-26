@@ -1,0 +1,117 @@
+# QuantClaw Data — Open Financial Intelligence Platform
+
+> 200+ financial data modules. Zero API keys. MCP-ready. Self-evolving.
+
+## What is QuantClaw Data?
+QuantClaw Data is an open financial intelligence platform built autonomously by AI agents. It provides 200+ data modules covering equities, fixed income, crypto, commodities, macro economics, alternative data, and quantitative analytics — all from free public sources.
+
+## How AI Agents Can Use This
+
+### MCP Integration (Recommended)
+Add to any AI agent's MCP config:
+```json
+{
+  "mcpServers": {
+    "quantclaw-data": {
+      "command": "python",
+      "args": ["/path/to/quantclaw-data/mcp_server.py"],
+      "env": { "CACHE_DIR": "/tmp/quantclaw-cache" }
+    }
+  }
+}
+```
+
+### REST API
+Every module is accessible via HTTP:
+```
+GET https://data.quantclaw.org/api/v1/{tool}?ticker={SYMBOL}
+```
+No authentication required. Returns JSON.
+
+### CLI
+```bash
+python cli.py {command} {arguments}
+```
+
+## Key Capabilities
+
+### Market Data
+- Real-time & historical prices (Yahoo Finance)
+- Options chains, Greeks, implied volatility surfaces
+- Technical indicators (50+ built-in)
+- Earnings calendars, analyst estimates, price targets
+
+### Regulatory & Filings
+- SEC EDGAR (10-K, 10-Q, 8-K, DEF 14A)
+- Congressional trading disclosures (STOCK Act)
+- Insider trading alerts
+- Activist investor tracking (13D/F)
+
+### Alternative Data
+- Social sentiment (Reddit, StockTwits)
+- News sentiment with NLP
+- Patent filings (USPTO)
+- Google Trends as demand proxy
+- Weather/agriculture impact (NOAA)
+- Satellite proxy data
+
+### Macro & Fixed Income
+- FRED (800K+ series): GDP, CPI, rates, yield curves
+- Central bank data: Fed, ECB, BOJ, PBOC
+- Treasury auctions, repo rates (NY Fed)
+- Municipal bonds (EMMA/MSRB)
+- Corporate bond spreads
+
+### Crypto & Digital Assets
+- CoinGecko: prices, market cap, volume
+- On-chain analytics (Etherscan, DeFi Llama)
+- Crypto derivatives, liquidation monitoring
+- Cross-chain bridge monitoring
+
+### Quantitative Analytics
+- Monte Carlo simulations
+- Fama-French factor models
+- Black-Litterman optimization
+- Backtesting framework
+- Walk-forward analysis
+- Cointegration pair finding
+
+### Global Macro
+- World Bank (1,400+ indicators, 217 countries)
+- IMF WEO forecasts
+- OECD leading indicators
+- UN Comtrade trade flows
+- BIS banking statistics
+- CIA World Factbook
+
+### Commodities
+- EIA: oil/gas inventories, production
+- USDA: crop reports, WASDE
+- OPEC monthly reports
+- CFTC Commitments of Traders
+- Rare earths (USGS)
+
+## Example Queries for AI Agents
+
+1. "Get current price and technicals for AAPL" → `GET /api/v1/prices?ticker=AAPL`
+2. "Run Monte Carlo simulation on SPY" → `GET /api/v1/monte-carlo?ticker=SPY`
+3. "Show recent congressional trades" → `GET /api/v1/congress-trades`
+4. "Get options chain for TSLA" → `GET /api/v1/options?ticker=TSLA`
+5. "Check insider trading for NVDA" → `GET /api/v1/insider-trades?ticker=NVDA`
+6. "Get US yield curve" → `GET /api/v1/treasury-curve`
+7. "Sentiment analysis for Bitcoin" → `GET /api/v1/crypto?ticker=BTC`
+8. "FRED GDP data" → `GET /api/v1/macro?series=GDP`
+
+## Links
+- Dashboard: https://data.quantclaw.org
+- Main site: https://quantclaw.org
+- Terminal: https://terminal.quantclaw.org
+- Parent: https://moneyclaw.com
+
+## Stats
+- 200 modules built (of 200 planned)
+- 43 free data sources integrated
+- 113,945 lines of code
+- 235 REST API endpoints
+- $0/month operating cost
+- Built autonomously by AI agents

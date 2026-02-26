@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "QuantClaw Data",
+  "name_for_model": "quantclaw_data",
+  "description_for_human": "Open financial intelligence platform — 200+ modules covering equities, crypto, macro, fixed income, commodities, and alternative data. Free, MCP-ready, self-evolving.",
+  "description_for_model": "QuantClaw Data provides 200+ financial data modules accessible via REST API. Covers real-time prices, options, technicals, SEC filings, congressional trades, sentiment analysis, macro indicators, crypto on-chain data, Monte Carlo simulations, and more. All endpoints are at https://data.quantclaw.org/api/v1/{tool}?ticker=SYMBOL. No API key required. Also available as MCP tools for AI agent integration.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://data.quantclaw.org/api/v1/[tool]",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://quantclaw.org/logo.png",
+  "contact_email": "hello@moneyclaw.com",
+  "legal_info_url": "https://quantclaw.org"
+}
