@@ -200,6 +200,10 @@ MODULES = {
         'file': 'crypto_exchange_flow.py',
         'commands': ['exchange-flows', 'exchange-netflow', 'whale-movements', 'exchange-tvl', 'exchange-dominance']
     },
+    'cdp_carbon': {
+        'file': 'cdp_carbon_disclosure.py',
+        'commands': ['cdp-epa', 'cdp-eprtr', 'cdp-sec', 'cdp-footprint']
+    },
     'crypto_derivatives': {
         'file': 'crypto_derivatives.py',
         'commands': ['funding', 'basis', 'oi', 'arb-scan', 'snapshot']
@@ -590,6 +594,17 @@ MODULES = {
         'commands': ['rbi-dashboard', 'rbi-rates', 'rbi-forex', 'rbi-money', 'rbi-credit', 
                      'rbi-inflation', 'rbi-bop', 'rbi-banking']
     },
+    'bse_nse': {
+        'file': 'bse_nse.py',
+        'commands': ['india-sensex', 'india-nifty', 'india-nifty-bank', 'india-nifty-it', 
+                     'india-all-indices', 'india-fii-dii', 'india-breadth', 'india-gainers', 
+                     'india-losers', 'india-active', 'india-market-status', 'india-market-dashboard']
+    },
+    'bank_of_korea': {
+        'file': 'bank_of_korea.py',
+        'commands': ['bok-dashboard', 'bok-base-rate', 'bok-money', 'bok-fx-reserves', 
+                     'bok-inflation', 'bok-gdp', 'bok-current-account']
+    },
     'poland_gus': {
         'file': 'poland_gus.py',
         'commands': ['poland-indicator', 'poland-gdp', 'poland-inflation', 'poland-employment', 
@@ -710,6 +725,10 @@ MODULES = {
     'flight': {
         'file': 'flight_data.py',
         'commands': ['flight-live', 'flight-index', 'flight-regional', 'flight-report']
+    },
+    'dtcc': {
+        'file': 'dtcc_trade_reporting.py',
+        'commands': ['dtcc-swaps', 'dtcc-repo', 'dtcc-triparty', 'dtcc-lending', 'dtcc-clearing', 'dtcc-ftd', 'dtcc-risk']
     }
 }
 
@@ -1300,6 +1319,15 @@ def print_help():
     print("  python cli.py country-profile GB                  # Comprehensive BIS profile")
     print("  python cli.py countries                           # List BIS reporting countries")
     
+    print("\nDTCC Trade Reporting (Phase 696):")
+    print("  python cli.py dtcc-swaps [asset_class]            # OTC derivatives cleared volumes (rates, credit, equity, fx, commodity)")
+    print("  python cli.py dtcc-repo [days]                    # NY Fed reverse repo operations history")
+    print("  python cli.py dtcc-triparty                       # Tri-party repo market statistics")
+    print("  python cli.py dtcc-lending                        # Securities lending market data")
+    print("  python cli.py dtcc-clearing                       # Central counterparty clearing volumes")
+    print("  python cli.py dtcc-ftd [ticker]                   # SEC fails-to-deliver data")
+    print("  python cli.py dtcc-risk                           # DTCC systemic risk metrics")
+    
     print("\nCarbon Credits & Emissions (Phase 177):")
     print("  python cli.py eu-ets-price [days]                 # EU ETS carbon allowance (EUA) price history")
     print("  python cli.py global-prices                       # Current carbon prices across global compliance markets")
@@ -1307,6 +1335,14 @@ def print_help():
     print("  python cli.py emissions-by-sector [jurisdiction]  # Emissions breakdown by sector (EU, UK, USA)")
     print("  python cli.py compare-markets [market1,market2]   # Compare carbon pricing mechanisms across jurisdictions")
     print("  python cli.py offset-projects [type]              # Carbon offset project types and registries (forestry, renewable, etc.)")
+    
+    print("\nCDP Carbon Disclosure (Phase 680):")
+    print("  python cli.py cdp-epa TICKER [--year 2023]       # EPA FLIGHT facility-level emissions for US company")
+    print("  python cli.py cdp-eprtr COMPANY [--year 2021] [--country DE]")
+    print("                                                    # E-PRTR European facility emissions")
+    print("  python cli.py cdp-sec CIK [--years 3]            # Search SEC filings for climate disclosures")
+    print("  python cli.py cdp-footprint TICKER [--year 2023] [--scope3]")
+    print("                                                    # Aggregated carbon footprint from multiple sources")
     
     print("\nContainer Port Throughput (Phase 193):")
     print("  python cli.py port-all                            # All major ports (Shanghai, Rotterdam, LA/Long Beach) summary")

@@ -102,6 +102,16 @@ from tase import (
     fetch_historical_ta35
 )
 
+from bank_of_korea import (
+    get_dashboard as bok_get_dashboard,
+    get_base_rate as bok_get_base_rate,
+    get_monetary_aggregates as bok_get_money,
+    get_fx_reserves as bok_get_fx_reserves,
+    get_inflation_data as bok_get_inflation,
+    get_gdp_growth as bok_get_gdp,
+    get_current_account as bok_get_current_account
+)
+
 from reserve_bank_india import (
     RBIDataProvider,
     get_rbi_dashboard
@@ -114,6 +124,17 @@ from india_nso import (
     get_labor_stats as india_nso_get_labor,
     get_trade_balance as india_nso_get_trade,
     get_full_stats as india_nso_get_full_stats
+)
+
+from bse_nse import (
+    get_sensex,
+    get_nifty,
+    get_nifty_bank,
+    get_all_indices,
+    get_fii_dii_flows_synthetic,
+    get_market_breadth_synthetic,
+    get_market_status,
+    get_market_dashboard
 )
 
 import china_nbs
@@ -638,6 +659,8 @@ from flight_data import (
     cmd_regional,
     cmd_report
 )
+
+from dtcc_trade_reporting import DTCCTradeReporting
 
 
 class MCPServer:
@@ -1887,6 +1910,57 @@ class MCPServer:
                 'handler': self._boi_policy_history
             },
             
+            # Bank of Korea Tools (Phase 635)
+            'bok_dashboard': {
+                'description': 'Comprehensive Bank of Korea dashboard with base rate, monetary aggregates, FX reserves, inflation, GDP, and current account',
+                'parameters': {},
+                'handler': self._bok_dashboard
+            },
+            'bok_base_rate': {
+                'description': 'Get current Bank of Korea base rate (policy rate)',
+                'parameters': {},
+                'handler': self._bok_base_rate
+            },
+            'bok_money': {
+                'description': 'Get Korea M1 and M2 monetary aggregates',
+                'parameters': {},
+                'handler': self._bok_money
+            },
+            'bok_fx_reserves': {
+                'description': 'Get Korea foreign exchange reserves in USD (billions)',
+                'parameters': {},
+                'handler': self._bok_fx_reserves
+            },
+            'bok_inflation': {
+                'description': 'Get Korea CPI inflation rate',
+                'parameters': {
+                    'years': {
+                        'type': 'integer',
+                        'description': 'Number of years of history (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._bok_inflation
+            },
+            'bok_gdp': {
+                'description': 'Get Korea GDP growth rate',
+                'parameters': {
+                    'years': {
+                        'type': 'integer',
+                        'description': 'Number of years of history (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._bok_gdp
+            },
+            'bok_current_account': {
+                'description': 'Get Korea current account balance in USD (billions)',
+                'parameters': {},
+                'handler': self._bok_current_account
+            },
+            
             # India NSO/MOSPI Tools (Phase 633)
             'india_nso_gdp': {
                 'description': 'Get latest India GDP growth rate (quarterly, YoY)',
@@ -1917,6 +1991,55 @@ class MCPServer:
                 'description': 'Get comprehensive India statistics (GDP, CPI, IIP, labor, trade)',
                 'parameters': {},
                 'handler': self._india_nso_full_stats
+            },
+            
+            # BSE/NSE India Exchange Tools (Phase 634)
+            'bse_sensex': {
+                'description': 'Get BSE Sensex 30 index (Bombay Stock Exchange) - price, change, volume, 52-week range, PE ratio',
+                'parameters': {},
+                'handler': self._bse_sensex
+            },
+            'nse_nifty50': {
+                'description': 'Get NSE Nifty 50 index (National Stock Exchange) - price, change, volume, 52-week range, PE ratio',
+                'parameters': {},
+                'handler': self._nse_nifty50
+            },
+            'nse_nifty_bank': {
+                'description': 'Get Nifty Bank index - top Indian banking stocks',
+                'parameters': {},
+                'handler': self._nse_nifty_bank
+            },
+            'india_all_indices': {
+                'description': 'Get all major Indian indices (Sensex, Nifty50, Nifty Next 50, Nifty Bank, Nifty IT, BSE Midcap, BSE Smallcap)',
+                'parameters': {
+                    'period': {
+                        'type': 'string',
+                        'description': 'Data period: 1d, 5d, 1mo, 3mo, 6mo, 1y (default 1d)',
+                        'required': False,
+                        'default': '1d'
+                    }
+                },
+                'handler': self._india_all_indices
+            },
+            'india_fii_dii_flows': {
+                'description': 'Get FII/DII flows (Foreign/Domestic Institutional Investor equity flows in INR crores) - synthetic estimates',
+                'parameters': {},
+                'handler': self._india_fii_dii_flows
+            },
+            'india_market_breadth': {
+                'description': 'Get market breadth indicators - advances/declines, advance-decline ratio, delivery percentage',
+                'parameters': {},
+                'handler': self._india_market_breadth
+            },
+            'india_market_status': {
+                'description': 'Check if Indian stock markets (BSE/NSE) are currently open - market hours 9:15 AM to 3:30 PM IST Mon-Fri',
+                'parameters': {},
+                'handler': self._india_market_status
+            },
+            'india_market_dashboard': {
+                'description': 'Comprehensive India market dashboard - Sensex, Nifty, Nifty Bank, Nifty IT, FII/DII flows, breadth, market status',
+                'parameters': {},
+                'handler': self._india_market_dashboard
             },
             
             # Tel Aviv Stock Exchange (TASE) Tools (Phase 631)
@@ -6063,6 +6186,63 @@ class MCPServer:
                 'description': 'Generate comprehensive flight traffic economic indicator report',
                 'parameters': {},
                 'handler': self._flight_report
+            },
+            
+            # DTCC Trade Reporting (Phase 696)
+            'dtcc_swaps_volume': {
+                'description': 'Get OTC derivatives cleared volumes from DTCC SDR by asset class',
+                'parameters': {
+                    'asset_class': {
+                        'type': 'string',
+                        'description': 'Asset class: rates, credit, equity, fx, commodity (default: rates)',
+                        'required': False,
+                        'default': 'rates'
+                    }
+                },
+                'handler': self._dtcc_swaps_volume
+            },
+            'dtcc_repo_operations': {
+                'description': 'Get NY Fed reverse repo operations history',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days of history to fetch (default: 30)',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._dtcc_repo_operations
+            },
+            'dtcc_triparty_repo': {
+                'description': 'Get tri-party repo market statistics',
+                'parameters': {},
+                'handler': self._dtcc_triparty_repo
+            },
+            'dtcc_securities_lending': {
+                'description': 'Get securities lending market data',
+                'parameters': {},
+                'handler': self._dtcc_securities_lending
+            },
+            'dtcc_clearing_volumes': {
+                'description': 'Get central counterparty clearing volumes (DTCC NSCC/FICC, CME, LCH)',
+                'parameters': {},
+                'handler': self._dtcc_clearing_volumes
+            },
+            'dtcc_fails_to_deliver': {
+                'description': 'Get SEC fails-to-deliver data for equities',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Optional stock ticker to filter (e.g., GME, AMC)',
+                        'required': False
+                    }
+                },
+                'handler': self._dtcc_fails_to_deliver
+            },
+            'dtcc_systemic_risk': {
+                'description': 'Get DTCC systemic risk indicators (settlement volume, liquidity exposure, concentration)',
+                'parameters': {},
+                'handler': self._dtcc_systemic_risk
             }
         }
     
@@ -8632,6 +8812,35 @@ class MCPServer:
         """Handler for boi_policy_history tool"""
         return {"history": boi_get_policy_history(months)}
     
+    # Bank of Korea (BOK) Handler Methods (Phase 635)
+    def _bok_dashboard(self) -> Dict:
+        """Handler for bok_dashboard tool"""
+        return bok_get_dashboard()
+    
+    def _bok_base_rate(self) -> Dict:
+        """Handler for bok_base_rate tool"""
+        return bok_get_base_rate()
+    
+    def _bok_money(self) -> Dict:
+        """Handler for bok_money tool"""
+        return bok_get_money()
+    
+    def _bok_fx_reserves(self) -> Dict:
+        """Handler for bok_fx_reserves tool"""
+        return bok_get_fx_reserves()
+    
+    def _bok_inflation(self, years: int = 10) -> Dict:
+        """Handler for bok_inflation tool"""
+        return bok_get_inflation(years)
+    
+    def _bok_gdp(self, years: int = 10) -> Dict:
+        """Handler for bok_gdp tool"""
+        return bok_get_gdp(years)
+    
+    def _bok_current_account(self) -> Dict:
+        """Handler for bok_current_account tool"""
+        return bok_get_current_account()
+    
     # Reserve Bank of India (RBI) Handler Methods (Phase 632)
     def _rbi_dashboard(self) -> Dict:
         """Handler for rbi_dashboard tool"""
@@ -8698,6 +8907,39 @@ class MCPServer:
     def _india_nso_full_stats(self) -> Dict:
         """Handler for india_nso_full_stats tool"""
         return india_nso_get_full_stats()
+    
+    # BSE/NSE Handler Methods (Phase 634)
+    def _bse_sensex(self) -> Dict:
+        """Handler for bse_sensex tool"""
+        return get_sensex()
+    
+    def _nse_nifty50(self) -> Dict:
+        """Handler for nse_nifty50 tool"""
+        return get_nifty()
+    
+    def _nse_nifty_bank(self) -> Dict:
+        """Handler for nse_nifty_bank tool"""
+        return get_nifty_bank()
+    
+    def _india_all_indices(self, period: str = '1d') -> Dict:
+        """Handler for india_all_indices tool"""
+        return get_all_indices(period)
+    
+    def _india_fii_dii_flows(self) -> Dict:
+        """Handler for india_fii_dii_flows tool"""
+        return get_fii_dii_flows_synthetic()
+    
+    def _india_market_breadth(self) -> Dict:
+        """Handler for india_market_breadth tool"""
+        return get_market_breadth_synthetic()
+    
+    def _india_market_status(self) -> Dict:
+        """Handler for india_market_status tool"""
+        return get_market_status()
+    
+    def _india_market_dashboard(self) -> Dict:
+        """Handler for india_market_dashboard tool"""
+        return get_market_dashboard()
     
     # TASE Handler Methods (Phase 631)
     def _tase_ta35_index(self, period: str = '1d') -> Dict:
@@ -9544,6 +9786,70 @@ class MCPServer:
             tracker = FlightDataTracker()
             report = tracker.generate_report()
             return {'success': True, 'report': report}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # DTCC Trade Reporting Handlers (Phase 696)
+    def _dtcc_swaps_volume(self, asset_class: str = 'rates') -> Dict:
+        """Handler for dtcc_swaps_volume tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_swaps_volume(asset_class)
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_repo_operations(self, days: int = 30) -> Dict:
+        """Handler for dtcc_repo_operations tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_repo_operations(days)
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_triparty_repo(self) -> Dict:
+        """Handler for dtcc_triparty_repo tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_tri_party_repo()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_securities_lending(self) -> Dict:
+        """Handler for dtcc_securities_lending tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_securities_lending()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_clearing_volumes(self) -> Dict:
+        """Handler for dtcc_clearing_volumes tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_clearing_volumes()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_fails_to_deliver(self, ticker: Optional[str] = None) -> Dict:
+        """Handler for dtcc_fails_to_deliver tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_fails_to_deliver(ticker)
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dtcc_systemic_risk(self) -> Dict:
+        """Handler for dtcc_systemic_risk tool"""
+        try:
+            dtcc = DTCCTradeReporting()
+            data = dtcc.get_systemic_risk_metrics()
+            return {'success': True, 'data': data}
         except Exception as e:
             return {'success': False, 'error': str(e)}
 

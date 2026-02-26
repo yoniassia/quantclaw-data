@@ -1,0 +1,532 @@
+/* Bloomberg Terminal Theme */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --terminal-bg: #0a0e27;
+  --terminal-panel-bg: #0f1629;
+  --terminal-panel-border: #1a2340;
+  --terminal-active-border: #00d4ff;
+  --terminal-text: #e0e8f0;
+  --terminal-green: #00ff41;
+  --terminal-blue: #00d4ff;
+  --terminal-red: #ff3366;
+  --terminal-yellow: #ffd700;
+  --terminal-gap: 8px;
+  --terminal-padding: 12px;
+}
+
+.terminal-body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  font-size: 12px;
+}
+
+.terminal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--terminal-bg);
+}
+
+.terminal-topbar {
+  background: var(--terminal-panel-bg);
+  border-bottom: 2px solid var(--terminal-panel-border);
+  padding: var(--terminal-padding);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  z-index: 100;
+}
+
+.terminal-brand {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--terminal-blue);
+  text-transform: uppercase;
+}
+
+.terminal-status {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 11px;
+}
+
+.terminal-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--terminal-green);
+}
+
+.terminal-live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--terminal-green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.terminal-clock {
+  color: var(--terminal-text);
+  font-weight: 500;
+}
+
+.terminal-ticker {
+  background: var(--terminal-panel-bg);
+  border-bottom: 1px solid var(--terminal-panel-border);
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminal-ticker-scroll {
+  display: flex;
+  gap: 40px;
+  animation: scroll 30s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.terminal-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  padding: 0 16px;
+}
+
+.terminal-ticker-symbol {
+  font-weight: 700;
+  color: var(--terminal-blue);
+}
+
+.terminal-ticker-price {
+  color: var(--terminal-text);
+}
+
+.terminal-ticker-change {
+  font-weight: 600;
+}
+
+.terminal-ticker-change.positive {
+  color: var(--terminal-green);
+}
+
+.terminal-ticker-change.negative {
+  color: var(--terminal-red);
+}
+
+.terminal-grid-container {
+  flex: 1;
+  overflow: hidden;
+  padding: var(--terminal-gap);
+}
+
+.terminal-panel {
+  background: var(--terminal-panel-bg);
+  border: 1px solid var(--terminal-panel-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  transition: border-color 0.2s;
+}
+
+.terminal-panel.active {
+  border-color: var(--terminal-active-border);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.terminal-panel-header {
+  background: var(--terminal-panel-bg);
+  border-bottom: 1px solid var(--terminal-panel-border);
+  padding: 8px var(--terminal-padding);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+  height: 32px;
+}
+
+.terminal-panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--terminal-blue);
+}
+
+.terminal-panel-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.terminal-panel-button {
+  background: transparent;
+  border: none;
+  color: var(--terminal-text);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 11px;
+  transition: color 0.2s;
+}
+
+.terminal-panel-button:hover {
+  color: var(--terminal-blue);
+}
+
+.terminal-panel-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--terminal-padding);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.terminal-panel-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.terminal-panel-content::-webkit-scrollbar-track {
+  background: var(--terminal-panel-bg);
+}
+
+.terminal-panel-content::-webkit-scrollbar-thumb {
+  background: var(--terminal-panel-border);
+  border-radius: 4px;
+}
+
+.terminal-panel-content::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-active-border);
+}
+
+.terminal-command-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 14, 39, 0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 120px;
+}
+
+.terminal-command-input-container {
+  width: 100%;
+  max-width: 600px;
+  background: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-active-border);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+}
+
+.terminal-command-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--terminal-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  padding: 8px 0;
+  caret-color: var(--terminal-green);
+}
+
+.terminal-command-input::placeholder {
+  color: rgba(224, 232, 240, 0.4);
+}
+
+.terminal-command-results {
+  margin-top: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.terminal-command-result-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.terminal-command-result-item:hover,
+.terminal-command-result-item.selected {
+  background: rgba(0, 212, 255, 0.1);
+  border-left-color: var(--terminal-blue);
+}
+
+.terminal-command-result-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--terminal-text);
+  margin-bottom: 4px;
+}
+
+.terminal-command-result-desc {
+  font-size: 10px;
+  color: rgba(224, 232, 240, 0.6);
+}
+
+.terminal-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.terminal-data-table th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--terminal-panel-border);
+  font-weight: 600;
+  color: var(--terminal-blue);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.terminal-data-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(26, 35, 64, 0.5);
+}
+
+.terminal-data-table tr:hover {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.terminal-kv-table {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  font-size: 11px;
+}
+
+.terminal-kv-key {
+  color: var(--terminal-blue);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.terminal-kv-value {
+  color: var(--terminal-text);
+}
+
+.terminal-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--terminal-blue);
+  font-size: 11px;
+}
+
+.terminal-error {
+  padding: 16px;
+  background: rgba(255, 51, 102, 0.1);
+  border-left: 3px solid var(--terminal-red);
+  color: var(--terminal-red);
+  font-size: 11px;
+}
+
+.terminal-welcome {
+  padding: 24px;
+}
+
+.terminal-welcome-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--terminal-blue);
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+
+.terminal-welcome-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.terminal-welcome-stat {
+  background: rgba(0, 212, 255, 0.05);
+  padding: 16px;
+  border-left: 3px solid var(--terminal-blue);
+}
+
+.terminal-welcome-stat-label {
+  font-size: 10px;
+  color: rgba(224, 232, 240, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.terminal-welcome-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--terminal-blue);
+}
+
+.terminal-welcome-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+
+.terminal-welcome-button {
+  background: var(--terminal-panel-border);
+  border: 1px solid var(--terminal-blue);
+  color: var(--terminal-blue);
+  padding: 10px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.terminal-welcome-button:hover {
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.terminal-welcome-shortcuts {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--terminal-panel-border);
+}
+
+.terminal-welcome-shortcuts-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--terminal-blue);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.terminal-shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 11px;
+}
+
+.terminal-shortcut-key {
+  color: var(--terminal-green);
+  font-weight: 600;
+}
+
+.terminal-shortcut-desc {
+  color: rgba(224, 232, 240, 0.7);
+}
+
+.terminal-positive {
+  color: var(--terminal-green);
+}
+
+.terminal-negative {
+  color: var(--terminal-red);
+}
+
+.terminal-neutral {
+  color: var(--terminal-text);
+}
+
+.terminal-highlight {
+  color: var(--terminal-yellow);
+}
+
+/* React Grid Layout overrides */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(0, 212, 255, 0.2);
+  border: 2px dashed var(--terminal-blue);
+  border-radius: 4px;
+  opacity: 0.5;
+  transition-duration: 100ms;
+  z-index: 2;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid var(--terminal-panel-border);
+  border-bottom: 2px solid var(--terminal-panel-border);
+}
+
+.react-grid-item:hover > .react-resizable-handle::after {
+  border-color: var(--terminal-blue);
+}
+
+/* Additional animations */
+@keyframes flash-green {
+  0% {
+    background: rgba(0, 255, 65, 0.3);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+@keyframes flash-red {
+  0% {
+    background: rgba(255, 51, 102, 0.3);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.flash-green {
+  animation: flash-green 0.5s ease-out;
+}
+
+.flash-red {
+  animation: flash-red 0.5s ease-out;
+}
