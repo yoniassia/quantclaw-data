@@ -1,191 +1,74 @@
-"""
-Decentralized Science (DeSci) Tracker (Roadmap #398)
-
-Monitors decentralized science projects, funding DAOs, IP-NFTs,
-and open research initiatives using public blockchain and web data.
-"""
+"""Decentralized Science (DeSci) Tracker — monitors DeSci protocols, tokens, funding, and research DAOs."""
 
 import json
+import urllib.request
 from datetime import datetime
-from typing import Dict, List, Optional
 
 
-DESCI_PROJECTS = {
-    "VitaDAO": {
-        "focus": "longevity_research",
-        "token": "VITA",
-        "blockchain": "Ethereum",
-        "treasury_usd": 4_000_000,
-        "projects_funded": 24,
-        "governance": "token_weighted",
-        "url": "https://vitadao.com",
-    },
-    "Molecule": {
-        "focus": "ip_nft_infrastructure",
-        "description": "IP-NFT framework for on-chain IP",
-        "blockchain": "Ethereum",
-        "ip_nfts_minted": 30,
-        "url": "https://molecule.to",
-    },
-    "LabDAO": {
-        "focus": "open_compute_biotech",
-        "description": "Decentralized wet lab and compute services",
-        "blockchain": "Ethereum",
-        "url": "https://labdao.xyz",
-    },
-    "ResearchHub": {
-        "focus": "open_access_publishing",
-        "token": "RSC",
-        "description": "Incentivized open science publishing",
-        "papers_hosted": 2_000_000,
-        "url": "https://researchhub.com",
-    },
-    "DeSci Labs": {
-        "focus": "research_publishing",
-        "product": "DeSci Nodes",
-        "description": "Verifiable research object publishing",
-        "url": "https://desci.com",
-    },
-    "AthenaDAO": {
-        "focus": "womens_health_research",
-        "token": "ATH",
-        "blockchain": "Ethereum",
-        "governance": "token_weighted",
-    },
-    "PsyDAO": {
-        "focus": "psychedelics_research",
-        "blockchain": "Ethereum",
-        "governance": "token_weighted",
-    },
-    "HairDAO": {
-        "focus": "hair_loss_research",
-        "token": "HAIR",
-        "blockchain": "Ethereum",
-    },
-    "GenomesDAO": {
-        "focus": "genomic_data_ownership",
-        "token": "GENE",
-        "blockchain": "Ethereum",
-        "description": "User-owned genomic data vault",
-    },
-    "Bio Protocol": {
-        "focus": "biotech_dao_launchpad",
-        "token": "BIO",
-        "blockchain": "Ethereum",
-        "description": "Launchpad for biotech DAOs",
-        "backed_by": ["Binance Labs", "a16z crypto"],
-    },
-}
-
-DESCI_CATEGORIES = {
-    "funding_daos": "DAOs that fund scientific research via token governance",
-    "ip_nfts": "Intellectual property represented as NFTs for licensing/trading",
-    "open_publishing": "Decentralized and incentivized research publishing",
-    "data_ownership": "Platforms for user-owned scientific/health data",
-    "compute_infrastructure": "Decentralized lab/compute services for researchers",
-}
-
-
-def get_desci_landscape() -> Dict:
-    """
-    Get comprehensive overview of the DeSci ecosystem including
-    all tracked projects, categories, and aggregate metrics.
-    """
-    by_focus = {}
-    for name, proj in DESCI_PROJECTS.items():
-        focus = proj.get("focus", "other")
-        by_focus.setdefault(focus, []).append(name)
-
-    tokens = [
-        {"project": k, "token": v["token"]}
-        for k, v in DESCI_PROJECTS.items()
-        if "token" in v
+def get_desci_protocols():
+    """Return major DeSci protocols and platforms with key metrics."""
+    protocols = [
+        {"name": "VitaDAO", "token": "VITA", "focus": "Longevity Research", "treasury_usd_m": 15, "projects_funded": 25, "chain": "Ethereum"},
+        {"name": "Molecule", "token": None, "focus": "IP-NFTs / Biotech", "treasury_usd_m": 10, "projects_funded": 12, "chain": "Ethereum"},
+        {"name": "LabDAO", "token": None, "focus": "Open-Source Lab Tools", "treasury_usd_m": 3, "projects_funded": 8, "chain": "Ethereum"},
+        {"name": "ResearchHub", "token": "RSC", "focus": "Open Science Publishing", "treasury_usd_m": 5, "projects_funded": 200, "chain": "Ethereum"},
+        {"name": "AthenaDAO", "token": None, "focus": "Women's Health Research", "treasury_usd_m": 2, "projects_funded": 6, "chain": "Ethereum"},
+        {"name": "PsyDAO", "token": None, "focus": "Psychedelic Research", "treasury_usd_m": 1.5, "projects_funded": 4, "chain": "Ethereum"},
+        {"name": "ValleyDAO", "token": "GROW", "focus": "Synthetic Biology", "treasury_usd_m": 2, "projects_funded": 5, "chain": "Ethereum"},
+        {"name": "HairDAO", "token": "HAIR", "focus": "Hair Loss Research", "treasury_usd_m": 1, "projects_funded": 3, "chain": "Ethereum"},
+        {"name": "Bio Protocol", "token": "BIO", "focus": "DeSci Launchpad", "treasury_usd_m": 25, "projects_funded": 7, "chain": "Ethereum"},
+        {"name": "GenomesDAO", "token": "GENE", "focus": "Genomic Data Ownership", "treasury_usd_m": 2, "projects_funded": 3, "chain": "Ethereum"},
     ]
+    total_treasury = sum(p["treasury_usd_m"] for p in protocols)
+    return {"protocols": protocols, "total_treasury_usd_m": total_treasury, "count": len(protocols), "as_of": datetime.utcnow().isoformat()}
 
+
+def get_desci_market_overview():
+    """Return DeSci market size, growth metrics, and key trends."""
     return {
-        "total_projects": len(DESCI_PROJECTS),
-        "categories": DESCI_CATEGORIES,
-        "projects_by_focus": by_focus,
-        "tokens": tokens,
-        "market_context": {
-            "trend": "Growing interest post-2022 as Web3 meets academic frustration",
-            "key_narratives": [
-                "IP-NFTs enable tradeable intellectual property",
-                "Token-gated funding bypasses traditional grants",
-                "Open access publishing with economic incentives",
-                "Patient/citizen-owned health data",
-            ],
-        },
+        "total_market_cap_usd_m": 450,
+        "total_funding_raised_usd_m": 320,
+        "active_research_daos": 30,
+        "total_projects_funded": 280,
+        "key_trends": [
+            "IP-NFTs tokenizing biotech IP rights",
+            "Quadratic funding for open science",
+            "Data DAOs for patient-owned health data",
+            "Token-curated registries for peer review",
+            "Biotech launchpads (Bio Protocol) gaining traction",
+        ],
+        "challenges": [
+            "Regulatory uncertainty around IP-NFTs",
+            "Limited liquidity for DeSci tokens",
+            "Academic adoption still nascent",
+            "Sustainability of DAO treasury funding",
+        ],
         "as_of": datetime.utcnow().isoformat(),
     }
 
 
-def get_desci_project(project_name: str) -> Optional[Dict]:
-    """
-    Get detailed info on a specific DeSci project by name (case-insensitive partial match).
-    """
-    for name, data in DESCI_PROJECTS.items():
-        if project_name.lower() in name.lower():
-            return {"name": name, **data}
-    return None
-
-
-def desci_funding_analysis() -> Dict:
-    """
-    Analyze DeSci funding flows, treasury sizes, and research output.
-    """
-    treasuries = [
-        {"project": k, "treasury_usd": v["treasury_usd"]}
-        for k, v in DESCI_PROJECTS.items()
-        if "treasury_usd" in v
+def get_desci_tokens():
+    """Return tradeable DeSci tokens with basic market data."""
+    tokens = [
+        {"token": "VITA", "name": "VitaDAO", "chain": "Ethereum", "category": "Longevity"},
+        {"token": "RSC", "name": "ResearchCoin", "chain": "Ethereum", "category": "Publishing"},
+        {"token": "BIO", "name": "Bio Protocol", "chain": "Ethereum", "category": "Launchpad"},
+        {"token": "GENE", "name": "GenomesDAO", "chain": "Ethereum", "category": "Genomics"},
+        {"token": "GROW", "name": "ValleyDAO", "chain": "Ethereum", "category": "Synthetic Bio"},
+        {"token": "HAIR", "name": "HairDAO", "chain": "Ethereum", "category": "Hair Loss"},
+        {"token": "LAKE", "name": "Data Lake", "chain": "Ethereum", "category": "Health Data"},
     ]
-    funded_projects = sum(
-        v.get("projects_funded", 0) for v in DESCI_PROJECTS.values()
-    )
-
-    return {
-        "tracked_treasuries": treasuries,
-        "total_research_projects_funded": funded_projects,
-        "funding_mechanisms": [
-            "Token sales and treasury management",
-            "IP-NFT fractionalization (e.g., VITA-FAST)",
-            "Quadratic funding rounds",
-            "Retroactive public goods funding",
-            "Direct token-gated grants",
-        ],
-        "comparison_to_traditional": {
-            "nih_annual_budget_bn": 47,
-            "nsf_annual_budget_bn": 9.9,
-            "desci_total_deployed_est_mn": 50,
-            "note": "DeSci is <0.1% of traditional funding but growing rapidly in niche areas",
-        },
-    }
+    return {"tokens": tokens, "count": len(tokens), "note": "Use CoinGecko API for live prices", "as_of": datetime.utcnow().isoformat()}
 
 
-def desci_vs_traditional_science() -> Dict:
-    """
-    Compare DeSci approach to traditional academic publishing and funding.
-    """
-    return {
-        "traditional_pain_points": [
-            "Average 2-3 year grant application cycle",
-            "Elsevier/Springer paywalls ($30-50 per paper access)",
-            "Peer review takes 6-18 months",
-            "Reproducibility crisis (>50% of studies fail replication)",
-            "IP owned by institutions, not researchers",
-        ],
-        "desci_solutions": [
-            "DAO governance for faster funding decisions (weeks not years)",
-            "Open access by default with token incentives",
-            "Transparent on-chain peer review",
-            "Verifiable research objects (DeSci Nodes)",
-            "IP-NFTs let researchers retain and monetize IP",
-        ],
-        "challenges": [
-            "Regulatory uncertainty around token-funded research",
-            "Quality control without traditional peer review",
-            "Token price volatility affecting treasury stability",
-            "Limited adoption by mainstream researchers",
-            "Legal enforceability of IP-NFTs across jurisdictions",
-        ],
-    }
+def fetch_desci_news():
+    """Fetch recent DeSci news from free sources."""
+    try:
+        url = "https://newsapi.org/v2/everything?q=decentralized+science+OR+DeSci+OR+IP-NFT+OR+research+DAO&sortBy=publishedAt&pageSize=10&language=en&apiKey=demo"
+        req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+            articles = [{"title": a["title"], "source": a["source"]["name"], "url": a["url"]} for a in data.get("articles", [])]
+            return {"articles": articles, "count": len(articles)}
+    except Exception as e:
+        return {"articles": [], "error": str(e), "note": "Use get_desci_protocols() for offline data"}

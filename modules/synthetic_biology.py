@@ -1,195 +1,71 @@
-"""
-Synthetic Biology Market Monitor (Roadmap #400)
-
-Tracks synthetic biology companies, applications, market growth,
-and key developments using public data sources.
-"""
+"""Synthetic Biology Market Monitor — tracks synbio companies, funding, IPOs, and market trends using free data sources."""
 
 import json
-from datetime import datetime
-from typing import Dict, List, Optional
+import urllib.request
+from datetime import datetime, timedelta
 
 
-SYNBIO_COMPANIES = {
-    "Ginkgo Bioworks": {
-        "ticker": "DNA",
-        "market_cap_bn": 1.5,
-        "focus": "cell_programming_platform",
-        "founded": 2008,
-        "platform": "Foundry (automated organism design)",
-        "applications": ["pharma", "agriculture", "industrials", "government"],
-    },
-    "Twist Bioscience": {
-        "ticker": "TWST",
-        "market_cap_bn": 2.5,
-        "focus": "synthetic_dna_manufacturing",
-        "founded": 2013,
-        "platform": "Silicon-based DNA synthesis",
-    },
-    "Amyris": {
-        "status": "bankrupt_2023",
-        "focus": "bio_based_ingredients",
-        "lesson": "Scale-up costs exceeded revenue; cautionary tale",
-    },
-    "Zymergen": {
-        "status": "acquired_by_ginkgo_2022",
-        "focus": "materials_biology",
-    },
-    "Moderna": {
-        "ticker": "MRNA",
-        "market_cap_bn": 35,
-        "focus": "mrna_therapeutics",
-        "founded": 2010,
-        "applications": ["vaccines", "cancer", "rare_diseases"],
-    },
-    "BioNTech": {
-        "ticker": "BNTX",
-        "market_cap_bn": 25,
-        "focus": "mrna_therapeutics",
-        "founded": 2008,
-    },
-    "Intellia Therapeutics": {
-        "ticker": "NTLA",
-        "market_cap_bn": 3,
-        "focus": "crispr_gene_editing",
-        "founded": 2014,
-    },
-    "CRISPR Therapeutics": {
-        "ticker": "CRSP",
-        "market_cap_bn": 4,
-        "focus": "crispr_gene_editing",
-        "founded": 2013,
-        "milestone": "First CRISPR therapy approved (Casgevy) Dec 2023",
-    },
-    "Beam Therapeutics": {
-        "ticker": "BEAM",
-        "market_cap_bn": 1.5,
-        "focus": "base_editing",
-        "founded": 2017,
-    },
-    "Recursion Pharmaceuticals": {
-        "ticker": "RXRX",
-        "market_cap_bn": 3,
-        "focus": "ai_driven_drug_discovery",
-        "founded": 2013,
-        "platform": "AI + biology platform for drug discovery",
-    },
-}
-
-SYNBIO_APPLICATIONS = {
-    "therapeutics": {
-        "market_size_bn_2024": 80,
-        "growth_rate_pct": 15,
-        "examples": ["mRNA vaccines", "gene therapy", "CRISPR treatments", "cell therapy"],
-    },
-    "agriculture": {
-        "market_size_bn_2024": 12,
-        "growth_rate_pct": 12,
-        "examples": ["engineered crops", "biopesticides", "nitrogen-fixing microbes"],
-    },
-    "industrial_biotech": {
-        "market_size_bn_2024": 15,
-        "growth_rate_pct": 8,
-        "examples": ["bio-based materials", "enzymes", "biofuels"],
-    },
-    "food_tech": {
-        "market_size_bn_2024": 5,
-        "growth_rate_pct": 20,
-        "examples": ["precision fermentation", "cultivated meat", "synthetic flavors"],
-    },
-    "data_storage": {
-        "market_size_bn_2024": 0.1,
-        "growth_rate_pct": 50,
-        "examples": ["DNA data storage", "biocomputing"],
-    },
-}
-
-
-def get_synbio_overview() -> Dict:
-    """
-    Get comprehensive overview of the synthetic biology market including
-    companies, applications, and market sizing.
-    """
-    public_companies = [
-        {"name": k, "ticker": v["ticker"], "market_cap_bn": v.get("market_cap_bn")}
-        for k, v in SYNBIO_COMPANIES.items()
-        if "ticker" in v
+def get_synbio_companies():
+    """Return curated list of publicly traded synthetic biology companies with tickers and subsectors."""
+    companies = [
+        {"ticker": "TWST", "name": "Twist Bioscience", "subsector": "DNA Synthesis", "market_cap_approx": "2B"},
+        {"ticker": "CDNA", "name": "CareDx", "subsector": "Transplant Diagnostics", "market_cap_approx": "1.5B"},
+        {"ticker": "BEAM", "name": "Beam Therapeutics", "subsector": "Base Editing", "market_cap_approx": "3B"},
+        {"ticker": "CRSP", "name": "CRISPR Therapeutics", "subsector": "Gene Editing", "market_cap_approx": "4B"},
+        {"ticker": "NTLA", "name": "Intellia Therapeutics", "subsector": "Gene Editing", "market_cap_approx": "3B"},
+        {"ticker": "EDIT", "name": "Editas Medicine", "subsector": "Gene Editing", "market_cap_approx": "500M"},
+        {"ticker": "VERV", "name": "Verve Therapeutics", "subsector": "Gene Editing CVD", "market_cap_approx": "1B"},
+        {"ticker": "ZYMERGEN", "name": "Ginkgo Bioworks", "subsector": "Cell Programming", "market_cap_approx": "1B"},
+        {"ticker": "DNA", "name": "Ginkgo Bioworks", "subsector": "Cell Programming", "market_cap_approx": "1B"},
+        {"ticker": "AMRS", "name": "Amyris", "subsector": "Industrial Biotech", "market_cap_approx": "200M"},
+        {"ticker": "GEVO", "name": "Gevo Inc", "subsector": "Biofuels", "market_cap_approx": "800M"},
+        {"ticker": "BNGO", "name": "Bionano Genomics", "subsector": "Genome Mapping", "market_cap_approx": "300M"},
     ]
-    total_market = sum(a["market_size_bn_2024"] for a in SYNBIO_APPLICATIONS.values())
+    return {"companies": companies, "count": len(companies), "as_of": datetime.utcnow().isoformat()}
 
-    return {
-        "total_market_size_bn_2024": round(total_market, 1),
-        "projected_market_size_bn_2030": round(total_market * 2.5, 1),
-        "public_companies": public_companies,
-        "applications": {k: v for k, v in SYNBIO_APPLICATIONS.items()},
-        "key_milestones": [
-            "2012: CRISPR-Cas9 gene editing discovered",
-            "2020: mRNA vaccines for COVID-19",
-            "2023: First CRISPR therapy (Casgevy) approved by FDA/MHRA",
-            "2024: AI-designed proteins advancing to clinical trials",
+
+def get_synbio_market_overview():
+    """Aggregate synthetic biology market metrics and growth estimates from public sources."""
+    overview = {
+        "global_market_size_2024_usd_bn": 18.5,
+        "projected_2030_usd_bn": 65.8,
+        "cagr_pct": 23.4,
+        "key_applications": [
+            {"application": "Healthcare & Pharma", "share_pct": 35},
+            {"application": "Agriculture", "share_pct": 22},
+            {"application": "Industrial Chemicals", "share_pct": 18},
+            {"application": "Food & Nutrition", "share_pct": 12},
+            {"application": "Environment", "share_pct": 8},
+            {"application": "Other", "share_pct": 5},
         ],
+        "top_regions": ["North America (42%)", "Europe (28%)", "Asia-Pacific (22%)"],
+        "key_technologies": ["CRISPR/Cas9", "DNA Synthesis", "Metabolic Engineering", "Cell-Free Systems", "Directed Evolution"],
         "as_of": datetime.utcnow().isoformat(),
     }
+    return overview
 
 
-def get_synbio_company(company_name: str) -> Optional[Dict]:
-    """
-    Get detailed info on a specific synthetic biology company.
-    """
-    for name, data in SYNBIO_COMPANIES.items():
-        if company_name.lower() in name.lower():
-            return {"name": name, **data}
-    return None
+def fetch_synbio_news():
+    """Fetch recent synthetic biology news headlines from free RSS/API sources."""
+    try:
+        url = "https://newsapi.org/v2/everything?q=synthetic+biology+OR+gene+editing+OR+CRISPR&sortBy=publishedAt&pageSize=10&language=en&apiKey=demo"
+        req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+            articles = [{"title": a["title"], "source": a["source"]["name"], "url": a["url"], "published": a["publishedAt"]} for a in data.get("articles", [])]
+            return {"articles": articles, "count": len(articles)}
+    except Exception as e:
+        return {"articles": [], "count": 0, "error": str(e), "note": "Use get_synbio_companies() and get_synbio_market_overview() for offline data"}
 
 
-def synbio_investment_trends() -> Dict:
-    """
-    Track venture capital and public market investment in synthetic biology.
-    """
-    return {
-        "vc_funding_by_year": [
-            {"year": 2019, "funding_bn": 7.5},
-            {"year": 2020, "funding_bn": 12.0},
-            {"year": 2021, "funding_bn": 22.0},
-            {"year": 2022, "funding_bn": 15.0},
-            {"year": 2023, "funding_bn": 10.0},
-            {"year": 2024, "funding_bn": 11.5},
-        ],
-        "ipo_tracker": [
-            {"company": "Ginkgo Bioworks", "year": 2021, "method": "SPAC", "valuation_bn": 15},
-            {"company": "Recursion", "year": 2021, "method": "IPO", "valuation_bn": 3.5},
-        ],
-        "ma_activity": [
-            {"target": "Zymergen", "acquirer": "Ginkgo Bioworks", "year": 2022},
-            {"target": "Seagen", "acquirer": "Pfizer", "year": 2023, "value_bn": 43},
-        ],
-        "trend": "Post-2021 funding correction, but AI+bio convergence driving renewed interest in 2024-25",
+def get_synbio_subsector_index():
+    """Break down synthetic biology into investable subsectors with representative ETFs and stocks."""
+    subsectors = {
+        "Gene Editing": {"tickers": ["CRSP", "NTLA", "EDIT", "BEAM", "VERV"], "etf": "ARKG"},
+        "DNA Synthesis": {"tickers": ["TWST"], "etf": None},
+        "Cell Programming": {"tickers": ["DNA"], "etf": None},
+        "Biofuels & Renewables": {"tickers": ["GEVO", "AMRS"], "etf": None},
+        "Genome Mapping": {"tickers": ["BNGO"], "etf": None},
+        "Broad Genomics ETFs": {"tickers": [], "etf": "ARKG, IDNA, GNOM"},
     }
-
-
-def crispr_therapy_pipeline() -> Dict:
-    """
-    Track CRISPR and gene editing therapy pipeline and approvals.
-    """
-    return {
-        "approved_therapies": [
-            {
-                "name": "Casgevy (exagamglogene autotemcel)",
-                "companies": ["CRISPR Therapeutics", "Vertex"],
-                "indication": "Sickle cell disease, beta-thalassemia",
-                "approved": "Dec 2023",
-                "price_usd": 2_200_000,
-            },
-        ],
-        "phase_3_trials": [
-            {"name": "CTX001 expansion", "company": "CRISPR Therapeutics", "indication": "additional blood disorders"},
-            {"name": "NTLA-2001", "company": "Intellia", "indication": "transthyretin amyloidosis"},
-        ],
-        "key_challenges": [
-            "Delivery mechanisms (getting CRISPR to target cells in vivo)",
-            "Off-target editing effects",
-            "Manufacturing scale and cost ($2M+ per treatment)",
-            "Regulatory frameworks for germline editing",
-            "Ethical considerations for enhancement applications",
-        ],
-    }
+    return {"subsectors": subsectors, "timestamp": datetime.utcnow().isoformat()}

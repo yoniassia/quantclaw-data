@@ -1,195 +1,76 @@
-"""
-Fusion Energy Progress Monitor — Track global fusion energy development milestones,
-funding, reactor projects, and scientific breakthroughs.
-
-Covers ITER, Commonwealth Fusion, Helion, TAE Technologies, and public research programs.
-Uses free data from IAEA, news APIs, and public project databases.
-"""
+"""Fusion Energy Progress Monitor — tracks fusion energy companies, milestones, funding, and timeline projections."""
 
 import json
 import urllib.request
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from datetime import datetime
 
 
-# Major fusion projects database (curated, updated periodically)
-FUSION_PROJECTS = {
-    "ITER": {
-        "location": "Cadarache, France",
-        "type": "Tokamak",
-        "status": "Under Construction",
-        "first_plasma_target": "2035",
-        "budget_bn_usd": 22.0,
-        "partners": ["EU", "US", "China", "Russia", "Japan", "South Korea", "India"],
-        "milestone": "Tokamak assembly ongoing",
-    },
-    "Commonwealth Fusion Systems": {
-        "location": "Devens, MA, USA",
-        "type": "Compact Tokamak (SPARC)",
-        "status": "Development",
-        "first_plasma_target": "2026",
-        "funding_bn_usd": 2.0,
-        "milestone": "HTS magnet record 20T (2021)",
-    },
-    "Helion Energy": {
-        "location": "Everett, WA, USA",
-        "type": "Field-Reversed Configuration",
-        "status": "Development (Polaris)",
-        "first_plasma_target": "2028",
-        "funding_bn_usd": 0.577,
-        "milestone": "Microsoft PPA signed (2023)",
-    },
-    "TAE Technologies": {
-        "location": "Foothill Ranch, CA, USA",
-        "type": "Field-Reversed Configuration",
-        "status": "Development (Copernicus)",
-        "first_plasma_target": "2030",
-        "funding_bn_usd": 1.2,
-        "milestone": "Norman reactor 75M°C (2022)",
-    },
-    "Tokamak Energy": {
-        "location": "Milton Park, UK",
-        "type": "Spherical Tokamak",
-        "status": "Development",
-        "first_plasma_target": "2030",
-        "funding_bn_usd": 0.25,
-        "milestone": "ST40 100M°C achieved",
-    },
-    "General Fusion": {
-        "location": "Richmond, BC, Canada",
-        "type": "Magnetized Target Fusion",
-        "status": "Development",
-        "first_plasma_target": "2027",
-        "funding_bn_usd": 0.3,
-        "milestone": "UK demo plant announced",
-    },
-    "Zap Energy": {
-        "location": "Seattle, WA, USA",
-        "type": "Sheared-Flow Z-Pinch",
-        "status": "Development",
-        "first_plasma_target": "2030",
-        "funding_bn_usd": 0.2,
-        "milestone": "FuZE-Q prototype underway",
-    },
-    "NIF (Lawrence Livermore)": {
-        "location": "Livermore, CA, USA",
-        "type": "Inertial Confinement (Laser)",
-        "status": "Research",
-        "first_plasma_target": "N/A",
-        "funding_bn_usd": 3.5,
-        "milestone": "Net energy gain achieved Dec 2022",
-    },
-}
+def get_fusion_companies():
+    """Return major fusion energy companies with funding and technology approach."""
+    companies = [
+        {"name": "Commonwealth Fusion Systems", "hq": "USA", "funding_usd_bn": 2.0, "approach": "Tokamak (HTS magnets)", "target_year": 2030, "status": "Building SPARC"},
+        {"name": "TAE Technologies", "hq": "USA", "funding_usd_bn": 1.2, "approach": "Field-Reversed Configuration", "target_year": 2030, "status": "Copernicus machine"},
+        {"name": "Helion Energy", "hq": "USA", "funding_usd_bn": 0.6, "approach": "Magneto-Inertial", "target_year": 2028, "status": "Polaris prototype"},
+        {"name": "General Fusion", "hq": "Canada", "funding_usd_bn": 0.3, "approach": "Magnetized Target", "target_year": 2030, "status": "Demo plant UK"},
+        {"name": "Tokamak Energy", "hq": "UK", "funding_usd_bn": 0.25, "approach": "Spherical Tokamak", "target_year": 2032, "status": "ST80-HTS"},
+        {"name": "Zap Energy", "hq": "USA", "funding_usd_bn": 0.2, "approach": "Sheared-Flow Z-Pinch", "target_year": 2030, "status": "FuZE-Q"},
+        {"name": "First Light Fusion", "hq": "UK", "funding_usd_bn": 0.1, "approach": "Inertial Confinement (projectile)", "target_year": 2032, "status": "Achieved fusion"},
+        {"name": "Marvel Fusion", "hq": "Germany", "funding_usd_bn": 0.1, "approach": "Laser-Driven Inertial", "target_year": 2033, "status": "R&D phase"},
+        {"name": "ITER", "hq": "France", "funding_usd_bn": 25.0, "approach": "Tokamak (international)", "target_year": 2035, "status": "Under construction"},
+        {"name": "NIF (LLNL)", "hq": "USA", "funding_usd_bn": 3.5, "approach": "Laser Inertial", "target_year": "Research", "status": "Achieved ignition Dec 2022"},
+    ]
+    total_private = sum(c["funding_usd_bn"] for c in companies if isinstance(c["target_year"], int) and c["name"] != "ITER")
+    return {"companies": companies, "total_private_funding_usd_bn": round(total_private, 2), "count": len(companies), "as_of": datetime.utcnow().isoformat()}
 
 
-def get_fusion_projects(status_filter: Optional[str] = None) -> List[Dict]:
-    """
-    Get all tracked fusion energy projects with details.
-
-    Args:
-        status_filter: Optional filter by status (e.g., 'Development', 'Research', 'Under Construction')
-
-    Returns:
-        List of fusion project dictionaries
-    """
-    results = []
-    for name, info in FUSION_PROJECTS.items():
-        if status_filter and status_filter.lower() not in info["status"].lower():
-            continue
-        project = {"name": name, **info}
-        results.append(project)
-
-    results.sort(key=lambda x: x.get("funding_bn_usd", x.get("budget_bn_usd", 0)), reverse=True)
-    return results
+def get_fusion_milestones():
+    """Return key historical and upcoming fusion energy milestones."""
+    milestones = [
+        {"year": 1997, "event": "JET achieves 16 MW fusion power record", "significance": "High"},
+        {"year": 2021, "event": "NIF achieves burning plasma", "significance": "High"},
+        {"year": 2022, "event": "NIF achieves ignition (energy gain >1)", "significance": "Historic"},
+        {"year": 2022, "event": "JET sets new fusion energy record (59 MJ)", "significance": "High"},
+        {"year": 2023, "event": "CFS demonstrates HTS magnet at 20 Tesla", "significance": "High"},
+        {"year": 2024, "event": "First Light Fusion confirms inertial fusion via projectile", "significance": "Medium"},
+        {"year": 2025, "event": "Helion Polaris prototype expected", "significance": "High"},
+        {"year": 2028, "event": "Helion targets first commercial power", "significance": "Potential breakthrough"},
+        {"year": 2030, "event": "CFS SPARC targeted first plasma", "significance": "Potential breakthrough"},
+        {"year": 2035, "event": "ITER first plasma (delayed from 2025)", "significance": "Major"},
+    ]
+    return {"milestones": milestones, "as_of": datetime.utcnow().isoformat()}
 
 
-def get_fusion_investment_summary() -> Dict:
-    """
-    Calculate total tracked investment in fusion energy and breakdown by approach.
-
-    Returns:
-        Dictionary with total funding, by-type breakdown, and project count
-    """
-    total = 0.0
-    by_type = {}
-    by_status = {}
-
-    for name, info in FUSION_PROJECTS.items():
-        funding = info.get("funding_bn_usd", info.get("budget_bn_usd", 0))
-        total += funding
-
-        ftype = info["type"]
-        by_type[ftype] = by_type.get(ftype, 0) + funding
-
-        status = info["status"]
-        by_status[status] = by_status.get(status, 0) + funding
-
+def get_fusion_investment_trends():
+    """Track annual private investment in fusion energy."""
+    annual = [
+        {"year": 2019, "private_investment_usd_m": 300},
+        {"year": 2020, "private_investment_usd_m": 500},
+        {"year": 2021, "private_investment_usd_m": 2800},
+        {"year": 2022, "private_investment_usd_m": 4700},
+        {"year": 2023, "private_investment_usd_m": 6200},
+        {"year": 2024, "private_investment_usd_m": 7100},
+    ]
+    cumulative = sum(y["private_investment_usd_m"] for y in annual)
     return {
-        "total_investment_bn_usd": round(total, 2),
-        "project_count": len(FUSION_PROJECTS),
-        "by_technology_type": {k: round(v, 2) for k, v in sorted(by_type.items(), key=lambda x: -x[1])},
-        "by_status": {k: round(v, 2) for k, v in sorted(by_status.items(), key=lambda x: -x[1])},
-        "earliest_commercial_target": min(
-            (p.get("first_plasma_target", "9999") for p in FUSION_PROJECTS.values() if p.get("first_plasma_target", "N/A") != "N/A"),
-            default="Unknown",
-        ),
-        "timestamp": datetime.utcnow().isoformat(),
+        "annual_investment": annual,
+        "cumulative_usd_m": cumulative,
+        "total_companies_worldwide": 43,
+        "government_support_countries": ["USA", "UK", "China", "Japan", "South Korea", "EU", "Canada", "Germany"],
+        "as_of": datetime.utcnow().isoformat(),
     }
 
 
-def get_fusion_timeline() -> List[Dict]:
-    """
-    Get fusion project timeline sorted by target first plasma date.
-
-    Returns:
-        List of projects with name, type, and target dates
-    """
-    timeline = []
-    for name, info in FUSION_PROJECTS.items():
-        target = info.get("first_plasma_target", "N/A")
-        timeline.append({
-            "name": name,
-            "type": info["type"],
-            "target_first_plasma": target,
-            "status": info["status"],
-            "latest_milestone": info.get("milestone", ""),
-        })
-
-    timeline.sort(key=lambda x: x["target_first_plasma"] if x["target_first_plasma"] != "N/A" else "9999")
-    return timeline
-
-
-def search_fusion_news(query: str = "fusion energy reactor") -> List[Dict]:
-    """
-    Search for recent fusion energy news via free news APIs.
-
-    Args:
-        query: Search query string
-
-    Returns:
-        List of news article summaries
-    """
-    try:
-        url = f"https://newsdata.io/api/1/news?apikey=pub_0&q={query}&language=en&category=science,technology"
-        req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
-            articles = []
-            for item in data.get("results", [])[:10]:
-                articles.append({
-                    "title": item.get("title", ""),
-                    "source": item.get("source_id", ""),
-                    "published": item.get("pubDate", ""),
-                    "link": item.get("link", ""),
-                })
-            return articles
-    except Exception:
-        return [{"note": "News API unavailable — use get_fusion_projects() for curated data"}]
-
-
-if __name__ == "__main__":
-    print("=== Fusion Energy Progress Monitor ===")
-    summary = get_fusion_investment_summary()
-    print(f"Total tracked investment: ${summary['total_investment_bn_usd']}B across {summary['project_count']} projects")
-    for p in get_fusion_timeline():
-        print(f"  {p['target_first_plasma']}: {p['name']} ({p['type']})")
+def get_fusion_vs_fission_comparison():
+    """Compare fusion vs fission on key metrics."""
+    return {
+        "comparison": {
+            "fuel": {"fusion": "Deuterium + Tritium (seawater + lithium)", "fission": "Uranium-235 / Plutonium-239"},
+            "waste": {"fusion": "Low-level, short-lived (~100 years)", "fission": "High-level, long-lived (~100,000 years)"},
+            "meltdown_risk": {"fusion": "None (reaction stops without confinement)", "fission": "Non-zero (Chernobyl, Fukushima)"},
+            "energy_density": {"fusion": "4x fission per kg fuel", "fission": "Very high vs fossil fuels"},
+            "carbon_emissions": {"fusion": "Zero direct", "fission": "Zero direct"},
+            "commercial_status": {"fusion": "Pre-commercial (2028-2035 target)", "fission": "Mature (60+ years)"},
+            "cost_per_mwh_projected": {"fusion": "$30-50 (projected)", "fission": "$60-90 (current)"},
+        },
+        "as_of": datetime.utcnow().isoformat(),
+    }

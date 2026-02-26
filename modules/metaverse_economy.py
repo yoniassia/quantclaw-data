@@ -1,160 +1,71 @@
-"""
-Metaverse Economy Dashboard (Roadmap #397)
-
-Tracks virtual world economies, digital land markets, avatar commerce,
-and metaverse platform metrics using public data sources.
-"""
+"""Metaverse Economy Dashboard — tracks metaverse market data, virtual world metrics, and XR industry trends."""
 
 import json
+import urllib.request
 from datetime import datetime
-from typing import Dict, List, Optional
 
 
-METAVERSE_PLATFORMS = {
-    "Decentraland": {
-        "token": "MANA",
-        "land_token": "LAND",
-        "blockchain": "Ethereum",
-        "category": "crypto_native",
-        "peak_land_price_usd": 2_400_000,
-        "total_land_parcels": 90_601,
-    },
-    "The Sandbox": {
-        "token": "SAND",
-        "land_token": "LAND",
-        "blockchain": "Ethereum",
-        "category": "crypto_native",
-        "total_land_parcels": 166_464,
-    },
-    "Roblox": {
-        "ticker": "RBLX",
-        "currency": "Robux",
-        "category": "gaming",
-        "dau_millions": 70,
-        "annual_revenue_bn": 2.7,
-    },
-    "Fortnite / Epic": {
-        "category": "gaming",
-        "registered_users_millions": 400,
-        "virtual_economy_annual_bn": 5.0,
-    },
-    "Meta Horizon Worlds": {
-        "ticker": "META",
-        "category": "social",
-        "status": "early_stage",
-        "reality_labs_annual_loss_bn": 16.0,
-    },
-    "Otherside (Yuga Labs)": {
-        "token": "APE",
-        "blockchain": "Ethereum",
-        "category": "crypto_native",
-        "total_land_parcels": 200_000,
-    },
-    "Spatial": {
-        "category": "social",
-        "status": "growing",
-    },
-    "VRChat": {
-        "category": "social",
-        "monthly_active_users": 4_000_000,
-    },
-}
-
-METAVERSE_SECTORS = [
-    "virtual_real_estate",
-    "avatar_fashion_wearables",
-    "virtual_events_concerts",
-    "gaming_play_to_earn",
-    "virtual_advertising",
-    "creator_economy",
-    "enterprise_collaboration",
-    "education_training",
-]
+def get_metaverse_companies():
+    """Return publicly traded companies with significant metaverse exposure."""
+    companies = [
+        {"ticker": "META", "name": "Meta Platforms", "segment": "Reality Labs", "revenue_segment_pct": 3},
+        {"ticker": "RBLX", "name": "Roblox", "segment": "Virtual World Platform", "revenue_segment_pct": 100},
+        {"ticker": "U", "name": "Unity Software", "segment": "3D Engine / XR", "revenue_segment_pct": 100},
+        {"ticker": "SNAP", "name": "Snap Inc", "segment": "AR Lenses / Spectacles", "revenue_segment_pct": 15},
+        {"ticker": "MANA-USD", "name": "Decentraland", "segment": "Virtual Real Estate", "revenue_segment_pct": 100},
+        {"ticker": "SAND-USD", "name": "The Sandbox", "segment": "Virtual Real Estate", "revenue_segment_pct": 100},
+        {"ticker": "AXS-USD", "name": "Axie Infinity", "segment": "GameFi", "revenue_segment_pct": 100},
+        {"ticker": "AAPL", "name": "Apple", "segment": "Vision Pro / XR", "revenue_segment_pct": 1},
+        {"ticker": "MSFT", "name": "Microsoft", "segment": "Mesh / HoloLens", "revenue_segment_pct": 2},
+        {"ticker": "NVDA", "name": "NVIDIA", "segment": "Omniverse", "revenue_segment_pct": 5},
+    ]
+    return {"companies": companies, "count": len(companies), "as_of": datetime.utcnow().isoformat()}
 
 
-def get_metaverse_overview() -> Dict:
-    """
-    Get a comprehensive overview of the metaverse economy including
-    all tracked platforms, sectors, and market sizing.
-    """
-    crypto_native = [k for k, v in METAVERSE_PLATFORMS.items() if v.get("category") == "crypto_native"]
-    gaming = [k for k, v in METAVERSE_PLATFORMS.items() if v.get("category") == "gaming"]
-    social = [k for k, v in METAVERSE_PLATFORMS.items() if v.get("category") == "social"]
-
+def get_metaverse_market_size():
+    """Return metaverse market size estimates and growth projections."""
     return {
-        "platforms_tracked": len(METAVERSE_PLATFORMS),
-        "categories": {
-            "crypto_native": crypto_native,
-            "gaming": gaming,
-            "social": social,
-        },
-        "sectors": METAVERSE_SECTORS,
-        "market_size_estimate": {
-            "2024_bn_usd": 65,
-            "2030_projected_bn_usd": 936,
-            "cagr_pct": 40,
+        "global_market_2024_usd_bn": 74.4,
+        "projected_2030_usd_bn": 507.8,
+        "cagr_pct": 37.7,
+        "segments": [
+            {"name": "Gaming", "share_pct": 30, "growth": "High"},
+            {"name": "Social / Communication", "share_pct": 20, "growth": "High"},
+            {"name": "Virtual Commerce", "share_pct": 18, "growth": "Very High"},
+            {"name": "Enterprise / Collaboration", "share_pct": 15, "growth": "Medium"},
+            {"name": "Education / Training", "share_pct": 10, "growth": "Medium"},
+            {"name": "Healthcare / Therapy", "share_pct": 7, "growth": "Medium"},
+        ],
+        "hardware": {
+            "vr_headset_shipments_2024_m": 8.5,
+            "ar_glasses_shipments_2024_m": 1.2,
+            "key_devices": ["Meta Quest 3", "Apple Vision Pro", "PSVR2", "Pico 4"],
         },
         "as_of": datetime.utcnow().isoformat(),
     }
 
 
-def get_platform_detail(platform_name: str) -> Optional[Dict]:
-    """
-    Get detailed metrics for a specific metaverse platform.
-    """
-    for name, data in METAVERSE_PLATFORMS.items():
-        if platform_name.lower() in name.lower():
-            return {"name": name, **data}
-    return None
-
-
-def virtual_real_estate_metrics() -> Dict:
-    """
-    Aggregate virtual real estate market metrics across platforms.
-    """
-    total_parcels = sum(
-        p.get("total_land_parcels", 0) for p in METAVERSE_PLATFORMS.values()
-    )
-    platforms_with_land = [
-        {"name": k, "parcels": v["total_land_parcels"], "blockchain": v.get("blockchain", "N/A")}
-        for k, v in METAVERSE_PLATFORMS.items()
-        if "total_land_parcels" in v
+def get_virtual_land_metrics():
+    """Get virtual real estate metrics across major metaverse platforms."""
+    platforms = [
+        {"platform": "Decentraland", "token": "MANA", "total_parcels": 90601, "avg_price_usd": 1200, "floor_price_usd": 800},
+        {"platform": "The Sandbox", "token": "SAND", "total_parcels": 166464, "avg_price_usd": 900, "floor_price_usd": 500},
+        {"platform": "Otherside", "token": "APE", "total_parcels": 100000, "avg_price_usd": 600, "floor_price_usd": 350},
+        {"platform": "Somnium Space", "token": "CUBE", "total_parcels": 5000, "avg_price_usd": 3500, "floor_price_usd": 2000},
     ]
+    total_value = sum(p["total_parcels"] * p["avg_price_usd"] for p in platforms)
+    return {"platforms": platforms, "total_estimated_value_usd": total_value, "as_of": datetime.utcnow().isoformat()}
 
+
+def get_xr_adoption_metrics():
+    """Track XR (VR/AR/MR) hardware and software adoption trends."""
     return {
-        "total_virtual_parcels": total_parcels,
-        "platforms": platforms_with_land,
-        "market_observations": [
-            "Virtual land prices peaked in Q1 2022 during metaverse hype",
-            "Floor prices dropped 80-95% from peaks by 2024",
-            "Institutional interest shifted to utility-based virtual spaces",
-            "Enterprise metaverse (training/collab) growing faster than consumer",
-        ],
-    }
-
-
-def metaverse_investment_landscape() -> Dict:
-    """
-    Track corporate and VC investment in metaverse technologies.
-    """
-    return {
-        "major_corporate_bets": [
-            {"company": "Meta", "investment_bn": 46, "period": "2020-2025", "focus": "VR/AR hardware + Horizon"},
-            {"company": "Epic Games", "investment_bn": 4, "period": "2020-2025", "focus": "Unreal Engine + Fortnite"},
-            {"company": "Microsoft", "investment_bn": 69, "period": "2022", "focus": "Activision acquisition (gaming)"},
-            {"company": "Apple", "investment_bn": 2, "period": "2023-2025", "focus": "Vision Pro spatial computing"},
-        ],
-        "vc_funding_trend": [
-            {"year": 2021, "funding_bn": 13.0},
-            {"year": 2022, "funding_bn": 7.0},
-            {"year": 2023, "funding_bn": 3.5},
-            {"year": 2024, "funding_bn": 2.0},
-        ],
-        "key_enablers": [
-            "VR/AR headset adoption curve",
-            "5G/6G bandwidth for streaming",
-            "AI-generated 3D content",
-            "Blockchain interoperability for digital assets",
-            "Spatial computing (Apple Vision Pro effect)",
-        ],
+        "vr_monthly_active_users_m": 35,
+        "ar_daily_active_users_m": 200,
+        "steam_vr_pct_users": 1.8,
+        "top_vr_apps": ["Beat Saber", "VRChat", "Gorilla Tag", "Resident Evil 4 VR", "Half-Life: Alyx"],
+        "enterprise_adoption_pct_fortune500": 22,
+        "developer_count_estimate": 500000,
+        "investment_2024_usd_bn": 12.5,
+        "as_of": datetime.utcnow().isoformat(),
     }
