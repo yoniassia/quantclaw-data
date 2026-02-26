@@ -795,7 +795,7 @@ export const additionalPhases = [
   { id: 688, name: "App Download Trends", description: "Mobile app installs as company growth proxy. Weekly.", status: "done" as const, category: "Alternative Data", loc: 485 },
   { id: 689, name: "AIS Vessel Tracking", description: "Ship positions, port congestion, trade flows. Daily.", status: "done" as const, category: "Alternative Data", loc: 565 },
   { id: 690, name: "Flight Radar Economic", description: "Air traffic volumes as economic activity proxy. Daily.", status: "done" as const, category: "Alternative Data", loc: 495 },
-  { id: 691, name: "Nighttime Lights Satellite", description: "VIIRS satellite lights as GDP/urbanization proxy. Monthly.", status: "done" as const, category: "Alternative Data", loc: 530 },
+  { id: 691, name: "Nighttime Lights Satellite", description: "VIIRS satellite lights as GDP/urbanization proxy. Monthly.", status: "done" as const, category: "Alternative Data", loc: 269 },
   { id: 692, name: "OECD MEI Indicators", description: "Main Economic Indicators, CLI, BCI for 38 countries. Monthly.", status: "done" as const, category: "Global Macro", loc: 510 },
   { id: 693, name: "OECD TiVA Trade", description: "Trade in Value Added, GVC participation. Annual.", status: "done" as const, category: "Global Macro", loc: 475 },
   { id: 694, name: "BIS Property Prices", description: "Residential/commercial property prices, 60 countries. Quarterly.", status: "done" as const, category: "Global Macro", loc: 490 },

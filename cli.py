@@ -96,6 +96,10 @@ MODULES = {
         'file': 'satellite_proxies.py',
         'commands': ['satellite-proxy', 'shipping-index', 'construction-activity', 'foot-traffic', 'economic-index']
     },
+    'nighttime_lights': {
+        'file': 'nighttime_lights_satellite.py',
+        'commands': ['lights-country', 'lights-region', 'lights-compare', 'lights-trend']
+    },
     'fed_policy': {
         'file': 'fed_policy.py',
         'commands': ['fed-watch', 'rate-probability', 'fomc-calendar', 'dot-plot', 'yield-curve', 'current-rate']
@@ -1317,3 +1321,11 @@ def print_help():
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
+
+    print("\nNighttime Lights Satellite (Phase 691):")
+    print("  python cli.py lights-country <CODE> [--year YYYY] # Country nighttime lights intensity")
+    print("  python cli.py lights-region --lat <LAT> --lon <LON> [--radius KM]")
+    print("                                                    # Regional lights around coordinates")
+    print("  python cli.py lights-compare <CODE1,CODE2,...>    # Compare countries by radiance")
+    print("  python cli.py lights-trend <CODE> --years YYYY-YYYY")
+    print("                                                    # Multi-year economic activity trend")

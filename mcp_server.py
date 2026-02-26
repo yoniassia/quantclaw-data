@@ -5834,6 +5834,89 @@ class MCPServer:
                     }
                 },
                 'handler': self._sse_northbound
+            },
+            'nighttime_lights_country': {
+                'description': 'Get VIIRS nighttime lights data for a country as economic activity proxy',
+                'parameters': {
+                    'country_code': {
+                        'type': 'string',
+                        'description': 'ISO 3-letter country code (USA, CHN, IND, etc.)',
+                        'required': True
+                    },
+                    'year': {
+                        'type': 'integer',
+                        'description': 'Year for data (default 2024)',
+                        'required': False,
+                        'default': 2024
+                    }
+                },
+                'handler': self._nighttime_lights_country
+            },
+            'nighttime_lights_region': {
+                'description': 'Get nighttime lights for a specific geographic region',
+                'parameters': {
+                    'latitude': {
+                        'type': 'number',
+                        'description': 'Latitude of region center',
+                        'required': True
+                    },
+                    'longitude': {
+                        'type': 'number',
+                        'description': 'Longitude of region center',
+                        'required': True
+                    },
+                    'radius_km': {
+                        'type': 'integer',
+                        'description': 'Radius in kilometers (default 50)',
+                        'required': False,
+                        'default': 50
+                    },
+                    'year': {
+                        'type': 'integer',
+                        'description': 'Year for data (default 2024)',
+                        'required': False,
+                        'default': 2024
+                    }
+                },
+                'handler': self._nighttime_lights_region
+            },
+            'nighttime_lights_compare': {
+                'description': 'Compare nighttime lights intensity across multiple countries',
+                'parameters': {
+                    'country_codes': {
+                        'type': 'array',
+                        'description': 'List of ISO 3-letter country codes to compare',
+                        'required': True
+                    },
+                    'year': {
+                        'type': 'integer',
+                        'description': 'Year for comparison (default 2024)',
+                        'required': False,
+                        'default': 2024
+                    }
+                },
+                'handler': self._nighttime_lights_compare
+            },
+            'nighttime_lights_trend': {
+                'description': 'Get multi-year nighttime lights trend for economic development tracking',
+                'parameters': {
+                    'country_code': {
+                        'type': 'string',
+                        'description': 'ISO 3-letter country code',
+                        'required': True
+                    },
+                    'start_year': {
+                        'type': 'integer',
+                        'description': 'Start year for trend',
+                        'required': True
+                    },
+                    'end_year': {
+                        'type': 'integer',
+                        'description': 'End year for trend',
+                        'required': True
+                    }
+                },
+                'handler': self._nighttime_lights_trend
             }
         }
     
@@ -9167,6 +9250,48 @@ class MCPServer:
         """Handler for sse_northbound tool"""
         try:
             result = get_northbound_flow(days=days)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # Nighttime Lights Satellite Handlers (Phase 691)
+    def _nighttime_lights_country(self, country_code: str, year: int = 2024) -> Dict:
+        """Handler for nighttime_lights_country tool"""
+        try:
+            from modules.nighttime_lights_satellite import NighttimeLightsSatellite
+            lights = NighttimeLightsSatellite()
+            result = lights.get_country_lights(country_code, year)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _nighttime_lights_region(self, latitude: float, longitude: float, 
+                                 radius_km: int = 50, year: int = 2024) -> Dict:
+        """Handler for nighttime_lights_region tool"""
+        try:
+            from modules.nighttime_lights_satellite import NighttimeLightsSatellite
+            lights = NighttimeLightsSatellite()
+            result = lights.get_regional_lights(latitude, longitude, radius_km, year)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _nighttime_lights_compare(self, country_codes: List[str], year: int = 2024) -> Dict:
+        """Handler for nighttime_lights_compare tool"""
+        try:
+            from modules.nighttime_lights_satellite import NighttimeLightsSatellite
+            lights = NighttimeLightsSatellite()
+            result = lights.compare_countries(country_codes, year)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _nighttime_lights_trend(self, country_code: str, start_year: int, end_year: int) -> Dict:
+        """Handler for nighttime_lights_trend tool"""
+        try:
+            from modules.nighttime_lights_satellite import NighttimeLightsSatellite
+            lights = NighttimeLightsSatellite()
+            result = lights.get_trend(country_code, start_year, end_year)
             return {'success': True, 'data': result}
         except Exception as e:
             return {'success': False, 'error': str(e)}
