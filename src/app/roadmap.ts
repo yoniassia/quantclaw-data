@@ -733,7 +733,7 @@ export const phases: Phase[] = [
 
 // Additional phases to reach 699
 export const additionalPhases = [
-  { id: 629, name: "Bank of Israel Dashboard", description: "BOI rates, FX reserves, monetary policy. Monthly.", status: "done" as const, category: "Country Stats", loc: 510 },
+  { id: 629, name: "Bank of Israel Dashboard", description: "BOI rates, FX reserves, monetary policy. Monthly.", status: "done" as const, category: "Country Stats", loc: 269 },
   { id: 630, name: "Israel CBS Statistics", description: "CPI, labor, trade, industrial production. Monthly.", status: "done" as const, category: "Country Stats", loc: 485 },
   { id: 631, name: "Tel Aviv Stock Exchange", description: "TASE indices, listings, corporate actions. Daily.", status: "done" as const, category: "Exchange Data", loc: 540 },
   { id: 632, name: "Reserve Bank of India", description: "RBI rates, forex, banking stats. Monthly.", status: "done" as const, category: "Country Stats", loc: 520 },

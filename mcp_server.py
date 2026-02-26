@@ -85,6 +85,15 @@ from boj import (
     get_boj_meeting_schedule
 )
 
+from bank_of_israel_dashboard import (
+    get_dashboard as boi_get_dashboard,
+    get_policy_rate as boi_get_policy_rate,
+    get_fx_reserves as boi_get_fx_reserves,
+    get_exchange_rates as boi_get_exchange_rates,
+    get_inflation_data as boi_get_inflation_data,
+    get_monetary_policy_history as boi_get_policy_history
+)
+
 import china_nbs
 
 from em_sovereign_spreads import (
@@ -1801,6 +1810,45 @@ class MCPServer:
                 'description': 'Get BOJ Monetary Policy Meeting (MPM) schedule - 8 meetings per year',
                 'parameters': {},
                 'handler': self._boj_meeting_schedule
+            },
+            
+            # Bank of Israel Dashboard Tools (Phase 629)
+            'boi_dashboard': {
+                'description': 'Comprehensive Bank of Israel dashboard with policy rate, FX reserves, exchange rates, inflation, and unemployment',
+                'parameters': {},
+                'handler': self._boi_dashboard
+            },
+            'boi_policy_rate': {
+                'description': 'Get current Bank of Israel policy interest rate',
+                'parameters': {},
+                'handler': self._boi_policy_rate
+            },
+            'boi_fx_reserves': {
+                'description': 'Get Israel foreign exchange reserves in USD (billions)',
+                'parameters': {},
+                'handler': self._boi_fx_reserves
+            },
+            'boi_exchange_rates': {
+                'description': 'Get ILS exchange rates vs USD and EUR',
+                'parameters': {},
+                'handler': self._boi_exchange_rates
+            },
+            'boi_inflation': {
+                'description': 'Get Israel CPI index, year-over-year inflation rate, and inflation target',
+                'parameters': {},
+                'handler': self._boi_inflation
+            },
+            'boi_policy_history': {
+                'description': 'Get historical Bank of Israel policy rate decisions',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months of history (default 24)',
+                        'required': False,
+                        'default': 24
+                    }
+                },
+                'handler': self._boi_policy_history
             },
             
             # Index Reconstitution Tracker Tools (Phase 136)
@@ -8243,6 +8291,33 @@ class MCPServer:
     def _boj_meeting_schedule(self) -> Dict:
         """Handler for boj_meeting_schedule tool"""
         return get_boj_meeting_schedule()
+    
+    # Bank of Israel Dashboard Handler Methods (Phase 629)
+    def _boi_dashboard(self) -> Dict:
+        """Handler for boi_dashboard tool"""
+        return boi_get_dashboard()
+    
+    def _boi_policy_rate(self) -> Dict:
+        """Handler for boi_policy_rate tool"""
+        rate = boi_get_policy_rate()
+        from datetime import datetime
+        return {"policy_rate_pct": rate, "updated": datetime.now().isoformat()}
+    
+    def _boi_fx_reserves(self) -> Dict:
+        """Handler for boi_fx_reserves tool"""
+        return boi_get_fx_reserves()
+    
+    def _boi_exchange_rates(self) -> Dict:
+        """Handler for boi_exchange_rates tool"""
+        return boi_get_exchange_rates()
+    
+    def _boi_inflation(self) -> Dict:
+        """Handler for boi_inflation tool"""
+        return boi_get_inflation_data()
+    
+    def _boi_policy_history(self, months: int = 24) -> Dict:
+        """Handler for boi_policy_history tool"""
+        return {"history": boi_get_policy_history(months)}
     
     # Index Reconstitution Tracker Handler Methods (Phase 136)
     def _index_sp500_changes(self, days: int = 365) -> Dict:

@@ -569,6 +569,10 @@ MODULES = {
         'file': 'israel_cbs.py',
         'commands': ['israel-gdp', 'israel-cpi', 'israel-housing', 'israel-tech-exports', 'israel-dashboard']
     },
+    'bank_of_israel': {
+        'file': 'bank_of_israel_dashboard.py',
+        'commands': ['boi-dashboard', 'boi-policy-rate', 'boi-fx-reserves', 'boi-exchange-rates', 'boi-inflation', 'boi-policy-history']
+    },
     'poland_gus': {
         'file': 'poland_gus.py',
         'commands': ['poland-indicator', 'poland-gdp', 'poland-inflation', 'poland-employment', 
