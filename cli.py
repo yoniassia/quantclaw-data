@@ -585,6 +585,11 @@ MODULES = {
         'file': 'tase.py',
         'commands': ['tase-index', 'tase-stock', 'tase-summary', 'tase-sectors', 'tase-history']
     },
+    'reserve_bank_india': {
+        'file': 'reserve_bank_india.py',
+        'commands': ['rbi-dashboard', 'rbi-rates', 'rbi-forex', 'rbi-money', 'rbi-credit', 
+                     'rbi-inflation', 'rbi-bop', 'rbi-banking']
+    },
     'poland_gus': {
         'file': 'poland_gus.py',
         'commands': ['poland-indicator', 'poland-gdp', 'poland-inflation', 'poland-employment', 

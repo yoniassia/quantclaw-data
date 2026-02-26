@@ -102,6 +102,11 @@ from tase import (
     fetch_historical_ta35
 )
 
+from reserve_bank_india import (
+    RBIDataProvider,
+    get_rbi_dashboard
+)
+
 from india_nso import (
     get_latest_gdp as india_nso_get_gdp,
     get_latest_cpi as india_nso_get_cpi,
@@ -1953,6 +1958,62 @@ class MCPServer:
                 'description': 'Sector performance analysis for Israeli stocks - Technology, Healthcare, Financials, etc.',
                 'parameters': {},
                 'handler': self._tase_sector_performance
+            },
+            
+            # Reserve Bank of India (RBI) Tools (Phase 632)
+            'rbi_dashboard': {
+                'description': 'Comprehensive RBI dashboard - policy rates, forex reserves, monetary aggregates, credit growth, inflation, BOP, banking sector',
+                'parameters': {},
+                'handler': self._rbi_dashboard
+            },
+            'rbi_policy_rates': {
+                'description': 'Get current RBI policy rates - repo, reverse repo, CRR, SLR, MSF, bank rate',
+                'parameters': {},
+                'handler': self._rbi_policy_rates
+            },
+            'rbi_forex_reserves': {
+                'description': 'Get India foreign exchange reserves (weekly data) - total, FCA, gold, SDRs, IMF tranche',
+                'parameters': {
+                    'weeks': {
+                        'type': 'integer',
+                        'description': 'Number of weeks of historical data (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._rbi_forex_reserves
+            },
+            'rbi_monetary_aggregates': {
+                'description': 'Get monetary aggregates - M0, M1, M2, M3, M4 money supply',
+                'parameters': {},
+                'handler': self._rbi_monetary_aggregates
+            },
+            'rbi_credit_growth': {
+                'description': 'Get bank credit and deposit growth rates (YoY) - non-food credit, deposits, credit-deposit ratio',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months of historical data (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._rbi_credit_growth
+            },
+            'rbi_inflation': {
+                'description': 'Get RBI inflation metrics - CPI (headline, food, core), WPI, inflation target',
+                'parameters': {},
+                'handler': self._rbi_inflation
+            },
+            'rbi_balance_of_payments': {
+                'description': 'Get India Balance of Payments - current account, trade balance, services, remittances, capital account, FDI, FPI',
+                'parameters': {},
+                'handler': self._rbi_balance_of_payments
+            },
+            'rbi_banking_sector': {
+                'description': 'Get banking sector health indicators - NPAs, capital adequacy, profitability, number of banks',
+                'parameters': {},
+                'handler': self._rbi_banking_sector
             },
             
             # Index Reconstitution Tracker Tools (Phase 136)
@@ -8570,6 +8631,48 @@ class MCPServer:
     def _boi_policy_history(self, months: int = 24) -> Dict:
         """Handler for boi_policy_history tool"""
         return {"history": boi_get_policy_history(months)}
+    
+    # Reserve Bank of India (RBI) Handler Methods (Phase 632)
+    def _rbi_dashboard(self) -> Dict:
+        """Handler for rbi_dashboard tool"""
+        return get_rbi_dashboard()
+    
+    def _rbi_policy_rates(self) -> Dict:
+        """Handler for rbi_policy_rates tool"""
+        rbi = RBIDataProvider()
+        return rbi.get_policy_rates()
+    
+    def _rbi_forex_reserves(self, weeks: int = 12) -> Dict:
+        """Handler for rbi_forex_reserves tool"""
+        rbi = RBIDataProvider()
+        reserves = rbi.get_forex_reserves()
+        return {"reserves": reserves[:weeks]}
+    
+    def _rbi_monetary_aggregates(self) -> Dict:
+        """Handler for rbi_monetary_aggregates tool"""
+        rbi = RBIDataProvider()
+        return rbi.get_monetary_aggregates()
+    
+    def _rbi_credit_growth(self, months: int = 12) -> Dict:
+        """Handler for rbi_credit_growth tool"""
+        rbi = RBIDataProvider()
+        growth = rbi.get_credit_growth()
+        return {"credit_growth": growth[:months]}
+    
+    def _rbi_inflation(self) -> Dict:
+        """Handler for rbi_inflation tool"""
+        rbi = RBIDataProvider()
+        return rbi.get_inflation_data()
+    
+    def _rbi_balance_of_payments(self) -> Dict:
+        """Handler for rbi_balance_of_payments tool"""
+        rbi = RBIDataProvider()
+        return rbi.get_balance_of_payments()
+    
+    def _rbi_banking_sector(self) -> Dict:
+        """Handler for rbi_banking_sector tool"""
+        rbi = RBIDataProvider()
+        return rbi.get_banking_sector_stats()
     
     # India NSO/MOSPI Handler Methods (Phase 633)
     def _india_nso_gdp(self) -> Dict:
