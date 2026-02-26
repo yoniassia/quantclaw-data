@@ -611,6 +611,12 @@ from auto_sales_ev import (
     get_comprehensive_auto_report
 )
 
+from shanghai_stock_exchange import (
+    get_sse_index,
+    get_margin_trading,
+    get_northbound_flow
+)
+
 
 class MCPServer:
     """MCP Server for QuantClaw Data"""
@@ -5799,6 +5805,35 @@ class MCPServer:
                     }
                 },
                 'handler': self._papers_report
+            },
+            'sse_index': {
+                'description': 'Get Shanghai Stock Exchange Composite Index (000001.SS) historical data',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days of historical data (default 30)',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._sse_index
+            },
+            'sse_margin': {
+                'description': 'Get Shanghai Stock Exchange margin trading data (simulated)',
+                'parameters': {},
+                'handler': self._sse_margin
+            },
+            'sse_northbound': {
+                'description': 'Get Stock Connect northbound flow data (mainland → HK → A-shares)',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days to analyze (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._sse_northbound
             }
         }
     
@@ -9111,6 +9146,30 @@ class MCPServer:
                 'error': str(e),
                 'tool': tool_name
             }
+    
+    def _sse_index(self, days: int = 30) -> Dict:
+        """Handler for sse_index tool"""
+        try:
+            result = get_sse_index(days=days)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _sse_margin(self) -> Dict:
+        """Handler for sse_margin tool"""
+        try:
+            result = get_margin_trading()
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _sse_northbound(self, days: int = 10) -> Dict:
+        """Handler for sse_northbound tool"""
+        try:
+            result = get_northbound_flow(days=days)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
     
     def handle_request(self, request: Dict) -> Dict:
         """Handle MCP request"""

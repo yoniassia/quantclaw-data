@@ -689,6 +689,10 @@ MODULES = {
     'academic_papers': {
         'file': 'academic_papers.py',
         'commands': ['papers-latest', 'papers-search', 'papers-trending', 'papers-by-author', 'papers-report']
+    },
+    'sse': {
+        'file': 'shanghai_stock_exchange.py',
+        'commands': ['sse-index', 'sse-margin', 'sse-northbound']
     }
 }
 
