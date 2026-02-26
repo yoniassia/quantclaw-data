@@ -1,245 +1,105 @@
-# 📈 QuantClaw Data
+# 📈 QuantClaw Data — AI-Built Financial Intelligence Platform
 
-**The open financial intelligence platform.** 208 modules built, 400 planned, 210 CLI commands, 200+ REST APIs, 210 MCP tools.
+> **699 modules. 112 data sources. 354K+ lines of code. $0/month. Built autonomously by AI agents.**
 
-> Built autonomously by AI agents. 150,000+ lines of code. 162 data sources. Zero API keys required for core features.
-
-📡 **NEW: [Signal Discovery & Correlation APIs →](docs/SIGNALS_AND_CORRELATIONS.md)** — 15 signal modules, cross-module correlation search, factor strategies, regime detection
-
-🌐 **Live:** [data.quantclaw.org](https://data.quantclaw.org)
-📦 **ClawHub:** `clawhub install quantclaw-data`
-📖 **GitHub:** [github.com/yoniassia/quantclaw-data](https://github.com/yoniassia/quantclaw-data)
+🌐 **Live**: [quantclaw.org](https://quantclaw.org) | 📊 **Dashboard**: [data.quantclaw.org](https://data.quantclaw.org)
 
 ---
 
-## 📊 Stats
+## What is QuantClaw Data?
 
-| Metric | Count |
+QuantClaw Data is an open financial intelligence platform where AI agents build, test, and deploy data modules autonomously. Every 30 minutes, a build agent creates new modules, expanding the platform's capabilities without human intervention.
+
+## 🔢 By the Numbers
+
+| Metric | Value |
 |--------|-------|
-| Lines of Code | 150,000+ |
-| Python Modules | 208 |
-| Next.js API Routes | 200+ |
-| MCP Tools | 210 |
-| CLI Commands | 210 |
-| Unique Data Sources | 162 |
-| Signal Modules | 15 |
-| Quant Strategies | 14 |
-| Phases Complete | 208/400 |
+| **Modules** | 699 |
+| **Data Sources** | 112 (40+ countries) |
+| **Lines of Code** | 354,050 |
+| **REST API Endpoints** | 235+ |
+| **Cost** | $0/month |
+| **API Keys Required** | 0 |
 
----
+## 🌍 Global Coverage
 
-## ⚡ Quick Start
+Central banks & statistics agencies from 40+ countries:
 
-```bash
-# Install via ClawHub (for OpenClaw agents)
-clawhub install quantclaw-data
+🇺🇸 US (FRED, SEC, BLS, Census) · 🇪🇺 EU (ECB, Eurostat) · 🇯🇵 Japan (BOJ, e-Stat, JPX) · 🇨🇳 China (PBOC, NBS, SSE, SZSE) · 🇮🇳 India (RBI, NSO, BSE/NSE) · 🇰🇷 Korea (BOK, KRX) · 🇦🇺 Australia (RBA, ABS, ASX) · 🇨🇦 Canada (BOC, StatCan) · 🇬🇧 UK (LSE) · 🇩🇪 Germany (Eurex) · 🇮🇱 Israel (BOI, CBS, TASE) · 🇷🇺 Russia (CBR, MOEX) · 🇧🇷 Brazil (BCB) · 🇲🇽 Mexico (Banxico, INEGI) · 🇸🇬 Singapore (MAS) · 🇭🇰 Hong Kong (HKMA) · 🇨🇭 Switzerland (SNB) · 🇿🇦 South Africa (SARB) · 🇸🇦 Saudi Arabia (SAMA) · 🇮🇩 Indonesia (BI) · 🇹🇼 Taiwan (CBC) · 🇵🇭 Philippines (BSP) · 🇨🇱 Chile · 🇨🇴 Colombia · 🇪🇬 Egypt · 🇲🇾 Malaysia · 🇻🇳 Vietnam · 🇹🇭 Thailand · 🇳🇬 Nigeria · 🇦🇷 Argentina · 🇵🇱 Poland
 
-# Or clone manually
-git clone https://github.com/yoniassia/quantclaw-data.git
-cd quantclaw-data
+Plus: IMF, World Bank, OECD, BIS, WTO, ILO, FAO, WHO, IEA, UNCTAD, UNIDO, IRENA
 
-# Install dependencies
-pip install yfinance numpy scipy pandas statsmodels pandas-datareader requests beautifulsoup4
+## 📦 Module Categories
 
-# Try it
-python cli.py price AAPL
-python cli.py technicals TSLA
-python cli.py monte-carlo SPY --simulations 10000
-python cli.py fama-french NVDA
-python cli.py screener --sector Technology --min-cap 10B
-```
+- **Market Data** — Prices, options, technicals, screeners
+- **Fixed Income** — Treasuries, corporates, munis, repo rates
+- **Derivatives** — CME, Cboe, ICE, DTCC, options analytics
+- **Crypto** — CoinGecko, DeFi Llama, Glassnode, L2Beat
+- **Global Macro** — FRED, central banks, yield curves
+- **Country Stats** — 40+ national statistics agencies
+- **Exchange Data** — JPX, LSE, SSE, SZSE, KRX, ASX, MOEX, TASE
+- **Alt Data** — Satellite, shipping, flights, patents, congress trades
+- **ESG & Climate** — CDP, carbon credits, EU taxonomy, deforestation
+- **Quant** — Fama-French, Monte Carlo, backtesting, optimization
+- **Intelligence** — NLP, sentiment, research synthesis
+- **Commodities** — Oil, gas, agriculture, metals, rare earths
 
----
+## 🔌 Integration
 
-## 🔌 4 Access Methods
-
-### 1. CLI (210 commands)
-```bash
-python cli.py price AAPL                    # Real-time price
-python cli.py technicals TSLA               # RSI, MACD, Bollinger
-python cli.py options AAPL                  # Options chain + Greeks
-python cli.py monte-carlo SPY              # Monte Carlo simulation
-python cli.py fama-french AAPL             # Factor regression
-python cli.py congress AAPL                # Congressional trades
-python cli.py bonds yield-curve            # Treasury yield curve
-python cli.py crypto bitcoin               # Crypto prices
-python cli.py forex EUR/USD                # Forex rates
-python cli.py smart-money AAPL             # Institutional flow
-```
-
-### 2. REST API (54 endpoints)
-```bash
-# Base: https://data.quantclaw.org/api/v1
-curl "https://data.quantclaw.org/api/v1/prices?ticker=AAPL"
-curl "https://data.quantclaw.org/api/v1/monte-carlo?symbol=SPY&simulations=1000"
-curl "https://data.quantclaw.org/api/v1/fama-french?ticker=NVDA"
-curl "https://data.quantclaw.org/api/v1/pairs?symbol1=KO&symbol2=PEP"
-curl "https://data.quantclaw.org/api/v1/cds?action=credit-spreads"
-```
-
-### 3. MCP Server (for AI agents)
+### MCP (AI Agents)
 ```json
 {
   "mcpServers": {
     "quantclaw-data": {
-      "command": "node",
-      "args": ["mcp-server.js"],
-      "cwd": "/path/to/quantclaw-data"
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "env": { "CACHE_DIR": "/tmp/quantclaw-cache" }
     }
   }
 }
 ```
 
-### 4. Web Dashboard
-Browse all modules with interactive cards at [data.quantclaw.org](https://data.quantclaw.org)
+### REST API
+```
+GET https://data.quantclaw.org/api/v1/{tool}?ticker={SYMBOL}
+```
+No authentication required.
 
----
-
-## 📦 Module Categories
-
-| Category | Modules | Examples |
-|----------|---------|---------|
-| 📊 Core Market Data | 20+ | Prices, profiles, screener, technicals, multi-timeframe |
-| 📈 Derivatives & Options | 15+ | Options flow, GEX, vol surface, Greeks, pin risk |
-| 🧮 Quantitative | 30+ | Fama-French, Monte Carlo, Kalman, Black-Litterman, pairs |
-| 🏦 Fixed Income & Macro | 25+ | Yield curves, CDS, Fed policy, inflation, PBOC, ECB |
-| 🔍 Alternative Data | 25+ | Satellite, dark pool, insider, patents, Congress trades |
-| 📰 Corporate Events | 15+ | Earnings, M&A, buybacks, activist, proxy fights |
-| 🤖 Intelligence & NLP | 20+ | News sentiment, filing analysis, AI earnings, FinBERT |
-| 🌍 Multi-Asset | 20+ | Crypto, FX cross rates, commodities, sector rotation |
-| ⚙️ Infrastructure | 10+ | Alerts, backtest, reconciliation, PDF export, streaming |
-
----
-
-## 📡 Data Sources (187)
-
-**Top sources by reference count:**
-| Source | Type | References |
-|--------|------|-----------|
-| FRED (St. Louis Fed) | Macro/rates | 654 |
-| US Treasury | Fixed income | 265 |
-| Yahoo Finance | Market data | 197 |
-| OPEC | Commodities | 171 |
-| IMF | Global macro | 108 |
-| SEC EDGAR | Regulatory | 76 |
-| USDA | Agriculture | 99 |
-| Eurostat | EU macro | 50 |
-| CFTC | Positioning | 32 |
-| EIA | Energy | 31 |
-| ECB | EU rates | 29 |
-| Census Bureau | Demographics | 21 |
-| BLS | Labor | 5 |
-
-**Plus:** World Bank, CoinGecko, DeFi Llama, Binance, BOJ, PBOC, OECD, FAO, IEA, LME, arXiv, USPTO, NOAA, Polygon, Finnhub, Alpaca, MSRB, CAISO, and 150+ more.
-
----
-
-## 🗺️ Roadmap
-
-### ✅ Phases 1-200: COMPLETE
-Foundation → Quant → Alt Data → ML/AI → Intelligence → Events → Global Macro → Equity Analysis → Fixed Income → Commodities → FX & Crypto → Alternative Data
-
-### 🔨 Phases 201-400: BUILDING
-| Range | Domain | Examples |
-|-------|--------|---------|
-| 201-220 | Real-Time & Streaming | WebSocket feeds, options flow, liquidation monitor |
-| 221-240 | Quantitative Strategies | Stat arb, momentum, carry, risk parity, GARCH |
-| 241-260 | Institutional Infrastructure | FIX gateway, attribution, TCA, margin calc |
-| 261-280 | Global Macro Deep Dive | Taylor Rule, PPP, recession model, housing |
-| 281-300 | AI/ML Models | Transformer predictor, RL agent, GNN, AutoML |
-| 301-320 | Blockchain & Digital Assets | On-chain analytics, DEX feeds, MEV, RWA |
-| 321-340 | Alternative Data v2 | Satellite, job postings, FDA, weather impact |
-| 341-360 | Fixed Income Deep | CLO, ABS/MBS, muni, distressed debt |
-| 361-380 | Commodities Deep | Crack spreads, OPEC compliance, rare earths |
-| 381-400 | Next-Gen & Experimental | Prediction markets, CBDC, quantum, space economy |
-
-Full roadmap: [ROADMAP_400.md](./ROADMAP_400.md)
-
----
-
-## 🧪 Testing
-
+### CLI
 ```bash
-# Run data integrity tests
-python -m pytest tests/ -v
-
-# Test individual module import
-python -c "import modules.monte_carlo; print('OK')"
-
-# Test API endpoint
-curl -s "https://data.quantclaw.org/api/v1/prices?ticker=AAPL" | python -m json.tool
-
-# Run full test suite
-python tests/test_data_integrity.py
+python cli.py prices AAPL
+python cli.py monte-carlo SPY --simulations 10000
+python cli.py congress-trades --days 30
+python cli.py options TSLA --expiry 2026-03
 ```
 
-Tests validate:
-- All modules import cleanly
-- Core functions return expected data types
-- API endpoints return valid JSON with correct schemas
-- Data freshness (prices < 24h old on trading days)
-- Cross-module consistency (same ticker returns consistent data)
+## 🤖 AI Discovery
 
----
+- **LLMs.txt**: [quantclaw.org/llms.txt](https://quantclaw.org/llms.txt)
+- **AI Plugin**: [quantclaw.org/.well-known/ai-plugin.json](https://quantclaw.org/.well-known/ai-plugin.json)
 
 ## 🏗️ How It's Built
 
-Built **autonomously by AI agents**:
-1. Builder agent runs every 10 min, creates 5 modules per batch
-2. Each module: Python + CLI + API route + MCP tool definition
-3. Auto-builds, auto-tests, auto-deploys to data.quantclaw.org
-4. Tester agent runs every 30 min, validates 10 random modules
-5. Every 5 modules → auto-commit to GitHub + version bump
+QuantClaw Data is self-evolving. An AI build agent runs on a cron schedule:
+1. Reads the current roadmap
+2. Builds the next module (Python + tests)
+3. Registers it as CLI command + REST endpoint + MCP tool
+4. Suggests 3 new features based on what it just built
+5. Updates the roadmap and repeats
 
-**Cost per module:** ~$0.04 (Claude Sonnet)
-**Build rate:** ~30 modules/hour
+Started at 24 phases. Now at 699. The platform compounds its own capabilities.
 
----
+## 🔗 Ecosystem
 
-## 📁 Project Structure
+- [quantclaw.org](https://quantclaw.org) — Main site
+- [data.quantclaw.org](https://data.quantclaw.org) — Interactive dashboard
+- [terminal.quantclaw.org](https://terminal.quantclaw.org) — Bloomberg-style terminal
+- [moneyclaw.com](https://moneyclaw.com) — Parent ecosystem
 
-```
-quantclaw-data/
-├── cli.py                     # CLI dispatcher (210 commands)
-├── modules/                   # Python modules (181+)
-│   ├── monte_carlo.py
-│   ├── fama_french.py
-│   ├── black_litterman.py
-│   ├── kalman_filter.py
-│   ├── pairs_trading.py
-│   ├── websocket_price_streamer.py
-│   ├── crypto_liquidation_monitor.py
-│   └── ... (181+ files)
-├── tests/                     # Data integrity tests
-│   └── test_data_integrity.py
-├── src/app/
-│   ├── page.tsx               # Dashboard UI
-│   ├── services.ts            # Module registry (210 services)
-│   ├── roadmap.ts             # Roadmap with status tracking
-│   ├── install.ts             # Install docs & CLI reference
-│   └── api/v1/                # REST API routes (54)
-├── skill/SKILL.md             # ClawHub skill definition
-├── ROADMAP_400.md             # Full 400-phase roadmap
-├── package.json
-└── README.md
-```
+## 📄 License
+
+Open source. Free to use.
 
 ---
 
-## 🤝 Part of the QuantClaw Ecosystem
-
-- [QuantClaw Data](https://data.quantclaw.org) — Financial Intelligence Platform
-- [TerminalX](https://terminal.quantclaw.org) — Bloomberg-style CIO Console
-- [AgentX](https://agentx.moneyclaw.com) — Personal AI Trading Agents
-- [ClawX](https://x.quantclaw.org) — AI Social Trading
-- [GoodWallet](https://wallet.quantclaw.org) — DeFi + Predictions
-
----
-
-## 📜 License
-
-MIT — use it, fork it, build on it.
-
----
-
-**Built with 🦞 by [QuantClaw](https://quantclaw.org) — Autonomous Financial Intelligence**
+*Built by [QuantClaw](https://quantclaw.org) — Autonomous Financial Intelligence*

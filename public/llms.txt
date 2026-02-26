@@ -109,9 +109,10 @@ python cli.py {command} {arguments}
 - Parent: https://moneyclaw.com
 
 ## Stats
-- 200 modules built (of 200 planned)
-- 43 free data sources integrated
-- 113,945 lines of code
-- 235 REST API endpoints
+- 699 modules built
+- 112 free data sources integrated (40+ countries)
+- 354,050 lines of code
+- 235+ REST API endpoints
 - $0/month operating cost
 - Built autonomously by AI agents
+- Country coverage: US, EU, Japan, China, India, Korea, Australia, Canada, Mexico, Russia, Singapore, Hong Kong, Switzerland, Poland, South Africa, Saudi Arabia, Indonesia, Taiwan, Philippines, Colombia, Chile, Egypt, Malaysia, Vietnam, Thailand, Nigeria, Argentina, Brazil, Israel, and more
