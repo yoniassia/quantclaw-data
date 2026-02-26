@@ -94,6 +94,14 @@ from bank_of_israel_dashboard import (
     get_monetary_policy_history as boi_get_policy_history
 )
 
+from tase import (
+    fetch_ta35_index,
+    fetch_israeli_stock,
+    get_market_summary as tase_get_market_summary,
+    fetch_sector_performance as tase_fetch_sector_performance,
+    fetch_historical_ta35
+)
+
 import china_nbs
 
 from em_sovereign_spreads import (
@@ -1849,6 +1857,47 @@ class MCPServer:
                     }
                 },
                 'handler': self._boi_policy_history
+            },
+            
+            # Tel Aviv Stock Exchange (TASE) Tools (Phase 631)
+            'tase_ta35_index': {
+                'description': 'Get TA-35 index (Tel Aviv 35 leading stocks) - price, change, volume, 52-week range',
+                'parameters': {
+                    'period': {
+                        'type': 'string',
+                        'description': 'Data period: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, max (default 1d)',
+                        'required': False,
+                        'default': '1d'
+                    }
+                },
+                'handler': self._tase_ta35_index
+            },
+            'tase_stock': {
+                'description': 'Get Israeli stock data - TEVA, NICE, CHKP, CYBR, WIX, MNDY, etc. Dual-listed (US+TASE) and local stocks',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock symbol (e.g., TEVA, NICE, CHKP) or TASE ticker (e.g., PSTI.TA for Bank Leumi)',
+                        'required': True
+                    },
+                    'period': {
+                        'type': 'string',
+                        'description': 'Data period (default 1d)',
+                        'required': False,
+                        'default': '1d'
+                    }
+                },
+                'handler': self._tase_stock
+            },
+            'tase_market_summary': {
+                'description': 'TASE market summary - TA-35, market breadth (advancers/decliners), top gainers/losers, total volume',
+                'parameters': {},
+                'handler': self._tase_market_summary
+            },
+            'tase_sector_performance': {
+                'description': 'Sector performance analysis for Israeli stocks - Technology, Healthcare, Financials, etc.',
+                'parameters': {},
+                'handler': self._tase_sector_performance
             },
             
             # Index Reconstitution Tracker Tools (Phase 136)
@@ -8318,6 +8367,24 @@ class MCPServer:
     def _boi_policy_history(self, months: int = 24) -> Dict:
         """Handler for boi_policy_history tool"""
         return {"history": boi_get_policy_history(months)}
+    
+    # TASE Handler Methods (Phase 631)
+    def _tase_ta35_index(self, period: str = '1d') -> Dict:
+        """Handler for tase_ta35_index tool"""
+        return fetch_ta35_index(period)
+    
+    def _tase_stock(self, symbol: str, period: str = '1d') -> Dict:
+        """Handler for tase_stock tool"""
+        return fetch_israeli_stock(symbol, period)
+    
+    def _tase_market_summary(self) -> Dict:
+        """Handler for tase_market_summary tool"""
+        return tase_get_market_summary()
+    
+    def _tase_sector_performance(self) -> Dict:
+        """Handler for tase_sector_performance tool"""
+        sectors = tase_fetch_sector_performance()
+        return {"sectors": sectors, "count": len(sectors)}
     
     # Index Reconstitution Tracker Handler Methods (Phase 136)
     def _index_sp500_changes(self, days: int = 365) -> Dict:

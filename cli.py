@@ -573,6 +573,10 @@ MODULES = {
         'file': 'bank_of_israel_dashboard.py',
         'commands': ['boi-dashboard', 'boi-policy-rate', 'boi-fx-reserves', 'boi-exchange-rates', 'boi-inflation', 'boi-policy-history']
     },
+    'tase': {
+        'file': 'tase.py',
+        'commands': ['tase-index', 'tase-stock', 'tase-summary', 'tase-sectors', 'tase-history']
+    },
     'poland_gus': {
         'file': 'poland_gus.py',
         'commands': ['poland-indicator', 'poland-gdp', 'poland-inflation', 'poland-employment', 

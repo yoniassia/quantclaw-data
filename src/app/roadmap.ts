@@ -735,7 +735,7 @@ export const phases: Phase[] = [
 export const additionalPhases = [
   { id: 629, name: "Bank of Israel Dashboard", description: "BOI rates, FX reserves, monetary policy. Monthly.", status: "done" as const, category: "Country Stats", loc: 269 },
   { id: 630, name: "Israel CBS Statistics", description: "CPI, labor, trade, industrial production. Monthly.", status: "done" as const, category: "Country Stats", loc: 485 },
-  { id: 631, name: "Tel Aviv Stock Exchange", description: "TASE indices, listings, corporate actions. Daily.", status: "done" as const, category: "Exchange Data", loc: 540 },
+  { id: 631, name: "Tel Aviv Stock Exchange", description: "TASE indices, listings, corporate actions. Daily.", status: "done" as const, category: "Exchange Data", loc: 379 },
   { id: 632, name: "Reserve Bank of India", description: "RBI rates, forex, banking stats. Monthly.", status: "done" as const, category: "Country Stats", loc: 520 },
   { id: 633, name: "India NSO/MOSPI", description: "GDP, IIP, CPI, labor force. Quarterly.", status: "done" as const, category: "Country Stats", loc: 475 },
   { id: 634, name: "BSE/NSE India Exchange", description: "Sensex, Nifty, FII/DII flows, deliverables. Daily.", status: "done" as const, category: "Exchange Data", loc: 555 },
