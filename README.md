@@ -1,8 +1,10 @@
 # 📈 QuantClaw Data
 
-**The open financial intelligence platform.** 200+ modules built, 400 planned, 210 CLI commands, 54 REST APIs, 210 MCP tools.
+**The open financial intelligence platform.** 208 modules built, 400 planned, 210 CLI commands, 200+ REST APIs, 210 MCP tools.
 
-> Built autonomously by AI agents. 140,888 lines of code. 187 data sources. Zero API keys required for core features.
+> Built autonomously by AI agents. 150,000+ lines of code. 162 data sources. Zero API keys required for core features.
+
+📡 **NEW: [Signal Discovery & Correlation APIs →](docs/SIGNALS_AND_CORRELATIONS.md)** — 15 signal modules, cross-module correlation search, factor strategies, regime detection
 
 🌐 **Live:** [data.quantclaw.org](https://data.quantclaw.org)
 📦 **ClawHub:** `clawhub install quantclaw-data`
@@ -14,13 +16,15 @@
 
 | Metric | Count |
 |--------|-------|
-| Lines of Code | 140,888+ |
-| Python Modules | 181+ |
-| Next.js API Routes | 54 |
+| Lines of Code | 150,000+ |
+| Python Modules | 208 |
+| Next.js API Routes | 200+ |
 | MCP Tools | 210 |
 | CLI Commands | 210 |
-| Unique Data Sources | 187 |
-| Phases Complete | 207/400 |
+| Unique Data Sources | 162 |
+| Signal Modules | 15 |
+| Quant Strategies | 14 |
+| Phases Complete | 208/400 |
 
 ---
 
