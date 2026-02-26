@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# AI Agent Discovery
+# LLMs.txt: https://quantclaw.org/llms.txt
+# AI Plugin: https://quantclaw.org/.well-known/ai-plugin.json
+# MCP Server: See /llms.txt for integration instructions
+
+Sitemap: https://quantclaw.org/sitemap.xml
