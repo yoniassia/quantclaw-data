@@ -1,0 +1,36 @@
+name: Weekly Full Test Suite
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday 6am UTC
+  workflow_dispatch:
+
+jobs:
+  full-test:
+    name: 🧪 Full Module Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install yfinance numpy scipy pandas statsmodels pandas-datareader requests beautifulsoup4
+
+      - name: Run full integrity test
+        run: python tests/test_data_integrity.py
+
+      - name: Test API endpoints
+        run: |
+          echo "## API Health Check" >> $GITHUB_STEP_SUMMARY
+          for ep in prices monte-carlo cds signal-fusion anomaly-scanner regime-correlation macro-leading; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://data.quantclaw.org/api/v1/$ep?ticker=AAPL" --max-time 30 2>/dev/null || echo "timeout")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ /api/v1/$ep → $STATUS" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ /api/v1/$ep → $STATUS" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
