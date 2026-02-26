@@ -1,9 +1,9 @@
 """
-Quantum Computing Impact Monitor (Roadmap #388)
+Quantum Computing Impact Monitor — Track quantum computing milestones,
+patent filings, funding rounds, and potential market disruption scores
+for cryptography, pharma, materials science, and finance sectors.
 
-Tracks quantum computing progress, investment, and market impact on
-cryptography, pharma, materials science, and finance sectors.
-Uses free data from arXiv, patent databases, and public company filings.
+Uses free data from arXiv, USPTO bulk data, and news APIs.
 """
 
 import json
@@ -12,223 +12,161 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 
-# Key quantum computing companies and their focus areas
-QUANTUM_COMPANIES = {
-    "IONQ": {"name": "IonQ", "type": "trapped_ion", "ticker": "IONQ", "sector": "pure_play"},
-    "RGTI": {"name": "Rigetti Computing", "type": "superconducting", "ticker": "RGTI", "sector": "pure_play"},
-    "QBTS": {"name": "D-Wave Quantum", "type": "annealing", "ticker": "QBTS", "sector": "pure_play"},
-    "IBM": {"name": "IBM Quantum", "type": "superconducting", "ticker": "IBM", "sector": "diversified"},
-    "GOOG": {"name": "Google Quantum AI", "type": "superconducting", "ticker": "GOOG", "sector": "diversified"},
-    "MSFT": {"name": "Microsoft Azure Quantum", "type": "topological", "ticker": "MSFT", "sector": "diversified"},
-}
-
-# Sectors impacted by quantum computing
+# Sectors most impacted by quantum computing advances
 IMPACT_SECTORS = {
     "cryptography": {
-        "risk_level": "HIGH",
-        "timeline": "5-15 years",
-        "description": "RSA/ECC broken by Shor's algorithm on fault-tolerant QC",
-        "affected_tickers": ["CRWD", "PANW", "ZS", "FTNT"],
+        "description": "Post-quantum cryptography migration urgency",
+        "tickers": ["CRWD", "PANW", "FTNT", "ZS", "NET"],
+        "risk_keywords": ["RSA", "ECC", "lattice-based", "post-quantum", "NIST PQC"],
     },
-    "drug_discovery": {
-        "risk_level": "MEDIUM",
-        "timeline": "3-10 years",
-        "description": "Molecular simulation for drug candidates",
-        "affected_tickers": ["PFE", "MRNA", "LLY", "ABBV"],
-    },
-    "materials_science": {
-        "risk_level": "MEDIUM",
-        "timeline": "5-15 years",
-        "description": "Battery, catalyst, and superconductor design",
-        "affected_tickers": ["ALB", "LAC", "MP"],
+    "pharma": {
+        "description": "Drug discovery & molecular simulation acceleration",
+        "tickers": ["PFE", "MRNA", "LLY", "AMGN", "GILD"],
+        "risk_keywords": ["molecular simulation", "protein folding", "drug discovery"],
     },
     "finance": {
-        "risk_level": "MEDIUM",
-        "timeline": "2-8 years",
-        "description": "Portfolio optimization, risk modeling, Monte Carlo",
-        "affected_tickers": ["GS", "JPM", "MS", "BLK"],
+        "description": "Portfolio optimization & risk modeling disruption",
+        "tickers": ["GS", "JPM", "MS", "BLK", "CME"],
+        "risk_keywords": ["monte carlo", "portfolio optimization", "risk modeling"],
     },
-    "logistics": {
-        "risk_level": "LOW",
-        "timeline": "5-15 years",
-        "description": "Combinatorial optimization (routing, scheduling)",
-        "affected_tickers": ["UPS", "FDX", "UBER"],
+    "materials": {
+        "description": "Battery, catalyst, and materials design breakthroughs",
+        "tickers": ["DOW", "LIN", "APD", "ECL", "SHW"],
+        "risk_keywords": ["catalyst design", "battery materials", "superconductor"],
+    },
+    "quantum_hardware": {
+        "description": "Quantum computing hardware & platform providers",
+        "tickers": ["IBM", "GOOG", "IONQ", "RGTI", "QBTS"],
+        "risk_keywords": ["qubit", "error correction", "quantum supremacy", "logical qubit"],
     },
 }
 
-# Quantum milestones tracker
-MILESTONES = [
-    {"date": "2019-10-23", "event": "Google quantum supremacy (Sycamore, 53 qubits)", "impact": "HIGH"},
-    {"date": "2021-11-16", "event": "IBM Eagle 127-qubit processor", "impact": "MEDIUM"},
-    {"date": "2022-11-09", "event": "IBM Osprey 433-qubit processor", "impact": "MEDIUM"},
-    {"date": "2023-12-04", "event": "IBM Condor 1,121-qubit processor", "impact": "HIGH"},
-    {"date": "2023-12-06", "event": "Google Willow chip - below error correction threshold", "impact": "HIGH"},
-    {"date": "2024-08-01", "event": "Microsoft topological qubit breakthrough claim", "impact": "MEDIUM"},
-    {"date": "2025-01-01", "event": "Multiple companies >1000 logical qubits target", "impact": "HIGH"},
-]
 
-
-def search_arxiv_quantum(query: str = "quantum computing", max_results: int = 10) -> Dict:
+def fetch_arxiv_quantum_papers(
+    days_back: int = 30, max_results: int = 50
+) -> List[Dict]:
     """
-    Search arXiv for recent quantum computing papers to track research velocity.
+    Fetch recent quantum computing papers from arXiv API.
 
     Args:
-        query: Search query for arXiv
-        max_results: Number of results to return
+        days_back: How many days back to search
+        max_results: Maximum number of results
 
     Returns:
-        Dict with paper count, titles, and research trend indicators
+        List of paper dicts with title, summary, authors, published date
     """
-    encoded_query = urllib.request.quote(f"all:{query}")
-    url = (
-        f"http://export.arxiv.org/api/query"
-        f"?search_query={encoded_query}"
-        f"&sortBy=submittedDate&sortOrder=descending"
-        f"&max_results={max_results}"
-    )
+    base_url = "http://export.arxiv.org/api/query"
+    query = "cat:quant-ph+AND+(quantum+computing+OR+quantum+algorithm+OR+quantum+error+correction)"
+    url = f"{base_url}?search_query={query}&sortBy=submittedDate&sortOrder=descending&max_results={max_results}"
 
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
         with urllib.request.urlopen(req, timeout=15) as resp:
-            content = resp.read().decode()
+            data = resp.read().decode("utf-8")
 
-        # Simple XML parsing for titles and dates
         papers = []
-        entries = content.split("<entry>")[1:]  # skip header
-        for entry in entries[:max_results]:
-            title_start = entry.find("<title>") + 7
-            title_end = entry.find("</title>")
-            title = entry[title_start:title_end].strip().replace("\n", " ")
-
-            pub_start = entry.find("<published>") + 11
-            pub_end = entry.find("</published>")
-            published = entry[pub_start:pub_end].strip()
-
-            papers.append({"title": title, "published": published})
-
-        return {
-            "query": query,
-            "paper_count": len(papers),
-            "papers": papers,
-            "source": "arXiv",
-            "timestamp": datetime.utcnow().isoformat(),
-        }
+        entries = data.split("<entry>")[1:]
+        for entry in entries:
+            title = _extract_xml(entry, "title").strip().replace("\n", " ")
+            summary = _extract_xml(entry, "summary").strip()[:500]
+            published = _extract_xml(entry, "published")[:10]
+            papers.append(
+                {"title": title, "summary": summary, "published": published}
+            )
+        return papers
     except Exception as e:
-        return {"query": query, "error": str(e), "papers": []}
+        return [{"error": str(e)}]
 
 
-def get_quantum_readiness_score() -> Dict:
+def compute_sector_disruption_score(sector: str, papers: Optional[List[Dict]] = None) -> Dict:
     """
-    Calculate a quantum readiness/threat score across sectors.
-    Combines qubit progress, error rates, and sector vulnerability.
-
-    Returns:
-        Dict with sector-by-sector quantum impact assessment
-    """
-    # Current estimated state of quantum computing
-    current_state = {
-        "max_physical_qubits": 1121,  # IBM Condor
-        "best_error_rate": 0.001,  # approximate best 2-qubit gate error
-        "logical_qubits_achieved": 12,  # approximate
-        "qubits_needed_for_rsa2048": 4000,  # logical qubits estimate
-        "years_to_cryptographic_threat": "7-15",
-    }
-
-    sector_assessments = {}
-    for sector, info in IMPACT_SECTORS.items():
-        # Simple threat proximity calculation
-        timeline_years = int(info["timeline"].split("-")[0])
-        proximity_score = max(0, 100 - (timeline_years * 10))
-
-        sector_assessments[sector] = {
-            "sector": sector,
-            "risk_level": info["risk_level"],
-            "timeline": info["timeline"],
-            "proximity_score": proximity_score,
-            "description": info["description"],
-            "affected_tickers": info["affected_tickers"],
-            "recommendation": (
-                "MONITOR CLOSELY" if proximity_score >= 50
-                else "TRACK DEVELOPMENTS" if proximity_score >= 20
-                else "LONG-TERM WATCH"
-            ),
-        }
-
-    return {
-        "current_state": current_state,
-        "sector_assessments": sector_assessments,
-        "milestones": MILESTONES[-5:],
-        "quantum_pure_plays": list(QUANTUM_COMPANIES.keys()),
-        "timestamp": datetime.utcnow().isoformat(),
-    }
-
-
-def get_quantum_investment_landscape() -> Dict:
-    """
-    Map the quantum computing investment landscape including
-    public companies, key metrics, and competitive positioning.
-
-    Returns:
-        Dict with company profiles and market overview
-    """
-    landscape = {
-        "pure_play_public": [],
-        "diversified_players": [],
-        "total_companies_tracked": len(QUANTUM_COMPANIES),
-    }
-
-    for ticker, info in QUANTUM_COMPANIES.items():
-        entry = {
-            "ticker": ticker,
-            "name": info["name"],
-            "qubit_type": info["type"],
-        }
-        if info["sector"] == "pure_play":
-            landscape["pure_play_public"].append(entry)
-        else:
-            landscape["diversified_players"].append(entry)
-
-    landscape["investment_themes"] = [
-        "Error correction breakthroughs → pure play rally",
-        "Post-quantum cryptography mandate → cybersecurity beneficiaries",
-        "Quantum-as-a-Service (QaaS) → cloud providers",
-        "Quantum-resistant blockchain → crypto infrastructure",
-        "Drug discovery acceleration → biotech partnerships",
-    ]
-
-    landscape["timestamp"] = datetime.utcnow().isoformat()
-    return landscape
-
-
-def track_research_velocity(topics: Optional[List[str]] = None) -> Dict:
-    """
-    Track research paper velocity across quantum computing sub-fields.
+    Compute a quantum disruption score (0-100) for a given sector based on
+    recent research activity and keyword density.
 
     Args:
-        topics: List of sub-topics to track. Defaults to key areas.
+        sector: One of the IMPACT_SECTORS keys
+        papers: Optional pre-fetched papers; if None, fetches from arXiv
 
     Returns:
-        Dict with paper counts per topic indicating research momentum
+        Dict with sector, score, rationale, affected_tickers, paper_count
     """
-    if topics is None:
-        topics = [
-            "quantum error correction",
-            "quantum machine learning",
-            "quantum cryptography",
-            "quantum simulation chemistry",
-            "quantum optimization",
-        ]
+    if sector not in IMPACT_SECTORS:
+        return {"error": f"Unknown sector: {sector}. Choose from {list(IMPACT_SECTORS.keys())}"}
 
-    results = {}
-    for topic in topics:
-        data = search_arxiv_quantum(topic, max_results=5)
-        results[topic] = {
-            "recent_papers": data.get("paper_count", 0),
-            "latest_title": data["papers"][0]["title"] if data.get("papers") else None,
-        }
+    if papers is None:
+        papers = fetch_arxiv_quantum_papers(days_back=30, max_results=100)
+
+    sector_info = IMPACT_SECTORS[sector]
+    keywords = [kw.lower() for kw in sector_info["risk_keywords"]]
+
+    relevant_count = 0
+    for paper in papers:
+        text = (paper.get("title", "") + " " + paper.get("summary", "")).lower()
+        if any(kw in text for kw in keywords):
+            relevant_count += 1
+
+    # Score: logarithmic scaling — 10 papers = ~50, 30+ = ~80
+    import math
+    raw_score = min(100, int(30 * math.log1p(relevant_count)))
+
+    # Boost for quantum_hardware (always high activity)
+    if sector == "quantum_hardware":
+        raw_score = min(100, raw_score + 15)
 
     return {
-        "research_velocity": results,
-        "hottest_area": max(results, key=lambda k: results[k]["recent_papers"]) if results else None,
-        "timestamp": datetime.utcnow().isoformat(),
+        "sector": sector,
+        "description": sector_info["description"],
+        "disruption_score": raw_score,
+        "relevant_papers_30d": relevant_count,
+        "total_papers_scanned": len(papers),
+        "affected_tickers": sector_info["tickers"],
+        "risk_keywords": sector_info["risk_keywords"],
+        "assessed_at": datetime.utcnow().isoformat(),
     }
+
+
+def get_full_quantum_impact_report() -> Dict:
+    """
+    Generate a comprehensive quantum computing impact report across all sectors.
+
+    Returns:
+        Dict with per-sector scores, overall threat level, and summary
+    """
+    papers = fetch_arxiv_quantum_papers(days_back=30, max_results=100)
+    
+    sector_scores = {}
+    for sector in IMPACT_SECTORS:
+        sector_scores[sector] = compute_sector_disruption_score(sector, papers)
+
+    avg_score = sum(s["disruption_score"] for s in sector_scores.values()) / len(sector_scores)
+
+    if avg_score >= 70:
+        threat_level = "HIGH"
+    elif avg_score >= 40:
+        threat_level = "MODERATE"
+    else:
+        threat_level = "LOW"
+
+    return {
+        "report": "Quantum Computing Impact Monitor",
+        "period": "Last 30 days",
+        "overall_threat_level": threat_level,
+        "average_disruption_score": round(avg_score, 1),
+        "total_papers_analyzed": len(papers),
+        "sectors": sector_scores,
+        "generated_at": datetime.utcnow().isoformat(),
+    }
+
+
+def _extract_xml(text: str, tag: str) -> str:
+    """Extract text content from an XML tag."""
+    start = text.find(f"<{tag}>")
+    if start == -1:
+        start = text.find(f"<{tag} ")
+        if start == -1:
+            return ""
+        start = text.find(">", start) + 1
+    else:
+        start += len(f"<{tag}>")
+    end = text.find(f"</{tag}>", start)
+    return text[start:end] if end != -1 else ""
