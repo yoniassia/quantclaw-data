@@ -3,12 +3,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const ticker = searchParams.get('ticker') || searchParams.get('symbol') || 'SPY';
+  const ticker = searchParams.get('ticker') || searchParams.get('symbol') || '';
   const action = searchParams.get('action') || 'get_all_etf_summary';
 
   try {
     const { execSync } = await import('child_process');
-    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.commodity_roll_yield as m; import json; print(json.dumps(m.${action}('${ticker}')))"`;
+    const args = ticker ? `'${ticker.replace(/'/g, "\\'")}'` : '';
+    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.commodity_roll_yield as m; import json; print(json.dumps(m.${action}(${args})))"`;
     const result = execSync(cmd, { timeout: 60000 }).toString().trim();
     const lines = result.split('\n');
     const jsonLine = lines[lines.length - 1];

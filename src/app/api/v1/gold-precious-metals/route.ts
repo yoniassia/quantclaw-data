@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const { execSync } = await import('child_process');
-    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.gold_precious_metals as m; import json; print(json.dumps(m.${action}('${ticker}')))"`;
+    const args = ticker ? `'${ticker.replace(/'/g, "\\'")}'` : '';
+    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.gold_precious_metals as m; import json; print(json.dumps(m.${action}(${args})))"`;
     const result = execSync(cmd, { timeout: 60000 }).toString().trim();
     const lines = result.split('\n');
     const jsonLine = lines[lines.length - 1];

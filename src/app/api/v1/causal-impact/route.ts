@@ -4,11 +4,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const ticker = searchParams.get('ticker') || searchParams.get('symbol') || 'SPY';
-  const action = searchParams.get('action') || 'run';
+  const action = searchParams.get('action') || 'cross_sectional_event_study';
 
   try {
     const { execSync } = await import('child_process');
-    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.causal_impact as m; import json; print(json.dumps(m.${action}('${ticker}')))"`;
+    const args = ticker ? `'${ticker.replace(/'/g, "\\'")}'` : '';
+    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.causal_impact as m; import json; print(json.dumps(m.${action}(${args})))"`;
     const result = execSync(cmd, { timeout: 60000 }).toString().trim();
     const lines = result.split('\n');
     const jsonLine = lines[lines.length - 1];

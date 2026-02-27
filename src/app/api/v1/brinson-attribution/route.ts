@@ -4,11 +4,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   
-  const action = searchParams.get('action') || 'run';
+  const action = searchParams.get('action') || 'attribution_summary_table';
 
   try {
     const { execSync } = await import('child_process');
-    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.brinson_attribution as m; import json; print(json.dumps(m.${action}('')))"`;
+    const query = searchParams.get('query') || '';
+    const args = query ? `'${query.replace(/'/g, "\\'")}'` : '';
+    const cmd = `cd /home/quant/apps/quantclaw-data && python3 -c "import modules.brinson_attribution as m; import json; print(json.dumps(m.${action}(${args})))"`;
     const result = execSync(cmd, { timeout: 60000 }).toString().trim();
     const lines = result.split('\n');
     const jsonLine = lines[lines.length - 1];

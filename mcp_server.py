@@ -75,6 +75,13 @@ from oecd import (
     OECD_COUNTRIES
 )
 
+from oecd_mei import (
+    get_mei_indicator,
+    get_all_mei,
+    MEI_DATASETS,
+    OECD_COUNTRIES as MEI_COUNTRIES
+)
+
 from boj import (
     get_tankan_survey,
     get_monetary_base,
@@ -94,6 +101,13 @@ from bank_of_israel_dashboard import (
     get_monetary_policy_history as boi_get_policy_history
 )
 
+from israel_cbs_statistics import IsraelCBSStatistics
+
+from mas_singapore import (
+    MASSingapore,
+    get_mas_summary
+)
+
 from tase import (
     fetch_ta35_index,
     fetch_israeli_stock,
@@ -111,6 +125,8 @@ from bank_of_korea import (
     get_gdp_growth as bok_get_gdp,
     get_current_account as bok_get_current_account
 )
+
+from kostat import KOSTATData
 
 from reserve_bank_india import (
     RBIDataProvider,
@@ -136,6 +152,8 @@ from bse_nse import (
     get_market_status,
     get_market_dashboard
 )
+
+from abs_australia_stats import ABSAustraliaStats
 
 import china_nbs
 
@@ -312,6 +330,11 @@ from earnings_surprise_history import (
     analyze_post_earnings_drift,
     calculate_earnings_quality,
     compare_surprise_history
+)
+
+from quality_factor_scoring import (
+    score_quality_factor,
+    quality_screen
 )
 
 from stock_split_corporate_events import (
@@ -652,6 +675,12 @@ from shanghai_stock_exchange import (
     get_northbound_flow
 )
 
+from shenzhen_stock_exchange import (
+    get_szse_data,
+    get_szse_quote,
+    get_chinext_performance
+)
+
 from flight_data import (
     FlightDataTracker,
     cmd_live_count,
@@ -660,7 +689,22 @@ from flight_data import (
     cmd_report
 )
 
+from satellite_lights import (
+    SatelliteLights,
+    satellite_lights_summary
+)
+
 from dtcc_trade_reporting import DTCCTradeReporting
+
+import paper_trading
+
+from backtesting_engine import (
+    BacktestEngine,
+    ParameterOptimizer,
+    WalkForwardOptimizer,
+    list_strategies,
+    format_report
+)
 
 
 class MCPServer:
@@ -1703,6 +1747,47 @@ class MCPServer:
                 'parameters': {},
                 'handler': self._oecd_countries
             },
+            
+            # OECD MEI Tools (Phase 692)
+            'oecd_mei_indicator': {
+                'description': 'Get OECD Main Economic Indicator (CPI, PPI, IPI, unemployment, confidence indices)',
+                'parameters': {
+                    'indicator': {
+                        'type': 'string',
+                        'description': 'Indicator: CPI, PPI, IPI, UNEMP, BCI, CCI, or RETAIL',
+                        'required': True
+                    },
+                    'countries': {
+                        'type': 'array',
+                        'description': 'List of country codes (default: G7)',
+                        'required': False
+                    },
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Months of history (default 24)',
+                        'required': False,
+                        'default': 24
+                    }
+                },
+                'handler': self._oecd_mei_indicator
+            },
+            'oecd_mei_snapshot': {
+                'description': 'Get comprehensive MEI snapshot for a country (all indicators)',
+                'parameters': {
+                    'country': {
+                        'type': 'string',
+                        'description': 'ISO 3-letter country code',
+                        'required': True
+                    },
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Months of history (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._oecd_mei_snapshot
+            },
             'china_pmi': {
                 'description': 'Get China Manufacturing PMI (Purchasing Managers Index). PMI > 50 = expansion, < 50 = contraction',
                 'parameters': {
@@ -1910,6 +1995,82 @@ class MCPServer:
                 'handler': self._boi_policy_history
             },
             
+            # Israel CBS Statistics Tools (Phase 630)
+            'israel_cbs_dashboard': {
+                'description': 'Comprehensive Israel CBS statistics dashboard: CPI, labor, industrial production, trade, interest rates, reserves',
+                'parameters': {},
+                'handler': self._israel_cbs_dashboard
+            },
+            'israel_cbs_cpi': {
+                'description': 'Get Israel Consumer Price Index with year-over-year change',
+                'parameters': {},
+                'handler': self._israel_cbs_cpi
+            },
+            'israel_cbs_labor': {
+                'description': 'Get Israel unemployment rate and labor market indicators',
+                'parameters': {},
+                'handler': self._israel_cbs_labor
+            },
+            'israel_cbs_industrial': {
+                'description': 'Get Israel industrial production index with YoY growth',
+                'parameters': {},
+                'handler': self._israel_cbs_industrial
+            },
+            'israel_cbs_trade': {
+                'description': 'Get Israel trade balance: exports, imports, and balance in USD millions',
+                'parameters': {},
+                'handler': self._israel_cbs_trade
+            },
+            'israel_cbs_rates': {
+                'description': 'Get Israel interest rates (lending rate)',
+                'parameters': {},
+                'handler': self._israel_cbs_rates
+            },
+            'israel_cbs_reserves': {
+                'description': 'Get Israel foreign exchange reserves in USD billions',
+                'parameters': {},
+                'handler': self._israel_cbs_reserves
+            },
+            
+            # MAS Singapore Tools (Phase 648)
+            'mas_monetary_policy': {
+                'description': 'Get MAS Singapore monetary policy stance and SGD exchange rate data',
+                'parameters': {},
+                'handler': self._mas_monetary_policy
+            },
+            'mas_fx_reserves': {
+                'description': 'Get Singapore foreign exchange reserves history',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months of history (default 24)',
+                        'required': False,
+                        'default': 24
+                    }
+                },
+                'handler': self._mas_fx_reserves
+            },
+            'mas_banking_stats': {
+                'description': 'Get Singapore banking sector statistics',
+                'parameters': {},
+                'handler': self._mas_banking_stats
+            },
+            'mas_economic_indicators': {
+                'description': 'Get Singapore key economic indicators (GDP, CPI, unemployment, trade)',
+                'parameters': {},
+                'handler': self._mas_economic_indicators
+            },
+            'mas_financial_stability': {
+                'description': 'Get Singapore financial stability indicators and metrics',
+                'parameters': {},
+                'handler': self._mas_financial_stability
+            },
+            'mas_summary': {
+                'description': 'Get comprehensive MAS Singapore dashboard',
+                'parameters': {},
+                'handler': self._mas_summary
+            },
+            
             # Bank of Korea Tools (Phase 635)
             'bok_dashboard': {
                 'description': 'Comprehensive Bank of Korea dashboard with base rate, monetary aggregates, FX reserves, inflation, GDP, and current account',
@@ -2081,6 +2242,109 @@ class MCPServer:
                 'description': 'Sector performance analysis for Israeli stocks - Technology, Healthcare, Financials, etc.',
                 'parameters': {},
                 'handler': self._tase_sector_performance
+            },
+            
+            # Australian Bureau of Statistics (ABS) Tools (Phase 639)
+            'abs_australia_gdp': {
+                'description': 'Australian GDP (quarterly, current prices A$ billion) - main economic indicator',
+                'parameters': {
+                    'quarters': {
+                        'type': 'integer',
+                        'description': 'Number of quarters (default 8)',
+                        'required': False,
+                        'default': 8
+                    }
+                },
+                'handler': self._abs_australia_gdp
+            },
+            'abs_australia_cpi': {
+                'description': 'Australian CPI (quarterly, index) - inflation tracker',
+                'parameters': {
+                    'quarters': {
+                        'type': 'integer',
+                        'description': 'Number of quarters (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_cpi
+            },
+            'abs_australia_employment': {
+                'description': 'Australian employment (monthly, thousands) - labor market indicator',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_employment
+            },
+            'abs_australia_unemployment': {
+                'description': 'Australian unemployment rate (monthly, %) - jobless rate',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_unemployment
+            },
+            'abs_australia_trade': {
+                'description': 'Australian trade balance (monthly, AUD million) - exports minus imports',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_trade
+            },
+            'abs_australia_building_approvals': {
+                'description': 'Australian building approvals (monthly, dwelling count) - construction activity',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_building_approvals
+            },
+            'abs_australia_retail': {
+                'description': 'Australian retail turnover (monthly, AUD million) - consumer spending',
+                'parameters': {
+                    'months': {
+                        'type': 'integer',
+                        'description': 'Number of months (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_retail
+            },
+            'abs_australia_wages': {
+                'description': 'Australian Wage Price Index (quarterly, index) - wage growth',
+                'parameters': {
+                    'quarters': {
+                        'type': 'integer',
+                        'description': 'Number of quarters (default 12)',
+                        'required': False,
+                        'default': 12
+                    }
+                },
+                'handler': self._abs_australia_wages
+            },
+            'abs_australia_dashboard': {
+                'description': 'Comprehensive Australian economic dashboard - GDP, CPI, employment, trade, building, retail, wages',
+                'parameters': {},
+                'handler': self._abs_australia_dashboard
             },
             
             # Reserve Bank of India (RBI) Tools (Phase 632)
@@ -2647,6 +2911,36 @@ class MCPServer:
                     }
                 },
                 'handler': self._earnings_compare_surprises
+            },
+            
+            # Quality Factor Scoring (Phase 400)
+            'quality_factor_score': {
+                'description': 'Score a stock on quality factors (ROE, leverage, accruals, earnings stability, margins)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._quality_factor_score
+            },
+            'quality_factor_screen': {
+                'description': 'Screen multiple stocks for quality factors and return those above minimum score',
+                'parameters': {
+                    'tickers': {
+                        'type': 'array',
+                        'description': 'List of stock ticker symbols to screen',
+                        'required': True
+                    },
+                    'min_score': {
+                        'type': 'number',
+                        'description': 'Minimum composite quality score (0-100)',
+                        'required': False,
+                        'default': 60.0
+                    }
+                },
+                'handler': self._quality_factor_screen
             },
             
             # Equity Screener (Phase 140)
@@ -5558,6 +5852,105 @@ class MCPServer:
                 'handler': self._list_airports
             },
             
+            # Satellite Nighttime Lights Tools (Phase 691)
+            'satellite_monthly_composite': {
+                'description': 'Get monthly VIIRS nighttime lights composite for economic activity analysis',
+                'parameters': {
+                    'year': {
+                        'type': 'number',
+                        'description': 'Year (2012-present)',
+                        'required': False
+                    },
+                    'month': {
+                        'type': 'number',
+                        'description': 'Month (1-12)',
+                        'required': False
+                    },
+                    'region': {
+                        'type': 'string',
+                        'description': 'Region: global, asia, africa, europe, americas',
+                        'required': False,
+                        'default': 'global'
+                    }
+                },
+                'handler': self._satellite_monthly_composite
+            },
+            'satellite_urban_growth': {
+                'description': 'Calculate urbanization index from multi-year nighttime lights data',
+                'parameters': {
+                    'city': {
+                        'type': 'string',
+                        'description': 'City name',
+                        'required': True
+                    },
+                    'years': {
+                        'type': 'array',
+                        'description': 'List of years to analyze (e.g., [2012, 2024])',
+                        'required': True
+                    }
+                },
+                'handler': self._satellite_urban_growth
+            },
+            'satellite_gdp_proxy': {
+                'description': 'Estimate economic activity from nighttime lights as GDP proxy',
+                'parameters': {
+                    'country': {
+                        'type': 'string',
+                        'description': 'Country name',
+                        'required': True
+                    },
+                    'year': {
+                        'type': 'number',
+                        'description': 'Year',
+                        'required': True
+                    }
+                },
+                'handler': self._satellite_gdp_proxy
+            },
+            'satellite_blackout_detection': {
+                'description': 'Detect sudden light drops indicating blackouts, disasters, or conflicts',
+                'parameters': {
+                    'region': {
+                        'type': 'string',
+                        'description': 'Geographic region',
+                        'required': True
+                    },
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (ISO format)',
+                        'required': True
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (ISO format)',
+                        'required': True
+                    }
+                },
+                'handler': self._satellite_blackout_detection
+            },
+            'satellite_settlement_detection': {
+                'description': 'Detect new settlements or refugee camps from nighttime light clusters',
+                'parameters': {
+                    'latitude': {
+                        'type': 'number',
+                        'description': 'Latitude',
+                        'required': True
+                    },
+                    'longitude': {
+                        'type': 'number',
+                        'description': 'Longitude',
+                        'required': True
+                    },
+                    'radius_km': {
+                        'type': 'number',
+                        'description': 'Search radius in km',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._satellite_settlement_detection
+            },
+            
             # Global Tourism Statistics Tools (Phase 194)
             'tourism_arrivals': {
                 'description': 'Get international tourist arrivals for a country from World Bank data',
@@ -6068,6 +6461,48 @@ class MCPServer:
                 },
                 'handler': self._sse_northbound
             },
+            'szse_index': {
+                'description': 'Get Shenzhen Stock Exchange Component/ChiNext Index data',
+                'parameters': {
+                    'index': {
+                        'type': 'string',
+                        'description': 'Index to query: szse_component or chinext (default: szse_component)',
+                        'required': False,
+                        'default': 'szse_component'
+                    },
+                    'period': {
+                        'type': 'string',
+                        'description': 'Period: 1d, 5d, 1mo, 3mo, 6mo, 1y (default: 1mo)',
+                        'required': False,
+                        'default': '1mo'
+                    }
+                },
+                'handler': self._szse_index
+            },
+            'szse_quote': {
+                'description': 'Get current Shenzhen Stock Exchange index quote',
+                'parameters': {
+                    'index': {
+                        'type': 'string',
+                        'description': 'Index: szse_component or chinext (default: szse_component)',
+                        'required': False,
+                        'default': 'szse_component'
+                    }
+                },
+                'handler': self._szse_quote
+            },
+            'szse_performance': {
+                'description': 'Get Shenzhen Stock Exchange index performance metrics (returns, vol, Sharpe)',
+                'parameters': {
+                    'index': {
+                        'type': 'string',
+                        'description': 'Index: szse_component or chinext (default: chinext)',
+                        'required': False,
+                        'default': 'chinext'
+                    }
+                },
+                'handler': self._szse_performance
+            },
             'nighttime_lights_country': {
                 'description': 'Get VIIRS nighttime lights data for a country as economic activity proxy',
                 'parameters': {
@@ -6243,6 +6678,232 @@ class MCPServer:
                 'description': 'Get DTCC systemic risk indicators (settlement volume, liquidity exposure, concentration)',
                 'parameters': {},
                 'handler': self._dtcc_systemic_risk
+            },
+            'paper_create': {
+                'description': 'Create a new paper trading portfolio',
+                'parameters': {
+                    'name': {
+                        'type': 'string',
+                        'description': 'Portfolio name',
+                        'required': True
+                    },
+                    'initial_cash': {
+                        'type': 'number',
+                        'description': 'Initial cash balance (default 100000)',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_create
+            },
+            'paper_buy': {
+                'description': 'Execute paper buy order',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock or crypto ticker symbol',
+                        'required': True
+                    },
+                    'quantity': {
+                        'type': 'number',
+                        'description': 'Quantity to buy',
+                        'required': True
+                    },
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    },
+                    'limit_price': {
+                        'type': 'number',
+                        'description': 'Limit price for limit orders',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_buy
+            },
+            'paper_sell': {
+                'description': 'Execute paper sell order',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock or crypto ticker symbol',
+                        'required': True
+                    },
+                    'quantity': {
+                        'type': 'number',
+                        'description': 'Quantity to sell',
+                        'required': True
+                    },
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    },
+                    'limit_price': {
+                        'type': 'number',
+                        'description': 'Limit price for limit orders',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_sell
+            },
+            'paper_positions': {
+                'description': 'Get all positions with live prices and P&L',
+                'parameters': {
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_positions
+            },
+            'paper_pnl': {
+                'description': 'Get comprehensive P&L summary and risk metrics',
+                'parameters': {
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_pnl
+            },
+            'paper_trades': {
+                'description': 'Get trade history',
+                'parameters': {
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    },
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days to look back (default 30)',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_trades
+            },
+            'paper_risk': {
+                'description': 'Get risk metrics (Sharpe ratio, max drawdown, win rate, etc.)',
+                'parameters': {
+                    'portfolio': {
+                        'type': 'string',
+                        'description': 'Portfolio name (default "default")',
+                        'required': False
+                    }
+                },
+                'handler': self._paper_risk
+            },
+            'backtest_run': {
+                'description': 'Run a backtest for a strategy on historical data',
+                'parameters': {
+                    'strategy': {
+                        'type': 'string',
+                        'description': 'Strategy name (sma_crossover, rsi_mean_reversion, etc.)',
+                        'required': True
+                    },
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Ticker symbol',
+                        'required': True
+                    },
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (YYYY-MM-DD)',
+                        'required': True
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (YYYY-MM-DD)',
+                        'required': True
+                    }
+                },
+                'handler': self._backtest_run
+            },
+            'backtest_strategies': {
+                'description': 'List all available backtesting strategies',
+                'parameters': {},
+                'handler': self._backtest_strategies
+            },
+            'backtest_optimize': {
+                'description': 'Optimize strategy parameters',
+                'parameters': {
+                    'strategy': {
+                        'type': 'string',
+                        'description': 'Strategy name',
+                        'required': True
+                    },
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Ticker symbol',
+                        'required': True
+                    },
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (YYYY-MM-DD)',
+                        'required': True
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (YYYY-MM-DD)',
+                        'required': True
+                    }
+                },
+                'handler': self._backtest_optimize
+            },
+            'backtest_walkforward': {
+                'description': 'Run walk-forward optimization',
+                'parameters': {
+                    'strategy': {
+                        'type': 'string',
+                        'description': 'Strategy name',
+                        'required': True
+                    },
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Ticker symbol',
+                        'required': True
+                    },
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (YYYY-MM-DD)',
+                        'required': True
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (YYYY-MM-DD)',
+                        'required': True
+                    }
+                },
+                'handler': self._backtest_walkforward
+            },
+            'backtest_compare': {
+                'description': 'Compare multiple strategies',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Ticker symbol',
+                        'required': True
+                    },
+                    'start_date': {
+                        'type': 'string',
+                        'description': 'Start date (YYYY-MM-DD)',
+                        'required': True
+                    },
+                    'end_date': {
+                        'type': 'string',
+                        'description': 'End date (YYYY-MM-DD)',
+                        'required': True
+                    },
+                    'strategies': {
+                        'type': 'array',
+                        'description': 'Strategy names',
+                        'required': True
+                    }
+                },
+                'handler': self._backtest_compare
             }
         }
     
@@ -8298,6 +8959,58 @@ class MCPServer:
         except Exception as e:
             return {'success': False, 'error': str(e)}
     
+    # Satellite Nighttime Lights Handlers (Phase 691)
+    def _satellite_monthly_composite(self, year: int = None, month: int = None, region: str = 'global') -> Dict:
+        """Handler for satellite_monthly_composite tool"""
+        try:
+            sl = SatelliteLights()
+            from datetime import datetime
+            if year is None:
+                year = datetime.utcnow().year
+            if month is None:
+                month = datetime.utcnow().month - 1 if datetime.utcnow().month > 1 else 12
+            
+            result = sl.get_monthly_composite(year, month, region)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _satellite_urban_growth(self, city: str, years: list) -> Dict:
+        """Handler for satellite_urban_growth tool"""
+        try:
+            sl = SatelliteLights()
+            result = sl.get_urban_growth_index(city, years)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _satellite_gdp_proxy(self, country: str, year: int) -> Dict:
+        """Handler for satellite_gdp_proxy tool"""
+        try:
+            sl = SatelliteLights()
+            result = sl.get_economic_activity_proxy(country, year)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _satellite_blackout_detection(self, region: str, start_date: str, end_date: str) -> Dict:
+        """Handler for satellite_blackout_detection tool"""
+        try:
+            sl = SatelliteLights()
+            result = sl.get_blackout_detection(region, start_date, end_date)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _satellite_settlement_detection(self, latitude: float, longitude: float, radius_km: float = 10) -> Dict:
+        """Handler for satellite_settlement_detection tool"""
+        try:
+            sl = SatelliteLights()
+            result = sl.get_refugee_camp_detection((latitude, longitude), radius_km)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
     def _list_airports(self) -> Dict:
         """Handler for list_airports tool"""
         try:
@@ -8723,6 +9436,65 @@ class MCPServer:
             'source': 'OECD'
         }
     
+    # OECD MEI Handlers (Phase 692)
+    def _oecd_mei_indicator(self, indicator: str, countries: Optional[List[str]] = None, months: int = 24) -> Dict:
+        """Handler for oecd_mei_indicator tool"""
+        indicator = indicator.upper()
+        if indicator not in MEI_DATASETS:
+            return {
+                'success': False,
+                'error': f'Unknown indicator: {indicator}',
+                'available': list(MEI_DATASETS.keys())
+            }
+        
+        if countries:
+            countries = [c.upper() for c in countries]
+        else:
+            countries = ['USA', 'DEU', 'GBR', 'FRA', 'ITA', 'JPN', 'CAN']  # G7
+        
+        records = get_mei_indicator(indicator, countries, months)
+        
+        # Group by country and find latest value
+        latest_by_country = {}
+        for rec in records:
+            country = rec['country']
+            if country not in latest_by_country or rec['date'] > latest_by_country[country]['date']:
+                latest_by_country[country] = rec
+        
+        return {
+            'success': True,
+            'indicator': indicator,
+            'indicator_name': MEI_DATASETS[indicator]['name'],
+            'latest_values': latest_by_country,
+            'total_records': len(records),
+            'source': 'OECD MEI'
+        }
+    
+    def _oecd_mei_snapshot(self, country: str, months: int = 12) -> Dict:
+        """Handler for oecd_mei_snapshot tool"""
+        country = country.upper()
+        results = get_all_mei(countries=[country], months=months)
+        
+        snapshot = {}
+        for indicator, records in results.items():
+            if records:
+                # Get latest value
+                latest = max(records, key=lambda x: x['date'])
+                snapshot[indicator] = {
+                    'name': MEI_DATASETS[indicator]['name'],
+                    'value': latest['value'],
+                    'date': latest['date'],
+                    'unit': latest['unit']
+                }
+        
+        return {
+            'success': True,
+            'country': country,
+            'snapshot': snapshot,
+            'indicators': list(snapshot.keys()),
+            'source': 'OECD MEI'
+        }
+    
     # China NBS/PBOC Handlers (Phase 101)
     def _china_pmi(self, months: int = 24, api_key: Optional[str] = None) -> Dict:
         """Handler for china_pmi tool"""
@@ -8812,6 +9584,72 @@ class MCPServer:
         """Handler for boi_policy_history tool"""
         return {"history": boi_get_policy_history(months)}
     
+    # Israel CBS Statistics Handler Methods (Phase 630)
+    def _israel_cbs_dashboard(self) -> Dict:
+        """Handler for israel_cbs_dashboard tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_dashboard()
+    
+    def _israel_cbs_cpi(self) -> Dict:
+        """Handler for israel_cbs_cpi tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_cpi()
+    
+    def _israel_cbs_labor(self) -> Dict:
+        """Handler for israel_cbs_labor tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_labor_market()
+    
+    def _israel_cbs_industrial(self) -> Dict:
+        """Handler for israel_cbs_industrial tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_industrial_production()
+    
+    def _israel_cbs_trade(self) -> Dict:
+        """Handler for israel_cbs_trade tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_trade_balance()
+    
+    def _israel_cbs_rates(self) -> Dict:
+        """Handler for israel_cbs_rates tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_interest_rates()
+    
+    def _israel_cbs_reserves(self) -> Dict:
+        """Handler for israel_cbs_reserves tool"""
+        cbs = IsraelCBSStatistics()
+        return cbs.get_foreign_reserves()
+    
+    # MAS Singapore Handler Methods (Phase 648)
+    def _mas_monetary_policy(self) -> Dict:
+        """Handler for mas_monetary_policy tool"""
+        mas = MASSingapore()
+        return mas.get_monetary_policy()
+    
+    def _mas_fx_reserves(self, months: int = 24) -> Dict:
+        """Handler for mas_fx_reserves tool"""
+        mas = MASSingapore()
+        return {'reserves': mas.get_fx_reserves(months)}
+    
+    def _mas_banking_stats(self) -> Dict:
+        """Handler for mas_banking_stats tool"""
+        mas = MASSingapore()
+        return mas.get_banking_stats()
+    
+    def _mas_economic_indicators(self) -> Dict:
+        """Handler for mas_economic_indicators tool"""
+        mas = MASSingapore()
+        return mas.get_economic_indicators()
+    
+    def _mas_financial_stability(self) -> Dict:
+        """Handler for mas_financial_stability tool"""
+        mas = MASSingapore()
+        return mas.get_financial_stability()
+    
+    def _mas_summary(self) -> Dict:
+        """Handler for mas_summary tool"""
+        return get_mas_summary()
+    
     # Bank of Korea (BOK) Handler Methods (Phase 635)
     def _bok_dashboard(self) -> Dict:
         """Handler for bok_dashboard tool"""
@@ -8840,6 +9678,42 @@ class MCPServer:
     def _bok_current_account(self) -> Dict:
         """Handler for bok_current_account tool"""
         return bok_get_current_account()
+    
+    # KOSTAT (Korean Statistics) Handler Methods (Phase 636)
+    def _kostat_dashboard(self) -> Dict:
+        """Handler for kostat_dashboard tool"""
+        kostat = KOSTATData()
+        return kostat.get_dashboard()
+    
+    def _kostat_gdp(self) -> Dict:
+        """Handler for kostat_gdp tool"""
+        kostat = KOSTATData()
+        return kostat.get_gdp()
+    
+    def _kostat_cpi(self) -> Dict:
+        """Handler for kostat_cpi tool"""
+        kostat = KOSTATData()
+        return kostat.get_cpi()
+    
+    def _kostat_unemployment(self) -> Dict:
+        """Handler for kostat_unemployment tool"""
+        kostat = KOSTATData()
+        return kostat.get_unemployment()
+    
+    def _kostat_industrial_production(self) -> Dict:
+        """Handler for kostat_industrial_production tool"""
+        kostat = KOSTATData()
+        return kostat.get_industrial_production()
+    
+    def _kostat_exports(self) -> Dict:
+        """Handler for kostat_exports tool"""
+        kostat = KOSTATData()
+        return kostat.get_exports()
+    
+    def _kostat_retail_sales(self) -> Dict:
+        """Handler for kostat_retail_sales tool"""
+        kostat = KOSTATData()
+        return kostat.get_retail_sales()
     
     # Reserve Bank of India (RBI) Handler Methods (Phase 632)
     def _rbi_dashboard(self) -> Dict:
@@ -8958,6 +9832,92 @@ class MCPServer:
         """Handler for tase_sector_performance tool"""
         sectors = tase_fetch_sector_performance()
         return {"sectors": sectors, "count": len(sectors)}
+    
+    # ABS Australia Stats Handler Methods (Phase 639)
+    def _abs_australia_gdp(self, quarters: int = 8) -> Dict:
+        """Handler for abs_australia_gdp tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_gdp(quarters)
+    
+    def _abs_australia_cpi(self, quarters: int = 12) -> Dict:
+        """Handler for abs_australia_cpi tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_cpi(quarters)
+    
+    def _abs_australia_employment(self, months: int = 12) -> Dict:
+        """Handler for abs_australia_employment tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_employment(months)
+    
+    def _abs_australia_unemployment(self, months: int = 12) -> Dict:
+        """Handler for abs_australia_unemployment tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_unemployment_rate(months)
+    
+    def _abs_australia_trade(self, months: int = 12) -> Dict:
+        """Handler for abs_australia_trade tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_trade_balance(months)
+    
+    def _abs_australia_building_approvals(self, months: int = 12) -> Dict:
+        """Handler for abs_australia_building_approvals tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_building_approvals(months)
+    
+    def _abs_australia_retail(self, months: int = 12) -> Dict:
+        """Handler for abs_australia_retail tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_retail_trade(months)
+    
+    def _abs_australia_wages(self, quarters: int = 12) -> Dict:
+        """Handler for abs_australia_wages tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_wage_price_index(quarters)
+    
+    def _abs_australia_dashboard(self) -> Dict:
+        """Handler for abs_australia_dashboard tool"""
+        abs_client = ABSAustraliaStats()
+        return abs_client.get_dashboard()
+    
+    # ASX Exchange Data Handler Methods (Phase 640)
+    def _asx_market_summary(self) -> Dict:
+        """Handler for asx_market_summary tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        return client.get_market_summary()
+    
+    def _asx_top_holdings(self, limit: int = 15) -> Dict:
+        """Handler for asx_top_holdings tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        holdings = client.get_asx200_composition()
+        return {"holdings": holdings[:limit], "count": len(holdings)}
+    
+    def _asx_stock_quote(self, ticker: str) -> Dict:
+        """Handler for asx_stock_quote tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        return client.get_stock_info(ticker)
+    
+    def _asx_corporate_actions(self, ticker: str, days: int = 90) -> Dict:
+        """Handler for asx_corporate_actions tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        actions = client.get_corporate_actions(ticker, days)
+        return {"ticker": ticker, "actions": actions, "count": len(actions)}
+    
+    def _asx_sector_performance(self) -> Dict:
+        """Handler for asx_sector_performance tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        sectors = client.get_sector_performance()
+        return {"sectors": sectors, "count": len(sectors)}
+    
+    def _asx_market_depth(self, ticker: str) -> Dict:
+        """Handler for asx_market_depth tool"""
+        from asx import ASXClient
+        client = ASXClient()
+        return client.get_market_depth(ticker)
     
     # Index Reconstitution Tracker Handler Methods (Phase 136)
     def _index_sp500_changes(self, days: int = 365) -> Dict:
@@ -9182,6 +10142,22 @@ class MCPServer:
     def _earnings_compare_surprises(self, tickers: List[str]) -> Dict:
         """Handler for earnings_compare_surprises tool"""
         return compare_surprise_history(tickers)
+    
+    # Quality Factor Scoring handlers (Phase 400)
+    def _quality_factor_score(self, ticker: str) -> Dict:
+        """Handler for quality_factor_score tool"""
+        return score_quality_factor(ticker)
+    
+    def _quality_factor_screen(self, tickers: List[str], min_score: float = 60.0) -> Dict:
+        """Handler for quality_factor_screen tool"""
+        import pandas as pd
+        df = quality_screen(tickers, min_score)
+        if df.empty:
+            return {'passed': 0, 'tickers': []}
+        return {
+            'passed': len(df),
+            'tickers': df.to_dict('records')
+        }
     
     # Stock Split & Corporate Events handlers (Phase 146)
     def _stock_split_history(self, ticker: str, years: int = 20) -> Dict:
@@ -9709,6 +10685,35 @@ class MCPServer:
         except Exception as e:
             return {'success': False, 'error': str(e)}
     
+    # Shenzhen Stock Exchange Handlers (Phase 698)
+    def _szse_index(self, index: str = 'szse_component', period: str = '1mo') -> Dict:
+        """Handler for szse_index tool"""
+        try:
+            result = get_szse_data(index=index, period=period)
+            if hasattr(result, 'to_dict'):
+                result_dict = result.to_dict('records')
+            else:
+                result_dict = result
+            return {'success': True, 'data': result_dict}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _szse_quote(self, index: str = 'szse_component') -> Dict:
+        """Handler for szse_quote tool"""
+        try:
+            result = get_szse_quote(index=index)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _szse_performance(self, index: str = 'chinext') -> Dict:
+        """Handler for szse_performance tool"""
+        try:
+            result = get_chinext_performance() if index == 'chinext' else get_szse_data(index=index, period='1y')
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
     # Nighttime Lights Satellite Handlers (Phase 691)
     def _nighttime_lights_country(self, country_code: str, year: int = 2024) -> Dict:
         """Handler for nighttime_lights_country tool"""
@@ -9850,6 +10855,209 @@ class MCPServer:
             dtcc = DTCCTradeReporting()
             data = dtcc.get_systemic_risk_metrics()
             return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # Paper Trading Handlers
+    def _paper_create(self, name: str, initial_cash: float = 100000) -> Dict:
+        """Handler for paper_create tool"""
+        try:
+            return paper_trading.create_portfolio(name, initial_cash)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_buy(self, ticker: str, quantity: float, portfolio: str = 'default', limit_price: Optional[float] = None) -> Dict:
+        """Handler for paper_buy tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                portfolio_id = paper_trading.get_or_create_default_portfolio()
+            
+            order_type = 'limit' if limit_price else 'market'
+            return paper_trading.execute_trade(portfolio_id, ticker.upper(), 'buy', quantity, order_type, limit_price)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_sell(self, ticker: str, quantity: float, portfolio: str = 'default', limit_price: Optional[float] = None) -> Dict:
+        """Handler for paper_sell tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                return {'success': False, 'error': 'Portfolio not found'}
+            
+            order_type = 'limit' if limit_price else 'market'
+            return paper_trading.execute_trade(portfolio_id, ticker.upper(), 'sell', quantity, order_type, limit_price)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_positions(self, portfolio: str = 'default') -> Dict:
+        """Handler for paper_positions tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                portfolio_id = paper_trading.get_or_create_default_portfolio()
+            
+            return paper_trading.get_positions(portfolio_id, with_live_prices=True)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_pnl(self, portfolio: str = 'default') -> Dict:
+        """Handler for paper_pnl tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                portfolio_id = paper_trading.get_or_create_default_portfolio()
+            
+            return paper_trading.get_pnl_summary(portfolio_id)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_trades(self, portfolio: str = 'default', days: int = 30) -> Dict:
+        """Handler for paper_trades tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                return {'success': False, 'error': 'Portfolio not found'}
+            
+            return paper_trading.get_trade_history(portfolio_id, days)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _paper_risk(self, portfolio: str = 'default') -> Dict:
+        """Handler for paper_risk tool"""
+        try:
+            portfolio_id = paper_trading.get_portfolio_id(portfolio)
+            if not portfolio_id:
+                portfolio_id = paper_trading.get_or_create_default_portfolio()
+            
+            return paper_trading.get_pnl_summary(portfolio_id)
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _backtest_run(self, strategy: str, ticker: str, start_date: str, end_date: str, 
+                      params: Optional[Dict] = None, cash: float = 100000) -> Dict:
+        """Handler for backtest_run tool"""
+        try:
+            engine = BacktestEngine(initial_cash=cash)
+            result = engine.run_backtest(strategy, ticker, start_date, end_date, params)
+            
+            return {
+                'success': True,
+                'run_id': result.run_id,
+                'metrics': {
+                    'total_return': result.total_return,
+                    'cagr': result.cagr,
+                    'sharpe_ratio': result.sharpe_ratio,
+                    'max_drawdown': result.max_drawdown,
+                    'num_trades': result.num_trades,
+                    'win_rate': result.win_rate
+                },
+                'num_trades': result.num_trades
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _backtest_strategies(self) -> Dict:
+        """Handler for backtest_strategies tool"""
+        try:
+            strategies = list_strategies()
+            return {
+                'success': True,
+                'strategies': strategies,
+                'count': len(strategies)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _backtest_optimize(self, strategy: str, ticker: str, start_date: str, end_date: str,
+                          method: str = 'grid', metric: str = 'sharpe_ratio') -> Dict:
+        """Handler for backtest_optimize tool"""
+        try:
+            engine = BacktestEngine()
+            optimizer = ParameterOptimizer(engine)
+            
+            # Define parameter grids
+            param_grids = {
+                'sma_crossover': {'fast_period': [10, 20], 'slow_period': [30, 50]},
+                'rsi_mean_reversion': {'rsi_period': [14, 20], 'oversold': [25, 30], 'overbought': [70, 75]},
+                'momentum': {'lookback_period': [20, 30], 'threshold': [0.02, 0.03]}
+            }
+            
+            param_grid = param_grids.get(strategy, {})
+            
+            if method == 'grid':
+                best_params, results = optimizer.grid_search(
+                    strategy, ticker, start_date, end_date, param_grid, metric
+                )
+            else:
+                param_ranges = {k: (min(v), max(v)) for k, v in param_grid.items()}
+                best_params, results = optimizer.random_search(
+                    strategy, ticker, start_date, end_date, param_ranges, 20, metric
+                )
+            
+            return {
+                'success': True,
+                'best_params': best_params,
+                'best_score': results[0]['score'] if results else 0,
+                'n_trials': len(results)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _backtest_walkforward(self, strategy: str, ticker: str, start_date: str, end_date: str,
+                             train_months: int = 12, test_months: int = 3) -> Dict:
+        """Handler for backtest_walkforward tool"""
+        try:
+            engine = BacktestEngine()
+            wf = WalkForwardOptimizer(engine)
+            
+            param_grids = {
+                'sma_crossover': {'fast_period': [10, 20], 'slow_period': [30, 50]},
+                'rsi_mean_reversion': {'rsi_period': [14, 20], 'oversold': [25, 30], 'overbought': [70, 75]}
+            }
+            
+            param_grid = param_grids.get(strategy)
+            
+            summary = wf.run_walkforward(
+                strategy, ticker, start_date, end_date,
+                train_months, test_months, param_grid
+            )
+            
+            return {
+                'success': True,
+                'n_windows': summary['n_windows'],
+                'oos_sharpe': summary['oos_sharpe'],
+                'oos_return': summary['oos_total_return'],
+                'degradation_ratio': summary['degradation_ratio'],
+                'overfitting_warning': bool(summary['overfitting_warning'])
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _backtest_compare(self, ticker: str, start_date: str, end_date: str, 
+                         strategies: List[str]) -> Dict:
+        """Handler for backtest_compare tool"""
+        try:
+            engine = BacktestEngine()
+            results = []
+            
+            for strategy_name in strategies:
+                result = engine.run_backtest(
+                    strategy_name, ticker, start_date, end_date, save_to_db=False
+                )
+                results.append({
+                    'strategy': strategy_name,
+                    'total_return': result.total_return,
+                    'sharpe_ratio': result.sharpe_ratio,
+                    'max_drawdown': result.max_drawdown,
+                    'num_trades': result.num_trades
+                })
+            
+            return {
+                'success': True,
+                'results': results,
+                'count': len(results)
+            }
         except Exception as e:
             return {'success': False, 'error': str(e)}
 

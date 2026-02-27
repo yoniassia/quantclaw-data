@@ -29,8 +29,9 @@ MODULES = {
         'commands': ['monte-carlo', 'var', 'scenario']
     },
     'backtest': {
-        'file': 'backtesting_framework.py',
-        'commands': ['backtest', 'backtest-momentum', 'backtest-mean-reversion']
+        'file': 'backtesting_engine.py',
+        'commands': ['backtest', 'backtest-strategies', 'backtest-optimize', 'backtest-walkforward', 
+                     'backtest-compare', 'backtest-report', 'backtest-history']
     },
     'volatility_surface': {
         'file': 'volatility_surface.py',
@@ -48,6 +49,10 @@ MODULES = {
         'file': 'kalman_filter.py',
         'commands': ['kalman', 'adaptive-ma', 'regime-detect']
     },
+    'kostat': {
+        'file': 'kostat.py',
+        'commands': ['kostat-gdp', 'kostat-cpi', 'kostat-dashboard']
+    },
     'multi_timeframe': {
         'file': 'multi_timeframe.py',
         'commands': ['mtf', 'trend-alignment', 'signal-confluence']
@@ -56,6 +61,14 @@ MODULES = {
         'file': 'smart_alerts.py',
         'commands': ['alert-create', 'alert-list', 'alert-check', 'alert-delete', 'alert-history', 'alert-stats']
     },
+    'alpha_picker': {
+        'file': 'alpha_picker.py',
+        'commands': ['alpha-score', 'alpha-picks', 'alpha-validate', 'alpha-scan', 'alpha-top-momentum']
+    },
+    'sa_quant': {
+        'file': 'sa_quant_replica.py',
+        'commands': ['sa-score', 'sa-strong-buys', 'sa-validate', 'sa-backtest']
+    },
     'order_book': {
         'file': 'order_book.py',
         'commands': ['order-book', 'bid-ask', 'liquidity', 'imbalance', 'support-resistance']
@@ -63,6 +76,15 @@ MODULES = {
     'options_flow': {
         'file': 'options_flow_scanner.py',
         'commands': ['options-flow-scan', 'options-flow-market', 'options-flow-darkpool']
+    },
+    'paper_trading': {
+        'file': 'paper_trading.py',
+        'commands': ['paper-create', 'paper-buy', 'paper-sell', 'paper-positions', 'paper-pnl', 
+                     'paper-trades', 'paper-orders', 'paper-cancel', 'paper-risk', 'paper-snapshot', 'paper-chart']
+    },
+    'live_paper_trading': {
+        'file': 'live_paper_trading.py',
+        'commands': ['paper-run', 'paper-status', 'paper-history']
     },
     'alert_dsl': {
         'file': 'alert_dsl.py',
@@ -155,6 +177,10 @@ MODULES = {
     'earnings_quality': {
         'file': 'earnings_quality.py',
         'commands': ['earnings-quality', 'accruals-trend', 'fraud-indicators']
+    },
+    'quality_factor': {
+        'file': 'quality_factor_scoring.py',
+        'commands': ['quality-score', 'quality-screen']
     },
     'patent': {
         'file': 'patent_tracking.py',
@@ -437,6 +463,10 @@ MODULES = {
         'file': 'oecd.py',
         'commands': ['cli', 'housing', 'productivity', 'compare', 'snapshot', 'countries']
     },
+    'oecd_mei': {
+        'file': 'oecd_mei.py',
+        'commands': ['mei-cpi', 'mei-ppi', 'mei-ipi', 'mei-unemp', 'mei-bci', 'mei-cci', 'mei-retail', 'mei-all', 'mei-snapshot']
+    },
     'boj': {
         'file': 'boj.py',
         'commands': ['tankan', 'monetary-base', 'fx-reserves', 'rates', 'boj-watch', 'compare-fed', 'meeting-schedule']
@@ -481,6 +511,10 @@ MODULES = {
         'file': 'singapore_dos.py',
         'commands': ['singapore-gdp', 'singapore-cpi', 'singapore-trade', 'singapore-mas', 'singapore-dashboard']
     },
+    'mas_singapore': {
+        'file': 'mas_singapore.py',
+        'commands': ['mas-policy', 'mas-reserves', 'mas-banking', 'mas-indicators', 'mas-stability', 'mas-summary']
+    },
     'fred_enhanced': {
         'file': 'fred_enhanced.py',
         'commands': ['fred-series', 'fred-yield-curve', 'fred-money-supply', 'fred-financial-conditions', 'fred-leading-indicators', 'fred-consumer-credit', 'fred-category', 'fred-snapshot', 'fred-categories', 'fred-search']
@@ -520,6 +554,10 @@ MODULES = {
     'bis_banking': {
         'file': 'bis_banking.py',
         'commands': ['dataflows', 'cross-border', 'derivatives', 'derivatives-by-type', 'fx-turnover', 'fx-centers', 'global-liquidity', 'debt-securities', 'property-prices', 'country-profile', 'countries']
+    },
+    'bis_credit_gap': {
+        'file': 'bis_credit_gap.py',
+        'commands': ['credit-gap', 'g20-credit-heatmap', 'crisis-probability']
     },
     'ilo_labor': {
         'file': 'ilo_labor.py',
@@ -585,6 +623,11 @@ MODULES = {
         'file': 'bank_of_israel_dashboard.py',
         'commands': ['boi-dashboard', 'boi-policy-rate', 'boi-fx-reserves', 'boi-exchange-rates', 'boi-inflation', 'boi-policy-history']
     },
+    'israel_cbs': {
+        'file': 'israel_cbs_statistics.py',
+        'commands': ['israel-cbs-dashboard', 'israel-cbs-cpi', 'israel-cbs-labor', 'israel-cbs-industrial', 
+                     'israel-cbs-trade', 'israel-cbs-rates', 'israel-cbs-reserves']
+    },
     'tase': {
         'file': 'tase.py',
         'commands': ['tase-index', 'tase-stock', 'tase-summary', 'tase-sectors', 'tase-history']
@@ -597,8 +640,17 @@ MODULES = {
     'bse_nse': {
         'file': 'bse_nse.py',
         'commands': ['india-sensex', 'india-nifty', 'india-nifty-bank', 'india-nifty-it', 
-                     'india-all-indices', 'india-fii-dii', 'india-breadth', 'india-gainers', 
-                     'india-losers', 'india-active', 'india-market-status', 'india-market-dashboard']
+                     'india-all-indices', 'india-fii-dii', 'india-breadth', 'india-gainers', 'india-losers', 'india-active', 'india-market-status', 'india-market-dashboard']
+    },
+    'abs_australia': {
+        'file': 'abs_australia_stats.py',
+        'commands': ['aus-gdp', 'aus-cpi', 'aus-employment', 'aus-unemployment', 
+                     'aus-trade', 'aus-building', 'aus-retail', 'aus-wages', 'aus-dashboard']
+    },
+    'asx': {
+        'file': 'asx.py',
+        'commands': ['asx-summary', 'asx-holdings', 'asx-quote', 'asx-actions', 'asx-sectors', 
+                     'asx-depth', 'asx-history', 'asx-compare', 'asx-movers', 'asx-indices']
     },
     'bank_of_korea': {
         'file': 'bank_of_korea.py',
@@ -666,6 +718,10 @@ MODULES = {
         'file': 'carbon_credits.py',
         'commands': ['eu-ets-price', 'global-prices', 'market-stats', 'emissions-by-sector', 'compare-markets', 'offset-projects']
     },
+    'eu_taxonomy': {
+        'file': 'eu_taxonomy_alignment.py',
+        'commands': ['taxonomy-score', 'taxonomy-leaders', 'taxonomy-sector']
+    },
     'rare_earths': {
         'file': 'rare_earths.py',
         'commands': ['mineral-profile', 'supply-risk', 'risk-rankings', 'sector-exposure', 'country-profile', 'rare-earths-detailed', 'comprehensive-report', 'list-minerals', 'list-sectors']
@@ -722,13 +778,25 @@ MODULES = {
         'file': 'shanghai_stock_exchange.py',
         'commands': ['sse-index', 'sse-margin', 'sse-northbound']
     },
+    'szse': {
+        'file': 'shenzhen_stock_exchange.py',
+        'commands': ['szse-index', 'szse-chinext', 'szse-summary', 'szse-performance']
+    },
     'flight': {
         'file': 'flight_data.py',
         'commands': ['flight-live', 'flight-index', 'flight-regional', 'flight-report']
     },
+    'satellite': {
+        'file': 'satellite_lights.py',
+        'commands': ['satellite-monthly', 'satellite-urban-growth', 'satellite-gdp', 'satellite-blackouts', 'satellite-settlements', 'satellite-summary']
+    },
     'dtcc': {
         'file': 'dtcc_trade_reporting.py',
         'commands': ['dtcc-swaps', 'dtcc-repo', 'dtcc-triparty', 'dtcc-lending', 'dtcc-clearing', 'dtcc-ftd', 'dtcc-risk']
+    },
+    'safe_china': {
+        'file': 'safe_china_fx_reserves.py',
+        'commands': ['safe-reserves', 'safe-capital-flows', 'safe-interventions', 'safe-composition', 'safe-gold', 'safe-dashboard']
     }
 }
 
@@ -785,10 +853,18 @@ def print_help():
     print("  python cli.py var SYMBOL [--confidence 0.95 0.99] [--days N]")
     print("  python cli.py scenario SYMBOL [--days N]")
     
-    print("\nBacktesting Framework (Phase 9):")
-    print("  python cli.py backtest SYMBOL1,SYMBOL2 --start YYYY-MM-DD --end YYYY-MM-DD [--strategy momentum|mean_reversion] [--capital 100000]")
-    print("  python cli.py backtest-momentum SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD [--lookback 20]")
-    print("  python cli.py backtest-mean-reversion SYMBOL --start YYYY-MM-DD --end YYYY-MM-DD [--lookback 20] [--z-threshold 2.0]")
+    print("\nBacktesting Framework with Walk-Forward Optimization:")
+    print("  python cli.py backtest-strategies                 # List all available strategies")
+    print("  python cli.py backtest <strategy> <ticker> --start YYYY-MM-DD --end YYYY-MM-DD [--cash 100000] [--params '{\"fast\": 10}']")
+    print("                                                    # Run single backtest")
+    print("  python cli.py backtest-optimize <strategy> <ticker> --start YYYY-MM-DD --end YYYY-MM-DD [--method grid|random] [--metric sharpe|return|calmar] [--n-trials 100]")
+    print("                                                    # Optimize strategy parameters")
+    print("  python cli.py backtest-walkforward <strategy> <ticker> --start YYYY-MM-DD --end YYYY-MM-DD [--train-months 12] [--test-months 3] [--metric sharpe]")
+    print("                                                    # Walk-forward optimization")
+    print("  python cli.py backtest-compare <ticker> --start YYYY-MM-DD --end YYYY-MM-DD --strategies sma_crossover,rsi_mean_reversion,momentum")
+    print("                                                    # Compare multiple strategies")
+    print("  python cli.py backtest-report <run_id>            # Get detailed report for a run")
+    print("  python cli.py backtest-history [--limit 10]       # List past backtest runs")
     
     print("\nWalk-Forward Optimization (Phase 37):")
     print("  python cli.py walk-forward SYMBOL [--strategy sma-crossover]")
@@ -895,6 +971,11 @@ def print_help():
     print("  python cli.py earnings-quality TICKER             # Accruals ratio, Beneish M-Score, Altman Z-Score")
     print("  python cli.py accruals-trend TICKER               # Accruals ratio trend over 4 periods")
     print("  python cli.py fraud-indicators TICKER             # Quick fraud/distress red flags summary")
+    
+    print("\nQuality Factor Scoring (Phase 400):")
+    print("  python cli.py quality-score TICKER                # Score stock on quality factors (ROE, leverage, accruals, stability)")
+    print("  python cli.py quality-screen AAPL,MSFT,GOOGL --min-score 70")
+    print("                                                    # Screen multiple tickers for quality")
     
     print("\nExecutive Compensation (Phase 51):")
     print("  python cli.py exec-comp TICKER                    # Executive compensation breakdown (CEO, CFO, top officers)")
@@ -1319,6 +1400,11 @@ def print_help():
     print("  python cli.py country-profile GB                  # Comprehensive BIS profile")
     print("  python cli.py countries                           # List BIS reporting countries")
     
+    print("\nBIS Credit-to-GDP Gap (Phase 695):")
+    print("  python cli.py credit-gap US                       # Get credit gap for a country (early warning indicator)")
+    print("  python cli.py g20-credit-heatmap                  # G20 countries credit gap heatmap")
+    print("  python cli.py crisis-probability US               # Estimate 3-year crisis probability")
+    
     print("\nDTCC Trade Reporting (Phase 696):")
     print("  python cli.py dtcc-swaps [asset_class]            # OTC derivatives cleared volumes (rates, credit, equity, fx, commodity)")
     print("  python cli.py dtcc-repo [days]                    # NY Fed reverse repo operations history")
@@ -1327,6 +1413,14 @@ def print_help():
     print("  python cli.py dtcc-clearing                       # Central counterparty clearing volumes")
     print("  python cli.py dtcc-ftd [ticker]                   # SEC fails-to-deliver data")
     print("  python cli.py dtcc-risk                           # DTCC systemic risk metrics")
+    
+    print("\nSAFE China FX Reserves (Phase 699 — FINAL):")
+    print("  python cli.py safe-reserves                       # Latest China FX reserves ($3.2T+)")
+    print("  python cli.py safe-capital-flows                  # Capital account flows (FDI, portfolio, hot money)")
+    print("  python cli.py safe-interventions                  # Estimated PBOC FX intervention activity")
+    print("  python cli.py safe-composition                    # Reserves currency composition (USD/EUR/JPY/gold)")
+    print("  python cli.py safe-gold                           # PBOC gold reserve purchases (de-dollarization)")
+    print("  python cli.py safe-dashboard                      # Comprehensive FX reserves dashboard")
     
     print("\nCarbon Credits & Emissions (Phase 177):")
     print("  python cli.py eu-ets-price [days]                 # EU ETS carbon allowance (EUA) price history")
@@ -1343,6 +1437,12 @@ def print_help():
     print("  python cli.py cdp-sec CIK [--years 3]            # Search SEC filings for climate disclosures")
     print("  python cli.py cdp-footprint TICKER [--year 2023] [--scope3]")
     print("                                                    # Aggregated carbon footprint from multiple sources")
+    
+    print("\nEU Taxonomy Alignment (Phase 681):")
+    print("  python cli.py taxonomy-score TICKER              # Estimate % revenue aligned with EU Taxonomy")
+    print("  python cli.py taxonomy-leaders [--sector renewable_energy] [--min-alignment 50]")
+    print("                                                    # Show companies with high taxonomy alignment")
+    print("  python cli.py taxonomy-sector renewable_energy   # Sector-specific taxonomy analysis")
     
     print("\nContainer Port Throughput (Phase 193):")
     print("  python cli.py port-all                            # All major ports (Shanghai, Rotterdam, LA/Long Beach) summary")
@@ -1367,6 +1467,41 @@ def print_help():
     print("                                                    # Search recent SEC bankruptcy filings")
     print("  python cli.py bankruptcy-tracker --ticker AAPL   # Track bankruptcy risk for specific company")
     print("  python cli.py bankruptcy-stats [--year 2025]     # Bankruptcy statistics by period")
+    
+    print("\nSatellite Nighttime Lights (Phase 691):")
+    print("  python cli.py satellite-monthly [--year 2024] [--month 1] [--region global]")
+    print("                                                    # Monthly VIIRS nighttime lights composite")
+    print("  python cli.py satellite-urban-growth <city> --years 2012,2024")
+    print("                                                    # Urban growth index from multi-year lights")
+    print("  python cli.py satellite-gdp <country> [--year 2024]")
+    print("                                                    # Economic activity proxy from lights")
+    print("  python cli.py satellite-blackouts <region> --start 2024-01-01 --end 2024-03-01")
+    print("                                                    # Detect blackouts/disasters from light drops")
+    print("  python cli.py satellite-settlements <lat>,<lon> [--radius 10]")
+    print("                                                    # Detect new settlements (refugee camps)")
+    print("  python cli.py satellite-summary               # Full satellite lights capabilities demo")
+    
+    print("\nPaper Trading Engine:")
+    print("  python cli.py paper-create <name> [--cash 100000]")
+    print("                                                    # Create new paper trading portfolio")
+    print("  python cli.py paper-buy <ticker> <qty> [--limit price] [--portfolio default]")
+    print("                                                    # Execute paper buy order")
+    print("  python cli.py paper-sell <ticker> <qty> [--limit price] [--portfolio default]")
+    print("                                                    # Execute paper sell order")
+    print("  python cli.py paper-positions [--portfolio default]")
+    print("                                                    # Show all positions with live P&L")
+    print("  python cli.py paper-pnl [--portfolio default]    # Show comprehensive P&L summary")
+    print("  python cli.py paper-trades [--portfolio default] [--days 30]")
+    print("                                                    # Show trade history")
+    print("  python cli.py paper-risk [--portfolio default]   # Show risk metrics")
+    print("  python cli.py paper-snapshot [--portfolio default]")
+    print("                                                    # Take daily snapshot")
+    print("  python cli.py paper-chart [--portfolio default]  # Show ASCII equity curve")
+    
+    print("\nLIVE Paper Trading - SA Quant Replica (Auto-rebalance on 1st & 15th):")
+    print("  python cli.py paper-run [--dry-run]              # Execute rebalance (score → trade → report)")
+    print("  python cli.py paper-status                       # Show current portfolio + performance")
+    print("  python cli.py paper-history [--limit 50]         # Show trade history")
 
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
