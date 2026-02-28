@@ -211,6 +211,10 @@ MODULES = {
         'file': 'quality_factor_scoring.py',
         'commands': ['quality-score', 'quality-screen']
     },
+    'factor_model_engine': {
+        'file': 'factor_model_engine.py',
+        'commands': ['factors', 'factor-score', 'factor-compare', 'factor-rank']
+    },
     'patent': {
         'file': 'patent_tracking.py',
         'commands': ['patent-search', 'patent-compare', 'patent-trends', 'industry-leaders']
@@ -1075,6 +1079,10 @@ def print_help():
     print("  python cli.py accruals-trend TICKER               # Accruals ratio trend over 4 periods")
     print("  python cli.py fraud-indicators TICKER             # Quick fraud/distress red flags summary")
     
+    print("\nFactor Model Engine (Phase 7) — 5-Factor Scoring:")
+    print("  python cli.py factors TICKER                    # All factor scores (momentum, value, quality, size, volatility)")
+    print("  python cli.py factor-compare TICKER1,TICKER2,.. # Compare factors across multiple stocks")
+    print()
     print("\nQuality Factor Scoring (Phase 400):")
     print("  python cli.py quality-score TICKER                # Score stock on quality factors (ROE, leverage, accruals, stability)")
     print("  python cli.py quality-screen AAPL,MSFT,GOOGL --min-score 70")

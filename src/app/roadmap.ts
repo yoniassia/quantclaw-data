@@ -13,7 +13,7 @@ export const phases: Phase[] = [
   { id: 2, name: "Enhanced Data", description: "Options chains with Greeks, earnings calendar, macro indicators, dividends, ETF holdings", status: "done", category: "Foundation", loc: 443 },
   { id: 3, name: "Alternative Data", description: "Social sentiment (Reddit/StockTwits), congress trades, short interest, technical analysis", status: "done", category: "Alt Data", loc: 375 },
   { id: 4, name: "Multi-Asset Coverage", description: "Cryptocurrency via CoinGecko, commodities, forex, analyst ratings, company profiles, screener", status: "done", category: "Multi-Asset", loc: 415 },
-  { id: 5, name: "Earnings Transcripts NLP", description: "Parse 8-K/call transcripts, extract key quotes, guidance changes, management sentiment", status: "done", category: "Intelligence", loc: 296 },
+  { id: 5, name: "Earnings Transcripts NLP", description: "Parse 8-K/call transcripts, extract key quotes, guidance changes, management sentiment", status: "done", category: "Intelligence", loc: 362 },
   { id: 6, name: "Options Flow Scanner", description: "Unusual activity alerts, dark pool prints, sweep detection, smart money tracking", status: "done", category: "Derivatives", loc: 368 },
   { id: 7, name: "Factor Model Engine", description: "Momentum, value, quality, size, volatility factor scoring for any stock", status: "done", category: "Quant", loc: 398 },
   { id: 8, name: "Portfolio Analytics", description: "Sharpe, Sortino, max drawdown, correlation matrix, Value-at-Risk calculations", status: "done", category: "Quant", loc: 381 },

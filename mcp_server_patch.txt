@@ -1,0 +1,45 @@
+
+# Import factor model engine (Phase 7)
+from factor_model_engine import get_factor_scores, compare_factors
+
+# Add to MCP server tools dict (insert after quality_factor_screen):
+            'factor_scores': {
+                'description': 'Calculate all factor scores (momentum, value, quality, size, volatility) for a stock',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol'
+                    }
+                },
+                'handler': self._factor_scores
+            },
+            'factor_compare': {
+                'description': 'Compare factor scores across multiple stocks',
+                'parameters': {
+                    'tickers': {
+                        'type': 'array',
+                        'description': 'List of stock ticker symbols',
+                        'items': {'type': 'string'}
+                    },
+                    'sort_by': {
+                        'type': 'string',
+                        'description': 'Column to sort by (default: momentum_12m)',
+                        'default': 'momentum_12m'
+                    }
+                },
+                'handler': self._factor_compare
+            },
+
+# Add handler methods:
+    def _factor_scores(self, ticker: str) -> Dict:
+        """Handler for factor_scores tool"""
+        return get_factor_scores(ticker, verbose=False)
+    
+    def _factor_compare(self, tickers: List[str], sort_by: str = 'momentum_12m') -> Dict:
+        """Handler for factor_compare tool"""
+        import pandas as pd
+        df = compare_factors(tickers, sort_by)
+        return {
+            'count': len(df),
+            'data': df.to_dict('records')
+        }

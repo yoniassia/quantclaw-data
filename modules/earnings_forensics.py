@@ -33,7 +33,7 @@ except ImportError:
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from earnings_quality_metrics import calculate_beneish_mscore, calculate_accruals_ratio
+from modules.earnings_quality import calculate_beneish_m_score as calculate_beneish_mscore, calculate_accruals_ratio
 
 
 def get_financial_data(ticker: str, period: str = 'annual') -> Optional[Dict]:

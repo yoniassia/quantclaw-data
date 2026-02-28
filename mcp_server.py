@@ -368,6 +368,12 @@ from quality_factor_scoring import (
     quality_screen
 )
 
+# Factor Model Engine (Phase 7)
+from factor_model_engine import (
+    get_factor_scores,
+    compare_factors
+)
+
 from stock_split_corporate_events import (
     get_stock_splits,
     analyze_split_impact,
@@ -3347,6 +3353,36 @@ class MCPServer:
                         'default': 60.0
                     }
                 },
+            
+            # Factor Model Engine (Phase 7)
+            'factor_scores': {
+                'description': 'Calculate all factor scores (momentum, value, quality, size, volatility) for a stock',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._factor_scores
+            },
+            'factor_compare': {
+                'description': 'Compare factor scores across multiple stocks',
+                'parameters': {
+                    'tickers': {
+                        'type': 'array',
+                        'description': 'List of stock ticker symbols',
+                        'required': True
+                    },
+                    'sort_by': {
+                        'type': 'string',
+                        'description': 'Column to sort by (default: momentum_12m)',
+                        'required': False,
+                        'default': 'momentum_12m'
+                    }
+                },
+                'handler': self._factor_compare
+            },
                 'handler': self._quality_factor_screen
             },
             
@@ -11306,6 +11342,20 @@ class MCPServer:
             'tickers': df.to_dict('records')
         }
     
+    # Factor Model Engine handlers (Phase 7)
+    def _factor_scores(self, ticker: str) -> Dict:
+        """Handler for factor_scores tool"""
+        return get_factor_scores(ticker, verbose=False)
+    
+    def _factor_compare(self, tickers: List[str], sort_by: str = 'momentum_12m') -> Dict:
+        """Handler for factor_compare tool"""
+        import pandas as pd
+        df = compare_factors(tickers, sort_by)
+        return {
+            'count': len(df),
+            'data': df.to_dict('records')
+        }
+    
     # Stock Split & Corporate Events handlers (Phase 146)
     def _stock_split_history(self, ticker: str, years: int = 20) -> Dict:
         """Handler for stock_split_history tool"""
@@ -12621,3 +12671,41 @@ Examples:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+@server.call_tool()
+async def edgar_search(
+    query: str,
+    ticker: Optional[str] = None,
+    form: Optional[str] = None,
+    limit: int = 20
+) -> List[TextContent]:
+    """SEC EDGAR full-text filing search"""
+    from modules.edgar_search import EdgarSearch
+    edgar = EdgarSearch()
+    results = edgar.search(query=query, entity=ticker, filing_type=form, limit=limit)
+    
+    output = f"🔍 EDGAR Search Results\nQuery: {query}\nTotal hits: {results['hits']}\n\n"
+    for filing in results['filings'][:limit]:
+        output += f"📄 {filing['entity']} ({filing['cik']})\n"
+        output += f"   Form: {filing['form']} | Date: {filing['filing_date']}\n"
+        output += f"   Relevance: {filing['relevance']:.2f}\n"
+        output += f"   Snippet: {filing['snippet'][:200]}...\n"
+        output += f"   URL: {filing['url']}\n\n"
+    
+    return [TextContent(type="text", text=output)]
+
+@server.call_tool()
+async def edgar_risk_factors(ticker: str, years: int = 3) -> List[TextContent]:
+    """Search risk factors in 10-K filings"""
+    from modules.edgar_search import EdgarSearch
+    edgar = EdgarSearch()
+    results = edgar.search_risk_factors(ticker, years=years)
+    
+    output = f"🚨 Risk Factor Analysis for {ticker}\nFound {len(results)} risk mentions\n\n"
+    for r in results[:20]:
+        output += f"📄 {r['form']} - {r['filing_date']}\n"
+        output += f"   Keyword: {r['keyword']}\n"
+        output += f"   Snippet: {r['snippet'][:150]}...\n"
+        output += f"   URL: {r['url']}\n\n"
+    
+    return [TextContent(type="text", text=output)]

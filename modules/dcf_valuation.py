@@ -32,7 +32,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Import SEC XBRL utilities
-from sec_xbrl_financial_statements import (
+from modules.sec_xbrl_financial_statements import (
     get_cik_from_ticker,
     get_financial_statements
 )
