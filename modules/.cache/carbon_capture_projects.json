@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-02-27T21:33:48.673556",
+  "total_projects": 15,
+  "operational": 8,
+  "under_construction": 1,
+  "planned": 4,
+  "cancelled": 1,
+  "total_capacity_mtpa": 39.7,
+  "operational_capacity_mtpa": 11.600000000000001,
+  "by_country": {
+    "Australia": 4.1,
+    "Canada": 3.5,
+    "Netherlands": 2.5,
+    "Norway": 3.2,
+    "UK": 21.0,
+    "USA": 5.4
+  },
+  "by_type": {
+    "Ethanol fermentation": 1.0,
+    "Hydrogen + industrial": 10.0,
+    "Industrial + storage": 5.0,
+    "Industrial aggregation": 1.5,
+    "Industrial cluster": 8.5,
+    "Natural gas processing": 5.7,
+    "Oxy-fuel combustion": 0.1,
+    "Post-combustion": 2.4,
+    "Pre-combustion": 4.0,
+    "Storage hub": 1.5
+  },
+  "projects": [
+    {
+      "project": "Petra Nova",
+      "country": "USA",
+      "capacity_mtpa": 1.4,
+      "status": "Operational",
+      "type": "Post-combustion",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Boundary Dam",
+      "country": "Canada",
+      "capacity_mtpa": 1.0,
+      "status": "Operational",
+      "type": "Post-combustion",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Quest",
+      "country": "Canada",
+      "capacity_mtpa": 1.0,
+      "status": "Operational",
+      "type": "Pre-combustion",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Illinois Industrial",
+      "country": "USA",
+      "capacity_mtpa": 1.0,
+      "status": "Operational",
+      "type": "Ethanol fermentation",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Gorgon",
+      "country": "Australia",
+      "capacity_mtpa": 4.0,
+      "status": "Operational",
+      "type": "Natural gas processing",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Sleipner",
+      "country": "Norway",
+      "capacity_mtpa": 1.0,
+      "status": "Operational",
+      "type": "Natural gas processing",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Sn\u00f8hvit",
+      "country": "Norway",
+      "capacity_mtpa": 0.7,
+      "status": "Operational",
+      "type": "Natural gas processing",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Northern Lights",
+      "country": "Norway",
+      "capacity_mtpa": 1.5,
+      "status": "Under construction",
+      "type": "Storage hub",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Porthos",
+      "country": "Netherlands",
+      "capacity_mtpa": 2.5,
+      "status": "Planned",
+      "type": "Industrial cluster",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Net Zero Teesside",
+      "country": "UK",
+      "capacity_mtpa": 6.0,
+      "status": "Planned",
+      "type": "Industrial cluster",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "HyNet North West",
+      "country": "UK",
+      "capacity_mtpa": 10.0,
+      "status": "Planned",
+      "type": "Hydrogen + industrial",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Acorn CCS",
+      "country": "UK",
+      "capacity_mtpa": 5.0,
+      "status": "Planned",
+      "type": "Industrial + storage",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Alberta Carbon Trunk Line",
+      "country": "Canada",
+      "capacity_mtpa": 1.5,
+      "status": "Operational",
+      "type": "Industrial aggregation",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Kemper County IGCC",
+      "country": "USA",
+      "capacity_mtpa": 3.0,
+      "status": "Cancelled",
+      "type": "Pre-combustion",
+      "source": "NETL_Database"
+    },
+    {
+      "project": "Callide Oxyfuel",
+      "country": "Australia",
+      "capacity_mtpa": 0.1,
+      "status": "Pilot",
+      "type": "Oxy-fuel combustion",
+      "source": "NETL_Database"
+    }
+  ],
+  "ccus_utilization_projects": [
+    {
+      "project": "LanzaTech Carbon Recycling",
+      "country": "USA",
+      "capacity_mtpa": 0.15,
+      "utilization": "Chemicals (ethanol)",
+      "status": "Operational",
+      "description": "Convert CO2 to ethanol using bacteria"
+    },
+    {
+      "project": "CO2 Solutions Valorisation Carbone",
+      "country": "Canada",
+      "capacity_mtpa": 0.03,
+      "utilization": "Chemicals (fertilizer)",
+      "status": "Pilot",
+      "description": "Enzyme-based CO2 capture for fertilizer"
+    },
+    {
+      "project": "Newlight AirCarbon",
+      "country": "USA",
+      "capacity_mtpa": 0.02,
+      "utilization": "Bioplastics",
+      "status": "Commercial",
+      "description": "Convert methane + CO2 to plastic pellets"
+    },
+    {
+      "project": "Carbon Clean Tuticorin",
+      "country": "India",
+      "capacity_mtpa": 0.06,
+      "utilization": "Soda ash production",
+      "status": "Operational",
+      "description": "CO2 for soda ash manufacturing"
+    },
+    {
+      "project": "CarbonCure Concrete",
+      "country": "USA/Canada",
+      "capacity_mtpa": 0.5,
+      "utilization": "Concrete curing",
+      "status": "Commercial",
+      "description": "Inject CO2 into concrete for strength + storage"
+    }
+  ],
+  "growth_rate_pct": 43.1,
+  "investment_to_1000mtpa": {
+    "current_capacity_mtpa": 11.600000000000001,
+    "target_capacity_mtpa": 1000,
+    "gap_mtpa": 988.4,
+    "investment_needed_usd": 1976800000000.0,
+    "investment_needed_billions": 1976.8,
+    "assumptions": {
+      "cost_per_mtpa_facility": "$2B",
+      "source": "IEA CCUS in Clean Energy Transitions"
+    }
+  }
+}

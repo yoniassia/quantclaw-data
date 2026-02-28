@@ -24,6 +24,8 @@ interface CommandOutput {
   timestamp: string;
 }
 
+type TabType = 'terminal' | 'sources' | 'stats';
+
 export default function HomePage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [marketData, setMarketData] = useState<MarketQuote[]>([]);
@@ -34,6 +36,10 @@ export default function HomePage() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [terminalOutput, setTerminalOutput] = useState<CommandOutput[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('terminal');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [expandedSource, setExpandedSource] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const feedRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -138,6 +144,19 @@ export default function HomePage() {
   const totalSources = dataSources.length;
   const totalLoc = phases.reduce((sum, p) => sum + (p.loc || 0), 0);
 
+  // Get unique categories
+  const categories = ['all', ...Array.from(new Set(dataSources.map(s => s.type)))];
+
+  // Filter data sources
+  const filteredSources = dataSources.filter(source => {
+    const matchesCategory = selectedCategory === 'all' || source.type === selectedCategory;
+    const matchesSearch = searchQuery === '' || 
+      source.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      source.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      source.type.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   function formatTime(date: Date): string {
     return date.toTimeString().split(' ')[0];
   }
@@ -211,17 +230,56 @@ export default function HomePage() {
         ];
         break;
 
+      case 'sources':
+        const topSources = dataSources.slice(0, 10);
+        output = [
+          `TOTAL DATA SOURCES: ${dataSources.length}`,
+          '',
+          'TOP 10 SOURCES:',
+          ...topSources.map(s => 
+            `  ${s.icon} ${s.name.padEnd(25)} [${s.type}]`
+          ),
+          '',
+          'Use "search <query>" to find specific sources',
+          'Or switch to Sources tab for full browser',
+        ];
+        break;
+
+      case 'search':
+        if (args.length === 0) {
+          output = ['ERROR: Usage: search <query>'];
+        } else {
+          const query = args.join(' ').toLowerCase();
+          const results = dataSources.filter(s => 
+            s.name.toLowerCase().includes(query) ||
+            s.desc.toLowerCase().includes(query) ||
+            s.type.toLowerCase().includes(query)
+          ).slice(0, 10);
+          
+          if (results.length === 0) {
+            output = [`No sources found for: ${query}`];
+          } else {
+            output = [
+              `Found ${results.length} sources matching "${query}":`,
+              '',
+              ...results.map(s => 
+                `  ${s.icon} ${s.name} - ${s.desc.substring(0, 50)}...`
+              ),
+            ];
+          }
+        }
+        break;
+
       case 'help':
         output = [
           'AVAILABLE COMMANDS:',
           '  price <TICKER>         Get current price',
           '  quote <TICKER>         Alias for price',
           '  modules                Show module statistics',
+          '  sources                List top data sources',
+          '  search <query>         Search modules by name',
           '  status                 System status',
           '  about                  About QuantClaw',
-          '  backtest <strategy>    Run backtest (coming soon)',
-          '  paper buy/sell         Paper trading (coming soon)',
-          '  alpha score/picks      Alpha signals (coming soon)',
           '  help                   Show this help',
           '  clear                  Clear terminal',
         ];
@@ -308,6 +366,14 @@ export default function HomePage() {
     return '█'.repeat(filled) + '░'.repeat(empty);
   }
 
+  // Quick command buttons
+  const quickCommands = [
+    { label: 'prices', cmd: 'price SPY' },
+    { label: 'modules', cmd: 'modules' },
+    { label: 'sources', cmd: 'sources' },
+    { label: 'help', cmd: 'help' },
+  ];
+
   return (
     <div style={{
       display: 'flex',
@@ -377,239 +443,15 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: !isMobile ? '2fr 1.2fr 1fr' : '1fr',
-        gridTemplateRows: !isMobile ? '1fr 1.3fr' : 'auto',
-        gap: '2px',
-        flex: 1,
-        background: '#0a0a0f',
-        overflow: isMobile ? 'auto' : 'hidden',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        {/* Panel 1: Market Data */}
+      {/* Mobile: Sticky Terminal Input + Quick Actions */}
+      {isMobile && (
         <div style={{
           background: '#111318',
-          border: '1px solid #1e2330',
-          padding: isMobile ? '10px' : '16px',
-          overflow: 'auto',
-          maxHeight: isMobile ? '220px' : 'none',
-          order: isMobile ? 1 : 0,
+          borderBottom: '1px solid #1e2330',
+          padding: '12px',
+          flexShrink: 0,
         }}>
-          <div style={{
-            fontSize: isMobile ? '11px' : '12px',
-            fontWeight: 'bold',
-            color: '#ff8c00',
-            marginBottom: isMobile ? '8px' : '12px',
-            letterSpacing: '1px',
-          }}>
-            MARKET DATA
-          </div>
-          {loading ? (
-            <div style={{ color: '#777' }}>Loading market data...</div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)',
-              gap: isMobile ? '4px' : '8px',
-              fontSize: isMobile ? '10px' : '11px',
-            }}>
-              {marketData.map((quote) => (
-                <div
-                  key={quote.ticker}
-                  onClick={() => {
-                    setCommandInput(`price ${quote.ticker}`);
-                    inputRef.current?.focus();
-                  }}
-                  style={{
-                    background: '#0a0a0f',
-                    border: '1px solid #1e2330',
-                    padding: isMobile ? '6px' : '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    borderRadius: isMobile ? '4px' : '0',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#ff8c00';
-                    e.currentTarget.style.background = 'rgba(255, 140, 0, 0.05)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#1e2330';
-                    e.currentTarget.style.background = '#0a0a0f';
-                  }}
-                >
-                  <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '4px' }}>
-                    {quote.ticker}
-                  </div>
-                  <div style={{ color: '#e0e0e0', fontSize: '13px', fontWeight: 'bold' }}>
-                    {quote.price.toFixed(2)}
-                  </div>
-                  <div style={{
-                    color: quote.change >= 0 ? '#00d26a' : '#ff3b3b',
-                    fontSize: '10px',
-                  }}>
-                    {quote.change >= 0 ? '+' : ''}{quote.change.toFixed(2)} ({quote.changePercent >= 0 ? '+' : ''}{quote.changePercent.toFixed(2)}%)
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Panel 2: Module Status */}
-        <div style={{
-          background: '#111318',
-          border: '1px solid #1e2330',
-          padding: isMobile ? '10px' : '16px',
-          overflow: 'auto',
-          maxHeight: isMobile ? '200px' : 'none',
-          order: isMobile ? 2 : 0,
-        }}>
-          <div style={{
-            fontSize: '12px',
-            fontWeight: 'bold',
-            color: '#ff8c00',
-            marginBottom: '12px',
-            letterSpacing: '1px',
-          }}>
-            MODULE STATUS
-          </div>
-          <div style={{ fontSize: '10px', lineHeight: '1.6' }}>
-            {moduleStats.map((stat) => (
-              <div key={stat.category} style={{ marginBottom: '6px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                  <span style={{ color: '#4da6ff' }}>
-                    {stat.category.toUpperCase().substring(0, 15).padEnd(15)}
-                  </span>
-                  <span style={{ color: '#e0e0e0' }}>
-                    [{stat.done.toString().padStart(3, ' ')}/{stat.total.toString().padEnd(3, ' ')}]
-                  </span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{
-                    color: stat.percentage >= 90 ? '#00d26a' : stat.percentage >= 70 ? '#4da6ff' : '#ff8c00',
-                  }}>
-                    {renderProgressBar(stat.percentage)}
-                  </span>
-                  <span style={{ color: '#777', minWidth: '35px' }}>
-                    {stat.percentage}%
-                  </span>
-                </div>
-              </div>
-            ))}
-            <div style={{
-              marginTop: '12px',
-              paddingTop: '12px',
-              borderTop: '1px solid #1e2330',
-              color: '#ff8c00',
-            }}>
-              {totalModules} MODULES | {totalSources} SOURCES | {totalLoc.toLocaleString()} LOC
-            </div>
-          </div>
-        </div>
-
-        {/* Panel 3: Live Feed */}
-        {!isMobile && (
-          <div style={{
-            background: '#111318',
-            border: '1px solid #1e2330',
-            padding: '16px',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <div style={{
-              fontSize: '12px',
-              fontWeight: 'bold',
-              color: '#ff8c00',
-              marginBottom: '12px',
-              letterSpacing: '1px',
-            }}>
-              LIVE FEED
-            </div>
-            <div
-              ref={feedRef}
-              style={{
-                flex: 1,
-                overflow: 'auto',
-                fontSize: '10px',
-                lineHeight: '1.8',
-              }}
-            >
-              {liveFeed.map((msg, idx) => (
-                <div key={idx} style={{ marginBottom: '6px' }}>
-                  <span style={{ color: '#777' }}>{msg.time}</span>
-                  {' '}
-                  <span style={{
-                    color: msg.category === 'MARKET' ? '#00d26a' : 
-                           msg.category === 'MODULE' ? '#4da6ff' : 
-                           msg.category === 'SYSTEM' ? '#9b59b6' : '#ff8c00',
-                    fontWeight: 'bold',
-                  }}>
-                    {msg.category}
-                  </span>
-                  {' '}
-                  <span style={{ color: '#e0e0e0' }}>{msg.message}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Panel 4: Command Terminal */}
-        <div style={{
-          background: '#111318',
-          border: '1px solid #1e2330',
-          padding: isMobile ? '10px' : '16px',
-          gridColumn: !isMobile ? 'span 2' : 'span 1',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          minHeight: isMobile ? '250px' : 'auto',
-          order: isMobile ? -1 : 0,
-        }}>
-          <div style={{
-            fontSize: '12px',
-            fontWeight: 'bold',
-            color: '#ff8c00',
-            marginBottom: '12px',
-            letterSpacing: '1px',
-          }}>
-            COMMAND TERMINAL
-          </div>
-          <div
-            ref={terminalRef}
-            style={{
-              flex: 1,
-              overflow: 'auto',
-              fontSize: '11px',
-              lineHeight: '1.6',
-              marginBottom: '12px',
-            }}
-          >
-            {terminalOutput.length === 0 && (
-              <div style={{ color: '#777' }}>
-                Type "help" for available commands. Press "/" to focus terminal.
-              </div>
-            )}
-            {terminalOutput.map((item, idx) => (
-              <div key={idx} style={{ marginBottom: '12px' }}>
-                <div style={{ color: '#4da6ff' }}>
-                  <span style={{ color: '#ff8c00' }}>QUANTCLAW&gt;</span> {item.command}
-                </div>
-                {item.output.map((line, lineIdx) => (
-                  <div key={lineIdx} style={{
-                    color: line.startsWith('ERROR') ? '#ff3b3b' : '#e0e0e0',
-                    paddingLeft: '0',
-                  }}>
-                    {line}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <span style={{ color: '#ff8c00', fontSize: '13px', fontWeight: 'bold' }}>QUANTCLAW&gt;</span>
             <input
               ref={inputRef}
@@ -623,10 +465,12 @@ export default function HomePage() {
                 background: '#0a0a0f',
                 border: '1px solid #1e2330',
                 color: '#e0e0e0',
-                padding: '8px',
+                padding: '12px',
                 fontSize: '13px',
                 fontFamily: 'inherit',
                 outline: 'none',
+                minHeight: '44px',
+                borderRadius: '4px',
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = '#ff8c00';
@@ -636,103 +480,774 @@ export default function HomePage() {
               }}
             />
           </div>
-        </div>
-
-        {/* Panel 5: Stats */}
-        <div style={{
-          background: '#111318',
-          border: '1px solid #1e2330',
-          padding: isMobile ? '10px' : '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
-          <div>
-            <div style={{
-              fontSize: '12px',
-              fontWeight: 'bold',
-              color: '#ff8c00',
-              marginBottom: '12px',
-              letterSpacing: '1px',
-            }}>
-              SYSTEM STATS
-            </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '12px',
-              fontSize: '10px',
-            }}>
-              <div>
-                <div style={{ color: '#777' }}>MODULES</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  {totalModules}
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>SOURCES</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  {totalSources}
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>API ENDPOINTS</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  235+
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>LOC</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  {Math.floor(totalLoc / 1000)}K
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>STRATEGIES</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  6
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>PORTFOLIOS</div>
-                <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
-                  ∞
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>UPTIME</div>
-                <div style={{ color: '#00d26a', fontSize: '16px', fontWeight: 'bold' }}>
-                  99.9%
-                </div>
-              </div>
-              <div>
-                <div style={{ color: '#777' }}>LATENCY</div>
-                <div style={{ color: '#00d26a', fontSize: '16px', fontWeight: 'bold' }}>
-                  &lt;50ms
-                </div>
-              </div>
-            </div>
-          </div>
           <div style={{
-            borderTop: '1px solid #1e2330',
-            paddingTop: '12px',
-            fontSize: '9px',
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
           }}>
-            <div style={{ marginBottom: '8px' }}>
-              <a href="/tutorial" style={{ color: '#4da6ff', textDecoration: 'none' }}>
-                → TUTORIAL
-              </a>
-              {' | '}
-              <a href="https://github.com/YourRepo/quantclaw-data" target="_blank" rel="noopener noreferrer" style={{ color: '#4da6ff', textDecoration: 'none' }}>
-                → GITHUB
-              </a>
-            </div>
-            <div style={{ color: '#777', lineHeight: '1.4' }}>
-              POWERED BY QUANTCLAW DATA ENGINE
-            </div>
+            {quickCommands.map(qc => (
+              <button
+                key={qc.label}
+                onClick={() => {
+                  setCommandInput(qc.cmd);
+                  handleCommand(qc.cmd);
+                }}
+                style={{
+                  background: '#1e2330',
+                  border: '1px solid #ff8c00',
+                  color: '#ff8c00',
+                  padding: '8px 16px',
+                  fontSize: '12px',
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                  minHeight: '44px',
+                  fontWeight: 'bold',
+                  letterSpacing: '1px',
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.background = '#ff8c00';
+                  e.currentTarget.style.color = '#0a0a0f';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.background = '#1e2330';
+                  e.currentTarget.style.color = '#ff8c00';
+                }}
+              >
+                {qc.label.toUpperCase()}
+              </button>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Main Content Area */}
+      <div style={{
+        flex: 1,
+        overflow: 'auto',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        {/* Desktop Layout */}
+        {!isMobile && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '2fr 1.2fr 1fr',
+            gridTemplateRows: '1fr 1.3fr',
+            gap: '2px',
+            height: '100%',
+            background: '#0a0a0f',
+          }}>
+            {/* Panel 1: Market Data */}
+            <div style={{
+              background: '#111318',
+              border: '1px solid #1e2330',
+              padding: '16px',
+              overflow: 'auto',
+            }}>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#ff8c00',
+                marginBottom: '12px',
+                letterSpacing: '1px',
+              }}>
+                MARKET DATA
+              </div>
+              {loading ? (
+                <div style={{ color: '#777' }}>Loading market data...</div>
+              ) : (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '8px',
+                  fontSize: '11px',
+                }}>
+                  {marketData.map((quote) => (
+                    <div
+                      key={quote.ticker}
+                      onClick={() => {
+                        setCommandInput(`price ${quote.ticker}`);
+                        inputRef.current?.focus();
+                      }}
+                      style={{
+                        background: '#0a0a0f',
+                        border: '1px solid #1e2330',
+                        padding: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#ff8c00';
+                        e.currentTarget.style.background = 'rgba(255, 140, 0, 0.05)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#1e2330';
+                        e.currentTarget.style.background = '#0a0a0f';
+                      }}
+                    >
+                      <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '4px' }}>
+                        {quote.ticker}
+                      </div>
+                      <div style={{ color: '#e0e0e0', fontSize: '13px', fontWeight: 'bold' }}>
+                        {quote.price.toFixed(2)}
+                      </div>
+                      <div style={{
+                        color: quote.change >= 0 ? '#00d26a' : '#ff3b3b',
+                        fontSize: '10px',
+                      }}>
+                        {quote.change >= 0 ? '+' : ''}{quote.change.toFixed(2)} ({quote.changePercent >= 0 ? '+' : ''}{quote.changePercent.toFixed(2)}%)
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Panel 2: Module Status */}
+            <div style={{
+              background: '#111318',
+              border: '1px solid #1e2330',
+              padding: '16px',
+              overflow: 'auto',
+            }}>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#ff8c00',
+                marginBottom: '12px',
+                letterSpacing: '1px',
+              }}>
+                MODULE STATUS
+              </div>
+              <div style={{ fontSize: '10px', lineHeight: '1.6' }}>
+                {moduleStats.map((stat) => (
+                  <div key={stat.category} style={{ marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                      <span style={{ color: '#4da6ff' }}>
+                        {stat.category.toUpperCase().substring(0, 15).padEnd(15)}
+                      </span>
+                      <span style={{ color: '#e0e0e0' }}>
+                        [{stat.done.toString().padStart(3, ' ')}/{stat.total.toString().padEnd(3, ' ')}]
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        color: stat.percentage >= 90 ? '#00d26a' : stat.percentage >= 70 ? '#4da6ff' : '#ff8c00',
+                      }}>
+                        {renderProgressBar(stat.percentage)}
+                      </span>
+                      <span style={{ color: '#777', minWidth: '35px' }}>
+                        {stat.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                <div style={{
+                  marginTop: '12px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid #1e2330',
+                  color: '#ff8c00',
+                }}>
+                  {totalModules} MODULES | {totalSources} SOURCES | {totalLoc.toLocaleString()} LOC
+                </div>
+              </div>
+            </div>
+
+            {/* Panel 3: Live Feed */}
+            <div style={{
+              background: '#111318',
+              border: '1px solid #1e2330',
+              padding: '16px',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#ff8c00',
+                marginBottom: '12px',
+                letterSpacing: '1px',
+              }}>
+                LIVE FEED
+              </div>
+              <div
+                ref={feedRef}
+                style={{
+                  flex: 1,
+                  overflow: 'auto',
+                  fontSize: '10px',
+                  lineHeight: '1.8',
+                }}
+              >
+                {liveFeed.map((msg, idx) => (
+                  <div key={idx} style={{ marginBottom: '6px' }}>
+                    <span style={{ color: '#777' }}>{msg.time}</span>
+                    {' '}
+                    <span style={{
+                      color: msg.category === 'MARKET' ? '#00d26a' : 
+                             msg.category === 'MODULE' ? '#4da6ff' : 
+                             msg.category === 'SYSTEM' ? '#9b59b6' : '#ff8c00',
+                      fontWeight: 'bold',
+                    }}>
+                      {msg.category}
+                    </span>
+                    {' '}
+                    <span style={{ color: '#e0e0e0' }}>{msg.message}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Panel 4: Command Terminal */}
+            <div style={{
+              background: '#111318',
+              border: '1px solid #1e2330',
+              padding: '16px',
+              gridColumn: 'span 2',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#ff8c00',
+                marginBottom: '12px',
+                letterSpacing: '1px',
+              }}>
+                COMMAND TERMINAL
+              </div>
+              <div
+                ref={terminalRef}
+                style={{
+                  flex: 1,
+                  overflow: 'auto',
+                  fontSize: '11px',
+                  lineHeight: '1.6',
+                  marginBottom: '12px',
+                }}
+              >
+                {terminalOutput.length === 0 && (
+                  <div style={{ color: '#777' }}>
+                    Type "help" for available commands. Press "/" to focus terminal.
+                  </div>
+                )}
+                {terminalOutput.map((item, idx) => (
+                  <div key={idx} style={{ marginBottom: '12px' }}>
+                    <div style={{ color: '#4da6ff' }}>
+                      <span style={{ color: '#ff8c00' }}>QUANTCLAW&gt;</span> {item.command}
+                    </div>
+                    {item.output.map((line, lineIdx) => (
+                      <div key={lineIdx} style={{
+                        color: line.startsWith('ERROR') ? '#ff3b3b' : '#e0e0e0',
+                        paddingLeft: '0',
+                      }}>
+                        {line}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#ff8c00', fontSize: '13px', fontWeight: 'bold' }}>QUANTCLAW&gt;</span>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={commandInput}
+                  onChange={(e) => setCommandInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Enter command..."
+                  style={{
+                    flex: 1,
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    color: '#e0e0e0',
+                    padding: '8px',
+                    fontSize: '13px',
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#ff8c00';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#1e2330';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Panel 5: Stats */}
+            <div style={{
+              background: '#111318',
+              border: '1px solid #1e2330',
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#ff8c00',
+                  marginBottom: '12px',
+                  letterSpacing: '1px',
+                }}>
+                  SYSTEM STATS
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '12px',
+                  fontSize: '10px',
+                }}>
+                  <div>
+                    <div style={{ color: '#777' }}>MODULES</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      {totalModules}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>SOURCES</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      {totalSources}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>API ENDPOINTS</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      235+
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>LOC</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      {Math.floor(totalLoc / 1000)}K
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>STRATEGIES</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      6
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>PORTFOLIOS</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '16px', fontWeight: 'bold' }}>
+                      ∞
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>UPTIME</div>
+                    <div style={{ color: '#00d26a', fontSize: '16px', fontWeight: 'bold' }}>
+                      99.9%
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#777' }}>LATENCY</div>
+                    <div style={{ color: '#00d26a', fontSize: '16px', fontWeight: 'bold' }}>
+                      &lt;50ms
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                borderTop: '1px solid #1e2330',
+                paddingTop: '12px',
+                fontSize: '9px',
+              }}>
+                <div style={{ marginBottom: '8px' }}>
+                  <a href="/tutorial" style={{ color: '#4da6ff', textDecoration: 'none' }}>
+                    → TUTORIAL
+                  </a>
+                  {' | '}
+                  <a href="https://github.com/YourRepo/quantclaw-data" target="_blank" rel="noopener noreferrer" style={{ color: '#4da6ff', textDecoration: 'none' }}>
+                    → GITHUB
+                  </a>
+                </div>
+                <div style={{ color: '#777', lineHeight: '1.4' }}>
+                  POWERED BY QUANTCLAW DATA ENGINE
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Layout with Tabs */}
+        {isMobile && (
+          <div style={{
+            height: 'calc(100% - 60px)', // Reserve space for bottom tab bar
+            overflow: 'auto',
+          }}>
+            {/* Terminal Tab */}
+            {activeTab === 'terminal' && (
+              <div style={{
+                background: '#111318',
+                padding: '12px',
+                minHeight: '100%',
+              }}>
+                <div
+                  ref={terminalRef}
+                  style={{
+                    fontSize: '11px',
+                    lineHeight: '1.6',
+                    marginBottom: '12px',
+                  }}
+                >
+                  {terminalOutput.length === 0 && (
+                    <div style={{ color: '#777' }}>
+                      Type a command above or tap quick action buttons.
+                    </div>
+                  )}
+                  {terminalOutput.map((item, idx) => (
+                    <div key={idx} style={{ marginBottom: '12px' }}>
+                      <div style={{ color: '#4da6ff' }}>
+                        <span style={{ color: '#ff8c00' }}>QUANTCLAW&gt;</span> {item.command}
+                      </div>
+                      {item.output.map((line, lineIdx) => (
+                        <div key={lineIdx} style={{
+                          color: line.startsWith('ERROR') ? '#ff3b3b' : '#e0e0e0',
+                          paddingLeft: '0',
+                        }}>
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sources Tab */}
+            {activeTab === 'sources' && (
+              <div style={{
+                background: '#111318',
+                padding: '12px',
+              }}>
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#ff8c00',
+                  marginBottom: '12px',
+                  letterSpacing: '1px',
+                }}>
+                  DATA SOURCES ({filteredSources.length})
+                </div>
+                
+                {/* Search Bar */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search sources..."
+                  style={{
+                    width: '100%',
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    color: '#e0e0e0',
+                    padding: '12px',
+                    fontSize: '13px',
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                    minHeight: '44px',
+                    borderRadius: '4px',
+                    marginBottom: '12px',
+                  }}
+                />
+
+                {/* Category Filter */}
+                <div style={{
+                  display: 'flex',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  marginBottom: '12px',
+                  paddingBottom: '8px',
+                }}>
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      style={{
+                        background: selectedCategory === cat ? '#ff8c00' : '#1e2330',
+                        border: '1px solid #ff8c00',
+                        color: selectedCategory === cat ? '#0a0a0f' : '#ff8c00',
+                        padding: '8px 16px',
+                        fontSize: '11px',
+                        fontFamily: 'inherit',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        minHeight: '44px',
+                        fontWeight: 'bold',
+                        letterSpacing: '1px',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {cat.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Sources Grid */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr',
+                  gap: '8px',
+                }}>
+                  {filteredSources.map(source => (
+                    <div
+                      key={source.name}
+                      onClick={() => setExpandedSource(expandedSource === source.name ? null : source.name)}
+                      style={{
+                        background: '#0a0a0f',
+                        border: expandedSource === source.name ? '2px solid #ff8c00' : '1px solid #1e2330',
+                        padding: '12px',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        minHeight: '44px',
+                      }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: expandedSource === source.name ? '8px' : '0',
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}>
+                          <span style={{ fontSize: '20px' }}>{source.icon}</span>
+                          <div>
+                            <div style={{
+                              color: '#4da6ff',
+                              fontWeight: 'bold',
+                              fontSize: '13px',
+                            }}>
+                              {source.name}
+                            </div>
+                            <div style={{
+                              color: '#777',
+                              fontSize: '10px',
+                            }}>
+                              {source.type}
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{
+                          color: source.status === 'active' ? '#00d26a' : '#777',
+                          fontSize: '20px',
+                        }}>
+                          {source.status === 'active' ? '✓' : '○'}
+                        </div>
+                      </div>
+                      {expandedSource === source.name && (
+                        <div style={{
+                          color: '#e0e0e0',
+                          fontSize: '11px',
+                          lineHeight: '1.6',
+                          paddingTop: '8px',
+                          borderTop: '1px solid #1e2330',
+                        }}>
+                          {source.desc}
+                          {source.modules && (
+                            <div style={{
+                              marginTop: '8px',
+                              color: '#777',
+                              fontSize: '10px',
+                            }}>
+                              Modules: {source.modules.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Stats Tab */}
+            {activeTab === 'stats' && (
+              <div style={{
+                background: '#111318',
+                padding: '12px',
+              }}>
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#ff8c00',
+                  marginBottom: '12px',
+                  letterSpacing: '1px',
+                }}>
+                  SYSTEM STATS
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '12px',
+                  fontSize: '10px',
+                  marginBottom: '20px',
+                }}>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>MODULES</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '20px', fontWeight: 'bold' }}>
+                      {totalModules}
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>SOURCES</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '20px', fontWeight: 'bold' }}>
+                      {totalSources}
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>API ENDPOINTS</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '20px', fontWeight: 'bold' }}>
+                      235+
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>LOC</div>
+                    <div style={{ color: '#e0e0e0', fontSize: '20px', fontWeight: 'bold' }}>
+                      {Math.floor(totalLoc / 1000)}K
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>UPTIME</div>
+                    <div style={{ color: '#00d26a', fontSize: '20px', fontWeight: 'bold' }}>
+                      99.9%
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#0a0a0f',
+                    border: '1px solid #1e2330',
+                    padding: '12px',
+                    borderRadius: '4px',
+                  }}>
+                    <div style={{ color: '#777' }}>LATENCY</div>
+                    <div style={{ color: '#00d26a', fontSize: '20px', fontWeight: 'bold' }}>
+                      &lt;50ms
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#ff8c00',
+                  marginBottom: '12px',
+                  letterSpacing: '1px',
+                }}>
+                  MODULE STATUS
+                </div>
+                <div style={{ fontSize: '10px', lineHeight: '1.6' }}>
+                  {moduleStats.map((stat) => (
+                    <div key={stat.category} style={{ marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                        <span style={{ color: '#4da6ff' }}>
+                          {stat.category.toUpperCase()}
+                        </span>
+                        <span style={{ color: '#e0e0e0' }}>
+                          {stat.done}/{stat.total}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{
+                          color: stat.percentage >= 90 ? '#00d26a' : stat.percentage >= 70 ? '#4da6ff' : '#ff8c00',
+                          flex: 1,
+                        }}>
+                          {renderProgressBar(stat.percentage)}
+                        </span>
+                        <span style={{ color: '#777', minWidth: '35px' }}>
+                          {stat.percentage}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Mobile: Bottom Tab Bar */}
+      {isMobile && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: '#1a1a2e',
+          borderTop: '2px solid #ff8c00',
+          display: 'flex',
+          justifyContent: 'space-around',
+          padding: '8px 0',
+          height: '60px',
+        }}>
+          {[
+            { id: 'terminal' as TabType, label: 'Terminal', icon: '⌨️' },
+            { id: 'sources' as TabType, label: 'Sources', icon: '📊' },
+            { id: 'stats' as TabType, label: 'Stats', icon: '📈' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                color: activeTab === tab.id ? '#ff8c00' : '#777',
+                fontSize: '20px',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                minHeight: '44px',
+                fontFamily: 'inherit',
+              }}
+            >
+              <span>{tab.icon}</span>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                letterSpacing: '1px',
+              }}>
+                {tab.label.toUpperCase()}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes pulse {

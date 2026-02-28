@@ -92,6 +92,15 @@ from boj import (
     get_boj_meeting_schedule
 )
 
+from core_market_data import (
+    get_quote,
+    get_historical_prices,
+    get_sec_filings,
+    get_news_sentiment,
+    get_fundamentals,
+    clear_cache
+)
+
 from bank_of_israel_dashboard import (
     get_dashboard as boi_get_dashboard,
     get_policy_rate as boi_get_policy_rate,
@@ -114,6 +123,13 @@ from tase import (
     get_market_summary as tase_get_market_summary,
     fetch_sector_performance as tase_fetch_sector_performance,
     fetch_historical_ta35
+)
+
+from krx import (
+    get_krx_indices,
+    get_kospi_composition,
+    get_market_summary as krx_get_market_summary,
+    get_sector_performance as krx_get_sector_performance
 )
 
 from bank_of_korea import (
@@ -140,6 +156,13 @@ from india_nso import (
     get_labor_stats as india_nso_get_labor,
     get_trade_balance as india_nso_get_trade,
     get_full_stats as india_nso_get_full_stats
+)
+
+from rbi_rates import (
+    fetch_policy_rates as rbi_fetch_rates,
+    fetch_forex_reserves as rbi_fetch_forex,
+    fetch_monetary_policy_stance as rbi_fetch_policy,
+    get_rbi_dashboard as rbi_get_dashboard
 )
 
 from bse_nse import (
@@ -269,6 +292,14 @@ from carbon_credits import (
     get_emissions_by_sector,
     compare_carbon_markets,
     get_carbon_offset_projects
+)
+
+from carbon_capture_projects import (
+    get_carbon_capture_summary
+)
+
+from drought_monitor import (
+    get_drought_summary
 )
 
 from container_port_throughput import (
@@ -706,6 +737,18 @@ from backtesting_engine import (
     format_report
 )
 
+from finviz_screener import (
+
+from cboe_putcall import CBOEPutCallData
+from openfigi_mapping import OpenFIGIClient
+    screener as finviz_screener,
+    quote as finviz_quote,
+    insider_trading as finviz_insider_trading,
+    high_short_interest,
+    value_stocks,
+    momentum_stocks
+)
+
 
 class MCPServer:
     """MCP Server for QuantClaw Data"""
@@ -716,6 +759,283 @@ class MCPServer:
     def _register_tools(self) -> Dict[str, Dict]:
         """Register all available MCP tools"""
         return {
+            # Core Market Data Tools (Phase 1)
+            'market_quote': {
+                'description': 'Get real-time stock quote (price, volume, market cap, ratios)',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol (e.g., AAPL, MSFT, TSLA)',
+                        'required': True
+                    }
+                },
+                'handler': self._market_quote
+            },
+            'market_historical': {
+                'description': 'Get historical OHLCV price data for a stock',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'period': {
+                        'type': 'string',
+                        'description': 'Period: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max (default 1mo)',
+                        'required': False,
+                        'default': '1mo'
+                    },
+                    'interval': {
+                        'type': 'string',
+                        'description': 'Interval: 1m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo (default 1d)',
+                        'required': False,
+                        'default': '1d'
+                    }
+                },
+                'handler': self._market_historical
+            },
+            'market_sec_filings': {
+                'description': 'Get recent SEC EDGAR filings (10-K, 10-Q, 8-K, etc.) for a company',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'filing_type': {
+                        'type': 'string',
+                        'description': 'Filter by filing type (10-K, 10-Q, 8-K, DEF 14A, 13D, etc.)',
+                        'required': False
+                    },
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Maximum number of filings to return (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._market_sec_filings
+            },
+            'market_news': {
+                'description': 'Get recent news with sentiment analysis for a stock',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Maximum number of articles (default 10)',
+                        'required': False,
+                        'default': 10
+                    }
+                },
+                'handler': self._market_news
+            },
+            'market_fundamentals': {
+                'description': 'Get company fundamentals (revenue, earnings, ratios, margins)',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._market_fundamentals
+            },
+            
+            # Enhanced Market Data Tools (Phase 2)
+            'options_greeks': {
+                'description': 'Get options chain with calculated Greeks (Delta, Gamma, Vega, Theta, Rho)',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'risk_free_rate': {
+                        'type': 'number',
+                        'description': 'Risk-free rate for Black-Scholes (default 0.05)',
+                        'required': False,
+                        'default': 0.05
+                    }
+                },
+                'handler': self._options_greeks
+            },
+            'earnings_calendar': {
+                'description': 'Get upcoming earnings dates and estimates',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol or ALL for market-wide calendar',
+                        'required': False
+                    },
+                    'days_ahead': {
+                        'type': 'integer',
+                        'description': 'Days to look ahead (default 30)',
+                        'required': False,
+                        'default': 30
+                    }
+                },
+                'handler': self._earnings_calendar
+            },
+            'dividend_data': {
+                'description': 'Get dividend history, yield, CAGR, and payout ratio',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._dividend_data
+            },
+            'etf_holdings': {
+                'description': 'Get ETF composition, sector weights, and top holdings',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'ETF ticker symbol (e.g., SPY, QQQ, IWM)',
+                        'required': True
+                    },
+                    'top_n': {
+                        'type': 'integer',
+                        'description': 'Number of top holdings to return (default 50)',
+                        'required': False,
+                        'default': 50
+                    }
+                },
+                'handler': self._etf_holdings
+            },
+            
+            # Multi-Asset Coverage Tools (Phase 4)
+            'crypto_price': {
+                'description': 'Get current cryptocurrency price from CoinGecko',
+                'parameters': {
+                    'symbol': {
+                        'type': 'string',
+                        'description': 'Cryptocurrency ID (bitcoin, ethereum, solana, etc.)',
+                        'required': True
+                    }
+                },
+                'handler': self._crypto_price
+            },
+            'crypto_list': {
+                'description': 'Get top cryptocurrencies by market cap',
+                'parameters': {
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Number of coins to return (default 100)',
+                        'required': False,
+                        'default': 100
+                    }
+                },
+                'handler': self._crypto_list
+            },
+            'commodity_price': {
+                'description': 'Get commodity futures price (gold, silver, oil, etc.)',
+                'parameters': {
+                    'name': {
+                        'type': 'string',
+                        'description': 'Commodity name (gold, silver, crude_oil, natural_gas, copper, etc.)',
+                        'required': True
+                    }
+                },
+                'handler': self._commodity_price
+            },
+            'commodities_all': {
+                'description': 'Get prices for all tracked commodities',
+                'parameters': {},
+                'handler': self._commodities_all
+            },
+            'forex_rate': {
+                'description': 'Get forex exchange rate between two currencies',
+                'parameters': {
+                    'base': {
+                        'type': 'string',
+                        'description': 'Base currency code (e.g., USD, EUR)',
+                        'required': True
+                    },
+                    'target': {
+                        'type': 'string',
+                        'description': 'Target currency code (e.g., EUR, JPY)',
+                        'required': True
+                    }
+                },
+                'handler': self._forex_rate
+            },
+            'forex_basket': {
+                'description': 'Get multiple forex pairs for a base currency',
+                'parameters': {
+                    'base': {
+                        'type': 'string',
+                        'description': 'Base currency code (default USD)',
+                        'required': False,
+                        'default': 'USD'
+                    },
+                    'targets': {
+                        'type': 'array',
+                        'description': 'Optional list of target currencies',
+                        'required': False
+                    }
+                },
+                'handler': self._forex_basket
+            },
+            'analyst_ratings': {
+                'description': 'Get analyst recommendations and price targets',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._analyst_ratings
+            },
+            'company_profile': {
+                'description': 'Get detailed company information (sector, industry, fundamentals)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._company_profile
+            },
+            'stock_screener': {
+                'description': 'Screen stocks based on fundamental criteria',
+                'parameters': {
+                    'min_market_cap': {
+                        'type': 'number',
+                        'description': 'Minimum market cap filter',
+                        'required': False
+                    },
+                    'max_pe': {
+                        'type': 'number',
+                        'description': 'Maximum P/E ratio filter',
+                        'required': False
+                    },
+                    'min_dividend_yield': {
+                        'type': 'number',
+                        'description': 'Minimum dividend yield filter',
+                        'required': False
+                    },
+                    'sector': {
+                        'type': 'string',
+                        'description': 'Sector filter',
+                        'required': False
+                    },
+                    'country': {
+                        'type': 'string',
+                        'description': 'Country filter',
+                        'required': False
+                    }
+                },
+                'handler': self._stock_screener
+            },
+            
             'worldbank_country_profile': {
                 'description': 'Get comprehensive economic profile for a country from World Bank data',
                 'parameters': {
@@ -1424,6 +1744,35 @@ class MCPServer:
                 'description': 'Analyze crypto exchange market share and dominance with concentration metrics (HHI index)',
                 'parameters': {},
                 'handler': self._crypto_exchange_dominance
+            },
+            
+            # Glassnode On-Chain Metrics Tools (Phase 684)
+            'glassnode_btc_metrics': {
+                'description': 'Get Bitcoin on-chain metrics (NVT, MVRV, SOPR, market data)',
+                'parameters': {},
+                'handler': self._glassnode_btc_metrics
+            },
+            'glassnode_eth_metrics': {
+                'description': 'Get Ethereum on-chain metrics (gas prices, staking, market data)',
+                'parameters': {},
+                'handler': self._glassnode_eth_metrics
+            },
+            'glassnode_exchange_flows': {
+                'description': 'Get Bitcoin exchange inflow/outflow data',
+                'parameters': {
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days to fetch (default 7)',
+                        'required': False,
+                        'default': 7
+                    }
+                },
+                'handler': self._glassnode_exchange_flows
+            },
+            'glassnode_market_overview': {
+                'description': 'Get comprehensive Bitcoin & Ethereum market overview with on-chain metrics',
+                'parameters': {},
+                'handler': self._glassnode_market_overview
             },
             
             # DeFi TVL & Yield Aggregator Tools (Phase 186)
@@ -2154,6 +2503,28 @@ class MCPServer:
                 'handler': self._india_nso_full_stats
             },
             
+            # RBI (Reserve Bank of India) Tools (Phase 632)
+            'rbi_get_rates': {
+                'description': 'Get Reserve Bank of India policy rates (repo, reverse repo, CRR, SLR, MSF, bank rate)',
+                'parameters': {},
+                'handler': self._rbi_get_rates
+            },
+            'rbi_get_forex_reserves': {
+                'description': 'Get India forex reserves (weekly RBI release) - total reserves, FCA, gold, SDRs',
+                'parameters': {},
+                'handler': self._rbi_get_forex_reserves
+            },
+            'rbi_get_policy_stance': {
+                'description': 'Get RBI monetary policy stance (accommodative/neutral/hawkish) and last MPC meeting date',
+                'parameters': {},
+                'handler': self._rbi_get_policy_stance
+            },
+            'rbi_get_dashboard': {
+                'description': 'Get consolidated RBI dashboard with rates, forex reserves, and monetary policy stance',
+                'parameters': {},
+                'handler': self._rbi_get_dashboard
+            },
+            
             # BSE/NSE India Exchange Tools (Phase 634)
             'bse_sensex': {
                 'description': 'Get BSE Sensex 30 index (Bombay Stock Exchange) - price, change, volume, 52-week range, PE ratio',
@@ -2244,6 +2615,42 @@ class MCPServer:
                 'handler': self._tase_sector_performance
             },
             
+
+            # Korea Exchange (KRX) Tools (Phase 637)
+            'krx_indices': {
+                'description': 'Get KRX indices - KOSPI, KOSDAQ, KOSPI 200 with price, change, volume, highs/lows',
+                'parameters': {
+                    'period': {
+                        'type': 'string',
+                        'description': 'Data period: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, max (default 1mo)',
+                        'required': False,
+                        'default': '1mo'
+                    }
+                },
+                'handler': self._krx_indices
+            },
+            'krx_top_stocks': {
+                'description': 'Get top KOSPI stocks by market cap - Samsung, SK Hynix, LG, Hyundai, Kia, POSCO, etc.',
+                'parameters': {
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Number of top stocks to return (default 20)',
+                        'required': False,
+                        'default': 20
+                    }
+                },
+                'handler': self._krx_top_stocks
+            },
+            'krx_market_summary': {
+                'description': 'KRX market summary - KOSPI level, daily change, volume, volatility, market status',
+                'parameters': {},
+                'handler': self._krx_market_summary
+            },
+            'krx_sector_performance': {
+                'description': 'Korean sector performance - Technology, Auto, Chemicals, Financials, etc.',
+                'parameters': {},
+                'handler': self._krx_sector_performance
+            },
             # Australian Bureau of Statistics (ABS) Tools (Phase 639)
             'abs_australia_gdp': {
                 'description': 'Australian GDP (quarterly, current prices A$ billion) - main economic indicator',
@@ -5406,6 +5813,20 @@ class MCPServer:
                 'handler': self._carbon_offset_projects
             },
             
+            # Carbon Capture & Storage Projects (Phase 578)
+            'carbon_capture_summary': {
+                'description': 'Get global CCS/CCUS project pipeline summary - operational/planned capacity, investment needs',
+                'parameters': {},
+                'handler': self._carbon_capture_summary
+            },
+            
+            # Drought Monitor Data (Phase 580)
+            'drought_summary': {
+                'description': 'Get current US drought conditions, severity breakdown, and agricultural/economic impact estimates',
+                'parameters': {},
+                'handler': self._drought_summary
+            },
+            
             # Container Port Throughput (Phase 193)
             'port_throughput': {
                 'description': 'Get container throughput (TEU) for major global ports - Shanghai, Rotterdam, LA/Long Beach',
@@ -6904,8 +7325,322 @@ class MCPServer:
                     }
                 },
                 'handler': self._backtest_compare
+            },
+            
+            # StockAnalysis.com EPS Revisions (Phase 700) — CRITICAL for Alpha Picker v3
+            'stockanalysis_eps_forecast': {
+                'description': 'Get analyst EPS and revenue estimates from StockAnalysis.com (current/next quarter/year, consensus, high/low, analyst count)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._stockanalysis_eps_forecast
+            },
+            'stockanalysis_eps_momentum': {
+                'description': 'Calculate EPS revision momentum signal (upward/downward/neutral) from analyst estimates — CRITICAL for identifying stocks with improving/deteriorating fundamentals',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._stockanalysis_eps_momentum
+            },
+            'stockanalysis_eps_history': {
+                'description': 'Get historical EPS surprise track record (beat/miss patterns) — predictor of future performance',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._stockanalysis_eps_history
+            },
+            
+            # Finviz Stock Screener Tools (Phase 701)
+            'finviz_screener': {
+                'description': 'Screen stocks with custom filters (fundamentals, technicals, insider data). Returns up to 100 stocks.',
+                'parameters': {
+                    'filters': {
+                        'type': 'object',
+                        'description': 'Filter criteria dict (e.g., {"cap_midover": "", "fa_pe_u20": ""})',
+                        'required': False
+                    },
+                    'order': {
+                        'type': 'string',
+                        'description': 'Sort order: -marketcap, price, -volume, -change (default -marketcap)',
+                        'required': False,
+                        'default': '-marketcap'
+                    },
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Max results (default 100)',
+                        'required': False,
+                        'default': 100
+                    }
+                },
+                'handler': self._finviz_screener
+            },
+            'finviz_quote': {
+                'description': 'Get detailed stock quote from Finviz (fundamentals, technicals, news, insider trades)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._finviz_quote
+            },
+            'finviz_insider': {
+                'description': 'Get recent insider trading activity with cluster detection',
+                'parameters': {
+                    'filter_type': {
+                        'type': 'string',
+                        'description': 'Transaction type: buy, sale, all (default buy)',
+                        'required': False,
+                        'default': 'buy'
+                    },
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Look back days (default 7)',
+                        'required': False,
+                        'default': 7
+                    },
+                    'min_value': {
+                        'type': 'integer',
+                        'description': 'Min transaction value (default 100000)',
+                        'required': False,
+                        'default': 100000
+                    }
+                },
+                'handler': self._finviz_insider
+            },
+            'finviz_high_short': {
+                'description': 'Screen for stocks with high short interest (potential short squeeze candidates)',
+                'parameters': {
+                    'min_float': {
+                        'type': 'number',
+                        'description': 'Min short % of float (default 20.0)',
+                        'required': False,
+                        'default': 20.0
+                    },
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Max results (default 50)',
+                        'required': False,
+                        'default': 50
+                    }
+                },
+                'handler': self._finviz_high_short
+            },
+            'finviz_value_stocks': {
+                'description': 'Screen for undervalued dividend stocks (low P/E + high yield)',
+                'parameters': {},
+                'handler': self._finviz_value_stocks
+            },
+            'finviz_momentum_stocks': {
+                'description': 'Screen for momentum stocks (strong technicals + volume)',
+                'parameters': {},
+                'handler': self._finviz_momentum_stocks
+            },
+            
+            # Baker Hughes Rig Count Tools (Phase 713)
+            'baker_hughes_current': {
+                'description': 'Get current weekly rig count (oil/gas breakdown, WoW/YoY changes)',
+                'parameters': {
+                    'region': {
+                        'type': 'string',
+                        'description': 'Region: US, Canada, or International (default US)',
+                        'required': False,
+                        'default': 'US'
+                    }
+                },
+                'handler': self._baker_hughes_current
+            },
+            'baker_hughes_basins': {
+                'description': 'Get rig count breakdown by major US basins (Permian, Eagle Ford, Bakken, etc.)',
+                'parameters': {},
+                'handler': self._baker_hughes_basins
+            },
+            'baker_hughes_trend': {
+                'description': 'Get historical rig count trend with moving averages',
+                'parameters': {
+                    'weeks': {
+                        'type': 'integer',
+                        'description': 'Number of weeks of history (default 52)',
+                        'required': False,
+                        'default': 52
+                    }
+                },
+                'handler': self._baker_hughes_trend
+            },
+            'baker_hughes_efficiency': {
+                'description': 'Calculate drilling efficiency proxy (barrels per rig per day)',
+                'parameters': {},
+                'handler': self._baker_hughes_efficiency
+            },
+            'baker_hughes_signal': {
+                'description': 'Get trading signal for energy stocks based on rig count trends',
+                'parameters': {},
+                'handler': self._baker_hughes_signal
+            }
+            }
+            },
+            # ShortVolume.com Tools (Phase 703)
+            'short_volume_latest': {
+                'description': 'Get latest short volume ratio for a ticker from ShortVolume.com',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    }
+                },
+                'handler': self._short_volume_latest
+            },
+            'short_volume_chart': {
+                'description': 'Get short volume ratio trend chart (ASCII)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'days': {
+                        'type': 'integer',
+                        'description': 'Number of days to chart (default 60)',
+                        'required': False,
+                        'default': 60
+                    }
+                },
+                'handler': self._short_volume_chart
+            },
+            'short_volume_compare': {
+                'description': 'Compare short volume ratios across multiple tickers',
+                'parameters': {
+                    'tickers': {
+                        'type': 'array',
+                        'items': {'type': 'string'},
+                        'description': 'List of ticker symbols to compare',
+                        'required': True
+                    }
+                },
+                'handler': self._short_volume_compare
+            },
+            'finra_short_interest': {
+                'description': 'Get official FINRA short interest data (bi-weekly)',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol'
+                    }
+                },
+                'handler': self._finra_short_interest
+            },
+            'short_squeeze_scan': {
+                'description': 'Scan for potential short squeeze candidates (high short ratio + anomalies)',
+                'parameters': {
+                    'min_ratio': {
+                        'type': 'number',
+                        'description': 'Minimum short ratio threshold in % (default 30)',
+                        'required': False,
+                        'default': 30.0
+                    }
+                },
+                'handler': self._short_squeeze_scan
+        }
+,
+            # CBOE Put/Call & Options Volume Tools (Phase 705)
+            'cboe_total_putcall': {
+                'description': 'Get total CBOE put/call ratio (equity + index combined) with market sentiment interpretation',
+                'parameters': {},
+                'handler': self._cboe_total_putcall
+            },
+            'cboe_equity_putcall': {
+                'description': 'Get equity-only CBOE put/call ratio and volume',
+                'parameters': {},
+                'handler': self._cboe_equity_putcall
+            },
+            'cboe_index_putcall': {
+                'description': 'Get index-only CBOE put/call ratio (SPX, NDX, RUT, VIX)',
+                'parameters': {},
+                'handler': self._cboe_index_putcall
+            },
+            'cboe_most_active': {
+                'description': 'Get most active options by volume from CBOE',
+                'parameters': {
+                    'limit': {
+                        'type': 'integer',
+                        'description': 'Number of most active options to return (default 20)',
+                        'required': False,
+                        'default': 20
+                    }
+                },
+                'handler': self._cboe_most_active
+            },
+            'cboe_summary': {
+                'description': 'Generate comprehensive CBOE put/call sentiment report with interpretation',
+                'parameters': {},
+                'handler': self._cboe_summary
             }
         }
+,
+            
+            # OpenFIGI Identifier Mapping Tools (Phase 711)
+            'figi_map_ticker': {
+                'description': 'Map ticker symbol to FIGI/ISIN/CUSIP and other identifiers',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol (e.g., AAPL, MSFT)',
+                        'required': True
+                    },
+                    'exchange': {
+                        'type': 'string',
+                        'description': 'Optional exchange code (e.g., US for NYSE/NASDAQ, LN for London)',
+                        'required': False
+                    }
+                },
+                'handler': self._figi_map_ticker
+            },
+            'figi_batch_map': {
+                'description': 'Batch map multiple ticker symbols to identifiers (max 100)',
+                'parameters': {
+                    'tickers': {
+                        'type': 'array',
+                        'description': 'List of ticker symbols to map',
+                        'required': True
+                    },
+                    'exchange': {
+                        'type': 'string',
+                        'description': 'Optional exchange code for all tickers',
+                        'required': False
+                    }
+                },
+                'handler': self._figi_batch_map
+            },
+            'figi_get_cusip': {
+                'description': 'Get CUSIP identifier for a ticker symbol',
+                'parameters': {
+                    'ticker': {
+                        'type': 'string',
+                        'description': 'Stock ticker symbol',
+                        'required': True
+                    },
+                    'exchange': {
+                        'type': 'string',
+                        'description': 'Optional exchange code',
+                        'required': False
+                    }
+                },
+                'handler': self._figi_get_cusip
+            }
     
     # Handler methods
     def _worldbank_country_profile(self, country_code: str, indicators: Optional[List[str]] = None, years: int = 10) -> Dict:
@@ -7138,6 +7873,99 @@ class MCPServer:
         """Handler for crypto_exchange_dominance tool"""
         from crypto_exchange_flow import get_exchange_dominance
         return get_exchange_dominance()
+    
+    # Glassnode On-Chain Metrics handlers (Phase 684)
+    def _glassnode_btc_metrics(self) -> Dict:
+        """Handler for glassnode_btc_metrics tool"""
+        from glassnode_onchain import (
+            get_market_metrics,
+            get_btc_nvt_ratio,
+            get_btc_mvrv,
+            get_btc_sopr
+        )
+        
+        market = get_market_metrics()
+        if 'error' in market:
+            return {'success': False, 'error': market['error']}
+        
+        return {
+            'success': True,
+            'data': {
+                'market': market['bitcoin'],
+                'nvt_ratio': get_btc_nvt_ratio(),
+                'mvrv_ratio': get_btc_mvrv(),
+                'sopr': get_btc_sopr(),
+                'timestamp': market['timestamp']
+            }
+        }
+    
+    def _glassnode_eth_metrics(self) -> Dict:
+        """Handler for glassnode_eth_metrics tool"""
+        from glassnode_onchain import (
+            get_market_metrics,
+            get_eth_gas_used,
+            get_eth_staking_metrics
+        )
+        
+        market = get_market_metrics()
+        if 'error' in market:
+            return {'success': False, 'error': market['error']}
+        
+        gas = get_eth_gas_used()
+        staking = get_eth_staking_metrics()
+        
+        return {
+            'success': True,
+            'data': {
+                'market': market['ethereum'],
+                'gas': gas,
+                'staking': staking,
+                'timestamp': market['timestamp']
+            }
+        }
+    
+    def _glassnode_exchange_flows(self, days: int = 7) -> Dict:
+        """Handler for glassnode_exchange_flows tool"""
+        from glassnode_onchain import get_btc_exchange_flows
+        
+        df = get_btc_exchange_flows(days=days)
+        return {
+            'success': True,
+            'data': df.to_dict(orient='records')
+        }
+    
+    def _glassnode_market_overview(self) -> Dict:
+        """Handler for glassnode_market_overview tool"""
+        from glassnode_onchain import (
+            get_market_metrics,
+            get_btc_nvt_ratio,
+            get_btc_mvrv,
+            get_btc_sopr,
+            get_eth_gas_used,
+            get_eth_staking_metrics
+        )
+        
+        market = get_market_metrics()
+        if 'error' in market:
+            return {'success': False, 'error': market['error']}
+        
+        return {
+            'success': True,
+            'data': {
+                'bitcoin': {
+                    'market': market['bitcoin'],
+                    'nvt_ratio': get_btc_nvt_ratio(),
+                    'mvrv_ratio': get_btc_mvrv(),
+                    'sopr': get_btc_sopr()
+                },
+                'ethereum': {
+                    'market': market['ethereum'],
+                    'gas': get_eth_gas_used(),
+                    'staking': get_eth_staking_metrics()
+                },
+                'timestamp': market['timestamp']
+            }
+        }
     
     # DeFi TVL & Yield Aggregator handlers (Phase 186)
     def _defi_global_tvl(self) -> Dict:
@@ -8418,6 +9246,16 @@ class MCPServer:
         """Handler for carbon_offset_projects tool"""
         return get_carbon_offset_projects(project_type)
     
+    # Carbon Capture & Storage Handler (Phase 578)
+    def _carbon_capture_summary(self) -> Dict:
+        """Handler for carbon_capture_summary tool"""
+        return get_carbon_capture_summary()
+    
+    # Drought Monitor Handler (Phase 580)
+    def _drought_summary(self) -> Dict:
+        """Handler for drought_summary tool"""
+        return get_drought_summary()
+    
     # Container Port Throughput Handlers (Phase 193)
     def _port_throughput(self, port: str = 'all') -> Dict:
         """Handler for port_throughput tool"""
@@ -9318,6 +10156,106 @@ class MCPServer:
         except Exception as e:
             return {'success': False, 'error': str(e)}
     
+
+    # ShortVolume.com Handler Methods (Phase 703)
+    def _short_volume_latest(self, ticker: str) -> Dict:
+        """Handler for short_volume_latest tool"""
+        try:
+            from modules.short_volume import get_latest_short_ratio
+            result = get_latest_short_ratio(ticker)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _short_volume_chart(self, ticker: str, days: int = 60) -> Dict:
+        """Handler for short_volume_chart tool"""
+        try:
+            from modules.short_volume import plot_short_volume_trend
+            chart = plot_short_volume_trend(ticker, days)
+            return {'success': True, 'chart': chart}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _short_volume_compare(self, tickers: List[str]) -> Dict:
+        """Handler for short_volume_compare tool"""
+        try:
+            from modules.short_volume import compare_short_activity
+            df = compare_short_activity(tickers)
+            if df.empty:
+                return {'success': False, 'error': 'No data found for any tickers'}
+            return {'success': True, 'data': df.to_dict('records')}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+    def _finra_short_interest(self, ticker: str) -> Dict:
+        """Handler for finra_short_interest tool"""
+        try:
+            from modules.finra_short_interest import fetch_finra_short_interest
+            df = fetch_finra_short_interest(ticker)
+            if df.empty:
+                return {'success': False, 'error': f'No FINRA short interest data found for {ticker}'}
+            return {'success': True, 'data': df.to_dict('records')}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _short_squeeze_scan(self, min_ratio: float = 30.0) -> Dict:
+        """Handler for short_squeeze_scan tool"""
+        try:
+            from modules.short_volume import detect_short_squeeze_candidates
+            candidates = detect_short_squeeze_candidates(min_short_ratio=min_ratio)
+            return {'success': True, 'candidates': candidates, 'count': len(candidates)}
+        except Exception as e:
+
+    # CBOE Put/Call & Options Volume Handlers (Phase 705)
+    def _cboe_total_putcall(self) -> Dict:
+        """Handler for cboe_total_putcall tool"""
+        try:
+            cboe = CBOEPutCallData()
+            data = cboe.get_total_putcall_ratio()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _cboe_equity_putcall(self) -> Dict:
+        """Handler for cboe_equity_putcall tool"""
+        try:
+            cboe = CBOEPutCallData()
+            data = cboe.get_equity_putcall_ratio()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _cboe_index_putcall(self) -> Dict:
+        """Handler for cboe_index_putcall tool"""
+        try:
+            cboe = CBOEPutCallData()
+            data = cboe.get_index_putcall_ratio()
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _cboe_most_active(self, limit: int = 20) -> Dict:
+        """Handler for cboe_most_active tool"""
+        try:
+            cboe = CBOEPutCallData()
+            data = cboe.get_most_active_options(limit)
+            return {'success': True, 'data': data, 'count': len(data)}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _cboe_summary(self) -> Dict:
+        """Handler for cboe_summary tool"""
+        try:
+            cboe = CBOEPutCallData()
+            summary = cboe.get_summary()
+            return {'success': True, 'summary': summary}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+            return {'success': False, 'error': str(e)}
+
     def list_tools(self) -> Dict:
         """List all available tools"""
         tools_list = []
@@ -9361,6 +10299,178 @@ class MCPServer:
     def _cia_factbook_compare(self, countries: List[str]) -> Dict:
         """Handler for cia_factbook_compare tool"""
         return cia_compare_countries(countries)
+    
+    # Core Market Data Handlers (Phase 1)
+    def _market_quote(self, symbol: str) -> Dict:
+        """Handler for market_quote tool"""
+        try:
+            result = get_quote(symbol)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _market_historical(self, symbol: str, period: str = '1mo', interval: str = '1d') -> Dict:
+        """Handler for market_historical tool"""
+        try:
+            result = get_historical_prices(symbol, period, interval)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _market_sec_filings(self, symbol: str, filing_type: Optional[str] = None, limit: int = 10) -> Dict:
+        """Handler for market_sec_filings tool"""
+        try:
+            result = get_sec_filings(symbol, filing_type, limit)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _market_news(self, symbol: str, limit: int = 10) -> Dict:
+        """Handler for market_news tool"""
+        try:
+            result = get_news_sentiment(symbol, limit)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _market_fundamentals(self, symbol: str) -> Dict:
+        """Handler for market_fundamentals tool"""
+        try:
+            result = get_fundamentals(symbol)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # Enhanced Market Data Handlers (Phase 2)
+    def _options_greeks(self, symbol: str, risk_free_rate: float = 0.05) -> Dict:
+        """Handler for options_greeks tool"""
+        try:
+            from enhanced_data import get_options_chain
+            result = get_options_chain(symbol, risk_free_rate)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _earnings_calendar(self, symbol: Optional[str] = None, days_ahead: int = 30) -> Dict:
+        """Handler for earnings_calendar tool"""
+        try:
+            from enhanced_data import get_earnings_calendar
+            result = get_earnings_calendar(symbol, days_ahead)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _dividend_data(self, symbol: str) -> Dict:
+        """Handler for dividend_data tool"""
+        try:
+            from enhanced_data import get_dividend_data
+            result = get_dividend_data(symbol)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _etf_holdings(self, symbol: str, top_n: int = 50) -> Dict:
+        """Handler for etf_holdings tool"""
+        try:
+            from enhanced_data import get_etf_holdings
+            result = get_etf_holdings(symbol, top_n)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # Multi-Asset Coverage Handlers (Phase 4)
+    def _crypto_price(self, symbol: str) -> Dict:
+        """Handler for crypto_price tool"""
+        try:
+            from multi_asset_coverage import get_crypto_price
+            result = get_crypto_price(symbol)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _crypto_list(self, limit: int = 100) -> Dict:
+        """Handler for crypto_list tool"""
+        try:
+            from multi_asset_coverage import get_crypto_list
+            result = get_crypto_list(limit)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _commodity_price(self, name: str) -> Dict:
+        """Handler for commodity_price tool"""
+        try:
+            from multi_asset_coverage import get_commodity_price
+            result = get_commodity_price(name)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _commodities_all(self) -> Dict:
+        """Handler for commodities_all tool"""
+        try:
+            from multi_asset_coverage import get_all_commodities
+            result = get_all_commodities()
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _forex_rate(self, base: str, target: str) -> Dict:
+        """Handler for forex_rate tool"""
+        try:
+            from multi_asset_coverage import get_forex_rate
+            result = get_forex_rate(base, target)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _forex_basket(self, base: str = "USD", targets: List[str] = None) -> Dict:
+        """Handler for forex_basket tool"""
+        try:
+            from multi_asset_coverage import get_forex_basket
+            result = get_forex_basket(base, targets)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _analyst_ratings(self, ticker: str) -> Dict:
+        """Handler for analyst_ratings tool"""
+        try:
+            from multi_asset_coverage import get_analyst_ratings
+            result = get_analyst_ratings(ticker)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _company_profile(self, ticker: str) -> Dict:
+        """Handler for company_profile tool"""
+        try:
+            from multi_asset_coverage import get_company_profile
+            result = get_company_profile(ticker)
+            if "error" in result:
+                return {'success': False, 'error': result['error']}
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _stock_screener(self, min_market_cap: Optional[float] = None, max_pe: Optional[float] = None,
+                       min_dividend_yield: Optional[float] = None, sector: Optional[str] = None,
+                       country: Optional[str] = None) -> Dict:
+        """Handler for stock_screener tool"""
+        try:
+            from multi_asset_coverage import screen_stocks
+            result = screen_stocks(min_market_cap, max_pe, min_dividend_yield, sector, country)
+            return {'success': True, 'data': result}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
     
     # UN Comtrade Handlers (Phase 103)
     def _comtrade_reporters(self, region: Optional[str] = None) -> Dict:
@@ -9782,6 +10892,23 @@ class MCPServer:
         """Handler for india_nso_full_stats tool"""
         return india_nso_get_full_stats()
     
+    # RBI Handler Methods (Phase 632)
+    def _rbi_get_rates(self) -> Dict:
+        """Handler for rbi_get_rates tool"""
+        return rbi_fetch_rates()
+    
+    def _rbi_get_forex_reserves(self) -> Dict:
+        """Handler for rbi_get_forex_reserves tool"""
+        return rbi_fetch_forex()
+    
+    def _rbi_get_policy_stance(self) -> Dict:
+        """Handler for rbi_get_policy_stance tool"""
+        return rbi_fetch_policy()
+    
+    def _rbi_get_dashboard(self) -> Dict:
+        """Handler for rbi_get_dashboard tool"""
+        return rbi_get_dashboard()
+    
     # BSE/NSE Handler Methods (Phase 634)
     def _bse_sensex(self) -> Dict:
         """Handler for bse_sensex tool"""
@@ -9833,6 +10960,26 @@ class MCPServer:
         sectors = tase_fetch_sector_performance()
         return {"sectors": sectors, "count": len(sectors)}
     
+
+    # KRX (Korea Exchange) Handler Methods (Phase 637)
+    def _krx_indices(self, period: str = '1mo') -> Dict:
+        """Handler for krx_indices tool"""
+        df = get_krx_indices(period)
+        return {"indices": df.to_dict('records'), "count": len(df)}
+    
+    def _krx_top_stocks(self, limit: int = 20) -> Dict:
+        """Handler for krx_top_stocks tool"""
+        df = get_kospi_composition(limit)
+        return {"stocks": df.to_dict('records'), "count": len(df)}
+    
+    def _krx_market_summary(self) -> Dict:
+        """Handler for krx_market_summary tool"""
+        return krx_get_market_summary()
+    
+    def _krx_sector_performance(self) -> Dict:
+        """Handler for krx_sector_performance tool"""
+        df = krx_get_sector_performance()
+        return {"sectors": df.to_dict('records'), "count": len(df)}
     # ABS Australia Stats Handler Methods (Phase 639)
     def _abs_australia_gdp(self, quarters: int = 8) -> Dict:
         """Handler for abs_australia_gdp tool"""
@@ -11060,6 +12207,201 @@ class MCPServer:
             }
         except Exception as e:
             return {'success': False, 'error': str(e)}
+    
+    # StockAnalysis.com EPS Revisions Handlers (Phase 700)
+    def _stockanalysis_eps_forecast(self, ticker: str) -> Dict:
+        """Handler for stockanalysis_eps_forecast tool"""
+        try:
+            from stockanalysis_eps_revisions import scrape_forecast
+            result = scrape_forecast(ticker, use_cache=False)
+            
+            if 'error' in result:
+                return {'success': False, 'error': result['error']}
+            
+            return {
+                'success': True,
+                'data': result
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _stockanalysis_eps_momentum(self, ticker: str) -> Dict:
+        """Handler for stockanalysis_eps_momentum tool"""
+        try:
+            from stockanalysis_eps_revisions import calculate_revision_momentum
+            result = calculate_revision_momentum(ticker)
+            
+            if 'error' in result:
+                return {'success': False, 'error': result['error']}
+            
+            return {
+                'success': True,
+                'data': result
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _stockanalysis_eps_history(self, ticker: str) -> Dict:
+        """Handler for stockanalysis_eps_history tool"""
+        try:
+            from stockanalysis_eps_revisions import get_eps_surprise_history
+            result = get_eps_surprise_history(ticker, use_cache=False)
+            
+            if 'error' in result:
+                return {'success': False, 'error': result['error']}
+            
+            return {
+                'success': True,
+                'data': result
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    # Finviz Screener Handler Methods (Phase 701)
+    def _finviz_screener(self, filters: Optional[Dict] = None, order: str = '-marketcap', limit: int = 100) -> Dict:
+        """Handler for finviz_screener tool"""
+        try:
+            df = finviz_screener(filters=filters, order=order, limit=limit)
+            return {
+                'success': True,
+                'data': df.to_dict('records'),
+                'count': len(df)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _finviz_quote(self, ticker: str) -> Dict:
+        """Handler for finviz_quote tool"""
+        try:
+            data = finviz_quote(ticker)
+            if 'error' in data:
+                return {'success': False, 'error': data['error']}
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _finviz_insider(self, filter_type: str = 'buy', days: int = 7, min_value: int = 100000) -> Dict:
+        """Handler for finviz_insider tool"""
+        try:
+            df = finviz_insider_trading(filter_type=filter_type, days=days, min_value=min_value)
+            
+            # Calculate clusters
+            clusters = []
+            if not df.empty:
+                cluster_data = df.groupby('ticker').agg({
+                    'value': 'count',
+                    'shares': 'first'
+                }).rename(columns={'value': 'num_trades'}).sort_values('num_trades', ascending=False)
+                clusters = cluster_data.head(10).to_dict('index')
+            
+            return {
+                'success': True,
+                'trades': df.to_dict('records'),
+                'count': len(df),
+                'clusters': clusters
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _finviz_high_short(self, min_float: float = 20.0, limit: int = 50) -> Dict:
+        """Handler for finviz_high_short tool"""
+        try:
+            df = high_short_interest(min_float=min_float, limit=limit)
+            return {
+                'success': True,
+                'data': df.to_dict('records'),
+                'count': len(df)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _finviz_value_stocks(self) -> Dict:
+        """Handler for finviz_value_stocks tool"""
+        try:
+            df = value_stocks()
+            return {
+                'success': True,
+                'data': df.to_dict('records'),
+                'count': len(df)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def _finviz_momentum_stocks(self) -> Dict:
+        """Handler for finviz_momentum_stocks tool"""
+        try:
+            df = momentum_stocks()
+            return {
+                'success': True,
+                'data': df.to_dict('records'),
+                'count': len(df)
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+
+    # OpenFIGI Identifier Mapping Handler Methods (Phase 711)
+    def _figi_map_ticker(self, ticker: str, exchange: Optional[str] = None) -> Dict:
+        """Handler for figi_map_ticker tool"""
+        try:
+            from openfigi_mapping import OpenFIGIClient
+            client = OpenFIGIClient()
+            result = client.map_identifier(ticker.upper(), "TICKER", exchange_code=exchange)
+            return result
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'identifier': ticker,
+                'id_type': 'TICKER'
+            }
+    
+    def _figi_batch_map(self, tickers: List[str], exchange: Optional[str] = None) -> Dict:
+        """Handler for figi_batch_map tool"""
+        try:
+            from openfigi_mapping import OpenFIGIClient
+            client = OpenFIGIClient()
+            jobs = [
+                {"idValue": t.upper(), "idType": "TICKER", "exchCode": exchange}
+                if exchange else {"idValue": t.upper(), "idType": "TICKER"}
+                for t in tickers
+            ]
+            results = client.batch_map(jobs)
+            return {
+                'success': True,
+                'count': len(results),
+                'results': results
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'count': 0,
+                'results': []
+            }
+    
+    def _figi_get_cusip(self, ticker: str, exchange: Optional[str] = None) -> Dict:
+        """Handler for figi_get_cusip tool"""
+        try:
+            from openfigi_mapping import OpenFIGIClient
+            client = OpenFIGIClient()
+            cusip = client.ticker_to_cusip(ticker.upper(), exchange=exchange)
+            return {
+                'success': True if cusip else False,
+                'ticker': ticker.upper(),
+                'cusip': cusip,
+                'exchange': exchange
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'ticker': ticker,
+                'cusip': None
+            }
 
     def handle_request(self, request: Dict) -> Dict:
         """Handle MCP request"""
@@ -11189,6 +12531,92 @@ Examples:
         for tool in tools['tools']:
             print(f"\n  {tool['name']}")
             print(f"    {tool['description']}")
+
+
+
+    # Baker Hughes Rig Count Handlers (Phase 713)
+    def _baker_hughes_current(self, region: str = "US") -> Dict:
+        """Handler for baker_hughes_current tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_current_count(region)
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_basins(self) -> Dict:
+        """Handler for baker_hughes_basins tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_basin_breakdown()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_trend(self, weeks: int = 52) -> Dict:
+        """Handler for baker_hughes_trend tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            df = bh.get_historical_trend(weeks)
+            data = df.to_dict(orient='records')
+            return {
+                'success': True,
+                'data': data,
+                'weeks': weeks
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_efficiency(self) -> Dict:
+        """Handler for baker_hughes_efficiency tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_drilling_efficiency_proxy()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_signal(self) -> Dict:
+        """Handler for baker_hughes_signal tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_signal_for_energy_stocks()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
 
 
 if __name__ == "__main__":

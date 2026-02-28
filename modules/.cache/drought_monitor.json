@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-02-27T21:35:38.097823",
+  "current_conditions": {
+    "valid_start": "2026-02-20",
+    "valid_end": "2026-02-27",
+    "none_pct": 58.2,
+    "d0_pct": 13.4,
+    "d1_pct": 11.8,
+    "d2_pct": 8.7,
+    "d3_pct": 5.3,
+    "d4_pct": 2.6,
+    "any_drought_pct": 41.8,
+    "severe_plus_pct": 16.6,
+    "source": "Fallback_Estimate"
+  },
+  "impact_estimate": {
+    "current_date": "2026-02-27",
+    "severe_plus_pct": 16.6,
+    "any_drought_pct": 41.8,
+    "farmland_affected_million_acres": 149.4,
+    "households_affected_millions": 33.4,
+    "estimated_economic_impact_billions_usd": 1.5,
+    "wildfire_risk": "High",
+    "crop_yield_impact_pct": 8.3,
+    "methodology": "Simplified model based on NOAA/USDA estimates"
+  },
+  "top_affected_states": []
+}

@@ -1,0 +1,8 @@
+{
+  "date": "2026-02-28",
+  "index_volume": 0,
+  "index_put_volume": 0,
+  "index_call_volume": 0,
+  "index_putcall_ratio": 0.0,
+  "note": "CBOE index options only (SPX, NDX, RUT, VIX)"
+}

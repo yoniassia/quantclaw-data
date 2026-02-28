@@ -12,6 +12,19 @@ MODULES_DIR = Path(__file__).parent / "modules"
 
 # Module registry
 MODULES = {
+    'core': {
+        'file': 'core_market_data.py',
+        'commands': ['quote', 'historical', 'sec', 'news', 'fundamentals', 'clear-cache']
+    },
+    'enhanced': {
+        'file': 'enhanced_data.py',
+        'commands': ['options-greeks', 'earnings-calendar', 'dividends', 'etf-holdings']
+    },
+    'multi_asset': {
+        'file': 'multi_asset_coverage.py',
+        'commands': ['crypto-price', 'crypto-list', 'commodity', 'commodities', 
+                     'forex', 'forex-basket', 'analyst-ratings', 'company-profile', 'screener']
+    },
     'cds': {
         'file': 'cds_spreads.py',
         'commands': ['sovereign-spreads', 'corporate-spreads', 'spread-compare', 'credit-risk-score']
@@ -65,6 +78,10 @@ MODULES = {
         'file': 'alpha_picker.py',
         'commands': ['alpha-score', 'alpha-picks', 'alpha-validate', 'alpha-scan', 'alpha-top-momentum']
     },
+    'alternative': {
+        'file': 'alternative_data.py',
+        'commands': ['alt-reddit', 'alt-stocktwits', 'alt-congress', 'alt-short', 'alt-combined']
+    },
     'sa_quant': {
         'file': 'sa_quant_replica.py',
         'commands': ['sa-score', 'sa-strong-buys', 'sa-validate', 'sa-backtest']
@@ -76,6 +93,14 @@ MODULES = {
     'options_flow': {
         'file': 'options_flow_scanner.py',
         'commands': ['options-flow-scan', 'options-flow-market', 'options-flow-darkpool']
+    },
+    'cboe_putcall': {
+        'file': 'cboe_putcall.py',
+        'commands': ['cboe-ratio', 'cboe-equity', 'cboe-index', 'cboe-active', 'cboe-history', 'cboe-summary']
+    },
+    'cnn_fear_greed': {
+        'file': 'cnn_fear_greed.py',
+        'commands': ['fear-greed', 'fear-greed-history', 'fear-greed-stats', 'fear-greed-signal', 'fear-greed-divergence']
     },
     'paper_trading': {
         'file': 'paper_trading.py',
@@ -161,6 +186,10 @@ MODULES = {
     'nft_market': {
         'file': 'nft_market.py',
         'commands': ['collection-stats', 'top-collections', 'wash-trading', 'market-overview', 'compare-collections', 'collection-history']
+    },
+    'glassnode': {
+        'file': 'glassnode_onchain.py',
+        'commands': ['glassnode-btc', 'glassnode-eth', 'glassnode-flows', 'glassnode-all']
     },
     'earnings_nlp': {
         'file': 'earnings_nlp.py',
@@ -479,6 +508,10 @@ MODULES = {
         'file': 'india_nso.py',
         'commands': ['india-gdp', 'india-cpi', 'india-iip', 'india-labor', 'india-trade', 'india-stats']
     },
+    'rbi_rates': {
+        'file': 'rbi_rates.py',
+        'commands': ['rbi-rates', 'rbi-forex', 'rbi-policy', 'rbi-dashboard']
+    },
     'bcb': {
         'file': 'bcb.py',
         'commands': ['brazil-selic', 'brazil-ipca', 'brazil-gdp', 'brazil-trade-balance', 'brazil-dashboard', 'brazil-exchange-rate']
@@ -559,6 +592,10 @@ MODULES = {
         'file': 'bis_credit_gap.py',
         'commands': ['credit-gap', 'g20-credit-heatmap', 'crisis-probability']
     },
+    'bis_property': {
+        'file': 'bis_property.py',
+        'commands': ['latest', 'compare', 'dashboard', 'heatmap']
+    },
     'ilo_labor': {
         'file': 'ilo_labor.py',
         'commands': ['labor-profile', 'labor-unemployment', 'labor-employment', 'labor-force', 'youth-unemployment', 'working-poverty', 'informal-employment', 'labor-compare', 'labor-countries', 'labor-search', 'labor-indicators']
@@ -631,6 +668,10 @@ MODULES = {
     'tase': {
         'file': 'tase.py',
         'commands': ['tase-index', 'tase-stock', 'tase-summary', 'tase-sectors', 'tase-history']
+    },
+    'krx': {
+        'file': 'krx.py',
+        'commands': ['krx-indices', 'krx-top-stocks', 'krx-summary']
     },
     'reserve_bank_india': {
         'file': 'reserve_bank_india.py',
@@ -718,6 +759,14 @@ MODULES = {
         'file': 'carbon_credits.py',
         'commands': ['eu-ets-price', 'global-prices', 'market-stats', 'emissions-by-sector', 'compare-markets', 'offset-projects']
     },
+    'carbon_capture': {
+        'file': 'carbon_capture_projects.py',
+        'commands': ['ccs-summary', 'ccs-pipeline', 'ccs-investment']
+    },
+    'drought': {
+        'file': 'drought_monitor.py',
+        'commands': ['drought-summary', 'drought-current', 'drought-impact']
+    },
     'eu_taxonomy': {
         'file': 'eu_taxonomy_alignment.py',
         'commands': ['taxonomy-score', 'taxonomy-leaders', 'taxonomy-sector']
@@ -797,7 +846,55 @@ MODULES = {
     'safe_china': {
         'file': 'safe_china_fx_reserves.py',
         'commands': ['safe-reserves', 'safe-capital-flows', 'safe-interventions', 'safe-composition', 'safe-gold', 'safe-dashboard']
-    }
+    },
+    'stockanalysis': {
+        'file': 'stockanalysis_eps_revisions.py',
+        'commands': ['eps-forecast', 'eps-momentum', 'eps-history']
+    },
+    "finviz": {
+        "file": "finviz_screener.py",
+        "commands": ["screener", "quote", "insider", "short", "value", "momentum"]
+    },
+    "openinsider": {
+        "file": "openinsider_form4.py",
+        "commands": ["insider-latest", "insider-clusters", "insider-top", "insider-ticker", "insider-sentiment"]
+    },
+    "short_volume": {
+        "file": "short_volume.py",
+        "commands": ["short-latest", "short-chart", "short-compare", "short-scan"]
+    },
+    'finra_short_interest': {
+        "file": "finra_short_interest.py",
+        "commands": ["finra-short"]
+    },
+    'sec_edgar_search': {
+        "file": "sec_edgar_full_text_search.py",
+        "commands": ["edgar-search", "edgar-risk-factors", "edgar-mda", "edgar-alert"]
+    },
+    'fed_soma': {
+        "file": "fed_soma.py",
+        "commands": ["fed-soma", "fed-soma-treasury", "fed-soma-mbs", "fed-soma-change", "fed-soma-duration"]
+    },
+    'aaii_sentiment': {
+        "file": "aaii_sentiment.py",
+        "commands": ["aaii", "aaii-current", "aaii-history", "aaii-signal"]
+    },
+    'wiki_pageviews': {
+        "file": "wiki_pageviews.py",
+        "commands": ["wiki-views", "wiki-ticker", "wiki-spikes", "wiki-compare", "wiki-top-tech"]
+    },
+    'openfigi_mapping': {
+        "file": "openfigi_mapping.py",
+        "commands": ["figi-map", "figi-ticker", "figi-batch"]
+    },
+    'fed_h15': {
+        'file': 'fed_h15_interest_rates.py',
+        'commands': ['fed-rates', 'fed-current', 'fed-curve', 'fed-slopes', 'fed-changes']
+    },
+    'baker_hughes': {
+        'file': 'baker_hughes_rig.py',
+        'commands': ['rig-current', 'rig-basins', 'rig-trend', 'rig-efficiency', 'rig-signal']
+    },
 }
 
 def dispatch_command(args):
@@ -832,7 +929,13 @@ def print_help():
     print("QUANTCLAW DATA CLI")
     print("\nAvailable commands:\n")
     
-    print("Pairs Trading (Phase 32):")
+    print("Enhanced Market Data (Phase 2):")
+    print("  python cli.py options-greeks SYMBOL [--rate 0.05]")
+    print("  python cli.py earnings-calendar [SYMBOL|ALL] [--days 30]")
+    print("  python cli.py dividends SYMBOL")
+    print("  python cli.py etf-holdings SYMBOL [--top 50]")
+    
+    print("\nPairs Trading (Phase 32):")
     print("  python cli.py pairs-scan SECTOR [--limit N]")
     print("  python cli.py cointegration SYMBOL1 SYMBOL2 [--lookback DAYS]")
     print("  python cli.py spread-monitor SYMBOL1 SYMBOL2 [--period PERIOD]")
@@ -1023,6 +1126,16 @@ def print_help():
     print("  python cli.py insider-summary [--days 7]          # Sector-wide insider buying/selling patterns")
     print("  python cli.py insider-sector SECTOR [--days 30]   # Deep dive: insider clusters in specific sector")
     print("  python cli.py insider-ticker TICKER [--days 90]   # Insider transaction history for a ticker")
+
+    print("OpenInsider SEC Form 4 (Phase 702) — Real-time insider filings, no API key:")
+    print("  python cli.py insider-latest [--days 7] [--min-value 25000]")
+    print("                                                    # Latest insider purchases")
+    print("  python cli.py insider-clusters [--days 30] [--min-insiders 2]")
+    print("                                                    # Cluster buys (multiple insiders same stock)")
+    print("  python cli.py insider-top [--limit 50]           # Highest-value insider trades")
+    print("  python cli.py insider-ticker TICKER [--days 90]  # All insider trades for ticker")
+    print("  python cli.py insider-sentiment TICKER [--days 90]")
+    print("                                                    # Buy/sell sentiment analysis")
     
     print("\nConvertible Bond Arbitrage (Phase 64):")
     print("  python cli.py convertible-scan                    # Scan for convertible bond opportunities")
@@ -1359,6 +1472,14 @@ def print_help():
     print("  python cli.py yield-compare [days]                # Compare curves (default: 30 days)")
     print("  python cli.py yield-maturity 10Y [days]           # Specific maturity time series")
     
+
+    print("\nFed SOMA Holdings (Phase 707):")
+    print("  python cli.py fed-soma                            # Current Fed balance sheet holdings summary")
+    print("  python cli.py fed-soma-treasury [bucket]          # Treasury holdings by maturity (0-1, 1-5, 5-10, 10+ years)")
+    print("  python cli.py fed-soma-mbs                        # Agency MBS holdings (Fannie/Freddie/Ginnie)")
+    print("  python cli.py fed-soma-change                     # Week-over-week QE/QT tracker")
+    print("  python cli.py fed-soma-duration                   # Fed portfolio duration analysis")
+
     print("\nSovereign Rating Tracker (Phase 164):")
     print("  python cli.py sovereign-ratings [days]            # All rating changes across S&P/Moody's/Fitch")
     print("  python cli.py sovereign-country <name>            # Ratings for a specific country")
@@ -1502,7 +1623,61 @@ def print_help():
     print("  python cli.py paper-run [--dry-run]              # Execute rebalance (score → trade → report)")
     print("  python cli.py paper-status                       # Show current portfolio + performance")
     print("  python cli.py paper-history [--limit 50]         # Show trade history")
+    
+    print("\nStockAnalysis.com EPS Revisions (Phase 700) — CRITICAL FOR ALPHA PICKER V3:")
+    print("  python cli.py eps-forecast TICKER               # Analyst EPS/revenue estimates (current/next Q/Y)")
+    print("  python cli.py eps-momentum TICKER               # EPS revision momentum signal (upward/downward/neutral)")
+    print("  python cli.py eps-history TICKER                # Historical EPS surprise track record (beat/miss)")
 
+    print("\nCBOE Put/Call & Options Volume (Phase 705):")
+    print("  python cli.py cboe-ratio                        # Total put/call ratio with interpretation")
+    print("  python cli.py cboe-equity                       # Equity-only P/C ratio")
+    print("  python cli.py cboe-index                        # Index-only P/C ratio (SPX, NDX)")
+    print("  python cli.py cboe-active [--limit 20]          # Most active options by volume")
+
+    print("\nSEC EDGAR Full-Text Search (Phase 706) — Bloomberg EDGAR<GO> Killer:")
+    print("  python cli.py edgar-search <query> [--entity AAPL] [--forms 10-K,10-Q] [--from 2024-01-01]")
+    print("                                                    # Full-text search across all SEC filings")
+    print("  python cli.py edgar-risk-factors <entity> [--keywords cyber,litigation] [--year 2024]")
+    print("                                                    # Extract Item 1A risk factors from 10-K")
+    print("  python cli.py edgar-mda <entity> [--keywords margins,headwinds] [--quarters 4]")
+    print("                                                    # MD&A analysis with sentiment scoring")
+    print("  python cli.py edgar-alert <keywords> [--forms 8-K,10-K] [--hours 24]")
+    print("\nCNN Fear & Greed Index (Phase 708) — Bloomberg GTMI Killer:")
+    print("  python cli.py fear-greed                        # Current Fear & Greed Index score")
+    print("  python cli.py fear-greed-history [--days 90]    # Historical Fear & Greed values")
+    print("  python cli.py fear-greed-stats [--days 365]     # Statistical summary & distribution")
+    print("  python cli.py fear-greed-signal                 # Trading signal based on sentiment")
+    print("  python cli.py fear-greed-divergence             # Detect divergence vs SPY price")
+    print("                                                    # Real-time filing alerts by keyword")
+    print("  python cli.py cboe-history [--days 30]          # Historical P/C ratios")
+    print("  python cli.py cboe-summary                      # Complete CBOE sentiment report")
+
+    print("\nWikipedia Pageviews (Phase 710) — Alt Data Attention Proxy:")
+    print("  python cli.py wiki-views <company_name> [--days 30]")
+    print("                                                    # Get Wikipedia pageviews for company")
+    print("  python cli.py wiki-ticker <TICKER> [--days 30]  # Map ticker to Wikipedia article")
+    print("  python cli.py wiki-spikes <company> [--days 90] [--threshold 2.0]")
+    print("                                                    # Detect attention spikes (volatility predictor)")
+    print("  python cli.py wiki-compare <company1,company2,...> [--days 30]")
+    print("                                                    # Compare pageview trends")
+    print("  python cli.py wiki-top-tech [--days 7]          # Top viewed tech companies")
+
+    print("\nOpenFIGI Identifier Mapping (Phase 711) — Bloomberg SECF<GO> Killer:")
+    print("  python cli.py figi-map <ticker> [--exchange US]")
+    print("                                                    # Map ticker to FIGI/ISIN/CUSIP")
+    print("  python cli.py figi-ticker <ticker> [--exchange US]")
+    print("                                                    # Get comprehensive identifier data")
+    print("  python cli.py figi-batch <ticker1,ticker2,...> [--exchange US]")
+
+    print("\nFed H.15 Interest Rates (Phase 712) — Bloomberg BTMM<GO> Killer:")
+    print("  python cli.py fed-rates [all|treasury|fed_funds|sofr|swaps] [--start 2024-01-01]")
+    print("                                                    # Fetch H.15 selected interest rates")
+    print("  python cli.py fed-current [all|treasury|sofr]   # Latest rates for all series")
+    print("  python cli.py fed-curve [--date YYYY-MM-DD]     # Treasury yield curve snapshot")
+    print("  python cli.py fed-slopes [--date YYYY-MM-DD]    # Yield curve slopes (2Y-10Y, etc.)")
+    print("  python cli.py fed-changes [--days 30]           # Rate changes over period")
+    print("                                                    # Batch map multiple tickers")
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
 
@@ -1513,3 +1688,12 @@ if __name__ == '__main__':
     print("  python cli.py lights-compare <CODE1,CODE2,...>    # Compare countries by radiance")
     print("  python cli.py lights-trend <CODE> --years YYYY-YYYY")
     print("                                                    # Multi-year economic activity trend")
+
+    print("\nShortVolume.com Daily Shorts (Phase 703):")
+    print("  python cli.py short-latest TICKER                # Latest short volume ratio for ticker")
+    print("  python cli.py short-chart TICKER [--days 60]     # Short volume ratio trend chart")
+    print("  python cli.py short-compare TICKER1,TICKER2,...  # Compare short ratios across tickers")
+    print("  python cli.py short-scan [--min-ratio 30]        # Scan for short squeeze candidates")
+
+    print("\nFINRA Short Interest (Phase 704):")
+    print("  python cli.py finra-short TICKER                # Official FINRA short interest data (bi-weekly)")

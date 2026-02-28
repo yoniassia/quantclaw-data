@@ -1,0 +1,84 @@
+
+    # Baker Hughes Rig Count Handlers (Phase 713)
+    def _baker_hughes_current(self, region: str = "US") -> Dict:
+        """Handler for baker_hughes_current tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_current_count(region)
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_basins(self) -> Dict:
+        """Handler for baker_hughes_basins tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_basin_breakdown()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_trend(self, weeks: int = 52) -> Dict:
+        """Handler for baker_hughes_trend tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            df = bh.get_historical_trend(weeks)
+            data = df.to_dict(orient='records')
+            return {
+                'success': True,
+                'data': data,
+                'weeks': weeks
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_efficiency(self) -> Dict:
+        """Handler for baker_hughes_efficiency tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_drilling_efficiency_proxy()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _baker_hughes_signal(self) -> Dict:
+        """Handler for baker_hughes_signal tool"""
+        try:
+            from modules.baker_hughes_rig import BakerHughesRigCount
+            bh = BakerHughesRigCount()
+            data = bh.get_signal_for_energy_stocks()
+            return {
+                'success': True,
+                'data': data
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+

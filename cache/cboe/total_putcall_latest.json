@@ -1,0 +1,10 @@
+{
+  "date": "2026-02-28",
+  "total_volume": 0,
+  "put_volume": 0,
+  "call_volume": 0,
+  "putcall_ratio": 0.0,
+  "equity_putcall": 0.0,
+  "index_putcall": 0.0,
+  "note": "CBOE data source - requires CSV parsing from cboe.com"
+}

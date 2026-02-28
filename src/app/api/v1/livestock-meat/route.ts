@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const ticker = searchParams.get('ticker') || searchParams.get('symbol') || 'SPY';
+  const ticker = searchParams.get('ticker') || searchParams.get('symbol') || '';
   const action = searchParams.get('action') || 'get_all_livestock_futures';
 
   try {

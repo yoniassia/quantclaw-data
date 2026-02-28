@@ -12,6 +12,7 @@ import json
 from typing import Dict, List, Optional
 from urllib.request import urlopen, Request
 from urllib.error import URLError
+from urllib.parse import quote
 
 
 # CFTC COT report categories
@@ -60,7 +61,7 @@ def fetch_cot_data(
     Returns:
         List of weekly COT records
     """
-    params = f"$where=cftc_contract_market_code='{contract_code}'&$order=report_date_as_yyyy_mm_dd DESC&$limit={weeks}"
+    params = quote(f"$where=cftc_contract_market_code='{contract_code}'&$order=report_date_as_yyyy_mm_dd DESC&$limit={weeks}", safe="$&='")
     url = f"{CFTC_BASE_URL}?{params}"
 
     try:
