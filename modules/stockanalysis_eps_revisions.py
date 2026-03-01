@@ -1,469 +1,323 @@
 #!/usr/bin/env python3
 """
-StockAnalysis.com EPS Revisions Scraper
-CRITICAL: Analyst EPS/revenue estimate revisions — closes Alpha Picker v3 accuracy gap (65%→85%+ SA match)
+StockAnalysis.com EPS Revisions Scraper — Phase 700
+CRITICAL: EPS estimate revisions, analyst consensus, revenue estimates via scraping.
+Closes Alpha Picker V3 accuracy gap (65%→85%+ SA match).
 
-Free data, no API key required. Scrapes:
-- EPS estimates (current/next quarter, current/next year)
+Free, no API key required. Scrapes stockanalysis.com for:
+- Current quarter/year EPS estimates
+- Analyst consensus (mean, high, low, # of analysts)
 - Revenue estimates
-- Analyst count, consensus, high/low ranges
-- Historical estimate changes (revision momentum)
+- Estimate revision trends (up/down revisions in last 7/30/90 days)
+- Earnings surprise history
 
-Source: stockanalysis.com/{ticker}/forecast/
+Usage:
+  python modules/stockanalysis_eps_revisions.py --ticker AAPL
+  python modules/stockanalysis_eps_revisions.py --ticker MSFT --json
+
+Data source: https://stockanalysis.com/stocks/{ticker}/forecast/
 """
 
 import requests
 from bs4 import BeautifulSoup
+import argparse
 import json
-import time
+import sys
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Any, Optional
 import re
-from pathlib import Path
 
-# Cache directory
-CACHE_DIR = Path.home() / ".quantclaw_cache" / "stockanalysis"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
-def get_cache_path(ticker: str, data_type: str = "forecast") -> Path:
-    """Get cache file path for ticker"""
-    return CACHE_DIR / f"{ticker.upper()}_{data_type}.json"
-
-def load_cache(ticker: str, max_age_hours: int = 24) -> Optional[Dict]:
-    """Load cached data if fresh"""
-    cache_file = get_cache_path(ticker)
-    if not cache_file.exists():
-        return None
+class StockAnalysisEPS:
+    """Scrape EPS revisions and analyst estimates from StockAnalysis.com"""
     
-    try:
-        data = json.loads(cache_file.read_text())
-        cached_time = datetime.fromisoformat(data.get("cached_at", ""))
-        age_hours = (datetime.now() - cached_time).total_seconds() / 3600
+    BASE_URL = "https://stockanalysis.com"
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        })
+    
+    def get_eps_estimates(self, ticker: str) -> Dict[str, Any]:
+        """
+        Get EPS estimates and analyst consensus for a ticker.
         
-        if age_hours < max_age_hours:
-            return data
-    except:
-        pass
-    
-    return None
-
-def save_cache(ticker: str, data: Dict):
-    """Save data to cache"""
-    data["cached_at"] = datetime.now().isoformat()
-    cache_file = get_cache_path(ticker)
-    cache_file.write_text(json.dumps(data, indent=2))
-
-def parse_number(text: str) -> Optional[float]:
-    """Parse number from text (handles $, B, M, K suffixes)"""
-    if not text or text.strip() in ["-", "N/A", ""]:
-        return None
-    
-    text = text.strip().replace("$", "").replace(",", "")
-    
-    # Handle suffixes
-    multiplier = 1
-    if text.endswith("B"):
-        multiplier = 1_000_000_000
-        text = text[:-1]
-    elif text.endswith("M"):
-        multiplier = 1_000_000
-        text = text[:-1]
-    elif text.endswith("K"):
-        multiplier = 1_000
-        text = text[:-1]
-    
-    try:
-        return float(text) * multiplier
-    except:
-        return None
-
-def _parse_forecast_table(table) -> Dict:
-    """Parse StockAnalysis.com forecast table (years as columns, metrics as rows)"""
-    rows = table.find_all("tr")
-    if len(rows) < 2:
-        return {}
-    
-    # Get years from header row
-    header_cells = rows[0].find_all(["th", "td"])
-    years = [cell.get_text().strip() for cell in header_cells[1:]]  # Skip first col
-    
-    # Initialize result dict
-    year_data = {year: {} for year in years}
-    
-    # Parse data rows (High, Avg, Low)
-    for row in rows[1:]:
-        cells = row.find_all(["th", "td"])
-        if len(cells) < 2:
-            continue
+        Args:
+            ticker: Stock ticker symbol
+            
+        Returns:
+            Dict with:
+            - current_quarter: {eps_estimate, revenue_estimate, num_analysts, date}
+            - current_year: {eps_estimate, revenue_estimate, num_analysts}
+            - next_quarter: {eps_estimate, revenue_estimate}
+            - next_year: {eps_estimate, revenue_estimate}
+            - revisions_7d: {up, down, unchanged}
+            - revisions_30d: {up, down, unchanged}
+            - surprise_history: [{quarter, estimate, actual, surprise_pct}, ...]
+            - timestamp: ISO timestamp
+        """
+        ticker = ticker.upper().strip()
         
-        metric_name = cells[0].get_text().strip().lower()
-        
-        # Map metric names
-        if "avg" in metric_name or "mean" in metric_name:
-            metric_key = "mean"
-        elif "high" in metric_name:
-            metric_key = "high"
-        elif "low" in metric_name:
-            metric_key = "low"
-        elif "analyst" in metric_name or "# of" in metric_name:
-            metric_key = "analysts"
-        else:
-            continue
-        
-        # Parse values for each year
-        for i, year in enumerate(years):
-            if i + 1 < len(cells):
-                value_text = cells[i + 1].get_text().strip()
+        try:
+            # Fetch forecast page
+            url = f"{self.BASE_URL}/stocks/{ticker.lower()}/forecast/"
+            response = self.session.get(url, timeout=10)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            data = {
+                'ticker': ticker,
+                'current_quarter': {},
+                'current_year': {},
+                'next_quarter': {},
+                'next_year': {},
+                'revisions_7d': {},
+                'revisions_30d': {},
+                'surprise_history': [],
+                'timestamp': datetime.utcnow().isoformat() + 'Z'
+            }
+            
+            # Extract EPS estimates from tables
+            tables = soup.find_all('table')
+            
+            for table in tables:
+                thead = table.find('thead')
+                tbody = table.find('tbody')
                 
-                # Skip "Pro" cells (paywalled)
-                if value_text.lower() == "pro":
+                if not thead or not tbody:
                     continue
                 
-                if metric_key == "analysts":
-                    try:
-                        year_data[year][metric_key] = int(value_text.replace(",", ""))
-                    except:
-                        pass
-                else:
-                    year_data[year][metric_key] = parse_number(value_text)
-    
-    return year_data
-
-def scrape_forecast(ticker: str, use_cache: bool = True) -> Dict:
-    """
-    Scrape analyst forecasts from stockanalysis.com
-    
-    Returns:
-        {
-            "ticker": "AAPL",
-            "eps_estimates": {
-                "current_quarter": {"mean": 1.50, "high": 1.60, "low": 1.40, "analysts": 25},
-                "next_quarter": {...},
-                "current_year": {...},
-                "next_year": {...}
-            },
-            "revenue_estimates": {
-                "current_quarter": {"mean": 95000000000, ...},
-                ...
-            },
-            "last_updated": "2026-02-28T13:00:00",
-            "cached_at": "..."
-        }
-    """
-    ticker = ticker.upper()
-    
-    # Try cache first
-    if use_cache:
-        cached = load_cache(ticker)
-        if cached:
-            return cached
-    
-    url = f"https://stockanalysis.com/stocks/{ticker.lower()}/forecast/"
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    
-    try:
-        resp = requests.get(url, headers=headers, timeout=15)
-        resp.raise_for_status()
-        
-        soup = BeautifulSoup(resp.text, "html.parser")
-        
-        result = {
-            "ticker": ticker,
-            "eps_estimates": {},
-            "revenue_estimates": {},
-            "last_updated": datetime.now().isoformat(),
-            "source": url
-        }
-        
-        # Find EPS and Revenue forecast tables
-        # New structure: years as columns, metrics as rows (High, Avg, Low)
-        
-        # Find EPS Forecast table
-        eps_heading = soup.find(['h2', 'h3'], string=lambda text: text and 'EPS Forecast' in text)
-        if eps_heading:
-            eps_table = eps_heading.find_next('table')
-            if eps_table:
-                result["eps_estimates"] = _parse_forecast_table(eps_table)
-        
-        # Find Revenue Forecast table
-        rev_heading = soup.find(['h2', 'h3'], string=lambda text: text and 'Revenue Forecast' in text)
-        if rev_heading:
-            rev_table = rev_heading.find_next('table')
-            if rev_table:
-                result["revenue_estimates"] = _parse_forecast_table(rev_table)
-        
-        # Save to cache
-        save_cache(ticker, result)
-        
-        return result
-        
-    except requests.RequestException as e:
-        return {"error": f"Request failed: {e}", "ticker": ticker}
-    except Exception as e:
-        return {"error": f"Parse failed: {e}", "ticker": ticker}
-
-def get_eps_surprise_history(ticker: str, use_cache: bool = True) -> Dict:
-    """
-    Scrape EPS surprise history (beat/miss patterns)
-    
-    Source: stockanalysis.com/{ticker}/earnings/
-    """
-    ticker = ticker.upper()
-    
-    # Try cache
-    cache_file = get_cache_path(ticker, "earnings_history")
-    if use_cache and cache_file.exists():
-        try:
-            data = json.loads(cache_file.read_text())
-            cached_time = datetime.fromisoformat(data.get("cached_at", ""))
-            age_hours = (datetime.now() - cached_time).total_seconds() / 3600
-            if age_hours < 168:  # 1 week cache for historical data
-                return data
-        except:
-            pass
-    
-    url = f"https://stockanalysis.com/stocks/{ticker.lower()}/earnings/"
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
-    }
-    
-    try:
-        resp = requests.get(url, headers=headers, timeout=15)
-        resp.raise_for_status()
-        
-        soup = BeautifulSoup(resp.text, "html.parser")
-        
-        result = {
-            "ticker": ticker,
-            "earnings_history": [],
-            "last_updated": datetime.now().isoformat(),
-            "source": url
-        }
-        
-        # Find earnings history table
-        table = soup.find("table")
-        
-        if table:
-            rows = table.find_all("tr")[1:]  # Skip header
-            
-            for row in rows[:12]:  # Last 12 quarters
-                cells = row.find_all(["td", "th"])
+                headers = [th.get_text(strip=True) for th in thead.find_all('th')]
+                rows = tbody.find_all('tr')
                 
-                if len(cells) >= 5:
-                    try:
-                        quarter = cells[0].get_text().strip()
-                        eps_actual = parse_number(cells[1].get_text())
-                        eps_estimate = parse_number(cells[2].get_text())
-                        surprise_pct = parse_number(cells[3].get_text().replace("%", ""))
+                # Parse EPS consensus table
+                if 'EPS Estimate' in headers or 'Mean' in headers:
+                    for row in rows:
+                        cells = row.find_all('td')
+                        if len(cells) < 2:
+                            continue
                         
-                        result["earnings_history"].append({
-                            "quarter": quarter,
-                            "eps_actual": eps_actual,
-                            "eps_estimate": eps_estimate,
-                            "surprise_pct": surprise_pct,
-                            "beat": surprise_pct > 0 if surprise_pct else None
+                        period = cells[0].get_text(strip=True)
+                        values = [c.get_text(strip=True) for c in cells[1:]]
+                        
+                        # Try to extract numeric values
+                        eps_val = self._parse_currency(values[0]) if values else None
+                        
+                        if 'Current Quarter' in period or 'This Quarter' in period:
+                            data['current_quarter']['eps_estimate'] = eps_val
+                            if len(values) > 1:
+                                data['current_quarter']['num_analysts'] = self._parse_int(values[1])
+                        elif 'Next Quarter' in period:
+                            data['next_quarter']['eps_estimate'] = eps_val
+                        elif 'Current Year' in period or 'This Year' in period:
+                            data['current_year']['eps_estimate'] = eps_val
+                            if len(values) > 1:
+                                data['current_year']['num_analysts'] = self._parse_int(values[1])
+                        elif 'Next Year' in period:
+                            data['next_year']['eps_estimate'] = eps_val
+                
+                # Parse Revenue estimates
+                if 'Revenue Estimate' in headers or 'Sales' in headers:
+                    for row in rows:
+                        cells = row.find_all('td')
+                        if len(cells) < 2:
+                            continue
+                        
+                        period = cells[0].get_text(strip=True)
+                        rev_val = self._parse_currency(cells[1].get_text(strip=True))
+                        
+                        if 'Current Quarter' in period or 'This Quarter' in period:
+                            data['current_quarter']['revenue_estimate'] = rev_val
+                        elif 'Next Quarter' in period:
+                            data['next_quarter']['revenue_estimate'] = rev_val
+                        elif 'Current Year' in period or 'This Year' in period:
+                            data['current_year']['revenue_estimate'] = rev_val
+                        elif 'Next Year' in period:
+                            data['next_year']['revenue_estimate'] = rev_val
+                
+                # Parse EPS Revisions (7d, 30d)
+                if 'Up' in headers and 'Down' in headers:
+                    for row in rows:
+                        cells = row.find_all('td')
+                        if len(cells) < 3:
+                            continue
+                        
+                        period = cells[0].get_text(strip=True).lower()
+                        up = self._parse_int(cells[1].get_text(strip=True))
+                        down = self._parse_int(cells[2].get_text(strip=True))
+                        
+                        if '7' in period or 'week' in period:
+                            data['revisions_7d'] = {'up': up, 'down': down}
+                        elif '30' in period or 'month' in period:
+                            data['revisions_30d'] = {'up': up, 'down': down}
+                
+                # Parse Earnings Surprise History
+                if 'Surprise %' in headers or 'Actual' in headers:
+                    for row in rows:
+                        cells = row.find_all('td')
+                        if len(cells) < 4:
+                            continue
+                        
+                        quarter = cells[0].get_text(strip=True)
+                        estimate = self._parse_currency(cells[1].get_text(strip=True))
+                        actual = self._parse_currency(cells[2].get_text(strip=True))
+                        surprise = cells[3].get_text(strip=True)
+                        
+                        # Parse surprise percentage
+                        surprise_pct = None
+                        if '%' in surprise:
+                            surprise_pct = self._parse_float(surprise.replace('%', ''))
+                        
+                        data['surprise_history'].append({
+                            'quarter': quarter,
+                            'estimate': estimate,
+                            'actual': actual,
+                            'surprise_pct': surprise_pct
                         })
-                    except:
-                        continue
-        
-        # Save cache
-        result["cached_at"] = datetime.now().isoformat()
-        cache_file.write_text(json.dumps(result, indent=2))
-        
-        return result
-        
-    except Exception as e:
-        return {"error": str(e), "ticker": ticker}
-
-def calculate_revision_momentum(ticker: str) -> Dict:
-    """
-    Calculate EPS estimate revision momentum (critical for Alpha Picker v3)
-    
-    Returns upward/downward revision trends
-    """
-    forecast = scrape_forecast(ticker)
-    
-    if "error" in forecast:
-        return forecast
-    
-    result = {
-        "ticker": ticker,
-        "revision_signal": "neutral",
-        "confidence": 0.0,
-        "metrics": {}
-    }
-    
-    eps = forecast.get("eps_estimates", {})
-    
-    # Check current quarter estimate vs range
-    cq = eps.get("current_quarter", {})
-    
-    if cq.get("mean") and cq.get("high") and cq.get("low"):
-        mean = cq["mean"]
-        high = cq["high"]
-        low = cq["low"]
-        
-        range_size = high - low
-        if range_size > 0:
-            # Where is mean in the range? (0 = low, 1 = high)
-            mean_position = (mean - low) / range_size
             
-            result["metrics"]["cq_mean_position"] = round(mean_position, 3)
+            # Extract next earnings date if available
+            earnings_date = soup.find(string=re.compile(r'Next Earnings Date', re.I))
+            if earnings_date:
+                date_text = earnings_date.find_next().get_text(strip=True) if earnings_date.find_next() else None
+                if date_text:
+                    data['current_quarter']['earnings_date'] = date_text
             
-            # Upward bias if mean > 0.6, downward if < 0.4
-            if mean_position > 0.6:
-                result["revision_signal"] = "upward"
-                result["confidence"] = round((mean_position - 0.5) * 2, 3)  # 0-1 scale
-            elif mean_position < 0.4:
-                result["revision_signal"] = "downward"
-                result["confidence"] = round((0.5 - mean_position) * 2, 3)
+            return data
+            
+        except requests.RequestException as e:
+            return {'error': f'HTTP error: {str(e)}', 'ticker': ticker}
+        except Exception as e:
+            return {'error': f'Parsing error: {str(e)}', 'ticker': ticker}
     
-    # Check analyst count trend (increasing = more attention = good)
-    analyst_counts = []
-    for period in ["current_quarter", "next_quarter", "current_year", "next_year"]:
-        if period in eps and "analysts" in eps[period]:
-            analyst_counts.append(eps[period]["analysts"])
+    def _parse_currency(self, text: str) -> Optional[float]:
+        """Parse currency string to float (handles $, B, M, K suffixes)"""
+        if not text or text == '-':
+            return None
+        
+        # Remove $, commas, spaces
+        clean = text.replace('$', '').replace(',', '').strip()
+        
+        # Handle B (billions), M (millions), K (thousands)
+        multiplier = 1.0
+        if clean.endswith('B'):
+            multiplier = 1e9
+            clean = clean[:-1]
+        elif clean.endswith('M'):
+            multiplier = 1e6
+            clean = clean[:-1]
+        elif clean.endswith('K'):
+            multiplier = 1e3
+            clean = clean[:-1]
+        
+        try:
+            return float(clean) * multiplier
+        except ValueError:
+            return None
     
-    if len(analyst_counts) >= 2:
-        result["metrics"]["analyst_count_trend"] = "increasing" if analyst_counts[0] < analyst_counts[-1] else "decreasing"
+    def _parse_float(self, text: str) -> Optional[float]:
+        """Parse float from text"""
+        if not text or text == '-':
+            return None
+        try:
+            return float(text.replace(',', '').replace('%', '').strip())
+        except ValueError:
+            return None
     
-    return result
+    def _parse_int(self, text: str) -> Optional[int]:
+        """Parse integer from text"""
+        if not text or text == '-':
+            return None
+        try:
+            return int(text.replace(',', '').strip())
+        except ValueError:
+            return None
 
-def cli_forecast(ticker: str):
-    """CLI: Get analyst forecasts for ticker"""
-    data = scrape_forecast(ticker, use_cache=False)
+def main():
+    parser = argparse.ArgumentParser(
+        description='StockAnalysis.com EPS Revisions & Analyst Consensus Scraper'
+    )
+    parser.add_argument('--ticker', type=str, required=True,
+                       help='Stock ticker symbol (e.g., AAPL, MSFT)')
+    parser.add_argument('--json', action='store_true',
+                       help='Output raw JSON')
     
-    if "error" in data:
-        print(f"❌ {data['error']}")
+    args = parser.parse_args()
+    
+    scraper = StockAnalysisEPS()
+    data = scraper.get_eps_estimates(args.ticker)
+    
+    if args.json:
+        print(json.dumps(data, indent=2))
         return
     
-    print(f"\n📊 Analyst Forecasts: {ticker}")
-    print("=" * 60)
+    # Pretty print
+    if 'error' in data:
+        print(f"❌ Error: {data['error']}")
+        sys.exit(1)
     
-    # EPS Estimates
-    print("\n💰 EPS Estimates:")
-    for period, est in data.get("eps_estimates", {}).items():
-        print(f"\n  {period.replace('_', ' ').title()}:")
-        if "mean" in est and est['mean'] is not None:
-            print(f"    Mean: ${est['mean']:.2f}")
-        if "high" in est and "low" in est and est['high'] is not None and est['low'] is not None:
-            print(f"    Range: ${est['low']:.2f} - ${est['high']:.2f}")
-        if "analysts" in est and est['analysts'] is not None:
-            print(f"    Analysts: {est['analysts']}")
+    print(f"\n{'='*60}")
+    print(f"📊 {data['ticker']} — EPS Estimates & Revisions")
+    print(f"{'='*60}\n")
     
-    # Revenue Estimates
-    print("\n💵 Revenue Estimates:")
-    for period, est in data.get("revenue_estimates", {}).items():
-        print(f"\n  {period.replace('_', ' ').title()}:")
-        if "mean" in est and est['mean'] is not None:
-            rev_b = est['mean'] / 1e9
-            print(f"    Mean: ${rev_b:.2f}B")
-        if "high" in est and "low" in est and est['high'] is not None and est['low'] is not None:
-            high_b = est['high'] / 1e9
-            low_b = est['low'] / 1e9
-            print(f"    Range: ${low_b:.2f}B - ${high_b:.2f}B")
-        if "analysts" in est and est['analysts'] is not None:
-            print(f"    Analysts: {est['analysts']}")
+    # Current Quarter
+    if data['current_quarter']:
+        print("📅 Current Quarter:")
+        cq = data['current_quarter']
+        if cq.get('eps_estimate'):
+            print(f"  EPS Estimate:     ${cq['eps_estimate']:.2f}")
+        if cq.get('revenue_estimate'):
+            rev_b = cq['revenue_estimate'] / 1e9
+            print(f"  Revenue Estimate: ${rev_b:.2f}B")
+        if cq.get('num_analysts'):
+            print(f"  Analysts:         {cq['num_analysts']}")
+        if cq.get('earnings_date'):
+            print(f"  Earnings Date:    {cq['earnings_date']}")
+        print()
     
-    print(f"\n📅 Last Updated: {data.get('last_updated', 'N/A')}")
-    print(f"🔗 Source: {data.get('source', 'N/A')}\n")
-
-def cli_revision_momentum(ticker: str):
-    """CLI: Calculate EPS revision momentum signal"""
-    data = calculate_revision_momentum(ticker)
+    # Current Year
+    if data['current_year']:
+        print("📆 Current Year:")
+        cy = data['current_year']
+        if cy.get('eps_estimate'):
+            print(f"  EPS Estimate:     ${cy['eps_estimate']:.2f}")
+        if cy.get('revenue_estimate'):
+            rev_b = cy['revenue_estimate'] / 1e9
+            print(f"  Revenue Estimate: ${rev_b:.2f}B")
+        if cy.get('num_analysts'):
+            print(f"  Analysts:         {cy['num_analysts']}")
+        print()
     
-    if "error" in data:
-        print(f"❌ {data['error']}")
-        return
+    # Revisions
+    if data['revisions_7d'] or data['revisions_30d']:
+        print("🔄 Estimate Revisions:")
+        if data['revisions_7d']:
+            r7 = data['revisions_7d']
+            print(f"  Last 7 Days:   ↑ {r7.get('up', 0)} up, ↓ {r7.get('down', 0)} down")
+        if data['revisions_30d']:
+            r30 = data['revisions_30d']
+            print(f"  Last 30 Days:  ↑ {r30.get('up', 0)} up, ↓ {r30.get('down', 0)} down")
+        print()
     
-    signal = data.get("revision_signal", "neutral")
-    confidence = data.get("confidence", 0.0)
+    # Surprise History (last 4 quarters)
+    if data['surprise_history']:
+        print("🎯 Earnings Surprise History (Last 4Q):")
+        for s in data['surprise_history'][:4]:
+            quarter = s.get('quarter', 'N/A')
+            est = s.get('estimate')
+            act = s.get('actual')
+            surprise = s.get('surprise_pct')
+            
+            est_str = f"${est:.2f}" if est else "N/A"
+            act_str = f"${act:.2f}" if act else "N/A"
+            surprise_str = f"{surprise:+.1f}%" if surprise is not None else "N/A"
+            
+            emoji = "✅" if surprise and surprise > 0 else "❌" if surprise and surprise < 0 else "➖"
+            print(f"  {emoji} {quarter:15s}  Est: {est_str:8s}  Act: {act_str:8s}  Surprise: {surprise_str}")
+        print()
     
-    # Signal emoji
-    signal_emoji = {
-        "upward": "📈",
-        "downward": "📉",
-        "neutral": "➡️"
-    }
-    
-    print(f"\n{signal_emoji.get(signal, '➡️')} EPS Revision Momentum: {ticker}")
-    print("=" * 60)
-    print(f"Signal: {signal.upper()}")
-    print(f"Confidence: {confidence:.1%}")
-    
-    if data.get("metrics"):
-        print("\nMetrics:")
-        for key, val in data["metrics"].items():
-            print(f"  {key}: {val}")
-    
+    print(f"Last updated: {data['timestamp']}")
     print()
 
-def cli_earnings_history(ticker: str):
-    """CLI: Show EPS surprise history"""
-    data = get_eps_surprise_history(ticker, use_cache=False)
-    
-    if "error" in data:
-        print(f"❌ {data['error']}")
-        return
-    
-    print(f"\n📊 Earnings History: {ticker}")
-    print("=" * 80)
-    print(f"{'Quarter':<12} {'Actual':>10} {'Estimate':>10} {'Surprise':>10} {'Beat/Miss':>12}")
-    print("-" * 80)
-    
-    for item in data.get("earnings_history", [])[:8]:
-        quarter = item.get("quarter", "N/A")
-        actual = item.get("eps_actual")
-        estimate = item.get("eps_estimate")
-        surprise = item.get("surprise_pct")
-        beat = item.get("beat")
-        
-        actual_str = f"${actual:.2f}" if actual else "N/A"
-        estimate_str = f"${estimate:.2f}" if estimate else "N/A"
-        surprise_str = f"{surprise:+.1f}%" if surprise else "N/A"
-        
-        beat_str = "✅ Beat" if beat else "❌ Miss" if beat is False else "—"
-        
-        print(f"{quarter:<12} {actual_str:>10} {estimate_str:>10} {surprise_str:>10} {beat_str:>12}")
-    
-    print()
-
-if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python stockanalysis_eps_revisions.py eps-forecast <ticker>")
-        print("  python stockanalysis_eps_revisions.py eps-momentum <ticker>")
-        print("  python stockanalysis_eps_revisions.py eps-history <ticker>")
-        print("\nExamples:")
-        print("  python stockanalysis_eps_revisions.py eps-forecast AAPL")
-        print("  python stockanalysis_eps_revisions.py eps-momentum TSLA")
-        print("  python stockanalysis_eps_revisions.py eps-history NVDA")
-        sys.exit(1)
-    
-    command = sys.argv[1].lower()
-    
-    # Strip eps- prefix if present (for CLI compatibility)
-    if command.startswith('eps-'):
-        command = command[4:]
-    
-    if len(sys.argv) < 3:
-        print(f"❌ Missing ticker symbol for command: {sys.argv[1]}")
-        sys.exit(1)
-    
-    ticker = sys.argv[2]
-    
-    if command == "forecast":
-        cli_forecast(ticker)
-    elif command == "momentum":
-        cli_revision_momentum(ticker)
-    elif command == "history":
-        cli_earnings_history(ticker)
-    else:
-        print(f"❌ Unknown command: {sys.argv[1]}")
-        sys.exit(1)
+if __name__ == '__main__':
+    main()

@@ -103,10 +103,10 @@ def get_short_volume(
         
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
-            raise ValueError(f"Ticker {ticker} not found on ShortVolume.com")
+            return {"error": f"Ticker {ticker} not found on ShortVolume.com", "ticker": ticker, "source": "shortvolume.com"}
         raise
     except Exception as e:
-        raise RuntimeError(f"Failed to fetch short volume for {ticker}: {e}")
+        return {"error": str(e), "ticker": ticker, "source": "shortvolume.com"}
 
 
 def get_latest_short_ratio(ticker: str) -> Dict:
