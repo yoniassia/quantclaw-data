@@ -30,8 +30,10 @@ def get_data(ticker="United States", months=12, **kwargs):
         resp = requests.get(url, timeout=60, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
         df = pd.read_csv(io.StringIO(resp.text), low_memory=False)
-        df['Date'] = pd.to_datetime(df.iloc[:, 7:].columns, format='%Y-%m-%d')  # assume date cols start col 7
-        recent_cols = df.columns[-months*12:]  # approx
+        # Date columns start after metadata cols
+        meta_cols = [c for c in df.columns if not (len(c) == 10 and c[4:5] == '-')]
+        date_cols = [c for c in df.columns if c not in meta_cols]
+        recent_cols = date_cols[-months:] if len(date_cols) >= months else date_cols
         df_recent = df[['RegionName', 'StateName', 'SizeRank'] + list(recent_cols)]
         if ticker:
             df_recent = df_recent[df_recent['RegionName'].str.contains(ticker, case=False, na=False)]

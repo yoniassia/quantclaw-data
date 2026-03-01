@@ -899,6 +899,10 @@ MODULES = {
         'file': 'baker_hughes_rig.py',
         'commands': ['rig-current', 'rig-basins', 'rig-trend', 'rig-efficiency', 'rig-signal']
     },
+    'ai_research': {
+        'file': 'ai_research_reports.py',
+        'commands': ['research', 'ai-report', 'equity-report', 'company-report']
+    },
 }
 
 def dispatch_command(args):
@@ -1686,6 +1690,71 @@ def print_help():
     print("  python cli.py fed-slopes [--date YYYY-MM-DD]    # Yield curve slopes (2Y-10Y, etc.)")
     print("  python cli.py fed-changes [--days 30]           # Rate changes over period")
     print("                                                    # Batch map multiple tickers")
+
+    print("\nAI Research Reports (Phase 23) — One-Click Equity Research:")
+    print("  python cli.py research TICKER [--model gpt-4o-mini] [--output report.md]")
+    print("                                                    # Generate comprehensive equity research report")
+    print("  python cli.py ai-report TICKER [--json]         # Same as research command")
+    print("  python cli.py company-report TICKER             # Alias for research command")
+
+@cli.command()
+@click.option('--ticker', required=True, help='Stock ticker')
+@click.option('--json-output', is_flag=True, help='JSON output')
+def stockanalysis_eps(ticker, json_output):
+    """StockAnalysis.com EPS estimates & analyst revisions"""
+    from modules.stockanalysis_eps import StockAnalysisEPS
+    scraper = StockAnalysisEPS()
+    data = scraper.get_eps_estimates(ticker)
+    
+    if json_output:
+        click.echo(json.dumps(data, indent=2))
+    else:
+        if 'error' in data:
+            click.echo(f"❌ Error: {data['error']}", err=True)
+            raise click.Abort()
+        
+        click.echo(f"\n📊 {data['ticker']} — EPS Estimates & Revisions\n")
+        
+        cq = data.get('current_quarter', {})
+        if cq.get('eps_estimate'):
+            click.echo(f"Current Quarter EPS: ${cq['eps_estimate']:.2f}")
+        if cq.get('num_analysts'):
+            click.echo(f"Analysts: {cq['num_analysts']}")
+        
+        revs = data.get('revisions_7d', {})
+        if revs:
+            click.echo(f"7D Revisions: ↑{revs.get('up', 0)} ↓{revs.get('down', 0)}")
+        
+        history = data.get('surprise_history', [])
+        if history:
+            click.echo(f"\nLast Surprise: {history[0].get('surprise_pct', 0):.1f}%")
+
+
+
+@cli.command()
+@click.option('--ticker', required=True, help='Stock ticker')
+@click.option('--json-output', is_flag=True, help='JSON output')
+def finviz_screen(ticker, json_output):
+    """Finviz comprehensive stock screener data"""
+    from modules.finviz_screener import FinvizScreener
+    screener = FinvizScreener()
+    data = screener.get_stock_data(ticker)
+    
+    if json_output:
+        click.echo(json.dumps(data, indent=2))
+    else:
+        if 'error' in data:
+            click.echo(f"❌ {data['error']}", err=True)
+            raise click.Abort()
+        
+        click.echo(f"\n📊 {data['ticker']} — Finviz Data\n")
+        fund = data.get('fundamentals', {})
+        if fund.get('pe'):
+            click.echo(f"P/E: {fund['pe']:.2f}")
+        if fund.get('eps_ttm'):
+            click.echo(f"EPS: ${fund['eps_ttm']:.2f}")
+
+
 if __name__ == '__main__':
     sys.exit(dispatch_command(sys.argv[1:]))
 

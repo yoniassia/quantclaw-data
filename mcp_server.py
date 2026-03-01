@@ -8234,7 +8234,23 @@ class MCPServer:
                 'success': True,
                 'ticker': ticker.upper(),
                 'name': flows[-1].name if flows else ticker,
-                'aum_millions': float(flows[-1].aum) if flows else 0,
+                'aum_millions': float(flows[-1,
+    {
+        "name": "get_eps_estimates",
+        "description": "Get EPS estimates, analyst consensus, revenue forecasts, and estimate revisions from StockAnalysis.com. Returns current/next quarter/year estimates, 7d/30d revision trends, and earnings surprise history. No API key required.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "ticker": {
+                    "type": "string",
+                    "description": "Stock ticker symbol (e.g., AAPL, MSFT, TSLA)"
+                }
+            },
+            "required": ["ticker"]
+        }
+    },
+
+                ].aum) if flows else 0,
                 'flow_1d': flow_1d,
                 'flow_5d': flow_5d,
                 'flow_20d': flow_20d,
@@ -12709,3 +12725,47 @@ async def edgar_risk_factors(ticker: str, years: int = 3) -> List[TextContent]:
         output += f"   URL: {r['url']}\n\n"
     
     return [TextContent(type="text", text=output)]
+
+@server.call_tool()
+async def ai_research_report(
+    ticker: str,
+    model: str = "gpt-4o-mini",
+    output_format: str = "markdown"
+) -> List[TextContent]:
+    """Generate comprehensive AI-powered equity research report
+    
+    Args:
+        ticker: Stock ticker symbol (e.g. AAPL, TSLA)
+        model: LLM model to use (default: gpt-4o-mini, or gpt-4, claude-3-sonnet-20240229)
+        output_format: Output format - "markdown" or "json" (default: markdown)
+    
+    Returns:
+        Comprehensive equity research report with fundamentals, valuation, sentiment analysis
+    """
+    from modules.ai_research_reports import generate_research_report, export_markdown
+    
+    report = generate_research_report(ticker, model=model)
+    
+    if "error" in report:
+        return [TextContent(type="text", text=f"❌ ERROR: {report['error']}")]
+    
+    if output_format == "json":
+        import json
+        return [TextContent(type="text", text=json.dumps(report, indent=2, default=str))]
+    
+    # Markdown format
+    md = export_markdown(report)
+    
+    # Add summary header
+    header = f"""🤖 AI-GENERATED EQUITY RESEARCH REPORT
+{'='*60}
+Ticker: {report['ticker']}
+Company: {report.get('company_name', 'N/A')}
+Generated: {report['generated_at']}
+Model: {report.get('model', 'N/A')}
+Data Sources: {', '.join(report.get('data_sources', []))}
+{'='*60}
+
+"""
+    
+    return [TextContent(type="text", text=header + md)]

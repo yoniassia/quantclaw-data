@@ -112,11 +112,7 @@ def get_data(cache_days: int = 7) -> pd.DataFrame:
             logger.warning(f"Cache read failed: {e}")
     
     all_data = []
-    for country_slug, country_code in CEE_COUNTRIES.items():
-        no, CEE_COUNTRIES is {'PL': 'poland'}, so for country_slug in values? Wait, fix.
-Wait, in scrape, country_slug is value, country is key.
-In loop, for country_code, country_slug in CEE_COUNTRIES.items():
-Yes, fix in code.
+    for country_code, country_slug in CEE_COUNTRIES.items():
         for ind_slug in INDICATORS:
             data = scrape_tradingeconomics(country_slug, ind_slug)
             all_data.extend(data)

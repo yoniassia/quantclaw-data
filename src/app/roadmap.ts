@@ -31,7 +31,7 @@ export const phases: Phase[] = [
   { id: 20, name: "ESG Scoring", description: "Environmental, social, governance composite scores and peer comparison", status: "done", category: "Alt Data", loc: 430 },
   { id: 21, name: "Quant Factor Zoo", description: "Replicate 400+ published academic factors with statistical validation", status: "done", category: "Quant", loc: 1208 },
   { id: 22, name: "Market Microstructure", description: "Bid-ask spreads, order flow imbalance, liquidity scoring, market maker activity", status: "done", category: "Quant", loc: 492 },
-  { id: 23, name: "AI Research Reports", description: "One-click LLM-generated equity research pulling from all data sources", status: "done", category: "Intelligence", loc: 409 },
+  { id: 23, name: "AI Research Reports", description: "One-click LLM-generated equity research pulling from all data sources", status: "done", category: "Intelligence", loc: 345 },
   { id: 24, name: "Data Quality Monitor", description: "Automated staleness checks, source health validation, alert triggers for broken feeds", status: "done", category: "Infrastructure", loc: 380 },
   { id: 25, name: "Real-time Streaming", description: "WebSocket feeds for live prices via Polygon, Finnhub, Alpaca. Level 2 quotes", status: "done", category: "Infrastructure", loc: 332 },
   { id: 26, name: "ML Earnings Predictor", description: "Random Forest + XGBoost ensemble predicting earnings beats/misses with 77% accuracy", status: "done", category: "ML/AI", loc: 402 },
@@ -806,8 +806,8 @@ export const additionalPhases = [
   { id: 699, name: "SAFE China FX Reserves", description: "China forex reserves, capital account flows. Monthly.", status: "done" as const, category: "Country Stats", loc: 421 },
 
   // ============ FREE NO-API-KEY SOURCES (700-713) — DataScout Discoveries ============
-  { id: 700, name: "StockAnalysis.com EPS Revisions", description: "CRITICAL: EPS estimate revisions, analyst consensus, revenue estimates via scraping. Closes Alpha Picker V3 accuracy gap (65%→85%+ SA match). Daily.", status: "done" as const, category: "Equity", loc: 469 },
-  { id: 701, name: "Finviz Stock Screener", description: "Consolidated fundamentals + technicals + insider data for 8000+ stocks via scraping. P/E, EPS growth, RSI, analyst targets, short float. Daily.", status: "done" as const, category: "Equity", loc: 471 },
+  { id: 700, name: "StockAnalysis.com EPS Revisions", description: "CRITICAL: EPS estimate revisions, analyst consensus, revenue estimates via scraping. Closes Alpha Picker V3 accuracy gap (65%→85%+ SA match). Daily.", status: "done" as const, category: "Equity", loc: 264 },
+  { id: 701, name: "Finviz Stock Screener", description: "Consolidated fundamentals + technicals + insider data for 8000+ stocks via scraping. P/E, EPS growth, RSI, analyst targets, short float. Daily.", status: "done" as const, category: "Equity", loc: 322 },
   { id: 702, name: "OpenInsider SEC Form 4", description: "Real-time insider trading filings. Cluster buys, dollar amounts, ownership changes. Faster than raw EDGAR. Daily.", status: "done" as const, category: "Equity", loc: 484 },
   { id: 703, name: "ShortVolume.com Daily Shorts", description: "Daily short volume by ticker from FINRA. Direct CSV download. Short volume ratio as contrarian signal. Daily.", status: "done" as const, category: "Equity", loc: 373 },
   { id: 704, name: "FINRA Short Interest (Official)", description: "Biweekly short interest reporting for all US securities. Shares sold short, days to cover. Official FINRA data. Bi-weekly.", status: "done" as const, category: "Equity", loc: 198 },
