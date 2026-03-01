@@ -44,17 +44,17 @@ def get_data(ticker="coins", **kwargs):
                     'thumb': coin['thumb'],
                     'market_cap_rank': coin['market_cap_rank'],
                     'price_btc': coin['price_btc'],
-                    'score': item['score']
+                    'score': item.get('score', 0)
                 })
         if 'nfts' in data:
             for item in data['nfts'][:10]:
-                nft = item['item']
+                nft = item
                 trending.append({
                     'type': 'nft',
                     'name': nft['name'],
                     'symbol': nft['symbol'],
                     'thumb': nft['thumb'],
-                    'score': item['score']
+                    'score': item.get('score', 0)
                 })
         df = pd.DataFrame(trending)
         df['fetch_time'] = datetime.now().isoformat()

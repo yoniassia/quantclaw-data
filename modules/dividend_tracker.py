@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """dividend_tracker — Dividend history from Yahoo. Requires yfinance. Free."""
 import os
+import json
 import time
 from datetime import datetime
 import pandas as pd
