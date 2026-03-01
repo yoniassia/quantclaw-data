@@ -176,15 +176,12 @@ if __name__ == "__main__":
 
     result = get_data()
     if isinstance(result, dict) and "error" in result:
-        print(f"ERROR: {result['error']}")
+        print(f"\nERROR: {result['error']}")
     else:
         print("L2Beat Scaling TVL Data:")
         print(result)
-        print(f"
-Summary stats:")
+        print(f"\n\nSummary stats:")
         print(result.describe())
-        print(f"
-Top 5 by TVL:")
+        print(f"\n\nTop 5 by TVL:")
         print(result.head())
-        print(f"
-Data shape: {result.shape}")
+        print(f"\n\nData shape: {result.shape}")

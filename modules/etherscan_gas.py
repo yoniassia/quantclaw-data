@@ -70,7 +70,7 @@ def fetch_gas_data() -> Dict[str, Any]:
     if data["status"] != "1":
         raise ValueError(f"API error: {data.get('message', 'Unknown')}")
 
-    result = data["result")
+    result = data["result"]
     result["fetch_time"] = datetime.utcnow().isoformat()
     logger.info(f"Gas prices - Safe: {result['SafeGasPrice']} gwei")
     return result
@@ -90,7 +90,7 @@ def process_gas_data(raw_result: Dict[str, Any]) -> pd.DataFrame:
 
     # Derived columns
     df["avg_gas_gwei"] = df[["safe_gas_gwei", "propose_gas_gwei", "fast_gas_gwei"]].mean(axis=1)
-    df["priority_fee_fast"] = df["fast_gas_gwei"] - df["base_fee_gwei")
+    df["priority_fee_fast"] = df["fast_gas_gwei"] - df["base_fee_gwei"]
     df["network_congestion"] = (df["gas_used_ratio"] > 0.9).astype(int)
 
     # Categories
@@ -132,7 +132,6 @@ if __name__ == "__main__":
     if isinstance(result, dict) and 'error' in result:
         print(f"ERROR: {result['error']}")
     else:
-        print("Ethereum Gas Prices (gwei):")
+        print("\nEthereum Gas Prices (gwei):")
         print(result)
-        print("
-Categories: Low <5, Med <20, High <50, VHigh >=50")
+        print("\n\nCategories: Low <5, Med <20, High <50, VHigh >=50")
