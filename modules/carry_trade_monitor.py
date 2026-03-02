@@ -18,9 +18,23 @@ from datetime import datetime, timedelta
 import os
 import logging
 from typing import Optional, Dict
-import pandas_datareader.data as web
+import requests
+import io
 import warnings
 warnings.filterwarnings('ignore')
+
+def _fred_fetch(series_id, start, end):
+    """Fetch FRED series as DataFrame (replaces pandas_datareader)."""
+    import pandas as pd
+    start_str = pd.Timestamp(start).strftime("%Y-%m-%d")
+    end_str = pd.Timestamp(end).strftime("%Y-%m-%d")
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}&cosd={start_str}&coed={end_str}"
+    resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+    resp.raise_for_status()
+    df = pd.read_csv(io.StringIO(resp.text), parse_dates=["DATE"], index_col="DATE")
+    df.columns = [series_id]
+    return df
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -75,7 +89,7 @@ def fetch_fred_rates() -> pd.DataFrame:
     all_rates = []
     for curr, series in RATES.items():
         try:
-            rate = web.DataReader(series, 'fred', '2000-01-01')
+            rate = _fred_fetch(series, '2000-01-01')
             rate = rate.rename(columns={series: curr})
             all_rates.append(rate)
             logger.info(f"Fetched {curr}: {len(rate)} obs")
