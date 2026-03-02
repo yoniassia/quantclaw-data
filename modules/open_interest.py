@@ -22,6 +22,8 @@ def get_open_interest(symbols: list[str] | None = None) -> list[dict[str, Any]]:
     Returns:
         List of dicts with symbol, open_interest_usd, open_interest_contracts, exchange.
     """
+    if isinstance(symbols, str):
+        symbols = [symbols]
     if symbols is None:
         symbols = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA", "AVAX",
                     "LINK", "DOT", "MATIC", "UNI", "ARB", "OP", "APT"]

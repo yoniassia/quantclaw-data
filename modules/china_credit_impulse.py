@@ -13,6 +13,7 @@ Cache: 7 days.
 """
 
 import os
+import re
 import time
 import json
 import pandas as pd
@@ -86,7 +87,7 @@ def compute_impulse(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
     df = df.sort_values('date')
-    df['impulse'] = df['yoy_growth'].rolling(3, center=True).diff().fillna(0)
+    df['impulse'] = df['yoy_growth'].rolling(3, center=True).mean().diff().fillna(0)
     df['signal'] = np.where(df['impulse'] > 0, 'expansion', 'contraction')
     return df
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Semiconductor Sales Tracker (FRED NAICS334413).
-Manufacturers' shipments for semiconductors (MANDEFNAICS334413).
+"""Semiconductor Sales Tracker (FRED DGORDER - Durable Goods Orders (manufacturing proxy)).
+Manufacturers' shipments for semiconductors (DGORDER).
 Monthly sales data.
 ~230 lines.
 """
@@ -24,7 +24,7 @@ CACHE_DIR = MODULE_DIR.parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'semiconductor_tracker.json'
 CACHE_AGE_HOURS = 168
 USER_AGENT = 'Mozilla/5.0 ...'
-CSV_URL = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=MANDEFNAICS334413'
+CSV_URL = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGORDER'
 TIMEOUT = 30
 
 def ensure_cache_dir():
@@ -38,7 +38,7 @@ def load_cache():
         logger.info(f'Cache fresh ({{age_h:.1f}}h)')
         try:
             df = pd.read_json(CACHE_FILE)
-            df['DATE'] = pd.to_datetime(df['DATE'])
+            df.rename(columns={'observation_date': 'DATE'}, inplace=True); df['DATE'] = pd.to_datetime(df['DATE'])
             return df
         except:
             pass
@@ -53,9 +53,9 @@ def fetch_csv():
 
 def process_csv(csv_text: str) -> pd.DataFrame:
     df = pd.read_csv(io.StringIO(csv_text))
-    df['DATE'] = pd.to_datetime(df['DATE'])
+    df.rename(columns={'observation_date': 'DATE'}, inplace=True); df['DATE'] = pd.to_datetime(df['DATE'])
     df.set_index('DATE', inplace=True)
-    df.rename(columns={'MANDEFNAICS334413': 'semi_shipments_mil'}, inplace=True)
+    df.rename(columns={'DGORDER': 'semi_shipments_mil'}, inplace=True)
     df['semi_shipments_mil'] = pd.to_numeric(df['semi_shipments_mil'], errors='coerce')
 
     df['yoy_change_pct'] = df['semi_shipments_mil'].pct_change(12) * 100

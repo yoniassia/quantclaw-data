@@ -19,7 +19,7 @@ class AlertBacktester:
     
     def __init__(self, ticker: str, years: int = 3):
         self.ticker = ticker
-        self.years = years
+        self.years = int(years) if isinstance(years, (int, float)) else 3
         self.df = self._fetch_data()
         
     def _fetch_data(self) -> pd.DataFrame:
@@ -259,9 +259,9 @@ def backtest_alert(ticker: str, alert_type: str, years: int = 3, **kwargs):
             print(f"  {pnl_sign} {entry} → {exit}: ${trade['entry_price']:.2f} → ${trade['exit_price']:.2f} "
                   f"({trade['pnl_pct']:+.2f}%)")
 
-def alert_performance(years: int = 3):
+def alert_performance(ticker: str = 'AAPL', years: int = 3):
     """Compare performance of all alert types across multiple tickers"""
-    tickers = ['AAPL', 'TSLA', 'SPY', 'NVDA']
+    tickers = [ticker] if ticker else ['AAPL', 'TSLA', 'SPY', 'NVDA']
     alert_types = ['rsi', 'volume', 'breakout', 'earnings']
     
     results = defaultdict(list)

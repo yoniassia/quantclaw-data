@@ -11,8 +11,9 @@ Cache.
 import pandas as pd
 import json
 from pathlib import Path
-from datetime import datetime
-import pandas_datareader.data as web
+from datetime import datetime, timedelta
+import requests
+import io
 
 SERIES = {
     'gdp': 'RGDPINDA666S',
@@ -46,8 +47,11 @@ def fetch_data():
     dfs = []
     for name, sid in SERIES.items():
         try:
-            df = web.DataReader(sid, 'fred', '2000-01-01')
-            df[name] = df[sid]
+            url = f'https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}'
+            resp = requests.get(url, timeout=15)
+            resp.raise_for_status()
+            df = pd.read_csv(io.StringIO(resp.text), parse_dates=['DATE'], index_col='DATE')
+            df[name] = pd.to_numeric(df[sid], errors='coerce')
             dfs.append(df[[name]])
         except Exception as e:
             print(f"Failed {sid}: {e}")

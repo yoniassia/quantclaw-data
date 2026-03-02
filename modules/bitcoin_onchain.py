@@ -13,6 +13,7 @@ import requests
 import json
 import os
 import time
+import numpy as np
 import logging
 from datetime import datetime
 from typing import Union, Dict, Any
@@ -55,20 +56,20 @@ def fetch_data():
     resp.raise_for_status()
     data = resp.json()
     data['fetch_time'] = datetime.utcnow().isoformat()
-    logger.info(f'Hashrate: {data["hashrate_10m_rolling_avg"]:.2f} TH/s')
+    logger.info(f'Hashrate: {data.get("hash_rate", data.get("hashrate_10m_rolling_avg", 0)):.2f} TH/s')
     return data
 
 def process_data(raw: Dict[str, Any]) -> pd.DataFrame:
     key_metrics = [
         'market_price_usd',
-        'hashrate_10m_rolling_avg',  # TH/s
-        'minutes_between_blocks_10m_rolling_avg',
-        'difficulty_10m_rolling_avg',
+        'hash_rate',  # TH/s
+        'minutes_between_blocks',
+        'difficulty',
         'estimated_transaction_volume_usd',
         'mempool_size',
         'n_orphans_total',
-        'transaction_rates_10m_rolling_avg',
-        'blocks_size_10m_rolling_avg_bytes'
+        'n_tx',
+        'blocks_size'
     ]
 
     df_data = {'timestamp': [raw['fetch_time']]}

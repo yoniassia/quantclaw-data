@@ -14,8 +14,8 @@ from typing import Dict, List, Tuple, Optional
 import yfinance as yf
 
 # Import alpha picker and paper trading
-from alpha_picker import AlphaPickerV3
-from paper_trading import (
+from modules.alpha_picker import AlphaPickerV3
+from modules.paper_trading import (
     init_db, get_db, db_lock, get_live_price,
     get_or_create_default_portfolio, get_cash_balance
 )

@@ -289,7 +289,7 @@ class BISCreditGap:
         dates = pd.date_range(
             end=datetime.now(),
             periods=40,
-            freq='Q'
+            freq='QE'
         )
         
         # Base credit-to-GDP ratio (varies by country development)

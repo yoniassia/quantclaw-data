@@ -18,6 +18,7 @@ import requests
 from statistics import mean, stdev
 import math
 from collections import Counter
+import pandas as pd
 
 # SEC EDGAR RSS feed
 SEC_EDGAR_RSS = "https://www.sec.gov/cgi-bin/browse-edgar"

@@ -10,6 +10,7 @@ import urllib.request
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+import pandas as pd
 
 
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
@@ -58,26 +59,19 @@ class BarbellBullet:
 
 def fetch_treasury_yields(api_key: str = "DEMO_KEY",
                           limit: int = 1) -> Dict[str, float]:
-    """Fetch latest Treasury yields from FRED.
-
-    Args:
-        api_key: FRED API key.
-        limit: Number of recent observations.
-
-    Returns:
-        Dict of tenor -> yield (%).
-    """
+    """Fetch latest Treasury yields from FRED CSV (no API key needed)."""
+    import csv, io
     yields = {}
     for tenor, series_id in TREASURY_SERIES.items():
-        url = (f"{FRED_BASE}?series_id={series_id}&api_key={api_key}"
-               f"&file_type=json&sort_order=desc&limit={limit}")
+        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                data = json.loads(resp.read())
-            for obs in data.get("observations", []):
-                if obs["value"] != ".":
-                    yields[tenor] = float(obs["value"])
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                text = resp.read().decode("utf-8")
+            rows = list(csv.reader(io.StringIO(text)))
+            for row in reversed(rows[1:]):
+                if len(row) >= 2 and row[1] not in ("", "."):
+                    yields[tenor] = float(row[1])
                     break
         except Exception:
             continue
@@ -87,25 +81,21 @@ def fetch_treasury_yields(api_key: str = "DEMO_KEY",
 def fetch_treasury_history(api_key: str = "DEMO_KEY",
                            series_id: str = "DGS10",
                            limit: int = 252) -> List[Tuple[str, float]]:
-    """Fetch historical Treasury yield series.
-
-    Args:
-        api_key: FRED API key.
-        series_id: FRED series ID.
-        limit: Number of observations.
-
-    Returns:
-        List of (date_str, yield_value) tuples.
-    """
-    url = (f"{FRED_BASE}?series_id={series_id}&api_key={api_key}"
-           f"&file_type=json&sort_order=desc&limit={limit}")
+    """Fetch historical Treasury yield series from FRED CSV (no API key needed)."""
+    import csv, io
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
-        return [(obs["date"], float(obs["value"]))
-                for obs in data.get("observations", [])
-                if obs["value"] != "."]
+            text = resp.read().decode("utf-8")
+        rows = list(csv.reader(io.StringIO(text)))
+        results = []
+        for row in reversed(rows[1:]):
+            if len(row) >= 2 and row[1] not in ("", "."):
+                results.append((row[0], float(row[1])))
+                if len(results) >= limit:
+                    break
+        return list(reversed(results))
     except Exception:
         return []
 
@@ -254,3 +244,20 @@ def curve_curvature_summary(yields: Dict[str, float]) -> Dict:
         } if bb else None,
         "curve_shape": "inverted" if spread_2s10s < 0 else "flat" if abs(spread_2s10s) < 0.25 else "steep"
     }
+
+def get_data(ticker="butterfly", **kwargs):
+    """Wrapper for QuantClaw compatibility."""
+    try:
+        yields = fetch_treasury_yields()
+        if not yields or 'error' in str(yields):
+            return pd.DataFrame({"error": ["Failed to fetch yields"]})
+        butterflies = standard_butterflies(yields)
+        summary = curve_curvature_summary(yields)
+        rows = []
+        for b in butterflies:
+            rows.append({"name": b.name if hasattr(b,'name') else str(b), "spread": getattr(b, 'spread', None)})
+        df = pd.DataFrame(rows) if rows else pd.DataFrame({"summary": [str(summary)]})
+        df['fetch_time'] = datetime.now().isoformat()
+        return df
+    except Exception as e:
+        return pd.DataFrame({"error": [str(e)]})

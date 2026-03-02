@@ -62,6 +62,9 @@ def analyze_monthly_seasonality(
         return {"error": str(e)}
 
     close = data["Close"]
+    # Handle multi-level columns from yfinance
+    if hasattr(close, "columns"):
+        close = close.iloc[:, 0]
     returns = close.pct_change().dropna()
 
     monthly_returns: Dict[int, List[float]] = {m: [] for m in range(1, 13)}

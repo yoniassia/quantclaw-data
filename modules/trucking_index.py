@@ -12,7 +12,8 @@ import pandas as pd
 import json
 from pathlib import Path
 from datetime import datetime, timedelta
-import pandas_datareader.data as web
+# import pandas_datareader.data as web  # broken dep
+import requests
 
 SERIES_ID = 'ATASTTFRMM'
 CACHE_DIR = Path(__file__).parent / 'cache'
@@ -40,8 +41,16 @@ def save_cache(df):
         json.dump(data, f)
 
 def fetch_fred():
-    df = web.DataReader(SERIES_ID, 'fred')
-    df = df.rename(columns={SERIES_ID: 'tonnage_index'})
+    import os
+    api_key = os.environ.get('FRED_API_KEY', 'f4cd5217-2afe-4d8e-9031-1328633c8532')
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={SERIES_ID}&api_key={api_key}&file_type=json'
+    resp = requests.get(url, timeout=15)
+    data = resp.json()
+    obs = data.get('observations', [])
+    records = [{'DATE': o['date'], 'tonnage_index': float(o['value'])} for o in obs if o['value'] != '.']
+    df = pd.DataFrame(records)
+    df['DATE'] = pd.to_datetime(df['DATE'])
+    df.set_index('DATE', inplace=True)
     df['yoy'] = df['tonnage_index'].pct_change(12) * 100
     df['ma3'] = df['tonnage_index'].rolling(3).mean()
     return df.dropna()

@@ -23,11 +23,11 @@ def get_data(ticker="HOUST", **kwargs):
         if age < 86400 * 7:
             return pd.read_csv(cache_file, parse_dates=['DATE'], index_col='DATE')
     try:
-        url = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=HOUST,PERMITNEW"
+        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={ticker}"
         resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
         df = pd.read_csv(io.StringIO(resp.text))
-        df['DATE'] = pd.to_datetime(df['DATE'])
+        date_col = [c for c in df.columns if 'date' in c.lower()][0]; df.rename(columns={date_col: 'DATE'}, inplace=True); df['DATE'] = pd.to_datetime(df['DATE'])
         df.set_index('DATE', inplace=True)
         df.columns = df.columns.str.strip()
         df = df.dropna()

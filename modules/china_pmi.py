@@ -34,7 +34,10 @@ def get_data(ticker="Manufacturing", **kwargs):
         soup = BeautifulSoup(resp.text, 'html.parser')
         # Current value
         value_el = soup.find('span', class_='float-big')
-        current = float(value_el.text.strip()) if value_el else 0
+        try:
+            current = float(value_el.text.strip()) if value_el else None
+        except ValueError:
+            current = None
         # Table historical
         table = soup.find('table', class_='table')
         rows = table.find_all('tr')[:10] if table else []
@@ -42,7 +45,10 @@ def get_data(ticker="Manufacturing", **kwargs):
         for row in rows:
             cols = [td.text.strip() for td in row.find_all('td')]
             if len(cols) >= 4:
-                data.append({'date': cols[0], 'actual': float(cols[1]), 'previous': float(cols[2]), 'consensus': float(cols[3])})
+                try:
+                    data.append({'date': cols[0], 'actual': float(re.sub(r'[^0-9.-]', '', cols[1])), 'previous': float(re.sub(r'[^0-9.-]', '', cols[2])) if re.search(r'[0-9]', cols[2]) else None, 'unit': cols[3] if len(cols) > 3 else None, 'period': cols[4] if len(cols) > 4 else None})
+                except (ValueError, IndexError):
+                    pass
         df = pd.DataFrame(data)
         df['fetch_time'] = datetime.now().isoformat()
         with open(cache_file, 'w') as f:

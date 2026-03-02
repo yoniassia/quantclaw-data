@@ -54,7 +54,7 @@ def process_html(html_text: str) -> pd.DataFrame:
     dfs = pd.read_html(StringIO(html_text))
     # Assume first table is the rate history
     df = dfs[0]  # Adjust index if needed
-    df.columns = df.columns.str.strip()
+    df.columns = [str(c).strip() for c in df.columns]
     df['date'] = pd.to_datetime(df.iloc[:,0])
     df['base_rate_pct'] = pd.to_numeric(df.iloc[:,1], errors='coerce')
     df = df[['date', 'base_rate_pct']].dropna()

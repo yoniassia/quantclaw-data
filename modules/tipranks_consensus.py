@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
-&quot;&quot;&quot;
-TipRanks Analyst Consensus Scraper
+"""
+TipRanks Analyst Consensus — stub module.
+Returns simulated analyst consensus data (TipRanks blocks scraping).
+"""
+import json
+import datetime
+from typing import Dict, List, Optional
 
-Scrapes analyst consensus ratings, price targets, success rates from TipRanks.
+def get_consensus(ticker: str = "AAPL") -> Dict:
+    return {
+        "ticker": ticker.upper(),
+        "source": "tipranks_consensus",
+        "note": "Simulated - TipRanks blocks automated scraping",
+        "consensus": "Moderate Buy",
+        "num_analysts": 28,
+        "avg_price_target": 245.0,
+        "retrieved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
 
-Focuses on top analysts, recent upgrades/downgrades, consensus PT changes.
+def get_top_analysts(sector: Optional[str] = None) -> List[Dict]:
+    return [{"name": "Stub Analyst", "firm": "N/A", "success_rate": 0.0, "note": "Simulated"}]
 
-Features:
-- Scrape top analysts table
-- Parse consensus ratings (Strong Buy to Sell)
-- Success rate, average return
-- Price target upside
-- Caching, retries, pandas
-- Free public data
+def get_data(ticker: str = "AAPL") -> Dict:
+    return get_consensus(ticker)
 
-Example:
-  data = get_data()
-&quot;&quot;&quot;
-# [Similar structure as previous, ~250 lines with parser for TipRanks table]
-import requests
-from bs4 import BeautifulSoup
-# ... full code similar to first, adjust parser for TipRanks selectors like .table-analysts etc.
-# get_data() returns analyst consensus data
-if __name__ == &quot;__main__&quot;:
-    print(get_data())
+if __name__ == "__main__":
+    print(json.dumps(get_data(), indent=2))

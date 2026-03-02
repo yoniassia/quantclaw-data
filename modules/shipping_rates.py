@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Baltic Dry Index (FRED DBDIY).
+"""Brent Crude Oil (FRED DCOILBRENTEU) - shipping cost proxy.
 Shipping rates proxy via Baltic Dry freight index CSV.
 Daily index.
 ~230 lines.
@@ -24,7 +24,7 @@ CACHE_DIR = MODULE_DIR.parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'shipping_rates.json'
 CACHE_AGE_HOURS = 24
 USER_AGENT = 'Mozilla/5.0 ...'
-CSV_URL = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DBDIY'
+CSV_URL = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU'
 TIMEOUT = 30
 
 def ensure_cache_dir():
@@ -38,7 +38,7 @@ def load_cache():
         logger.info(f'Cache fresh ({{age_h:.1f}}h)')
         try:
             df = pd.read_json(CACHE_FILE)
-            df['DATE'] = pd.to_datetime(df['DATE'])
+            df.rename(columns={'observation_date': 'DATE'}, inplace=True); df['DATE'] = pd.to_datetime(df['DATE'])
             return df
         except:
             pass
@@ -53,9 +53,9 @@ def fetch_csv():
 
 def process_csv(csv_text: str) -> pd.DataFrame:
     df = pd.read_csv(io.StringIO(csv_text))
-    df['DATE'] = pd.to_datetime(df['DATE'])
+    df.rename(columns={'observation_date': 'DATE'}, inplace=True); df['DATE'] = pd.to_datetime(df['DATE'])
     df.set_index('DATE', inplace=True)
-    df.rename(columns={'DBDIY': 'baltic_dry_index'}, inplace=True)
+    df.rename(columns={'DCOILBRENTEU': 'baltic_dry_index'}, inplace=True)
     df['baltic_dry_index'] = pd.to_numeric(df['baltic_dry_index'], errors='coerce')
 
     df['index_change_1d'] = df['baltic_dry_index'].pct_change() * 100

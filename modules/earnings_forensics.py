@@ -33,7 +33,7 @@ except ImportError:
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from modules.earnings_quality import calculate_beneish_m_score as calculate_beneish_mscore, calculate_accruals_ratio
+from modules.earnings_quality import calculate_beneish_m_score as calculate_beneish_mscore, calculate_accruals_ratio, analyze_earnings_quality as _analyze_eq
 
 
 def get_financial_data(ticker: str, period: str = 'annual') -> Optional[Dict]:
@@ -427,7 +427,8 @@ def comprehensive_forensics_report(ticker: str, period: str = 'quarterly', quiet
     # 1. Beneish M-Score (Phase 59)
     if not quiet:
         print("\n📊 Beneish M-Score (Earnings Manipulation Detector)...")
-    beneish = calculate_beneish_mscore(ticker, period)
+    _eq = _analyze_eq(ticker)
+    beneish = _eq.get("beneish_m_score", {}) if isinstance(_eq, dict) else {}
     report['analyses']['beneish'] = beneish
     
     if 'error' not in beneish and 'm_score' in beneish:
@@ -452,7 +453,7 @@ def comprehensive_forensics_report(ticker: str, period: str = 'quarterly', quiet
     # 2. Accruals Analysis (Phase 59)
     if not quiet:
         print("💰 Accruals Ratio (Cash Flow Quality)...")
-    accruals = calculate_accruals_ratio(ticker, period)
+    accruals = _eq.get("accruals_ratio", {}) if isinstance(_eq, dict) else {}
     report['analyses']['accruals'] = accruals
     
     if 'error' not in accruals and 'accruals_ratio' in accruals:

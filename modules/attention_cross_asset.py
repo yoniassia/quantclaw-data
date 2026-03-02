@@ -84,7 +84,7 @@ def multi_asset_attention_signal(
     target = target_returns[-lookback:] if len(target_returns) >= lookback else target_returns
     assets = list(cross_asset_returns.keys())
 
-    if not assets or not target:
+    if not assets or (hasattr(target, "__len__") and len(target) == 0):
         return {"signal": 0.0, "attention_weights": {}, "dominant_driver": None, "confidence": 0.0}
 
     keys = []
