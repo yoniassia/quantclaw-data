@@ -30,6 +30,8 @@ def get_gas_prices() -> dict[str, Any]:
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())
         result = data.get("result", {})
+        if isinstance(result, str):
+            return {"error": f"Etherscan API returned: {result}"}
         safe = float(result.get("SafeGasPrice", 0))
         standard = float(result.get("ProposeGasPrice", 0))
         fast = float(result.get("FastGasPrice", 0))

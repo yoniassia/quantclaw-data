@@ -13,7 +13,23 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 import requests
-import pandas_datareader.data as web
+import os
+
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
+
+def _fred_series(series_id, limit=500):
+    """Fetch FRED series without pandas_datareader."""
+    if not FRED_API_KEY:
+        return pd.DataFrame()
+    url = f"https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={FRED_API_KEY}&file_type=json&sort_order=desc&limit={limit}"
+    resp = requests.get(url, timeout=15)
+    obs = resp.json().get("observations", [])
+    if not obs:
+        return pd.DataFrame()
+    df = pd.DataFrame(obs)
+    df["date"] = pd.to_datetime(df["date"])
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    return df.set_index("date")[["value"]].dropna().sort_index()
 
 CACHE_DIR = Path(__file__).parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'latam_macro.json'
@@ -34,7 +50,7 @@ def load_cache():
     return df
 
 def fetch_brazil_selic():
-    url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&amp;dataInicial=01/01/2010'
+    url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=01/01/2020'
     resp = requests.get(url)
     data = resp.json()
     df = pd.DataFrame(data)
@@ -44,14 +60,14 @@ def fetch_brazil_selic():
 
 def fetch_mexico_rate():
     try:
-        df = web.DataReader('INTGSTMXM193N', 'fred')
-        return df.rename(columns={'INTGSTMXM193N': 'mexico_rate'})
+        df = _fred_series('INTGSTMXM193N')
+        df = df.rename(columns={'value': 'mexico_rate'})
     except:
         return pd.DataFrame()
 
 def fetch_brazil_cpi():
     try:
-        df = web.DataReader('BRACPIALLMINMEI', 'fred')
+        df = _fred_series('BRACPIALLMINMEI').rename(columns={'value': 'BRACPIALLMINMEI'})
         df['cpi_yoy'] = df['BRACPIALLMINMEI'].pct_change(12) * 100
         return df[['cpi_yoy']]
     except:

@@ -60,7 +60,12 @@ def fetch_recent_insider_filings(
         # Fallback: generate sample data for demonstration
         data = _generate_sample_filings(ticker, days_back)
 
-    filings = data.get("hits", data.get("filings", []))
+    hits_raw = data.get("hits", data.get("filings", []))
+    # SEC EDGAR returns {"hits": {"hits": [...]}} — unwrap if needed
+    if isinstance(hits_raw, dict):
+        filings = hits_raw.get("hits", [])
+    else:
+        filings = hits_raw if isinstance(hits_raw, list) else []
 
     transactions = []
     for f in filings[:50]:
@@ -222,6 +227,9 @@ def insider_sentiment_score(ticker: str, transactions: List[Dict]) -> Dict:
 
 def _parse_filing(filing: Dict) -> Optional[Dict]:
     """Parse a raw SEC filing into structured transaction."""
+    # Unwrap Elasticsearch _source if present
+    if "_source" in filing:
+        filing = filing["_source"]
     return {
         "insider_name": filing.get("reportingOwner", filing.get("name", "Unknown")),
         "insider_role": filing.get("officerTitle", filing.get("role", "Officer")),

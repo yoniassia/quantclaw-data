@@ -30,11 +30,22 @@ def get_data(ticker="^ADV", period="3mo", **kwargs):
         tickers = ['^ADV', '^DEC', '^NYHGH', '^NYLOW']  # NYSE: ^NYHGH ^NYLOW or ^NH ^NL NASDAQ
         if ticker in tickers:
             tickers = [ticker]
-        data = yf.download(tickers, period=period, progress=False)['Adj Close']
-        data.columns = [c.replace('Adj Close', '').strip() for c in data.columns]
-        data['net_advancers'] = data['^ADV'] - data['^DEC']
-        data['net_new_highs'] = data['^NYHGH'] - data['^NYLOW']
-        data['adv_dec_ratio'] = data['^ADV'] / (data['^DEC'] + 1)
+        data = yf.download(tickers, period=period, progress=False)
+        if data.empty:
+            return pd.DataFrame({"error": ["No data returned for breadth tickers"]})
+        if isinstance(data.columns, pd.MultiIndex):
+            if 'Adj Close' in data.columns.get_level_values(0):
+                data = data['Adj Close']
+            else:
+                data = data.droplevel(0, axis=1)
+        if isinstance(data, pd.Series):
+            data = data.to_frame(name=ticker)
+        if len(tickers) > 1 and all(t in data.columns for t in ['^ADV', '^DEC']):
+            data['net_advancers'] = data['^ADV'] - data['^DEC']
+        if len(tickers) > 1 and all(t in data.columns for t in ['^NYHGH', '^NYLOW']):
+            data['net_new_highs'] = data['^NYHGH'] - data['^NYLOW']
+        if '^ADV' in data.columns and '^DEC' in data.columns:
+            data['adv_dec_ratio'] = data['^ADV'] / (data['^DEC'] + 1)
         data.dropna(inplace=True)
         data['fetch_time'] = datetime.now().isoformat()
         cache_data = data.reset_index().to_json(orient='split')

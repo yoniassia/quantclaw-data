@@ -89,7 +89,7 @@ def fetch_fred_rates() -> pd.DataFrame:
     all_rates = []
     for curr, series in RATES.items():
         try:
-            rate = _fred_fetch(series, '2000-01-01')
+            rate = _fred_fetch(series, '2000-01-01', datetime.now().strftime('%Y-%m-%d'))
             rate = rate.rename(columns={series: curr})
             all_rates.append(rate)
             logger.info(f"Fetched {curr}: {len(rate)} obs")

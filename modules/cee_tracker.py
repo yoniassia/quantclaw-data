@@ -66,6 +66,11 @@ def try_eurostat(dataset: str, params: Dict) -> Optional[pd.DataFrame]:
         logger.warning(f"Eurostat {dataset} failed: {e}")
     return None
 
+
+def _safe_float(text):
+    cleaned = re.sub(r"[^0-9.-]", "", text) if text else ""
+    return float(cleaned) if cleaned else None
+
 def scrape_tradingeconomics(country_slug: str, indicator: str) -> List[Dict]:
     """Scrape latest data from TradingEconomics."""
     url = f"https://tradingeconomics.com/{country_slug}/{indicator}"
@@ -76,7 +81,8 @@ def scrape_tradingeconomics(country_slug: str, indicator: str) -> List[Dict]:
         soup = BeautifulSoup(resp.text, 'html.parser')
         data = []
         value_el = soup.find('span', class_='float-big')
-        current_value = float(re.sub(r'[^0-9.-]', '', value_el.text)) if value_el else None
+        raw_val = re.sub(r'[^0-9.-]', '', value_el.text) if value_el else ''
+        current_value = float(raw_val) if raw_val else None
         table = soup.find('table', class_='table')
         if table:
             rows = table.find_all('tr')[:12]
@@ -85,9 +91,9 @@ def scrape_tradingeconomics(country_slug: str, indicator: str) -> List[Dict]:
                 if len(cols) >= 3:
                     data.append({
                         'date': cols[0],
-                        'actual': float(re.sub(r'[^0-9.-]', '', cols[1])) if cols[1] else None,
-                        'previous': float(re.sub(r'[^0-9.-]', '', cols[2])) if cols[2] else None,
-                        'consensus': float(re.sub(r'[^0-9.-]', '', cols[3])) if len(cols) > 3 and cols[3] else None,
+                        'actual': _safe_float(cols[1]) if cols[1] else None,
+                        'previous': _safe_float(cols[2]) if cols[2] else None,
+                        'consensus': _safe_float(cols[3]) if len(cols) > 3 and cols[3] else None,
                     })
         if data and current_value is not None:
             data[0]['actual'] = current_value

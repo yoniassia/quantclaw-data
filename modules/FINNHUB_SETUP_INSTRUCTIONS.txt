@@ -1,0 +1,65 @@
+# Quick Setup Instructions for Finnhub IPO Calendar Module
+
+## Option 1: Automated Setup (Recommended)
+Run the setup script:
+```bash
+cd /home/quant/apps/quantclaw-data/modules
+./setup_finnhub.sh
+```
+
+## Option 2: Manual Setup
+
+### Step 1: Get API Key
+1. Visit https://finnhub.io
+2. Click "Get free API key"
+3. Sign up (no credit card required)
+4. Copy your API key
+
+### Step 2: Configure API Key
+
+Choose ONE of these methods:
+
+**Method A: Credentials File (Recommended)**
+```bash
+cat > ~/.credentials/finnhub.json << EOF
+{
+  "api_key": "your_actual_api_key_here"
+}
+EOF
+```
+
+**Method B: Environment Variable**
+```bash
+export FINNHUB_API_KEY="your_actual_api_key_here"
+# Add to ~/.bashrc or ~/.zshrc to make permanent
+```
+
+**Method C: .env File**
+```bash
+echo 'FINNHUB_API_KEY=your_actual_api_key_here' >> /home/quant/apps/quantclaw-data/.env
+```
+
+### Step 3: Test
+```bash
+cd /home/quant/apps/quantclaw-data
+python3 modules/finnhub_ipo_calendar.py test
+```
+
+## Troubleshooting
+
+**"401 Unauthorized"**
+- Your API key is invalid or expired
+- Get a new key at https://finnhub.io
+
+**"No Finnhub API key found"**
+- API key not configured in any of the checked locations
+- Run setup_finnhub.sh or follow Manual Setup above
+
+**"demo" key doesn't work**
+- Finnhub doesn't provide a public demo key
+- You must sign up for a free account
+
+## Free Tier Limits
+- 60 API calls per minute
+- Sufficient for most use cases
+- No credit card required
