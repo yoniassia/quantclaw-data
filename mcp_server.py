@@ -7525,8 +7525,6 @@ class MCPServer:
                 'description': 'Get trading signal for energy stocks based on rig count trends',
                 'parameters': {},
                 'handler': self._baker_hughes_signal
-            }
-            }
             },
             # ShortVolume.com Tools (Phase 703)
             'short_volume_latest': {

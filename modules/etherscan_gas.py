@@ -34,7 +34,7 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
-API_URL = "https://api.etherscan.io/api?module=gastracker&action=gasoracle"
+API_URL = "https://api.etherscan.io/v2/api?chainid=1&module=gastracker&action=gasoracle"
 TIMEOUT = 10
 
 def ensure_cache_dir() -> None:
@@ -79,11 +79,11 @@ def process_gas_data(raw_result: Dict[str, Any]) -> pd.DataFrame:
     """Process gas oracle result into DataFrame."""
     df_data = {
         "timestamp": [raw_result["fetch_time"]],
-        "safe_gas_gwei": [int(raw_result["SafeGasPrice"])],
-        "propose_gas_gwei": [int(raw_result["ProposeGasPrice"])],
-        "fast_gas_gwei": [int(raw_result["FastGasPrice"])],
-        "base_fee_gwei": [int(raw_result.get("suggestBaseFee", 0))],
-        "gas_used_ratio": [float(raw_result["gasUsedRatio"])],
+        "safe_gas_gwei": [float(raw_result["SafeGasPrice"])],
+        "propose_gas_gwei": [float(raw_result["ProposeGasPrice"])],
+        "fast_gas_gwei": [float(raw_result["FastGasPrice"])],
+        "base_fee_gwei": [float(raw_result.get("suggestBaseFee", 0))],
+        "gas_used_ratio": [float(raw_result["gasUsedRatio"].split(",")[0]) if "," in str(raw_result.get("gasUsedRatio", "0")) else float(raw_result.get("gasUsedRatio", 0))],
         "last_block": [raw_result.get("LastBlock", "N/A")],
     }
     df = pd.DataFrame(df_data)

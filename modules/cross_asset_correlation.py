@@ -14,6 +14,12 @@ import urllib.request
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
+try:
+    import yfinance as yf
+    HAS_YF = True
+except ImportError:
+    HAS_YF = False
+
 
 # Representative ETFs/tickers for major asset classes
 DEFAULT_ASSETS = {
@@ -50,6 +56,25 @@ def fetch_yahoo_history(
         f"https://query1.finance.yahoo.com/v7/finance/download/{ticker}"
         f"?period1={start}&period2={end}&interval=1d&events=history"
     )
+    # Try yfinance first (handles cookies/crumb automatically)
+    if HAS_YF:
+        try:
+            import warnings
+            warnings.filterwarnings('ignore')
+            df = yf.download(ticker, period=f"{days}d", progress=False)
+            if not df.empty:
+                # Flatten MultiIndex columns if present
+                if isinstance(df.columns, __import__('pandas').MultiIndex):
+                    df = df.droplevel('Ticker', axis=1) if 'Ticker' in df.columns.names else df.droplevel(1, axis=1)
+                results = []
+                for date, row in df.iterrows():
+                    close = float(row.get("Close", row.get("Adj Close", 0)))
+                    if close > 0:
+                        results.append({"date": date.strftime("%Y-%m-%d"), "close": close})
+                return results
+        except Exception:
+            pass
+    # Fallback to direct download
     try:
         req = urllib.request.Request(url, headers={
             "User-Agent": "Mozilla/5.0 (QuantClaw/1.0)"

@@ -72,6 +72,11 @@ def calculate_price_impact(ticker_obj, action_date, window_days=5) -> Dict:
                 "error": "No price data available"
             }
         
+        # Normalize action_date to match index timezone
+        import pandas as pd
+        if hasattr(hist.index, 'tz') and hist.index.tz is not None:
+            action_date = pd.Timestamp(action_date).tz_localize(hist.index.tz)
+        
         # Find closest trading day before action
         pre_data = hist[hist.index < action_date]
         if len(pre_data) == 0:

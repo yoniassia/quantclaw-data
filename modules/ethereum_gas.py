@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 
-_ETHERSCAN_FREE = "https://api.etherscan.io/api"
+_ETHERSCAN_V2 = "https://api.etherscan.io/v2/api"
 
 
 def get_gas_prices() -> dict[str, Any]:
@@ -23,9 +23,9 @@ def get_gas_prices() -> dict[str, Any]:
     Returns:
         Dict with gas prices in Gwei for different speed tiers.
     """
-    # Use Blocknative-style free endpoint or Etherscan
+    # Etherscan V2 API (V1 deprecated March 2026)
     try:
-        url = f"{_ETHERSCAN_FREE}?module=gastracker&action=gasoracle"
+        url = f"{_ETHERSCAN_V2}?chainid=1&module=gastracker&action=gasoracle"
         req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())

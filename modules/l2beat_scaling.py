@@ -32,7 +32,7 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
-API_URL = "https://l2beat.com/api/scaling/tvl"
+API_URL = "https://l2beat.com/api/scaling/summary"
 TIMEOUT = 30
 
 def ensure_cache_dir() -> None:
@@ -66,11 +66,12 @@ def fetch_l2beat_data() -> Dict[str, Any]:
     logger.info(f"Fetched data with {len(data)} projects")
     return data
 
-def process_data(raw_data: List[Dict[str, Any]]) -> pd.DataFrame:
+def process_data(raw_data) -> pd.DataFrame:
     """Process raw L2Beat data into clean DataFrame.
 
     Handles:
-    - Flattens nested project lists if present
+    - /api/scaling/summary format: {chart: {types, data}, projects: {slug: {...}}}
+    - Legacy list-of-projects format
     - Extracts key TVL metrics
     - Calculates derived columns (e.g., TVL rank)
     - Cleans and types data
@@ -79,14 +80,37 @@ def process_data(raw_data: List[Dict[str, Any]]) -> pd.DataFrame:
     if not raw_data:
         raise ValueError("No data to process")
 
-    # Assume top-level is list of projects
+    # Handle summary endpoint format: {chart: ..., projects: {slug: {...}}}
     projects = []
-    for item in raw_data:
-        if isinstance(item, dict) and "projects" in item:
-            # Handle grouped data
-            projects.extend(item["projects"])
-        else:
-            projects.append(item)
+    if isinstance(raw_data, dict) and "projects" in raw_data:
+        proj_dict = raw_data["projects"]
+        if isinstance(proj_dict, dict):
+            for slug, info in proj_dict.items():
+                row = {"slug": slug}
+                if isinstance(info, dict):
+                    row.update(info)
+                    # Extract TVL from tvs (Total Value Secured) breakdown
+                    if "tvs" in info and isinstance(info["tvs"], dict):
+                        breakdown = info["tvs"].get("breakdown", {})
+                        if isinstance(breakdown, dict) and "total" in breakdown:
+                            row["tvl"] = breakdown["total"]
+                    # Fallback: extract TVL from nested chart data if present
+                    elif "charts" in info and isinstance(info["charts"], dict):
+                        chart_data = info["charts"].get("tvl", {}).get("data", [])
+                        if chart_data:
+                            latest = chart_data[-1]
+                            # [timestamp, native, canonical, external, ethPrice]
+                            if len(latest) >= 4:
+                                row["tvl"] = sum(latest[1:4])
+                projects.append(row)
+        elif isinstance(proj_dict, list):
+            projects = proj_dict
+    elif isinstance(raw_data, list):
+        for item in raw_data:
+            if isinstance(item, dict) and "projects" in item:
+                projects.extend(item["projects"])
+            else:
+                projects.append(item)
 
     df = pd.DataFrame(projects)
     if df.empty:
@@ -109,9 +133,14 @@ def process_data(raw_data: List[Dict[str, Any]]) -> pd.DataFrame:
         "reports": "reports",  # JSON
     }
 
-    # Select and rename columns
+    # Select and rename columns that exist
     available_cols = [col for col in column_map if col in df.columns]
-    df = df[available_cols].rename(columns={v: k for k, v in column_map.items() if v in df.columns})
+    rename_map = {col: column_map[col] for col in available_cols}
+    df = df[available_cols].rename(columns=rename_map)
+
+    # If tvl_usd not present but 'tvl' column exists under different name, try to extract
+    if "tvl_usd" not in df.columns and "tvl" in df.columns:
+        df["tvl_usd"] = pd.to_numeric(df["tvl"], errors="coerce")
 
     # Type conversions
     numeric_cols = ["tvl_usd", "tvl_7d_change_pct", "tvl_30d_change_pct"]
@@ -119,21 +148,22 @@ def process_data(raw_data: List[Dict[str, Any]]) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Add derived columns
-    df["tvl_rank"] = df["tvl_usd"].rank(ascending=False).astype(int)
-    df["tvl_category"] = pd.cut(
-        df["tvl_usd"],
-        bins=[0, 1e9, 5e9, float("inf")],
-        labels=["<1B", "1-5B", ">5B"]
-    )
+    # Add derived columns only if tvl_usd exists
+    if "tvl_usd" in df.columns:
+        df["tvl_rank"] = df["tvl_usd"].rank(ascending=False, method="min").astype("Int64")
+        df["tvl_category"] = pd.cut(
+            df["tvl_usd"].fillna(0),
+            bins=[0, 1e9, 5e9, float("inf")],
+            labels=["<1B", "1-5B", ">5B"]
+        )
+        df = df.sort_values("tvl_usd", ascending=False).reset_index(drop=True)
+        df["tvl_usd_formatted"] = df["tvl_usd"].apply(
+            lambda x: f"${x/1e9:.2f}B" if pd.notna(x) and x >= 1e9 else (f"${x/1e6:.1f}M" if pd.notna(x) else "N/A")
+        )
+    else:
+        logger.warning("No TVL column found in data — returning available columns")
 
-    # Sort by TVL
-    df = df.sort_values("tvl_usd", ascending=False).reset_index(drop=True)
-
-    # Format numbers
-    df["tvl_usd_formatted"] = df["tvl_usd"].apply(lambda x: f"" if pd.notna(x) else "N/A")
-
-    logger.info(f"Processed DataFrame: {len(df)} rows, top TVL: {df['tvl_usd'].iloc[0] if len(df)>0 else 'N/A'}")
+    logger.info(f"Processed DataFrame: {len(df)} rows, top TVL: {df['tvl_usd'].iloc[0] if 'tvl_usd' in df.columns and len(df)>0 else 'N/A'}")
     return df
 
 def save_cache(data: Dict[str, Any]) -> None:

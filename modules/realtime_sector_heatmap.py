@@ -45,28 +45,30 @@ def get_sector_performance(period: str = "1d") -> List[Dict]:
 
     results = []
     tickers = list(SECTOR_ETFS.values())
-    data = yf.download(tickers, period=period, progress=False, group_by="ticker")
+    data = yf.download(tickers, period=period, progress=False)
 
     for sector, etf in SECTOR_ETFS.items():
         try:
             if len(tickers) == 1:
-                df = data
+                close = data["Close"].dropna()
+                vol_col = data["Volume"].dropna()
             else:
-                df = data[etf] if etf in data.columns.get_level_values(0) else None
+                # yfinance returns MultiIndex: (Price, Ticker)
+                if isinstance(data.columns, __import__('pandas').MultiIndex):
+                    close = data["Close"][etf].dropna() if etf in data["Close"].columns else None
+                    vol_col = data["Volume"][etf].dropna() if etf in data["Volume"].columns else None
+                else:
+                    close = None
+                    vol_col = None
 
-            if df is None or df.empty:
-                continue
-
-            close = df["Close"].dropna()
-            if len(close) < 2:
+            if close is None or len(close) < 2:
                 continue
 
             first_price = float(close.iloc[0])
             last_price = float(close.iloc[-1])
             change_pct = round((last_price - first_price) / first_price * 100, 3)
 
-            vol_col = df["Volume"].dropna()
-            volume = int(vol_col.iloc[-1]) if len(vol_col) > 0 else 0
+            volume = int(vol_col.iloc[-1]) if vol_col is not None and len(vol_col) > 0 else 0
 
             results.append({
                 "sector": sector,

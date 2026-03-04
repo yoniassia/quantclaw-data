@@ -152,10 +152,10 @@ def get_all_protocols() -> Dict[str, Any]:
         
         protocols = response.json()
         
-        # Sort by TVL
+        # Sort by TVL (handle None values)
         sorted_protocols = sorted(
             protocols, 
-            key=lambda x: x.get('tvl', 0), 
+            key=lambda x: x.get('tvl') or 0, 
             reverse=True
         )
         
