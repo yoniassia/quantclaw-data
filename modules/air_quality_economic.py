@@ -45,6 +45,8 @@ def get_aqi_dashboard(cities: Optional[List[str]] = None) -> Dict:
     Includes PM2.5, PM10, O3, NO2 levels and health categories.
     """
     now = datetime.now()
+    if isinstance(cities, str):
+        cities = [cities]
     target_cities = cities or list(CITY_BASELINES.keys())
 
     results = []

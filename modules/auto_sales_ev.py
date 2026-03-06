@@ -15,7 +15,9 @@ Commands:
 - ev-registrations [--country US] [--months 12]
 - auto-market [--region US] [--months 12]
 """
+from dotenv import load_dotenv
 
+import os
 import sys
 import requests
 import json
@@ -25,8 +27,12 @@ from collections import defaultdict
 import re
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_API_BASE = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = None  # Will use public data without API key when possible
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Will use public data without API key when possible
 
 # FRED Series IDs for Auto Sales
 FRED_AUTO_SERIES = {

@@ -7,6 +7,8 @@ Data sources:
 - OECD Israel dataset (fallback)
 - FRED Israel indicators
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 from datetime import datetime, timedelta
@@ -14,11 +16,15 @@ from typing import Dict, List, Optional
 import json
 
 
+
+# Load environment variables
+load_dotenv()
+
 class IsraelCBSStatistics:
     """Israel Central Bureau of Statistics economic data"""
     
     def __init__(self):
-        self.fred_api_key = "8e2df20ff9c4a2d9aa90be50a47d8f17"  # quantclaw FRED key
+        self.fred_api_key = os.environ.get("FRED_API_KEY", "")  # quantclaw FRED key
         self.base_url = "https://api.stlouisfed.org/fred/series/observations"
         
         # Working FRED series IDs for Israel (verified)

@@ -21,6 +21,8 @@ Data Sources:
 Author: QUANTCLAW DATA Build Agent
 Phase: 142
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -29,6 +31,10 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 import time
 import warnings
+
+# Load environment variables
+load_dotenv()
+
 warnings.filterwarnings('ignore')
 
 # Import SEC XBRL utilities
@@ -39,7 +45,7 @@ from modules.sec_xbrl_financial_statements import (
 
 # FRED API Configuration
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # FRED Series for DCF inputs
 FRED_SERIES = {

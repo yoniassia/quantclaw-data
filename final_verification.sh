@@ -1,45 +1,48 @@
 #!/bin/bash
-echo "======================================"
-echo "PHASE 48 VERIFICATION REPORT"
-echo "======================================"
+echo "=================================="
+echo "FINAL MIGRATION VERIFICATION"
+echo "=================================="
 echo ""
 
-echo "📁 Files Status:"
-echo "  • peer_network.py: $(wc -l < modules/peer_network.py) lines"
-echo "  • API route: $(test -f src/app/api/v1/peer-network/route.ts && echo '✅ EXISTS' || echo '❌ MISSING')"
-echo "  • CLI entry: $(grep -c 'peer_network' cli.py) references"
-echo "  • services.ts: $(grep -c 'phase: 48' src/app/services.ts) services"
-echo "  • roadmap.ts: $(grep 'id: 48' src/app/roadmap.ts | grep -o 'status: "[^"]*"')"
-echo ""
+echo "1. Checking api_config.py..."
+python3 modules/api_config.py > /dev/null 2>&1 && echo "   ✓ api_config.py works" || echo "   ✗ api_config.py FAILED"
 
-echo "🧪 CLI Commands Test:"
-commands=("peer-network" "compare-networks" "map-dependencies")
-for cmd in "${commands[@]}"; do
-  if python3 cli.py 2>&1 | grep -q "$cmd"; then
-    echo "  ✅ $cmd - registered"
-  else
-    echo "  ❌ $cmd - not found"
-  fi
-done
 echo ""
+echo "2. Testing module imports..."
+python3 -c "from modules import fed_policy" > /dev/null 2>&1 && echo "   ✓ fed_policy imports" || echo "   ✗ fed_policy FAILED"
+python3 -c "from modules import finnhub_ipo_calendar" > /dev/null 2>&1 && echo "   ✓ finnhub_ipo_calendar imports" || echo "   ✗ finnhub_ipo_calendar FAILED"
+python3 -c "from modules import eia_energy" > /dev/null 2>&1 && echo "   ✓ eia_energy imports" || echo "   ✗ eia_energy FAILED"
+python3 -c "from modules import bls" > /dev/null 2>&1 && echo "   ✓ bls imports" || echo "   ✗ bls FAILED"
 
-echo "📊 Functional Test:"
-# Run a simple test
-output=$(python3 modules/peer_network.py peer-network AAPL 2>&1)
-if echo "$output" | grep -q "PEER NETWORK ANALYSIS"; then
-  echo "  ✅ Module executes successfully"
-  echo "  ✅ Output format: Human-readable"
+echo ""
+echo "3. Checking backup directory..."
+if [ -d "backups_api_migration/20260304_213922" ]; then
+    COUNT=$(ls backups_api_migration/20260304_213922/*.py 2>/dev/null | wc -l)
+    echo "   ✓ Backup directory exists ($COUNT files)"
 else
-  echo "  ❌ Module execution failed"
+    echo "   ✗ Backup directory NOT FOUND"
 fi
-echo ""
 
-echo "======================================"
-echo "SUMMARY"
-echo "======================================"
-echo "Phase 48: Peer Network Analysis"
-echo "Status: $(grep 'id: 48' src/app/roadmap.ts | grep -o 'status: "[^"]*"' | cut -d'"' -f2)"
-echo "LOC: $(wc -l < modules/peer_network.py)"
-echo "CLI: 3 commands"
-echo "API: 3 endpoints"
-echo "======================================"
+echo ""
+echo "4. Checking key files..."
+[ -f "patch_api_keys.py" ] && echo "   ✓ patch_api_keys.py" || echo "   ✗ patch_api_keys.py missing"
+[ -f "test_api_keys.py" ] && echo "   ✓ test_api_keys.py" || echo "   ✗ test_api_keys.py missing"
+[ -f "modules/api_config.py" ] && echo "   ✓ modules/api_config.py" || echo "   ✗ modules/api_config.py missing"
+[ -f "api_migration.log" ] && echo "   ✓ api_migration.log" || echo "   ✗ api_migration.log missing"
+[ -f "API_MIGRATION_COMPLETE.md" ] && echo "   ✓ API_MIGRATION_COMPLETE.md" || echo "   ✗ API_MIGRATION_COMPLETE.md missing"
+
+echo ""
+echo "5. Testing API key loading..."
+python3 << 'PYEOF'
+import sys
+sys.path.insert(0, 'modules')
+from api_config import is_configured, list_configured_services
+
+configured = list_configured_services()
+print(f"   ✓ {len(configured)} API services configured")
+PYEOF
+
+echo ""
+echo "=================================="
+echo "VERIFICATION COMPLETE"
+echo "=================================="

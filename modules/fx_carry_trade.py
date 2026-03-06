@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """
 FX Carry Trade Monitor Module — Phase 182
 
@@ -18,6 +19,8 @@ Carry Trade Logic:
 Author: QUANTCLAW DATA Build Agent
 Phase: 182
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -28,8 +31,23 @@ import time
 import statistics
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access, no key required
+def _load_fred_key():
+    key = os.environ.get('FRED_API_KEY', '')
+    if not key:
+        env_path = Path(__file__).parent.parent / '.env'
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith('FRED_API_KEY='):
+                    key = line.split('=', 1)[1].strip()
+                    break
+    return key
+
+FRED_API_KEY = _load_fred_key()
 
 # Major FX pairs and their 3-month interest rate series
 CURRENCY_RATES = {
@@ -153,14 +171,15 @@ def get_current_interest_rate(currency: str) -> Optional[float]:
         return None
     
     series_id = CURRENCY_RATES[currency]['series_id']
-    data = fetch_fred_series(series_id, days_back=30)
+    # Monthly series need wider lookback (90 days) to catch latest observation
+    data = fetch_fred_series(series_id, days_back=90)
     
     if data and len(data) > 0:
         return data[0]['value']
     
     # Try alternative series for USD
     if currency == 'USD' and 'alt_series' in CURRENCY_RATES[currency]:
-        alt_data = fetch_fred_series(CURRENCY_RATES[currency]['alt_series'], days_back=30)
+        alt_data = fetch_fred_series(CURRENCY_RATES[currency]['alt_series'], days_back=90)
         if alt_data and len(alt_data) > 0:
             return alt_data[0]['value']
     

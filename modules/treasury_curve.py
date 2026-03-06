@@ -21,6 +21,7 @@ Coverage: Current curve + historical analysis
 Author: QUANTCLAW DATA Build Agent
 Phase: 154
 """
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -31,6 +32,10 @@ import time
 from xml.etree import ElementTree as ET
 
 # Treasury.gov API Configuration
+
+# Load environment variables
+load_dotenv()
+
 TREASURY_CURVE_API = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service"
 TREASURY_CURVE_ENDPOINT = f"{TREASURY_CURVE_API}/v2/accounting/od/avg_interest_rates"
 
@@ -38,7 +43,7 @@ TREASURY_CURVE_ENDPOINT = f"{TREASURY_CURVE_API}/v2/accounting/od/avg_interest_r
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
 
 # Load FRED API key from credentials
-FRED_API_KEY = ""
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 try:
     import os
     creds_path = os.path.expanduser('~/.openclaw/workspace/.credentials/fred-api.json')

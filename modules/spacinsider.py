@@ -31,6 +31,7 @@ Usage:
     # Get liquidations
     df = spacinsider.get_data(period='liquidation')
 """
+from dotenv import load_dotenv
 
 import requests
 import pandas as pd
@@ -42,6 +43,10 @@ from typing import Optional, Dict, List
 from bs4 import BeautifulSoup
 
 # Cache configuration
+
+# Load environment variables
+load_dotenv()
+
 CACHE_DIR = os.path.join(os.path.dirname(__file__), '..', 'cache')
 os.makedirs(CACHE_DIR, exist_ok=True)
 CACHE_TTL = 4 * 3600  # 4 hours
@@ -73,8 +78,11 @@ def get_api_key() -> Optional[str]:
     if os.path.exists(env_file):
         with open(env_file, 'r') as f:
             for line in f:
-                if line.startswith('SPACINSIDER_API_KEY='):
-                    return line.split('=', 1)[1].strip().strip('"\'')
+                line = line.strip()
+                if line.startswith('SPACINSIDER_API_KEY'):
+                    parts = line.split('=', 1)
+                    if len(parts) == 2:
+                        return parts[1].strip().strip('"\'') or None
     
     # Check .credentials directory
     creds_file = os.path.expanduser('~/.credentials/spacinsider.json')

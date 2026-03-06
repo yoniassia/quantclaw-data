@@ -4,12 +4,18 @@ FACTOR TIMING MODEL - Phase 73
 Regime detection for when factors work, adaptive factor rotation
 Uses: Ken French Data Library, FRED (macro indicators), Yahoo Finance
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import argparse
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 import json
+
+
+# Load environment variables
+load_dotenv()
 
 try:
     import yfinance as yf
@@ -33,7 +39,7 @@ FACTOR_ETFS = {
 }
 
 # FRED API key (using demo key, users should replace with their own)
-FRED_API_KEY = "demo"  # Replace with real key from https://fred.stlouisfed.org/docs/api/api_key.html
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Replace with real key from https://fred.stlouisfed.org/docs/api/api_key.html
 
 # Economic indicators for regime detection
 MACRO_INDICATORS = {
@@ -76,16 +82,20 @@ class FactorRegimeDetector:
         for factor_name, ticker in FACTOR_ETFS.items():
             try:
                 data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+                # Handle MultiIndex columns from newer yfinance
+                if isinstance(data.columns, pd.MultiIndex):
+                    data = data.droplevel('Ticker', axis=1)
                 if not data.empty:
-                    returns = data['Adj Close'].pct_change()
+                    close_col = 'Adj Close' if 'Adj Close' in data.columns else 'Close'
+                    returns = data[close_col].pct_change()
                     factor_data[factor_name] = {
                         'ticker': ticker,
                         'total_return': ((1 + returns).prod() - 1) * 100,
                         'annualized_return': (((1 + returns.mean()) ** 252) - 1) * 100,
                         'volatility': returns.std() * np.sqrt(252) * 100,
                         'sharpe': (returns.mean() / returns.std()) * np.sqrt(252) if returns.std() > 0 else 0,
-                        'current_price': data['Adj Close'].iloc[-1],
-                        'max_drawdown': self._calculate_max_drawdown(data['Adj Close'])
+                        'current_price': data[close_col].iloc[-1],
+                        'max_drawdown': self._calculate_max_drawdown(data[close_col])
                     }
             except Exception as e:
                 print(f"Warning: Could not fetch {ticker}: {e}", file=sys.stderr)
@@ -112,6 +122,8 @@ class FactorRegimeDetector:
         # Fetch VIX for volatility regime
         try:
             vix_data = yf.download('^VIX', period='5d', progress=False)
+            if isinstance(vix_data.columns, pd.MultiIndex):
+                vix_data = vix_data.droplevel('Ticker', axis=1)
             if not vix_data.empty:
                 current_vix = vix_data['Close'].iloc[-1]
                 regime['indicators']['vix'] = float(current_vix)
@@ -272,6 +284,8 @@ class FactorRegimeDetector:
             try:
                 vix_data = yf.download('^VIX', start=current_date - timedelta(days=7), 
                                        end=current_date, progress=False)
+                if isinstance(vix_data.columns, pd.MultiIndex):
+                    vix_data = vix_data.droplevel('Ticker', axis=1)
                 if not vix_data.empty:
                     avg_vix = vix_data['Close'].mean()
                     

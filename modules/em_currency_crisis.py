@@ -16,6 +16,8 @@ Data Sources:
 Phase: 184
 Author: QUANTCLAW DATA Build Agent
 """
+from dotenv import load_dotenv
+import os
 
 import requests
 import json
@@ -26,7 +28,11 @@ import time
 
 # FRED API Configuration
 # Get free API key at: https://fredaccount.stlouisfed.org/apikeys
-FRED_API_KEY = ""  # Set via environment variable FRED_API_KEY or register for free key
+
+# Load environment variables
+load_dotenv()
+
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Set via environment variable FRED_API_KEY or register for free key
 FRED_API_BASE = "https://api.stlouisfed.org/fred"
 
 # Key EM Country Series IDs from FRED

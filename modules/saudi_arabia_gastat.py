@@ -24,6 +24,8 @@ Coverage: Saudi Arabia national statistics
 Author: QUANTCLAW DATA Build Agent
 Phase: 126
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -39,7 +41,11 @@ import time
 # 3. World Bank for supplementary data
 # 4. Synthetic data generation for demonstration
 
-FRED_API_KEY = "demo"  # Use demo key for now, can be configured
+
+# Load environment variables
+load_dotenv()
+
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Use demo key for now, can be configured
 
 # Core Saudi Economic Indicators
 SAUDI_INDICATORS = {

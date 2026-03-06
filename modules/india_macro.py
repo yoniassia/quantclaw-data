@@ -2,7 +2,7 @@
 """
 india_macro.py - India GDP/CPI from FRED/RBI.
 
-Series: RGDPINDA666S (Real GDP), CPALTT01INA661S (CPI YoY), INDPROIND (IPI).
+Series: MKTGDPINA646NWDB (GDP), INDCPIALLMINMEI (CPI), INDPRO (Industrial Production).
 
 Returns DF: date, gdp_yoy, cpi_yoy, ipi_yoy.
 
@@ -16,9 +16,9 @@ import requests
 import io
 
 SERIES = {
-    'gdp': 'RGDPINDA666S',
-    'cpi': 'CPALTT01INA661S',
-    'ipi': 'INDPROIND'
+    'gdp': 'MKTGDPINA646NWDB',
+    'cpi': 'INDCPIALLMINMEI',
+    'ipi': 'INDPRO'
 }
 CACHE_DIR = Path(__file__).parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'india_macro.json'
@@ -50,9 +50,13 @@ def fetch_data():
             url = f'https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}'
             resp = requests.get(url, timeout=15)
             resp.raise_for_status()
-            df = pd.read_csv(io.StringIO(resp.text), parse_dates=['DATE'], index_col='DATE')
-            df[name] = pd.to_numeric(df[sid], errors='coerce')
-            dfs.append(df[[name]])
+            raw_df = pd.read_csv(io.StringIO(resp.text))
+            date_col = [c for c in raw_df.columns if 'date' in c.lower()][0]
+            raw_df = raw_df.rename(columns={date_col: 'DATE'})
+            raw_df['DATE'] = pd.to_datetime(raw_df['DATE'])
+            raw_df = raw_df.set_index('DATE')
+            raw_df[name] = pd.to_numeric(raw_df[sid], errors='coerce')
+            dfs.append(raw_df[[name]])
         except Exception as e:
             print(f"Failed {sid}: {e}")
     if not dfs:

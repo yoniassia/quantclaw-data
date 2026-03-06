@@ -5,6 +5,8 @@ Tracks wage growth metrics across multiple sources: Atlanta Fed Wage Growth Trac
 BLS Employment Cost Index (ECI), Average Hourly Earnings, and real wage calculations.
 Critical for inflation forecasting and Fed policy analysis.
 """
+import os
+from dotenv import load_dotenv
 
 import json
 import urllib.request
@@ -12,8 +14,12 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = "DEMO_KEY"
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # Key wage-related FRED series
 WAGE_SERIES = {

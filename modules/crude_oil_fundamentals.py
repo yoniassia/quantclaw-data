@@ -18,6 +18,8 @@ Coverage: 1990-present for EIA, 2000-present for OPEC
 Author: QUANTCLAW DATA Build Agent
 Phase: 169
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -28,8 +30,12 @@ import re
 from bs4 import BeautifulSoup
 
 # ========== EIA API CONFIGURATION ==========
+
+# Load environment variables
+load_dotenv()
+
 EIA_BASE_URL = "https://api.eia.gov/v2"
-EIA_API_KEY = ""  # Free tier: register at eia.gov/opendata
+EIA_API_KEY = os.environ.get("EIA_API_KEY", "")  # Free tier: register at eia.gov/opendata
 
 # EIA Series IDs for crude oil data
 EIA_CRUDE_SERIES = {

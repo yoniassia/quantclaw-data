@@ -22,10 +22,14 @@ CACHE_DIR = MODULE_DIR.parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'eurostat_macro.json'
 CACHE_AGE_HOURS = 168
 USER_AGENT = 'Mozilla/5.0 ...'
-API_URL = 'https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/namq_10_gdp'
+API_URL = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp'
 PARAMS = {
-    'format': 'jsondataonly',
-    'lang': 'en'
+    'format': 'JSON',
+    'lang': 'en',
+    'geo': 'EU27_2020',
+    'unit': 'CLV_PCH_PRE',
+    's_adj': 'SCA',
+    'na_item': 'B1GQ'
 }
 TIMEOUT = 30
 
@@ -56,18 +60,31 @@ def fetch_data():
     return data
 
 def process_data(raw: Dict) -> pd.DataFrame:
+    # Extract time labels from dimension metadata
+    time_labels = {}
+    try:
+        time_dim = raw.get('dimension', {}).get('time', {})
+        cat = time_dim.get('category', {})
+        idx_map = cat.get('index', {})
+        label_map = cat.get('label', {})
+        # idx_map: {"2024Q1": 0, ...}, label_map: {"2024Q1": "2024-Q1", ...}
+        reverse_idx = {v: k for k, v in idx_map.items()}
+        time_labels = {str(pos): label_map.get(key, key) for pos, key in reverse_idx.items()}
+    except Exception:
+        pass
+
     df_list = []
     for idx, val in raw.get('value', {}).items():
-        row = {'index': idx, 'value': val}
+        row = {'index': int(idx), 'value': val}
+        if time_labels:
+            row['quarter'] = time_labels.get(idx, idx)
         df_list.append(row)
     df = pd.DataFrame(df_list)
-
-    # Parse dimensions from index if SDMX
-    # Simplified: assume value column
     df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    df.sort_values('index', inplace=True)
+    df.reset_index(drop=True, inplace=True)
 
-    # Add parse logic for GDP series if needed
-    logger.info('Eurostat GDP processed')
+    logger.info(f'Eurostat GDP processed: {len(df)} observations')
     return df
 
 def save_cache(raw):

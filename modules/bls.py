@@ -16,6 +16,8 @@ With free registration: 500 queries/day + 10 years of data.
 Phase: 97
 Author: QUANTCLAW DATA Build Agent
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 import json
@@ -26,8 +28,12 @@ import time
 
 
 # BLS API Configuration
+
+# Load environment variables
+load_dotenv()
+
 BLS_API_BASE = "https://api.bls.gov/publicAPI/v2"
-BLS_API_KEY = ""  # Optional: Register at https://data.bls.gov/registrationEngine/ for higher limits
+BLS_API_KEY = os.environ.get("BLS_API_KEY", "")  # Optional: Register at https://data.bls.gov/registrationEngine/ for higher limits
 
 # Key BLS Series IDs
 BLS_SERIES = {

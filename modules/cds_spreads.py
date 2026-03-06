@@ -10,6 +10,8 @@ Data Sources:
 Author: QUANTCLAW DATA Build Agent
 Phase: 30
 """
+import os
+from dotenv import load_dotenv
 
 import yfinance as yf
 import requests
@@ -18,8 +20,12 @@ from typing import Dict, List, Optional
 import json
 
 # FRED API Configuration (public access, no key needed for basic queries)
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = "your_fred_key"  # Can work without key for some endpoints
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Can work without key for some endpoints
 
 # Corporate Bond ETF Proxies
 CREDIT_ETFS = {

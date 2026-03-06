@@ -5,6 +5,8 @@ Calculates implied Fed Funds target rates from CME Fed Funds futures prices.
 Uses free FRED data for current effective rate and futures-implied probabilities.
 Covers FOMC meeting expectations and rate path projections.
 """
+import os
+from dotenv import load_dotenv
 
 import datetime
 import json
@@ -12,8 +14,12 @@ import urllib.request
 from typing import Dict, List, Optional
 
 
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = "DEMO_KEY"
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # FRED series for Fed Funds
 SERIES = {

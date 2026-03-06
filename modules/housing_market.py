@@ -7,10 +7,25 @@ inventory levels using FRED and other free data sources.
 """
 
 import json
+import os
 import urllib.request
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
+
+def _load_fred_key():
+    key = os.environ.get('FRED_API_KEY', '')
+    if not key:
+        env_path = Path(__file__).parent.parent / '.env'
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith('FRED_API_KEY='):
+                    key = line.split('=', 1)[1].strip()
+                    break
+    return key or "DEMO_KEY"
+
+_FRED_KEY = _load_fred_key()
 
 # FRED series for housing indicators
 HOUSING_SERIES = {
@@ -32,7 +47,7 @@ def _fetch_fred(series_id: str, limit: int = 12) -> list[dict]:
     url = (
         f"https://api.stlouisfed.org/fred/series/observations?"
         f"series_id={series_id}&sort_order=desc&limit={limit}"
-        f"&file_type=json&api_key=DEMO_KEY"
+        f"&file_type=json&api_key={_FRED_KEY}"
     )
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "QuantClaw/1.0"})

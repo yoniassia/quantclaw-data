@@ -23,6 +23,7 @@ API Key: Required (free from https://quickstats.nass.usda.gov/api)
 Phase: 114
 Author: QUANTCLAW DATA Build Agent
 """
+from dotenv import load_dotenv
 
 import requests
 import json
@@ -34,11 +35,15 @@ import os
 from pathlib import Path
 
 # USDA NASS QuickStats API Configuration
+
+# Load environment variables
+load_dotenv()
+
 NASS_API_BASE = "https://quickstats.nass.usda.gov/api"
 NASS_API_KEY = os.environ.get('USDA_NASS_API_KEY', '')  # Set via environment or leave empty for demo
 
 # FRED API for supplementary agricultural data
-FRED_API_KEY = ""  # Will use fred module's key
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Will use fred module's key
 FRED_API_BASE = "https://api.stlouisfed.org/fred"
 
 # Core Commodities

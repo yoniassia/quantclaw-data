@@ -19,6 +19,8 @@ Coverage: US Corporate bonds by rating, sector, and maturity
 Author: QUANTCLAW DATA Build Agent
 Phase: 156
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -28,8 +30,16 @@ from typing import Dict, List, Optional, Tuple
 import time
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+try:
+    from modules.api_config import FRED_API_KEY as _FRED_KEY
+    FRED_API_KEY = _FRED_KEY or os.environ.get("FRED_API_KEY", "")
+except ImportError:
+    FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # ========== ICE BOFA CORPORATE BOND SPREAD SERIES ==========
 

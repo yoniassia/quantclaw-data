@@ -19,6 +19,8 @@ Daily updates for BDI, weekly for container rates, daily for congestion proxies.
 Phase: 110
 Author: QUANTCLAW DATA Build Agent
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 import json
@@ -31,7 +33,11 @@ import re
 
 
 # FRED API Configuration
-FRED_API_KEY = ""  # Will use fred module's key
+
+# Load environment variables
+load_dotenv()
+
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Will use fred module's key
 FRED_API_BASE = "https://api.stlouisfed.org/fred"
 
 # FRED Series IDs for Shipping

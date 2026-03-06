@@ -11,6 +11,8 @@ Data Sources:
 Author: QUANTCLAW DATA Build Agent
 Phase: 43
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 from datetime import datetime, timedelta
@@ -20,9 +22,13 @@ import sys
 from collections import defaultdict
 
 # API Configuration
+
+# Load environment variables
+load_dotenv()
+
 COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
 ETHERSCAN_BASE_URL = "https://api.etherscan.io/api"
-ETHERSCAN_API_KEY = "YourApiKeyToken"  # Free tier: 5 calls/sec
+ETHERSCAN_API_KEY = os.environ.get("ETHERSCAN_API_KEY", "")  # Free tier: 5 calls/sec
 BLOCKCHAIN_COM_BASE_URL = "https://blockchain.info"
 DEFILLAMA_BASE_URL = "https://api.llama.fi"
 

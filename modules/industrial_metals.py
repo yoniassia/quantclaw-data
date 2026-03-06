@@ -18,6 +18,8 @@ CLI Commands:
 - python cli.py metals-snapshot        # All metals overview
 - python cli.py metals-correlation     # Correlation with industrial indicators
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -27,9 +29,13 @@ from typing import Dict, List, Any, Optional
 import statistics
 
 # API Configuration
+
+# Load environment variables
+load_dotenv()
+
 YAHOO_FINANCE_BASE = "https://query1.finance.yahoo.com/v8/finance/chart"
 FRED_BASE = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = "your_api_key_here"  # Free from https://fred.stlouisfed.org/docs/api/api_key.html
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Free from https://fred.stlouisfed.org/docs/api/api_key.html
 
 # Metal ETF mappings
 METAL_ETFS = {

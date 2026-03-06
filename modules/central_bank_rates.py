@@ -13,6 +13,8 @@ Data Sources:
 Author: QUANTCLAW DATA Build Agent
 Phase: 166
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -24,8 +26,12 @@ from bs4 import BeautifulSoup
 import re
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access
 
 # Central Banks and their FRED series IDs
 CENTRAL_BANKS = {

@@ -14,6 +14,8 @@ US Treasuries, a key indicator of emerging market credit risk and sentiment.
 Author: QUANTCLAW DATA Build Agent
 Phase: 158
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 from datetime import datetime, timedelta
@@ -22,8 +24,12 @@ import statistics
 
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # FRED Series IDs for EM Bond Spreads
 FRED_SERIES = {

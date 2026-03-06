@@ -11,15 +11,20 @@ Cache.
 import pandas as pd
 import numpy as np
 import json
+import requests
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
-import pandas_datareader.data as web
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 SERIES_ID = 'RAILFRTINTERMODAL'
+try:
+    from modules.api_config import FRED_API_KEY
+except ImportError:
+    import os
+    FRED_API_KEY = os.environ.get('FRED_API_KEY', '')
 CACHE_DIR = Path(__file__).parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'rail.json'
 CACHE_EXPIRY_HOURS = 24
@@ -45,8 +50,14 @@ def save_cache(df):
         json.dump(data, f)
 
 def fetch_fred():
-    df = web.DataReader(SERIES_ID, 'fred', '2010-01-01')
-    df = df.rename(columns={SERIES_ID: 'rail_intermodal'})
+    url = f"https://api.stlouisfed.org/fred/series/observations?series_id={SERIES_ID}&api_key={FRED_API_KEY}&file_type=json&observation_start=2010-01-01"
+    resp = requests.get(url, timeout=15)
+    resp.raise_for_status()
+    obs = resp.json().get('observations', [])
+    rows = [{'DATE': o['date'], 'rail_intermodal': float(o['value'])} for o in obs if o['value'] != '.']
+    df = pd.DataFrame(rows)
+    df['DATE'] = pd.to_datetime(df['DATE'])
+    df.set_index('DATE', inplace=True)
     df['yoy_change'] = df['rail_intermodal'].pct_change(52) * 100
     df['ma4'] = df['rail_intermodal'].rolling(4).mean()
     return df.dropna()

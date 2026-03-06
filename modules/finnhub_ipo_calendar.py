@@ -26,13 +26,21 @@ Usage:
     df = finnhub_ipo_calendar.get_data(from_date='2026-01-01', to_date='2026-03-31')
 """
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 import requests
 import pandas as pd
-import os
 import json
 import time
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
+
+# API key from environment
+FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
 # Cache configuration
 CACHE_DIR = os.path.join(os.path.dirname(__file__), '..', 'cache')
@@ -45,32 +53,14 @@ FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
 
 def get_api_key() -> Optional[str]:
     """
-    Check for Finnhub API key in multiple locations:
-    1. Environment variable FINNHUB_API_KEY
-    2. .env file in quantclaw-data directory
-    3. .credentials/finnhub.json
+    Get Finnhub API key from environment variable.
+    Falls back to demo key if not set.
     
-    Returns API key or None if not found.
+    Returns API key or demo key.
     """
-    # Check environment variable
-    api_key = os.environ.get('FINNHUB_API_KEY')
-    if api_key:
-        return api_key
-    
-    # Check .env file
-    env_file = os.path.join(os.path.dirname(__file__), '..', '.env')
-    if os.path.exists(env_file):
-        with open(env_file, 'r') as f:
-            for line in f:
-                if line.startswith('FINNHUB_API_KEY='):
-                    return line.split('=', 1)[1].strip().strip('"\'')
-    
-    # Check .credentials directory
-    creds_file = os.path.expanduser('~/.credentials/finnhub.json')
-    if os.path.exists(creds_file):
-        with open(creds_file, 'r') as f:
-            creds = json.load(f)
-            return creds.get('api_key') or creds.get('FINNHUB_API_KEY')
+    # Use environment variable (loaded from .env via dotenv)
+    if FINNHUB_API_KEY:
+        return FINNHUB_API_KEY
     
     # Use demo key as fallback (limited rate)
     return "demo"  # Finnhub provides a demo key for testing

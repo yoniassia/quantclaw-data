@@ -23,6 +23,8 @@ Coverage: 300+ economic time series
 Author: QUANTCLAW DATA Build Agent
 Phase: 104
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -32,8 +34,12 @@ from typing import Dict, List, Optional, Tuple
 import time
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # ========== COMPREHENSIVE FRED SERIES REGISTRY ==========
 

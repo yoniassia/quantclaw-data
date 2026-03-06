@@ -62,6 +62,7 @@ def fetch_mexico_rate():
     try:
         df = _fred_series('INTGSTMXM193N')
         df = df.rename(columns={'value': 'mexico_rate'})
+        return df
     except:
         return pd.DataFrame()
 

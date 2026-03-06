@@ -47,8 +47,15 @@ def fetch_eem():
     return data
 
 def process_data(df_raw: pd.DataFrame) -> pd.DataFrame:
-    df = df_raw[['Adj Close', 'Volume']].copy()
-    df.rename(columns={'Adj Close': 'eem_price', 'Volume': 'volume'}, inplace=True)
+    # Handle both old ('Adj Close') and new ('Close') yfinance column names
+    price_col = 'Adj Close' if 'Adj Close' in df_raw.columns else 'Close'
+    vol_col = 'Volume'
+    # Handle MultiIndex columns from yfinance
+    if isinstance(df_raw.columns, pd.MultiIndex):
+        df_raw.columns = df_raw.columns.get_level_values(0)
+        price_col = 'Adj Close' if 'Adj Close' in df_raw.columns else 'Close'
+    df = df_raw[[price_col, vol_col]].copy()
+    df.rename(columns={price_col: 'eem_price', vol_col: 'volume'}, inplace=True)
     df['price_return_pct'] = df['eem_price'].pct_change() * 100
     df['volume_ma_20'] = df['volume'].rolling(20).mean()
     df['volatility_20'] = df['price_return_pct'].rolling(20).std()

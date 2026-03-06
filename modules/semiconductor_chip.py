@@ -15,6 +15,8 @@ Monthly updates. No API key required.
 Phase: 195
 Author: QUANTCLAW DATA Build Agent
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 import json
@@ -25,8 +27,12 @@ import re
 
 
 # FRED API configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = "demo"  # Public demo key with rate limits
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public demo key with rate limits
 
 # Key FRED series for semiconductor industry
 FRED_SERIES = {

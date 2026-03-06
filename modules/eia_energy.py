@@ -18,6 +18,8 @@ Coverage: US energy markets, 1990-present
 Author: QUANTCLAW DATA Build Agent
 Phase: 112
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -27,8 +29,12 @@ from typing import Dict, List, Optional, Tuple
 import time
 
 # EIA API Configuration
+
+# Load environment variables
+load_dotenv()
+
 EIA_BASE_URL = "https://api.eia.gov/v2"
-EIA_API_KEY = ""  # Free tier available, register at eia.gov/opendata
+EIA_API_KEY = os.environ.get("EIA_API_KEY", "")  # Free tier available, register at eia.gov/opendata
 
 # ========== EIA SERIES REGISTRY ==========
 

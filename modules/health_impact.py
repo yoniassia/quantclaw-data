@@ -14,6 +14,8 @@ Commands:
 - pandemic-impact [--metric TYPE] [--country CODE] [--start DATE] [--end DATE]
 - health-monitor [--region REGION] [--alert-threshold HIGH/MEDIUM/LOW]
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import requests
@@ -23,8 +25,12 @@ from typing import Dict, List, Optional, Any
 from collections import defaultdict
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_API_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = "e02c96e55d15a9bb8bd313f960ffb23e"  # Public FRED key
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public FRED key
 
 # WHO Disease Outbreak News (scrape public data)
 WHO_DON_URL = "https://www.who.int/emergencies/disease-outbreak-news"

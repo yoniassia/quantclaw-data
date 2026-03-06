@@ -23,6 +23,8 @@ Monthly refresh on PMI release days (typically 1st-3rd business day of month).
 Phase: 106
 Author: QUANTCLAW DATA Build Agent
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -32,8 +34,12 @@ from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_API_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = ""  # Optional: configure via environment
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Optional: configure via environment
 
 # Global PMI Series Mapping
 # Format: Country -> {manufacturing: FRED_ID, services: FRED_ID}

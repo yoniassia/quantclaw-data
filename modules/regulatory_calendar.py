@@ -17,6 +17,8 @@ Data Sources:
 Author: QUANTCLAW DATA Build Agent
 Phase: 78
 """
+import os
+from dotenv import load_dotenv
 
 import yfinance as yf
 import requests
@@ -30,8 +32,12 @@ import numpy as np
 from collections import defaultdict
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access mode
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access mode
 
 # BLS API Configuration
 BLS_BASE_URL = "https://api.bls.gov/publicAPI/v2"

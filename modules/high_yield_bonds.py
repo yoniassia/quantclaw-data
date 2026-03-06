@@ -13,10 +13,26 @@ Phase: 157
 import requests
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
+from pathlib import Path
 import json
+import os
 
 # FRED API Configuration
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
+
+# Load FRED API key from .env or environment
+def _load_fred_key():
+    key = os.environ.get('FRED_API_KEY', '')
+    if not key:
+        env_path = Path(__file__).parent.parent / '.env'
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith('FRED_API_KEY='):
+                    key = line.split('=', 1)[1].strip()
+                    break
+    return key
+
+FRED_API_KEY = _load_fred_key()
 
 # FRED Series IDs for High Yield Bond Data
 FRED_HY_SERIES = {
@@ -51,6 +67,7 @@ def get_fred_series(series_id: str, lookback_days: int = 365) -> Dict:
         url = f"{FRED_BASE_URL}/series/observations"
         params = {
             "series_id": series_id,
+            "api_key": FRED_API_KEY,
             "file_type": "json",
             "observation_start": (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d"),
         }

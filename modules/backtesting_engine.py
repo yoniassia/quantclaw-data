@@ -1284,13 +1284,17 @@ def format_report(result: BacktestResult) -> str:
     return "\n".join(lines)
 
 
-def ascii_equity_curve(equity_curve: List[Tuple[datetime, float]], height: int = 10) -> str:
-    """Generate ASCII art equity curve"""
+def ascii_equity_curve(equity_curve, height: int = 10) -> str:
+    """Generate ASCII art equity curve. Accepts List[Tuple[datetime, float]] or List[float/int]."""
     
     if not equity_curve:
         return ""
     
-    values = [e[1] for e in equity_curve]
+    # Support both List[Tuple] and List[float/int]
+    if isinstance(equity_curve[0], (int, float)):
+        values = [float(v) for v in equity_curve]
+    else:
+        values = [e[1] for e in equity_curve]
     min_val = min(values)
     max_val = max(values)
     

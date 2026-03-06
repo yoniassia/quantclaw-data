@@ -4,6 +4,8 @@ weekly changes, historical drawdowns, and estimate days of import coverage.
 
 Uses free EIA (Energy Information Administration) open data API.
 """
+import os
+from dotenv import load_dotenv
 
 import json
 import urllib.request
@@ -11,9 +13,13 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 
+
+# Load environment variables
+load_dotenv()
+
 EIA_API_BASE = "https://api.eia.gov/v2"
 # Free EIA API key (register at eia.gov — free tier)
-DEFAULT_API_KEY = "demo"
+DEFAULT_API_KEY = os.environ.get("DEFAULT_API_KEY", "")
 
 SPR_SERIES = {
     "total": "PET.WCSSTUS1.W",        # Weekly US SPR stocks (thousand barrels)

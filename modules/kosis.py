@@ -19,6 +19,8 @@ No API key required for basic KOSIS data
 Author: QUANTCLAW DATA Build Agent
 Phase: 122
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -28,11 +30,15 @@ from typing import Dict, List, Optional
 import time
 
 # KOSIS API Configuration
+
+# Load environment variables
+load_dotenv()
+
 KOSIS_BASE_URL = "https://kosis.kr/openapi"
 
 # Bank of Korea ECOS API
 BOK_BASE_URL = "https://ecos.bok.or.kr/api"
-BOK_API_KEY = "sample"  # Public sample key for basic data
+BOK_API_KEY = os.environ.get("BOK_API_KEY", "")  # Public sample key for basic data
 
 # Core Korean Economic Indicators
 # KOSIS Statistical Table IDs (verified working)

@@ -20,6 +20,8 @@ Key EIA Series:
 Author: QUANTCLAW DATA Build Agent
 Phase: 170
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 import json
@@ -30,8 +32,12 @@ import time
 
 
 # EIA API Configuration
+
+# Load environment variables
+load_dotenv()
+
 EIA_API_BASE = "https://api.eia.gov/v2"
-EIA_API_KEY = ""  # Optional: Register at https://www.eia.gov/opendata/register.php
+EIA_API_KEY = os.environ.get("EIA_API_KEY", "")  # Optional: Register at https://www.eia.gov/opendata/register.php
 
 # Key Natural Gas Series
 NG_SERIES = {
@@ -131,7 +137,7 @@ def fetch_eia_series(series_key: str, start_date: Optional[str] = None,
     
     # Build API request
     params = {
-        "frequency": series_info["frequency"][0].upper(),  # W for weekly, M for monthly
+        "frequency": series_info["frequency"],  # Use full word: 'weekly' or 'monthly'
         "data[0]": "value",
         "sort[0][column]": "period",
         "sort[0][direction]": "desc",

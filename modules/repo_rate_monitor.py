@@ -19,6 +19,8 @@ Coverage: US money markets and Fed operations
 Author: QUANTCLAW DATA Build Agent
 Phase: 161
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -30,6 +32,10 @@ import time
 # ========== API CONFIGURATION ==========
 
 # NY Fed Markets API (public, no auth)
+
+# Load environment variables
+load_dotenv()
+
 NYFED_BASE_URL = "https://markets.newyorkfed.org/api"
 NYFED_ENDPOINTS = {
     'repo': '/rp/results/search.json',
@@ -39,7 +45,7 @@ NYFED_ENDPOINTS = {
 
 # FRED API for SOFR and related rates
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # FRED Series IDs for money market rates
 MONEY_MARKET_SERIES = {

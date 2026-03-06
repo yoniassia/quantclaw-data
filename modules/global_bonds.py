@@ -29,7 +29,11 @@ import time
 
 # FRED API Configuration
 FRED_API_BASE = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = os.environ.get('FRED_API_KEY', '')  # Get from environment. Register at https://fred.stlouisfed.org/
+try:
+    from modules.api_config import FRED_API_KEY as _FRED_KEY
+    FRED_API_KEY = _FRED_KEY or os.environ.get('FRED_API_KEY', '')
+except ImportError:
+    FRED_API_KEY = os.environ.get('FRED_API_KEY', '')
 
 # Global 10Y Bond Yield Series IDs (FRED)
 BOND_YIELDS_10Y = {

@@ -21,6 +21,8 @@ Monthly refresh on data release day.
 Phase: 101
 Author: QUANTCLAW DATA Build Agent
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -30,8 +32,12 @@ from typing import Dict, List, Optional
 import time
 
 # FRED API for China data (most reliable for programmatic access)
+
+# Load environment variables
+load_dotenv()
+
 FRED_API_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = ""  # Optional: set via environment or config
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Optional: set via environment or config
 
 # China Economic Indicators via FRED
 CHINA_FRED_SERIES = {

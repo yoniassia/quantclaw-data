@@ -4,11 +4,17 @@ High Yield vs Investment Grade Spread Decomposition — Analyze credit spread dy
 Decomposes the HY-IG spread into components: default risk premium, liquidity premium,
 and risk appetite indicator. Uses FRED and Yahoo Finance free data.
 """
+import os
+from dotenv import load_dotenv
 
 import json
 import urllib.request
 from datetime import datetime
 
+
+
+# Load environment variables
+load_dotenv()
 
 FRED_SERIES = {
     "BAMLH0A0HYM2": "ICE BofA US High Yield OAS",
@@ -17,7 +23,7 @@ FRED_SERIES = {
     "DFF": "Federal Funds Rate",
 }
 
-FRED_API_KEY = "DEMO_KEY"  # Replace with real key for production
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Replace with real key for production
 
 
 def get_credit_spreads(api_key: str = None) -> dict:

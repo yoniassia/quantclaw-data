@@ -7,15 +7,31 @@ times, and FRED supply chain pressure index for a composite disruption score.
 """
 
 import json
+import os
 import urllib.request
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 
 
-def get_supply_chain_pressure_index(api_key: str = "DEMO_KEY", limit: int = 60) -> dict[str, Any]:
+def _load_fred_key():
+    key = os.environ.get('FRED_API_KEY', '')
+    if not key:
+        env_path = Path(__file__).parent.parent / '.env'
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith('FRED_API_KEY='):
+                    key = line.split('=', 1)[1].strip()
+                    break
+    return key or "DEMO_KEY"
+
+_FRED_KEY = _load_fred_key()
+
+
+def get_supply_chain_pressure_index(api_key: str = _FRED_KEY, limit: int = 60) -> dict[str, Any]:
     """Fetch NY Fed Global Supply Chain Pressure Index (GSCPI) from FRED."""
     url = (
         f"{FRED_BASE}?series_id=GSCPIGLOBALDATA&api_key={api_key}"
@@ -46,7 +62,7 @@ def get_supply_chain_pressure_index(api_key: str = "DEMO_KEY", limit: int = 60) 
         return {"error": str(e)}
 
 
-def get_supplier_delivery_times(api_key: str = "DEMO_KEY", limit: int = 36) -> dict[str, Any]:
+def get_supplier_delivery_times(api_key: str = _FRED_KEY, limit: int = 36) -> dict[str, Any]:
     """ISM Manufacturing Supplier Deliveries Index — above 50 = slower deliveries."""
     url = (
         f"{FRED_BASE}?series_id=NAPMSD&api_key={api_key}"
@@ -74,7 +90,7 @@ def get_supplier_delivery_times(api_key: str = "DEMO_KEY", limit: int = 36) -> d
         return {"error": str(e)}
 
 
-def get_inventory_to_sales_ratio(api_key: str = "DEMO_KEY", limit: int = 36) -> dict[str, Any]:
+def get_inventory_to_sales_ratio(api_key: str = _FRED_KEY, limit: int = 36) -> dict[str, Any]:
     """Total Business Inventory/Sales Ratio — rising = potential glut or demand weakness."""
     url = (
         f"{FRED_BASE}?series_id=ISRATIO&api_key={api_key}"
@@ -98,7 +114,7 @@ def get_inventory_to_sales_ratio(api_key: str = "DEMO_KEY", limit: int = 36) -> 
         return {"error": str(e)}
 
 
-def get_composite_disruption_score(api_key: str = "DEMO_KEY") -> dict[str, Any]:
+def get_composite_disruption_score(api_key: str = _FRED_KEY) -> dict[str, Any]:
     """Composite supply chain disruption score combining multiple indicators."""
     gscpi = get_supply_chain_pressure_index(api_key, limit=1)
     delivery = get_supplier_delivery_times(api_key, limit=1)

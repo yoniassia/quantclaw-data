@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """earnings_calendar_enhanced — Yahoo earnings calendar. Requires yfinance. Free."""
 import os
+import json
 import time
 from datetime import datetime
 import pandas as pd
@@ -34,7 +35,6 @@ def get_data(ticker="AAPL", **kwargs):
             df = pd.DataFrame(calendar).T if calendar is not None else pd.DataFrame({"error": ["No data"]})
         cache_data = df.to_dict('records')
         with open(cache_file, 'w') as f:
-            import json
             json.dump(cache_data, f, default=str)
         return df
     except Exception as e:

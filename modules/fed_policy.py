@@ -14,6 +14,8 @@ Dot plot analysis and consensus projection tracking
 Author: QUANTCLAW DATA Build Agent
 Phase: 45
 """
+import os
+from dotenv import load_dotenv
 
 import yfinance as yf
 import requests
@@ -26,8 +28,12 @@ from bs4 import BeautifulSoup
 
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # FRED Series IDs for Fed Policy Data
 FRED_SERIES = {

@@ -5,6 +5,8 @@ Comprehensive labor market analytics combining JOLTS, ADP, NFP, initial/continui
 claims, participation rate, U-3/U-6 unemployment, and Beveridge curve analysis.
 All data from free FRED API.
 """
+import os
+from dotenv import load_dotenv
 
 import json
 import math
@@ -13,8 +15,12 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
-FRED_API_KEY = "DEMO_KEY"
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # Core labor market FRED series
 LABOR_SERIES = {

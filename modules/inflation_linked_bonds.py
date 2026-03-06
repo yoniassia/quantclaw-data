@@ -25,7 +25,9 @@ Coverage: Current yields + historical trends
 Author: QUANTCLAW DATA Build Agent
 Phase: 167
 """
+from dotenv import load_dotenv
 
+import os
 import sys
 import json
 import requests
@@ -36,8 +38,12 @@ import time
 # ========== API CONFIGURATION ==========
 
 # FRED API
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # ECB SDW API
 ECB_BASE_URL = "https://data-api.ecb.europa.eu/service/data"

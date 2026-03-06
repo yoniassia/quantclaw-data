@@ -24,6 +24,8 @@ Coverage: US structured credit markets
 Author: QUANTCLAW DATA Build Agent
 Phase: 163
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -34,8 +36,12 @@ import time
 import re
 
 # FRED API Configuration
+
+# Load environment variables
+load_dotenv()
+
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""  # Public access for basic queries
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Public access for basic queries
 
 # SEC EDGAR Configuration
 SEC_BASE_URL = "https://www.sec.gov"

@@ -21,6 +21,8 @@ Coverage: 60+ countries
 Author: QUANTCLAW DATA Build Agent
 Phase: 113
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -31,10 +33,14 @@ import time
 
 # ============ BIS API (Bank for International Settlements) ============
 # BIS provides quarterly credit statistics and credit-to-GDP gaps
+
+# Load environment variables
+load_dotenv()
+
 BIS_BASE_URL = "https://www.bis.org/statistics"
 
 # FRED API Configuration (fallback for US data)
-FRED_API_KEY = None  # Will try to read from env or use public endpoints
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Will try to read from env or use public endpoints
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
 
 # World Bank API Configuration

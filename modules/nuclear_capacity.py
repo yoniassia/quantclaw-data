@@ -4,6 +4,7 @@ Uses EIA API for monthly nuclear electricity generation/capacity.
 Proxy for global nuclear capacity trends.
 ~240 lines.
 """
+from dotenv import load_dotenv
 
 import pandas as pd
 import requests
@@ -15,6 +16,10 @@ from datetime import datetime
 from typing import Union, Dict
 from pathlib import Path
 
+
+# Load environment variables
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO, format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s')
 logger = logging.getLogger(__name__)
 
@@ -23,7 +28,7 @@ CACHE_DIR = MODULE_DIR.parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'nuclear_capacity.json'
 CACHE_AGE_HOURS = 168
 USER_AGENT = 'Mozilla/5.0 ...'
-API_KEY = 'DEMO_KEY'
+API_KEY = os.environ.get("API_KEY", "")
 BASE_URL = 'https://api.eia.gov/v2/electricity/rto/fuel-type-data/data'
 PARAMS = {
     'api_key': API_KEY,

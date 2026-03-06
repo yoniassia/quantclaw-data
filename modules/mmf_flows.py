@@ -24,7 +24,9 @@ Coverage: All SEC-registered money market funds
 Author: QUANTCLAW DATA Build Agent
 Phase: 168
 """
+from dotenv import load_dotenv
 
+import os
 import sys
 import json
 import requests
@@ -35,12 +37,16 @@ from xml.etree import ElementTree as ET
 from collections import defaultdict
 
 # SEC EDGAR API Configuration
+
+# Load environment variables
+load_dotenv()
+
 SEC_BASE_URL = "https://www.sec.gov"
 SEC_SEARCH_URL = f"{SEC_BASE_URL}/cgi-bin/browse-edgar"
 
 # FRED API for aggregate data
 FRED_BASE_URL = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = ""
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # Load FRED API key
 try:

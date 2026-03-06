@@ -20,6 +20,8 @@ CLI Commands:
 - python cli.py airline-passengers           # TSA checkpoint passenger data
 - python cli.py tourism-recovery             # Post-pandemic recovery tracker
 """
+import os
+from dotenv import load_dotenv
 
 import sys
 import json
@@ -29,9 +31,13 @@ from typing import Dict, List, Any, Optional
 import statistics
 
 # API Configuration
+
+# Load environment variables
+load_dotenv()
+
 WB_BASE = "https://api.worldbank.org/v2"
 FRED_BASE = "https://api.stlouisfed.org/fred"
-FRED_API_KEY = "your_api_key_here"  # Free from https://fred.stlouisfed.org/docs/api/api_key.html
+FRED_API_KEY = os.environ.get("FRED_API_KEY", "")  # Free from https://fred.stlouisfed.org/docs/api/api_key.html
 YAHOO_FINANCE_BASE = "https://query1.finance.yahoo.com/v8/finance/chart"
 
 # World Bank Tourism Indicators

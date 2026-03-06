@@ -4,6 +4,7 @@ EIA API v2 natural-gas/stor/wkly with DEMO_KEY.
 Working gas in storage.
 ~250 lines.
 """
+from dotenv import load_dotenv
 
 import pandas as pd
 import requests
@@ -15,6 +16,10 @@ from datetime import datetime
 from typing import Union, Dict
 from pathlib import Path
 
+
+# Load environment variables
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO, format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s')
 logger = logging.getLogger(__name__)
 
@@ -23,7 +28,11 @@ CACHE_DIR = MODULE_DIR.parent / 'cache'
 CACHE_FILE = CACHE_DIR / 'eia_natural_gas_storage.json'
 CACHE_AGE_HOURS = 168  # Weekly
 USER_AGENT = 'Mozilla/5.0 ...'
-API_KEY = 'DEMO_KEY'
+try:
+    from modules.api_config import EIA_API_KEY as _EIA_KEY
+    API_KEY = _EIA_KEY or os.environ.get("EIA_API_KEY", "") or os.environ.get("API_KEY", "")
+except ImportError:
+    API_KEY = os.environ.get("EIA_API_KEY", "") or os.environ.get("API_KEY", "")
 BASE_URL = 'https://api.eia.gov/v2/natural-gas/stor/wkly'
 PARAMS = {'api_key': API_KEY, 'frequency': 'weekly', 'data[0]': 'value', 'facets[series][]': ['NG_STO_WK']}
 TIMEOUT = 30
@@ -57,6 +66,11 @@ def fetch_data():
 
 def process_data(raw: Dict) -> pd.DataFrame:
     data_list = raw['response']['data']
+    # EIA API may return a dict (e.g. {'value': []}) instead of a list when no data
+    if isinstance(data_list, dict):
+        data_list = data_list.get('value', []) if isinstance(data_list.get('value'), list) else []
+    if not data_list:
+        return pd.DataFrame(columns=['storage_bcf', 'change_wow', 'ma_5w'])
     df = pd.DataFrame(data_list)
     df['period'] = pd.to_datetime(df['period'])
     df.set_index('period', inplace=True)

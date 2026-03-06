@@ -17,6 +17,8 @@ Form D captures:
 Author: QUANTCLAW DATA Build Agent
 Phase: 198
 """
+import os
+from dotenv import load_dotenv
 
 import requests
 from datetime import datetime, timedelta
@@ -27,6 +29,10 @@ import re
 from pathlib import Path
 
 # SEC EDGAR Configuration
+
+# Load environment variables
+load_dotenv()
+
 SEC_BASE_URL = "https://www.sec.gov"
 SEC_HEADERS = {
     "User-Agent": "QuantClaw Data quant@moneyclaw.com",
@@ -35,7 +41,7 @@ SEC_HEADERS = {
 }
 
 # Crunchbase Configuration (optional, requires API key)
-CRUNCHBASE_API_KEY = None  # Set via environment or config
+CRUNCHBASE_API_KEY = os.environ.get("CRUNCHBASE_API_KEY", "")  # Set via environment or config
 CRUNCHBASE_BASE_URL = "https://api.crunchbase.com/api/v4"
 
 # Cache directory

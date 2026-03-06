@@ -662,14 +662,17 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
         pass
 
     def _send_json(self, data, status=200):
-        body = json.dumps(data, indent=2, default=str).encode()
-        self.send_response(status)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            body = json.dumps(data, indent=2, default=str).encode()
+            self.send_response(status)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+            self.wfile.write(body)
+        except BrokenPipeError:
+            pass  # Client disconnected, don't crash
 
     def do_OPTIONS(self):
         self._send_json({})
