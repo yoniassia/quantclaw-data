@@ -111,7 +111,8 @@ def get_data(cache_days: int = 7) -> pd.DataFrame:
     if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) < cache_days * 86400:
         try:
             with open(cache_file, 'r') as f:
-                cached_df = pd.read_json(f.read(), orient='records')
+                cached_data = json.load(f)
+                cached_df = pd.DataFrame(cached_data)
             logger.info(f"Loaded cached CEE data ({len(cached_df)} rows)")
             return cached_df.tail(50)
         except Exception as e:
@@ -141,7 +142,11 @@ def summary_latest() -> pd.DataFrame:
     df = get_data()
     if df.empty:
         return df
-    latest = df.loc[df.groupby(['country', 'indicator']).date.idxmax()]
+    # Filter out rows with null dates before grouping
+    df_valid = df.dropna(subset=['date'])
+    if df_valid.empty:
+        return pd.DataFrame({'error': ['No valid dates in data']})
+    latest = df_valid.loc[df_valid.groupby(['country', 'indicator']).date.idxmax()]
     return latest.pivot(index='country', columns='indicator', values='actual').round(2)
 
 if __name__ == '__main__':

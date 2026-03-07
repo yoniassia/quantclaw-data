@@ -54,6 +54,9 @@ def fetch_csv():
 
 def process_csv(csv_text: str) -> pd.DataFrame:
     df = pd.read_csv(io.StringIO(csv_text))
+    # FRED CSV uses 'observation_date' column; normalize to 'DATE'
+    if 'observation_date' in df.columns:
+        df.rename(columns={'observation_date': 'DATE'}, inplace=True)
     df['DATE'] = pd.to_datetime(df['DATE'])
     df.set_index('DATE', inplace=True)
     df.rename(columns={'WSLB20': 'yield_pct'}, inplace=True)

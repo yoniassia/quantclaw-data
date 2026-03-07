@@ -31,8 +31,22 @@ def _fred_fetch(series_id, start, end):
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}&cosd={start_str}&coed={end_str}"
     resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
     resp.raise_for_status()
-    df = pd.read_csv(io.StringIO(resp.text), parse_dates=["DATE"], index_col="DATE")
+    df = pd.read_csv(io.StringIO(resp.text))
+    # FRED CSV may use 'DATE' or 'date' or first column as date
+    date_col = None
+    for col in df.columns:
+        if col.upper() == 'DATE':
+            date_col = col
+            break
+    if date_col is None:
+        date_col = df.columns[0]
+    df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+    df = df.set_index(date_col)
+    df.index.name = 'DATE'
     df.columns = [series_id]
+    # Convert values to numeric (FRED sometimes has '.' for missing)
+    df[series_id] = pd.to_numeric(df[series_id], errors='coerce')
+    df = df.dropna()
     return df
 
 

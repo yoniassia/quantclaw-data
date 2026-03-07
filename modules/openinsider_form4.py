@@ -74,11 +74,12 @@ class OpenInsiderTracker:
                 price = cols[8].text.strip()
                 qty = cols[9].text.strip()
                 owned = cols[10].text.strip()
-                value = cols[11].text.strip() if len(cols) > 11 else ""
+                delta_own = cols[11].text.strip() if len(cols) > 11 else ""
+                value = cols[12].text.strip() if len(cols) > 12 else ""
                 
                 # Convert value to int for filtering
                 try:
-                    value_int = int(value.replace('$', '').replace(',', '').replace('+', ''))
+                    value_int = int(value.replace('$', '').replace(',', '').replace('+', '').replace('-', ''))
                 except:
                     value_int = 0
                 
@@ -187,7 +188,7 @@ class OpenInsiderTracker:
                     'price': cols[8].text.strip(),
                     'shares': cols[9].text.strip(),
                     'shares_owned': cols[10].text.strip(),
-                    'value_usd': cols[11].text.strip() if len(cols) > 11 else ""
+                    'value_usd': cols[12].text.strip() if len(cols) > 12 else ""
                 })
             
             return pd.DataFrame(rows)
@@ -236,7 +237,7 @@ class OpenInsiderTracker:
                     'price': cols[8].text.strip(),
                     'shares': cols[9].text.strip(),
                     'shares_owned': cols[10].text.strip(),
-                    'value_usd': cols[11].text.strip() if len(cols) > 11 else ""
+                    'value_usd': cols[12].text.strip() if len(cols) > 12 else ""
                 })
             
             df = pd.DataFrame(rows)

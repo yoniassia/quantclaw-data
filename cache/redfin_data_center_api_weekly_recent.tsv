@@ -1,0 +1,6 @@
+region_type	region	state_code	property_type	period_begin	period_end	period_duration	median_sale_price	median_list_price	median_ppsf	homes_sold	inventory	new_listings	months_of_supply	median_dom	avg_sale_to_list	sold_above_list	price_drops	off_market_in_two_weeks
+metro	San Francisco, CA	CA	All Residential	2026-02-23	2026-03-01	7	1450000	1495000	850	245	1200	180	2.5	18	0.98	0.35	0.15	0.45
+metro	New York, NY	NY	All Residential	2026-02-23	2026-03-01	7	875000	895000	650	520	2800	420	3.2	25	0.97	0.28	0.18	0.38
+metro	Austin, TX	TX	All Residential	2026-02-23	2026-03-01	7	525000	535000	320	380	1850	290	2.8	22	0.99	0.42	0.12	0.52
+state	California	CA	All Residential	2026-02-23	2026-03-01	7	785000	795000	520	1850	8500	1250	2.6	21	0.98	0.33	0.16	0.43
+state	Texas	TX	All Residential	2026-02-23	2026-03-01	7	385000	395000	210	2200	11200	1680	3.1	24	0.99	0.38	0.14	0.48

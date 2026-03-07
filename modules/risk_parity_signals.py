@@ -82,7 +82,14 @@ def fetch_prices() -> pd.DataFrame:
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            data = yf.download(TICKERS, period='2y', progress=False)['Adj Close']
+            data = yf.download(TICKERS, period='2y', progress=False)
+            # yfinance >= 0.2.31 removed 'Adj Close', use 'Close' as fallback
+            if 'Adj Close' in data.columns.get_level_values(0):
+                data = data['Adj Close']
+            elif 'Close' in data.columns.get_level_values(0):
+                data = data['Close']
+            else:
+                raise ValueError(f"No price column found. Columns: {data.columns.tolist()}")
             if data.isna().all().all():
                 raise ValueError("All data NaN")
             data = data.dropna()
@@ -103,7 +110,7 @@ def compute_risk_parity_weights(prices: pd.DataFrame) -> pd.DataFrame:
     vols = returns.rolling(window=ROLLING_WINDOW).std() * ANNUALIZATION
     
     # Inverse vols, forward fill
-    inv_vols = (1 / vols).fillna(method='ffill').fillna(0)
+    inv_vols = (1 / vols).ffill().fillna(0)
     
     # Normalize weights
     weights = inv_vols.div(inv_vols.sum(axis=1), axis=0)
@@ -136,9 +143,9 @@ def get_data() -> pd.DataFrame:
         if df_result.empty:
             raise ValueError("Result DataFrame is empty")
         
-        # Validation
-        weight_cols = [col for col in df_result.columns if col.startswith('weight_')]
-        assert len(weight_cols) == len(TICKERS)
+        # Validation — columns may be weight_TICKER or TICKER_weight depending on concat key order
+        weight_cols = [col for col in df_result.columns if 'weight' in col.lower() and col != 'weight_sum']
+        assert len(weight_cols) == len(TICKERS), f"Expected {len(TICKERS)} weight cols, got {weight_cols}"
         assert (df_result['weight_sum'] - 1).abs().max() < 0.01
         
         save_cache(df_result)

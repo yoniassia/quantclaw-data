@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-03-07 03:34:26",
+  "source": "mock_data",
+  "currency": "USD",
+  "unit": "per 40ft container",
+  "routes": {
+    "FBX01": {
+      "route": "FBX01",
+      "rate": 1915,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": 1.96,
+      "change_30d_pct": 14.04,
+      "route_info": {
+        "name": "China/East Asia \u2192 US West Coast",
+        "origin": "China/East Asia",
+        "destination": "US West Coast",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from major Chinese ports to US West Coast"
+      }
+    },
+    "FBX02": {
+      "route": "FBX02",
+      "rate": 2467,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": 1.37,
+      "change_30d_pct": 14.58,
+      "route_info": {
+        "name": "China/East Asia \u2192 US East Coast",
+        "origin": "China/East Asia",
+        "destination": "US East Coast",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from major Chinese ports to US East Coast"
+      }
+    },
+    "FBX03": {
+      "route": "FBX03",
+      "rate": 1605,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": -0.32,
+      "change_30d_pct": 7.83,
+      "route_info": {
+        "name": "China/East Asia \u2192 Europe",
+        "origin": "China/East Asia",
+        "destination": "Europe",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from major Chinese ports to European ports"
+      }
+    },
+    "FBX11": {
+      "route": "FBX11",
+      "rate": 967,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": -4.45,
+      "change_30d_pct": -11.48,
+      "route_info": {
+        "name": "Europe \u2192 US East Coast",
+        "origin": "Europe",
+        "destination": "US East Coast",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from European ports to US East Coast"
+      }
+    },
+    "FBX12": {
+      "route": "FBX12",
+      "rate": 735,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": -3.07,
+      "change_30d_pct": 4.65,
+      "route_info": {
+        "name": "US West Coast \u2192 Asia",
+        "origin": "US West Coast",
+        "destination": "Asia",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from US West Coast to Asian ports"
+      }
+    },
+    "FBX13": {
+      "route": "FBX13",
+      "rate": 885,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": 0.33,
+      "change_30d_pct": 9.91,
+      "route_info": {
+        "name": "Europe \u2192 Asia",
+        "origin": "Europe",
+        "destination": "Asia",
+        "container": "40ft",
+        "description": "Spot rates for 40ft containers from European ports to Asian ports"
+      }
+    },
+    "FBX_GLOBAL": {
+      "route": "FBX_GLOBAL",
+      "rate": 1489,
+      "currency": "USD",
+      "date": "2026-03-07",
+      "change_7d_pct": -0.3,
+      "change_30d_pct": 2.6,
+      "route_info": {
+        "name": "Global Container Index",
+        "origin": "Global",
+        "destination": "Global",
+        "container": "Composite",
+        "description": "Weighted global average of major container shipping routes"
+      }
+    }
+  }
+}

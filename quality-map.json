@@ -1,0 +1,2046 @@
+{
+  "stockanalysis_com": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Analyst consensus + price targets. Real AAPL/MSFT data. HTML parsing."
+  },
+  "defillama_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "DeFi TVL/yields/chains/stablecoins via api.llama.fi"
+  },
+  "sec_edgar_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "SEC filings, insider tx, XBRL facts, real AAPL data"
+  },
+  "finnhub_bond_yield_curve": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Bond yields, economic calendar, crypto candles, needs FINNHUB_API_KEY"
+  },
+  "quantpipe_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ML factor API, domain not yet live, structured error handling ready"
+  },
+  "eu_ets_carbon_market_api": {
+    "score": "B",
+    "functions": 11,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Carbon prices, auction calendar, compliance metrics. TradingEconomics scraping fallback."
+  },
+  "fred_bond_series_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Corporate bonds, credit spreads, MBS rates, HY/IG dynamics. Real FRED data."
+  },
+  "neoxchange_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Market microstructure via Yahoo Finance. Bid/ask during market hours only."
+  },
+  "port_of_los_angeles_signal_dashboard": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Container TEUs, monthly volumes, YoY comparison. Real scraped data back to 1995."
+  },
+  "oecd_stats_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "GDP, inflation, policy rates, unemployment, BCI. Sample data, ready for live swap."
+  },
+  "openinsider_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Insider buys, cluster buys, large trades. Real scraped data (256+ txns)."
+  },
+  "watttime_marginal_emissions_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ESG grid emissions, 8 US regions, free tier 10k req/mo."
+  },
+  "unctad_maritime_transport_data_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Shipping connectivity, port calls, fleet stats, freight rates. Fallback data."
+  },
+  "financial_modeling_prep_fmp_earnings_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Earnings calendar, income statements, EPS surprises, analyst estimates."
+  },
+  "twelve_data_global_markets_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "OHLCV, quotes, technicals, 97 exchanges. Live AAPL price confirmed."
+  },
+  "polygonio_options": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Options chain/snapshot/aggregates/trades/quotes. Needs POLYGON_API_KEY."
+  },
+  "sec_edgar_13f_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "13F filings, manager search, CIK lookup. Real Berkshire data. Holdings parsing limited."
+  },
+  "dune_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Dune Analytics queries, DEX volume, whale txns. Needs DUNE_API_KEY."
+  },
+  "google_earth_engine": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "NDVI, land use, nighttime lights, temperature via NASA POWER fallback."
+  },
+  "alpha_vantage_global_markets_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Global quotes, FX, crypto, economic indicators. Rate-limited 25/day free."
+  },
+  "bea_economic_accounts_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "GDP, personal income, trade balance, NIPA tables. Needs BEA_API_KEY (free)."
+  },
+  "b3_brazil_market_data_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "IBOVESPA, PETR4/VALE3 quotes, sector performance. Real data via Yahoo Finance."
+  },
+  "alpha_vantage_real_estate": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "REIT quotes/fundamentals, 40+ tickers, 10 subsectors. Needs AV API key."
+  },
+  "alphavantagefx": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "FX intraday/daily/weekly/monthly + real-time rates. Needs AV API key."
+  },
+  "fred_api_for_fixed_income_series": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Treasury yields, credit spreads, mortgage rates, SOFR, fed funds. All real data."
+  },
+  "orderflow_free_feed": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Crypto order flow via Binance public API. Real BTC/ETH data, no key needed."
+  },
+  "fred_api": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "52 fixed income series \u2014 corporate spreads, swaps, CP, mortgage, SLOOS. Needs FRED_API_KEY."
+  },
+  "nasdaq_data_link_fundamentals": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Company fundamentals via Nasdaq/Quandl. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "portwatch_api": {
+    "score": "A",
+    "functions": 10,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "IMF PortWatch \u2014 port data, vessel tracking, congestion. ArcGIS Hub, no key."
+  },
+  "itc_trade_map_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "International trade stats via UN Comtrade. Sample data, needs API key for live."
+  },
+  "finnhub_institutional_profile": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Institutional holders, fund holdings, ownership summary. Needs FINNHUB_API_KEY."
+  },
+  "fiscaldata_treasury": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "US Treasury data \u2014 debt, interest rates, exchange rates, spending. No key, real data."
+  },
+  "biopharm_pipeline": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "FDA calendar, clinical trials, drug pipeline via ClinicalTrials.gov. Real data."
+  },
+  "imf_data": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "IMF WEO \u2014 GDP, inflation, unemployment, 190+ countries. Real forecasts to 2030."
+  },
+  "exchangeratehost": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "FX rates via Frankfurter/ECB. Conversion, time series, fluctuation. No key."
+  },
+  "finnhub_stock_news_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Company/market news + sentiment. 245 AAPL articles, live data."
+  },
+  "finnhub_etf_flows_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ETF holdings/profile/sector/country exposure. Free tier 403, needs premium."
+  },
+  "alpha_vantage_earnings_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Earnings history, calendar, surprises, income statements. Real IBM data."
+  },
+  "nasdaq_data_link_zillow": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Housing data with smart FRED fallback. Real median home prices."
+  },
+  "bank_of_japan_time_series_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "BOJ policy rate, yield curve, monetary base via FRED. 4/5 working."
+  },
+  "polygonio_ticker_news": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Ticker news for NLP/sentiment via Polygon.io. Real AAPL articles, demo key works."
+  },
+  "sec_apiio": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "SEC insider trades, 13F holdings, filing search via free EDGAR EFTS. Real data."
+  },
+  "biopharmcatalyst_pipeline_database": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "FDA catalysts, PDUFA dates, drug pipeline. Mock fallback for Cloudflare-protected site."
+  },
+  "finnhub_emerging_markets_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "EM stocks \u2014 India/China/Brazil. Search works, quote limited to US on free tier."
+  },
+  "iex_cloud_treasury_rates_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Treasury rates with IEX/FRED/synthetic fallback. 11 maturities, yield curve analysis."
+  },
+  "planet_labs_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Satellite imagery search, basemap tiles (no key), scene metadata. Alt data."
+  },
+  "fundflow_api_by_quantdatahub": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ETF fund flows \u2014 SPY/QQQ/IWM inflows/outflows, category breakdown."
+  },
+  "nse_india_free_api": {
+    "score": "A",
+    "functions": 13,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "13 funcs! NSE India \u2014 RELIANCE quotes, NIFTY 50, options, bulk/block deals. No key."
+  },
+  "open_earth_foundation_climate_dataset_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Climate/ESG \u2014 emissions, carbon pricing, transition risk. 73 data sources, 356K records."
+  },
+  "stocktwits_sentiment_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Social sentiment, trending symbols. Real AAPL/TSLA data. No auth."
+  },
+  "eia_open_data_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Crude oil, natural gas, petroleum inventories, electricity. Live EIA data."
+  },
+  "finnhub_etf_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ETF holdings/profile/sector/country. Needs premium Finnhub key."
+  },
+  "nasdaq_data_link_emerging_markets_datasets": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "NSE/BSE/HKEX/SSE stocks. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "coingecko_api": {
+    "score": "A",
+    "functions": 9,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Crypto prices, trending, DeFi, OHLC. BTC $68K live. No key needed."
+  },
+  "world_bank_open_data_api": {
+    "score": "A",
+    "functions": 9,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "GDP, unemployment, inflation, 190+ countries. US $28.75T GDP live."
+  },
+  "financial_modeling_prep_api": {
+    "score": "B",
+    "functions": 9,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Earnings, financials, DCF, quotes. Demo key disabled, needs free signup."
+  },
+  "imf_economic_data_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "IMF IFS/WEO \u2014 GDP, inflation, BoP, fiscal. SDMX timeout issues."
+  },
+  "bts_freight": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "US freight indicators, border crossings, modal comparison. Live BTS data."
+  },
+  "moralis_web3_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Web3 wallet tokens/txns/NFTs/DeFi. 9 EVM chains. Needs MORALIS_API_KEY."
+  },
+  "biopharmcatalyst_pipeline_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "FDA/PDUFA catalysts with scraping fallback. API down, regex-based."
+  },
+  "nasdaq_data_link_etf_datasets": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ETF flows, AUM, sector flows. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "cboe_livevol_data_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "VIX data working via CBOE CDN. P/C ratio guidance mode."
+  },
+  "nasdaq_data_link_earnings_estimates": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Earnings estimates/revisions/surprises. Needs API key."
+  },
+  "alpha_vantage_commodities_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "10 commodities \u2014 WTI, Brent, natgas, gold, copper, wheat. CLI included."
+  },
+  "zillow_research_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "ZHVI, ZORI, inventory. Hawaii $820K, LA $944K. CSV parsing."
+  },
+  "climatiq_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Carbon emissions \u2014 electricity, flights, vehicles. 10 categories."
+  },
+  "finnhub_options_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-06",
+    "builder": "NightBuilder",
+    "notes": "Options chain/puts/calls/summary. Needs premium Finnhub."
+  },
+  "polygon_io_options": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options contracts, aggregates, ATM finder. AAPL chain working."
+  },
+  "bls_public_data_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Unemployment 4.4%, NFP 158K, CPI 325. 40+ BLS series. Live data."
+  },
+  "finnhub_stock_ownership_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "118 AAPL insider txns, 196 TSLA. Live data without premium key."
+  },
+  "tiingo_etf_flows_dataset": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ETF flows/prices/metadata. Needs TIINGO_API_KEY (free 50K/mo)."
+  },
+  "eodhd_government_bonds": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "30+ bond tickers, yield curves, spreads. Needs EODHD_API_KEY."
+  },
+  "finnhub_institutional_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "118 AAPL insider txns, MSPR sentiment. Real SEC Form 4 data."
+  },
+  "alpha_vantage_treasury_yields": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Treasury yields + spread analysis. Needs AV API key."
+  },
+  "sec_edgar_open_data_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "XBRL facts, company filings, ticker\u2192CIK. AAPL $379B assets live."
+  },
+  "trading_economics_commodity_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Commodities \u2014 energy/metals/agriculture. Sample data, API-ready."
+  },
+  "ici_fund_flows_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Weekly fund flows scraped from ICI. $-19B equity outflows live."
+  },
+  "sentinel_hub": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Satellite NDVI, crop monitoring, land cover, economic activity proxies."
+  },
+  "polygonio": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Stock OHLCV, snapshots, splits, dividends, grouped daily. Needs POLYGON_API_KEY."
+  },
+  "fred_housing_data_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Case-Shiller, housing starts, mortgage rates, delinquency, inventory dashboard."
+  },
+  "polygon_options_aggregates": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options OHLCV, chain snapshots, contract search. Needs POLYGON_API_KEY."
+  },
+  "iex_cloud": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Stock quotes, earnings, institutional ownership, market movers. Needs IEX_TOKEN."
+  },
+  "finnhub_news_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "249 AAPL articles, 100 market news. Sentiment premium-only."
+  },
+  "treasury_fiscal_data_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US debt $38.87T, interest rates, treasury statement. No key needed."
+  },
+  "financial_modeling_prep_ipo_calendar": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "IPO calendar, confirmed IPOs, prospectus, stats. Needs FMP_API_KEY."
+  },
+  "covalent_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "On-chain data 200+ chains. Token balances, txns, NFTs. Needs COVALENT_API_KEY."
+  },
+  "bureau_of_transportation_statistics_freight_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Freight flows, transborder, port TEU, transport index. Free Socrata API."
+  },
+  "bank_of_canada_rates_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USD/CAD 1.3613, policy rate 2.25%. Bank of Canada Valet API, no key."
+  },
+  "open_energy_data_initiative_oedi_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Utility rates, solar/wind resource. Needs free OPENEI_API_KEY."
+  },
+  "currencyfreaks_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FX rates + volatility + cross-rates. Frankfurter.app fallback, no key needed."
+  },
+  "urbanmetrics_housing_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Case-Shiller, inventory, rental yields. 16 cities. FRED fallback, real data."
+  },
+  "eurostat_international_trade_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EU trade balance, partners, products. EU27-US \u20ac197.6B surplus. No key."
+  },
+  "sec_edgar_api_v2": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "XBRL + filings + insider trades. AAPL $379B assets live."
+  },
+  "bank_of_england_statistical_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BoE bank rate 3.75%, GBP/USD 1.34. Scraping + free APIs fallback."
+  },
+  "morningstar_fund_flow_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fund flows by category. Mock data with TODO markers for scraping."
+  },
+  "trading_economics_bond_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US Treasury yields via Yahoo Finance. 2s10s +56.3bps. Free."
+  },
+  "vesselfinder_ais_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Vessel tracking, port congestion, shipping rates. Structured mock data."
+  },
+  "imf_portwatch": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Port congestion, chokepoints, 15 ports. Sample data, needs API auth."
+  },
+  "shortvolume_com": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FINRA short volume \u2014 AAPL 37.88%, squeeze scores. Real CDN data."
+  },
+  "un_comtrade_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA imports $3.17T. Trade data for 20 economies. Free, no key."
+  },
+  "sec_edgar_company_facts_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "XBRL facts \u2014 AAPL $359B assets, 503 concepts. Free SEC API."
+  },
+  "fiscaldata_treasury_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US debt $38.87T, cash balance, interest, revenue. Free."
+  },
+  "finnhub_institutional_profile_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider transactions \u2014 22 AAPL txns, sentiment analysis. Free tier."
+  },
+  "world_bank_wits_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "WITS trade metadata \u2014 country search, trade summaries. Free."
+  },
+  "polygonio_options_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options chains, greeks, contracts. AAPL calls working. Snapshot needs higher tier."
+  },
+  "finnhub_ipo_calendar_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "93 recent IPOs, Q1 2026 177 IPOs $25.1B raised. Live Finnhub data."
+  },
+  "forge_private_market_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Private market prices, secondary txns. Needs FORGE_API_KEY."
+  },
+  "imf_data_api": {
+    "score": "A",
+    "functions": 14,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "GDP, inflation, debt, BOP. 260+ countries, forecasts to 2030. Free DataMapper API."
+  },
+  "sec_edgar_next_api": {
+    "score": "A",
+    "functions": 14,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL revenue $265.6B, 10-K/10-Q, XBRL, full-text search. Free."
+  },
+  "ratesapiio": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FX rates via Frankfurter.app fallback. EUR/USD 0.865. 30 currencies. No key."
+  },
+  "electricity_maps_carbon_intensity_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "352 global grid zones. Zones endpoint free, carbon data needs key."
+  },
+  "opensky_network_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "5905 aircraft tracked live. Regional queries. Free anonymous API."
+  },
+  "freightos_baltic_index_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "7 FBX routes, caching. Mock data, needs FREIGHTOS_API_KEY for live."
+  },
+  "lunarcrush_social_insights": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Crypto social sentiment, galaxy score. Needs LUNARCRUSH_API_KEY."
+  },
+  "eodhd_news_and_sentiment": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL news + sentiment. Real-time articles. EODHD free tier 100/day."
+  },
+  "etfstream_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPY $698B AUM, QQQ comparison. yfinance-backed, no key."
+  },
+  "alpha_vantage_institutional_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "13F holders, insider txns, fund holdings. Needs ALPHA_VANTAGE_API_KEY."
+  },
+  "boj_open_data_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BOJ rates, monetary base, CPI, JPY FX. 14 series mapped. Placeholder data."
+  },
+  "biopharmcatalyst_pipeline_dataset": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FDA calendar, PDUFA dates, pipeline search. Sample data (Cloudflare block)."
+  },
+  "alpha_vantage_fund_flows": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fund overview, ETF profiles, search. Needs real AV key for full data."
+  },
+  "alpha_vantage_fundamentals_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "IBM $240B mktcap, PE 23.05. Income/balance/cash flow. AV free tier."
+  },
+  "alpha_vantage_earnings_calendar_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "8624 upcoming earnings, CSV parsing. 870 reporting in 7 days."
+  },
+  "cboe_open_data_feed": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "VIX 9137 records current, put/call ratios, 4.4M+ daily volume. Free."
+  },
+  "alpaca_market_data_api": {
+    "score": "A",
+    "functions": 12,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BTC $67,981 live. Crypto free, stocks need ALPACA_API_KEY."
+  },
+  "finnhub": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Core module: AAPL $257.46 quote, $3.78T mktcap, peers, candles. Free tier."
+  },
+  "world_bank_commodity_price_data_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "44 commodities mapped. Pink Sheet Excel not parsed yet. Structure ready."
+  },
+  "global_trade_helpdesk_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Tariffs, trade stats, HS codes. USA-CHN $536B imports. Sample data."
+  },
+  "climate_trace_emissions_dataset_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Global CO2 425.6BT. 11 sectors, live Climate TRACE v6 API. Free."
+  },
+  "eurostat_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EU inflation -0.3%, GDP growth. 15+ datasets. Free Eurostat JSON API."
+  },
+  "sec_edgar_xbrl_api_v2": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL facts, Revenues concept, 11x 10-K filings. Free SEC API."
+  },
+  "finnhub_options_chain_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options chain, ATM, volume analysis. Needs paid Finnhub ($99/mo)."
+  },
+  "finnhub_bond_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Bond profile/price/yield curve. 403 on bond endpoints \u2014 needs paid tier."
+  },
+  "ilostat_bulk_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA unemployment 3.64%, global LFPR 61.2%. Real SDMX API. Free."
+  },
+  "fao_food_price_index_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FAO food index 172.8, meat/cereals/oils. Real CSV data. Free."
+  },
+  "sec_api_sec_apiio": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EFTS full-text search. IPO S-1s, 8-K filings, insider Form 4. Free SEC."
+  },
+  "planet_labs_free_tier_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "NASA FIRMS fires, NDVI vegetation, nighttime lights proxy. Free."
+  },
+  "alpha_vantage_emerging_markets_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EM stock quotes, FX, indices. BSE/NSE with real AV key. Demo works."
+  },
+  "quantearnings_feed": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Earnings calendar, surprise, revisions. Yahoo fallback, needs auth."
+  },
+  "un_comtrade_transport_mode_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Trade by transport mode, partners. Mock data, needs COMTRADE_API_KEY."
+  },
+  "finage_bond_data_feed": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US10Y 4.13%. FRED+Treasury.gov fallback. Credit spreads. Free."
+  },
+  "finstatements_free_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL ROE 151.9%, MSFT net $101.8B. SEC EDGAR XBRL. Free."
+  },
+  "nasdaq_data_link_13f_dataset": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Berkshire 45 13F filings, BlackRock search. SEC EDGAR. Free."
+  },
+  "twelve_data_bond_feed": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US10Y 4.19%, 13 maturities. Treasury.gov XML. Recession signals."
+  },
+  "earningsestimate_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL $292 consensus (40 analysts). yfinance+AV fallback."
+  },
+  "climate_trace_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "24 sectors. API returns 404, needs registration/auth."
+  },
+  "spacinsider_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPAC IPOs, mergers, redemptions. Sample data, API unavailable."
+  },
+  "pboc_macro_indicators_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "China LPR 3.45%, FX reserves $3.247T, M2. Cached Feb 2026 data."
+  },
+  "token_terminal_api": {
+    "score": "B",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "DeFi revenue, TVL, P/E. 100+ protocols. Needs paid API key."
+  },
+  "eia_open_data_api_v2": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "WTI $71.13, Brent $77.24. 17 EIA v2 routes. Real data."
+  },
+  "alpha_vantage_forex": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "999 EUR/USD data points 2007-present. Daily/weekly/monthly/intraday."
+  },
+  "flowtrack_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPY $3.2B inflow. 28 ETFs, 14 sectors. Yahoo Finance-backed."
+  },
+  "climate_trace_emissions_dataset": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA 5270 MT, China 12667 MT CO2e. 15 sectors. Cached 2023 data."
+  },
+  "census_bureau_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CA 39.3M pop, NY 8.4M housing units. Real Census data. Free."
+  },
+  "cftc_commitments_of_traders_data": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "GOLD 699K OI, net long 159K. Extreme positioning z-scores. Free."
+  },
+  "openfigi_fundamentals_feed": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL\u2192BBG000B9XRY4. Bloomberg FIGI mapping. Free, no key."
+  },
+  "climatiq_emission_factors_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "40K+ emission factors. Needs free CLIMATIQ_API_KEY."
+  },
+  "finnhub_fundamentals_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL P/E 25.54, ROE 29.65%, 54 analysts. Free tier."
+  },
+  "covalent_unified_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Multi-chain: balances, txns, NFTs, holders. Needs COVALENT_API_KEY."
+  },
+  "eosda_crop_monitoring_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "NDVI, soil moisture, crop calendar. Needs EOSDA_API_KEY."
+  },
+  "electricity_maps_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Carbon intensity, power breakdown. Needs ELECTRICITY_MAPS_TOKEN."
+  },
+  "copernicus_sentinel_hub": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Sentinel-2 catalog, NDVI availability. 50 Iowa images. Free OData."
+  },
+  "bitquery_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "DEX trades, token transfers, 40+ chains. Needs BITQUERY_API_KEY."
+  },
+  "verra_registry_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "VCS carbon credit projects. API needs auth (406). Structure ready."
+  },
+  "costar_market_analytics_feed": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CRE vacancy, cap rates. FRED fallback 333 data points 1949-2026."
+  },
+  "openfigi": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL\u2192BBG000B9XRY4. Batch mapping 100 IDs. Free, no key."
+  },
+  "sec_edgar_fulltext_search": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "100 AI filings, 10-K search. Real EFTS API. Free."
+  },
+  "alchemy_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Ethereum JSON-RPC. Blocks, balances, gas. Needs ALCHEMY_API_KEY."
+  },
+  "shortvolumecom": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Short volume, squeeze detection. Sample data (JS-rendered site)."
+  },
+  "fed_h15_selected_interest_rates": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fed funds, SOFR, Treasury curve 1M-30Y. Fallback data."
+  },
+  "eod_historical_data_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL fundamentals, 80+ dividends, EOD prices. Demo token works."
+  },
+  "quantex_micro_api": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "L2 order book, liquidity score, price impact. Synthetic data framework."
+  },
+  "microtick_dataset": {
+    "score": "B",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Tick data analysis, VWAP, realized vol. 50K sample ticks."
+  },
+  "usda_quick_stats_api": {
+    "score": "C",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Crop/livestock data. Needs USDA_API_KEY (401 without)."
+  },
+  "usda_agricultural_market_news_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "340+ reports today. Livestock/dairy/grain PDFs. Free, no key."
+  },
+  "deribit_crypto_options_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BTC $67,504, 1012 options, IV 64.36%. Greeks, chains, vol surface. Free."
+  },
+  "eurostat_economic_api_update": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EU HICP 162.4, France CPI. SDMX-JSON. Free 1000 queries/day."
+  },
+  "aqueduct_water_risk_atlas_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Water stress, drought, flood risk. CartoDB SQL API. ESG data. Free."
+  },
+  "bts_freight_analysis_framework_dataset": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "FAF5.7.1 freight data. CSV parsing framework. Needs manual download."
+  },
+  "imf_global_macro_api_update": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US GDP 2.1%, Japan 0.6%. WEO forecasts 200+ countries. Free."
+  },
+  "exchangerate_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "166 currencies, real-time. open.er-api.com. No key needed."
+  },
+  "frankfurter_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ECB rates, 30 currencies, historical time series. Free."
+  },
+  "deribit_crypto_derivatives_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BTC $67,680, 1012 options, P/C 0.70, funding rate. Free public API."
+  },
+  "world_bank_data_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US GDP $28.7T, inflation 2.95%, 217 countries. Free."
+  },
+  "usda_agricultural_commodity_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Cattle $242.57/cwt, pork cutout $98.27, hogs $91.69. 149 reports. Free."
+  },
+  "spacinsider_data_feed": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPAC mergers, IPOs, redemptions. Demo data, API unavailable."
+  },
+  "flipside_crypto_api": {
+    "score": "C",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "On-chain SQL queries. API endpoint DNS fail. Structure ready."
+  },
+  "commrealdata_api": {
+    "score": "C",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CRE lease/cap rates. API doesn't exist yet. Structure ready."
+  },
+  "alpaca_markets_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Stock/crypto bars, quotes, snapshots. Needs ALPACA_API_KEY."
+  },
+  "sentinel_hub_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "NDVI, crop health, land cover. OAuth2. Needs SH credentials."
+  },
+  "redfin_data_center_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Metro housing: prices, inventory, DOM, sale-to-list. 1.6GB S3 TSV. Free."
+  },
+  "wto_stats_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA $1.7T exports, CHN > USA > DEU ranking. Merchandise/services trade."
+  },
+  "carbon_interface_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Carbon emissions estimates: electricity, flights, vehicles. Free 1000 req/mo."
+  },
+  "cepii_baci_dataset_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Bilateral trade flows, USA/CHN $5.4B, dependency scores. Sample data."
+  },
+  "china_a_shares_open_data_feed": {
+    "score": "A",
+    "functions": 12,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SSE Composite, CSI 300, Moutai \u00a51402, BYD \u00a593.62. Yahoo Finance."
+  },
+  "polygon_io_ticker_news": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL news + sentiment. Polygon.io free tier."
+  },
+  "ratesapi_io": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ECB FX rates via Frankfurter. EUR 0.865, GBP 0.750. Free."
+  },
+  "alpha_vantage_institutional_holdings": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "13F holdings, insider trades. Needs ALPHAVANTAGE_API_KEY."
+  },
+  "financial_modeling_prep_fmp_insider_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider trades, sentiment. Needs FMP_API_KEY."
+  },
+  "global_commodity_insights_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Brent $73.83, Gold $2648. World Bank Pink Sheet. 23 commodities. Free."
+  },
+  "openexchangerates": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "173 currencies. Free 1000 req/mo. Currencies list works without key."
+  },
+  "newsapi_financial_filter": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Financial/stock/crypto news + sentiment. Needs NEWSAPI_KEY."
+  },
+  "us_treasury_fiscal_data_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US debt $38.87T, interest rates 3.72%. No key needed."
+  },
+  "bankofenglandrates": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "BoE bank rate 4.75%, yield curve. API endpoint changed Mar 2026."
+  },
+  "openinsider": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider buys/sells/clusters. AAPL 12 trades. Scraper, no key needed."
+  },
+  "world_bank_infrastructure_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "22 indicators, USA/CHN/India infra data. Free."
+  },
+  "bts_transportation_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "TX border 984K crossings, Laredo #1 truck port. Socrata API. Free."
+  },
+  "rba_economic_data_feed": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AUS cash rate 4.35%, CPI, bonds. Sample data, RBA CSV 404."
+  },
+  "swiss_national_bank_data_feed": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CHF/USD 0.773, SARON -0.076%, SNB assets 886.5B CHF. Free."
+  },
+  "freddie_mac_house_price_index_dataset": {
+    "score": "A",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "National HPI 297.85, CA 334.49. 400+ metros. Free CSV."
+  },
+  "fhfa_house_price_index_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "National/state/metro HPI. Synthetic data, FHFA CSV URLs changed."
+  },
+  "esma_regulatory_data_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "255M+ instruments, 174M+ derivatives. Solr API. Free, no key."
+  },
+  "crunchbase_venture_data_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "VC company search, funding rounds. Needs CRUNCHBASE_API_KEY."
+  },
+  "pitchbook_open_vc_dataset": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "VC deals Q4 2025: 3915 deals $51.3B. AI sector $34.2B. Market estimates."
+  },
+  "aishub_data_feed": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Vessel tracking AIS data. 125K vessels, port traffic. Sample data."
+  },
+  "cnn_fear_and_greed_index": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fear 26.7/100. 7 components. CNN production API. Free."
+  },
+  "twelve_data_options_chain": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options chain, expirations, max pain. Needs TWELVE_DATA_API_KEY."
+  },
+  "fed_h_15_selected_interest_rates": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fed funds 3.64%, 10Y 4.13%, SOFR 3.66%. FRED API. Free."
+  },
+  "trading_economics_api": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Bonds, indices, FX, commodities. Guest auth. Free tier 3 items/endpoint."
+  },
+  "oecd_data_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "GDP, unemployment, CPI, CLI. SDMX-JSON. API slow, 24h cache."
+  },
+  "us_census_bureau_housing_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CA 14.5M units, HI $808K median. 52 states/territories. Free, no key."
+  },
+  "tiingo_fundamentals_api": {
+    "score": "C",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Statements, daily metrics, earnings. Demo key 403. Needs TIINGO_API_KEY."
+  },
+  "financial_modeling_prep_bonds": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Treasury rates, credit ratings, corp bonds. Needs FMP_API_KEY."
+  },
+  "financial_modeling_prep_ipo_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "IPO calendar, confirmed, prospectus. Needs FMP_API_KEY."
+  },
+  "alpha_vantage_international_stocks": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Intl stocks (NSE, SA, A-shares). IBM $258.85 via demo. Rate limited."
+  },
+  "fed_soma_holdings": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Fed $6.25T holdings, Treasuries $4.23T, MBS $2.01T. Free NY Fed API."
+  },
+  "fred_housing_api": {
+    "score": "A",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "30Y mortgage 6.00%, Case-Shiller 332.04, median $405K. 36 FRED series."
+  },
+  "baker_hughes_rig_count": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US rig count ~585, 82% oil. Simulated data, needs scraper/FRED key."
+  },
+  "aaii_sentiment_survey": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Bullish 33.1%, Bearish 35.5%. Scraped real data. AAII rate limits."
+  },
+  "census_bureau_housing_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ACS housing units, homeownership, median values. Some endpoints 404."
+  },
+  "eodhd_fundamentals_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL $3.78T mktcap, P/E 32.88, 130 quarters earnings. Demo token works."
+  },
+  "finnhub_bond_yield_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Yield curve, govt/corp bonds. 403 on free tier (premium only)."
+  },
+  "open_energy_data_initiative_oedi_dataset": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Solar, electricity prices (NYC $0.23/kWh), 414 GW renewable. NREL API."
+  },
+  "nasdaq_data_link_corporate_credit": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "HY spread 3.0 bps, IG 0.82 bps. RISK_ON signal. FRED fallback. Free."
+  },
+  "the_graph_api": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "DeFi subgraphs. Service migrated 2024 to paid network. Placeholder."
+  },
+  "eurostat_web_services": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EU27 employment 70.4%, DE unemployment 3.1%, GDP 0.4%. SDMX API."
+  },
+  "eurostat_transport_statistics_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "DE road freight 26 data points 1999-2024, EU freight index. Free."
+  },
+  "who_clinical_trials": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ClinicalTrials.gov API v2. Drug pipelines, recruiting trials. Free."
+  },
+  "usgs_earthexplorer": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "42 earthquakes M5+, M7.1 Malaysia. Potomac 4.14ft. Real-time USGS."
+  },
+  "us_census_bureau_international_trade_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Jan 2024: $160B exports, $254B imports, $-93.5B balance. Free."
+  },
+  "sentiment_investor_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Stock sentiment, trending, hype score. API unreachable. Framework ready."
+  },
+  "renewable_energy_market_feed": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA solar 205 TWh, wind 434 TWh. Solar CAGR 26.5%. OWID data. Free."
+  },
+  "clinicaltrialsgov_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Pfizer pipeline score 53, diabetes 1032 trials. ClinicalTrials.gov v2. Free."
+  },
+  "us_census_bureau_building_permits": {
+    "score": "C",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Census BPS API returns 404. Framework with FRED alternatives documented."
+  },
+  "nasdaq_data_link_earnings_revisions": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EPS revisions, momentum. Needs API key."
+  },
+  "twelve_data_stock_sentiment": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Stock sentiment, trending scan 15 stocks. Needs TWELVE_DATA_API_KEY."
+  },
+  "etfgi_flows_dataset": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPY $4.4B inflow, QQQ $682M. Monthly flows, sector breakdown. Simulated."
+  },
+  "finnhub_earnings_estimates_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EPS/revenue estimates, analyst recs. 403 on free tier (paid only)."
+  },
+  "quiver_quantitative_wallstreetbets": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "WSB mentions TSLA 3, AAPL 2. Reddit JSON fallback. Real data."
+  },
+  "twelve_data_sentiment_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL sentiment -6.87 Neutral. Quant proxy from price/vol. Demo key works."
+  },
+  "alpha_vantage_api": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EM forex, market movers, 16 exchange status. IBM $258.85. Demo key."
+  },
+  "finnhub_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EM quotes, 7 countries, 13 FX pairs, IPO calendar. AAPL $257.46."
+  },
+  "nasdaq_data_link_etf_flows": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ETF flows 33 ETFs, 11 sectors. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "reddit_data_api_finance_sentiment_feed": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "23 tickers from WSB. Reddit JSON API, no OAuth. Real-time."
+  },
+  "alpha_vantage_insider_sentiment_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider sentiment, transactions, buy/sell ratio. AV API."
+  },
+  "sec_market_structure_data_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Market metrics, order types, hidden rate. SEC.gov rate limiting IP."
+  },
+  "stockgeist_social_sentiment": {
+    "score": "A",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Social sentiment, trending, anomalies. Smart sample data fallback."
+  },
+  "trading_economics_bond_yields_api": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Bond yields, spreads, global 10Y. Needs paid TE API key."
+  },
+  "tiingo": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EOD prices, crypto, news. Demo token 403. Needs TIINGO_API_KEY."
+  },
+  "us_census_bureau_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CA 39.4M pop, MD $98K income, 14.4M housing units. Free, no key."
+  },
+  "world_bank_labor_dataset_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "US unemp 4.2%, JP 2.5%, 10 major economies. Free WB API."
+  },
+  "bank_of_canada_bond_data_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "CAD 3M T-bill 2.18%, 10Y 3.62%, policy rate 2.50%. Valet API. Free."
+  },
+  "oecd_labour_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "USA 90 data points, JPN LFPR 99.5%. SDMX 2.1 parser. Free."
+  },
+  "openbb_sdk": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "OpenBB wrapper. Graceful fallback without SDK installed."
+  },
+  "gluonts": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Time series forecasting. Statistical fallback. MAE 3.08, MAPE 2.59%."
+  },
+  "nasdaq_data_link_fundamentals_dataset": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SHARADAR fundamentals. Paid subscription required ($200+/mo)."
+  },
+  "twelve_data_etf_api": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ETF quotes, profiles, holdings. Needs TWELVE_DATA_API_KEY."
+  },
+  "finrl_library": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "6 RL algos (PPO, A2C, DDPG). Real data via yfinance. No key needed."
+  },
+  "tradier_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options chains, quotes, tick data. Needs Tradier sandbox token."
+  },
+  "nasdaq_data_link_fixed_income": {
+    "score": "C",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Treasury yields, bill rates, spreads. 403 without API key."
+  },
+  "vettafi_etf_flows_tracker": {
+    "score": "B",
+    "functions": 6,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ETF flows, sector rotation, 15+ ETFs. Historical estimates."
+  },
+  "bank_of_japan_open_data_portal": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "JPY/USD 156.09, policy rate 1.0%. BOJ HTML scraping. Live data."
+  },
+  "oecd_economic_indicators_dataset": {
+    "score": "B",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "GDP, inflation, CLI. SDMX-JSON. Real data but API very slow (20-30s)."
+  },
+  "twelve_data_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Quotes, time series, FX. Demo key blocked. Needs TWELVE_DATA_API_KEY."
+  },
+  "twelve_data_options_api": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Options chain, expirations. Needs TWELVE_DATA_API_KEY."
+  },
+  "nasdaq_data_link_institutional_holdings": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "13F holdings, ownership changes. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "financial_modeling_prep_fmp_income_statement_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Income statements, ratios, key metrics. Needs FMP_API_KEY."
+  },
+  "financial_modeling_prep_insider_api": {
+    "score": "C",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider trades, roster. 401 without FMP_API_KEY."
+  },
+  "openei_api": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Utility rates 500+ structures Con Edison. EV stations needs NREL key. Free."
+  },
+  "eurostat_demographics_api": {
+    "score": "A",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "DE pop 66yrs, unemployment 842 records, migration 16.9K records. Free."
+  },
+  "openetf_flows_feed": {
+    "score": "B",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ETF flows. openetf.org unreachable, synthetic fallback with realistic patterns."
+  },
+  "nvca_venture_monitor_dataset": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "VC deal activity, exits, fundraising. NVCA.org blocks scraping, sample data."
+  },
+  "imf_climate_linked_macro_dataset": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Climate-adjusted GDP via IMF WEO. Climate-specific endpoints use mock data."
+  },
+  "pubchem_compound_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "NIH chemistry DB. Aspirin C9H8O4, Ibuprofen C13H18O2. No key. Pharma/biotech analysis."
+  },
+  "world_bank_climate_change_data_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "25 climate indicators, USA 17.4t CO2e/cap, GBR 1220mm precip. Free WB API."
+  },
+  "nasa_power_api": {
+    "score": "A",
+    "functions": 7,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Solar/temp/wind/precip. NYC -0.11C Jan 2026. Global 1981-present. No key."
+  },
+  "openweathermap_climate_api": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "6 commodities x 14 regions risk analysis. Needs OPENWEATHERMAP_API_KEY."
+  },
+  "lightcast_open_skills_api": {
+    "score": "B",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Labor market skills taxonomy. Needs LIGHTCAST_CLIENT_ID/SECRET."
+  },
+  "twelve_data": {
+    "score": "A",
+    "functions": 11,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "AAPL $257.46, EUR/USD 1.16, BTC $67.8K. Demo key works. 800 calls/day free."
+  },
+  "nasdaq_data_link_bonds": {
+    "score": "A",
+    "functions": 4,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "10Y Treasury 4.13%, curve normal, 2Y-10Y spread 0.56%. FRED fallback. Free."
+  },
+  "eurostat_comext_api": {
+    "score": "A",
+    "functions": 13,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "EU trade 88.7K data points, EU-US 115 pts. 500 queries/day. Free."
+  },
+  "copernicus_data_space_ecosystem": {
+    "score": "A",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Sentinel-1/2/3/5P satellite catalog. Crop/shipping/ESG alt-data. Free OData."
+  },
+  "eodhd_insider_data_api": {
+    "score": "B",
+    "functions": 5,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Insider trades, 13F. Demo key 404 on insider endpoints. Needs paid EODHD."
+  }
+}

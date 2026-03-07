@@ -1,6 +1,9 @@
 """
 Zacks Rank Scraper — Zacks.com Stock Research Ranks (1-5 Scale)
 
+⚠️ STATUS: NON-FUNCTIONAL - Zacks.com uses Incapsula/Imperva anti-bot protection
+   that blocks automated scraping. Requires paid API access or enterprise partnership.
+
 Scrapes Zacks Rank for popular US stocks from individual stock quote pages.
 Zacks Rank: 1 (Strong Buy) > 2 (Buy) > 3 (Hold) > 4 (Sell) > 5 (Strong Sell)
 Data source: https://www.zacks.com/stock/quote/[TICKER]
@@ -9,6 +12,9 @@ Use cases:
 - Stock screening by rank
 - Portfolio rank average
 - Rank changes tracking
+
+LIMITATION: As of March 2026, Zacks.com blocks automated access via Incapsula.
+Alternative: Use Zacks Investment Research API (paid) or find alternative rank data.
 """
 
 import requests
@@ -22,6 +28,13 @@ import re
 from typing import Optional, List, Dict
 import sys
 import argparse
+
+# Try to import playwright for anti-bot bypass
+try:
+    from playwright.sync_api import sync_playwright
+    PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    PLAYWRIGHT_AVAILABLE = False
 
 CACHE_DIR = Path(__file__).parent.parent / "cache" / "zacks_rank"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -55,7 +68,79 @@ def get_session():
     })
     return session
 
-def fetch_single_rank(session, ticker, retries=3):
+def fetch_single_rank_playwright(ticker, retries=2):
+    """Fetch Zacks rank using Playwright to bypass anti-bot protection"""
+    if not PLAYWRIGHT_AVAILABLE:
+        return None
+    
+    url = f"{BASE_URL}/stock/quote/{ticker}"
+    
+    for attempt in range(retries):
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context(
+                    user_agent=USER_AGENTS[0],
+                    viewport={'width': 1920, 'height': 1080}
+                )
+                page = context.new_page()
+                page.goto(url, wait_until='networkidle', timeout=30000)
+                
+                # Wait a bit for JavaScript to load
+                page.wait_for_timeout(2000)
+                
+                html = page.content()
+                browser.close()
+                
+                soup = BeautifulSoup(html, 'html.parser')
+                
+                # Look for Zacks Rank
+                rank_elem = soup.find('span', class_=re.compile(r'rank.*num|rank.*value', re.I)) or \
+                            soup.find('div', attrs={'data-zacks-rank': True}) or \
+                            soup.find(string=re.compile(r'Zacks Rank #\d{1,2}'))
+                
+                if rank_elem:
+                    rank_text = rank_elem.parent.get_text(strip=True) if not rank_elem.name == 'span' else rank_elem.get_text(strip=True)
+                    rank_match = re.search(r'#(\d{1,2})', rank_text)
+                    rank_num = int(rank_match.group(1)) if rank_match else None
+                    rank_desc_match = re.search(r'\(([^)]+)\)', rank_text)
+                    rank_desc = rank_desc_match.group(1) if rank_desc_match else ''
+                    
+                    price_elem = soup.find('span', class_=re.compile(r'last-price|current-price', re.I))
+                    price = price_elem.get_text(strip=True).replace('$', '').replace(',', '') if price_elem else None
+                    price = float(price) if price else None
+                    
+                    change_elem = soup.find('span', class_=re.compile(r'change|net-change', re.I))
+                    change = change_elem.get_text(strip=True) if change_elem else ''
+                    
+                    return {
+                        'ticker': ticker,
+                        'rank': rank_num,
+                        'rank_description': rank_desc,
+                        'rank_text': rank_text,
+                        'price': price,
+                        'change_pct': change,
+                        'scrape_time': datetime.now().isoformat(),
+                        'url': url,
+                        'method': 'playwright'
+                    }
+                
+                time.sleep(1)
+        except Exception as e:
+            if attempt < retries - 1:
+                time.sleep(2 ** attempt)
+    
+    return None
+
+def fetch_single_rank(session, ticker, retries=3, use_playwright=True):
+    """Fetch Zacks rank. Will try Playwright first if available to bypass anti-bot protection."""
+    # Try Playwright first if available and requested
+    if use_playwright and PLAYWRIGHT_AVAILABLE:
+        result = fetch_single_rank_playwright(ticker, retries=2)
+        if result:
+            return result
+        # If Playwright failed, fall back to requests
+    
     url = f"{BASE_URL}/stock/quote/{ticker}"
     for attempt in range(retries):
         try:

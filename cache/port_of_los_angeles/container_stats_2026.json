@@ -1,0 +1,139 @@
+{
+  "year": 2026,
+  "monthly": [
+    {
+      "month": "January",
+      "loaded_imports": 421593.75,
+      "empty_imports": 115.0,
+      "total_imports": 421708.75,
+      "loaded_exports": 104297.0,
+      "empty_exports": 285994.5,
+      "total_exports": 390291.5,
+      "total_teus": 812000.25,
+      "yoy_change_pct": "-12.14%"
+    },
+    {
+      "month": "February",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "March",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "April",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "May",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "June",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "July",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "August",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "September",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "October",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "November",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    },
+    {
+      "month": "December",
+      "loaded_imports": 0.0,
+      "empty_imports": 0.0,
+      "total_imports": 0.0,
+      "loaded_exports": 0.0,
+      "empty_exports": 0.0,
+      "total_exports": 0.0,
+      "total_teus": 0.0,
+      "yoy_change_pct": ""
+    }
+  ],
+  "last_updated": "2026-03-06T20:22:38.094195",
+  "source": "https://www.portoflosangeles.org/Business/statistics/Container-Statistics/Historical-TEU-Statistics-2026"
+}

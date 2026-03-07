@@ -1,0 +1,28 @@
+[
+  {
+    "filing_date": "2025-09-15 06:01:19",
+    "trade_date": "2025-09-12",
+    "ticker": "TSLA",
+    "company": "Musk Elon",
+    "insider_name": "CEO, 10%",
+    "title": "P - Purchase",
+    "trade_type": "$389.28",
+    "price": "+2,568,732",
+    "qty": "509,362,808",
+    "owned": "+1%",
+    "value": "+$999,959,042"
+  },
+  {
+    "filing_date": "2025-04-28 18:45:17",
+    "trade_date": "2025-04-24",
+    "ticker": "TSLA",
+    "company": "Gebbia Joseph",
+    "insider_name": "Dir",
+    "title": "P - Purchase",
+    "trade_type": "$256.31",
+    "price": "+4,000",
+    "qty": "4,111",
+    "owned": ">999%",
+    "value": "+$1,025,232"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "country": "EU",
+    "carbon_tax_usd": null,
+    "ets_price_usd": 85.2,
+    "policy_type": "ETS",
+    "last_updated": "2026-03-07T13:05:40.395322"
+  },
+  {
+    "country": "CAN",
+    "carbon_tax_usd": 50.0,
+    "ets_price_usd": null,
+    "policy_type": "Carbon Tax",
+    "last_updated": "2026-03-07T13:05:40.395330"
+  },
+  {
+    "country": "CHN",
+    "carbon_tax_usd": null,
+    "ets_price_usd": 9.5,
+    "policy_type": "ETS",
+    "last_updated": "2026-03-07T13:05:40.395332"
+  },
+  {
+    "country": "GBR",
+    "carbon_tax_usd": 24.0,
+    "ets_price_usd": null,
+    "policy_type": "Carbon Tax",
+    "last_updated": "2026-03-07T13:05:40.395334"
+  }
+]
