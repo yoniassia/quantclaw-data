@@ -1,627 +1,678 @@
-#!/usr/bin/env python3
 """
-Alpha Vantage Global Markets API — Phase 701
-Real-time and historical market data for global stocks, forex, crypto, and economic indicators.
+Alpha Vantage Global Markets — International indices, forex, and cross-listed equities.
 
-Data includes:
-- Global stock quotes (NSE/BSE India, Shanghai/Shenzhen China, NYSE, NASDAQ, etc.)
-- Daily and intraday OHLCV price data
-- Foreign exchange rates
-- Cryptocurrency ratings and quotes
-- Economic indicators (GDP, CPI, inflation, unemployment, etc.)
-- Global symbol search
+Access global market data including international stock exchanges, currency exchange
+rates, forex pairs, and market status across worldwide exchanges. Covers emerging
+markets (India, Brazil, China, Japan) and developed markets (US, UK, Germany).
 
-Usage:
-  python modules/alpha_vantage_global_markets_api.py --quote AAPL
-  python modules/alpha_vantage_global_markets_api.py --search Tesla
-  python modules/alpha_vantage_global_markets_api.py --forex EUR USD
-  python modules/alpha_vantage_global_markets_api.py --indicator GDP --json
-
-Requires: ALPHA_VANTAGE_API_KEY environment variable
-Free tier: 25 requests/day, 5 requests/minute
-Data source: https://www.alphavantage.co/
+Source: https://www.alphavantage.co/documentation/
+Update frequency: Real-time (5 min delay on free tier)
+Category: Quant Tools & ML
+Free tier: 5 API calls/min, 500 calls/day (requires free API key)
 """
 
-import requests
-import argparse
 import json
-import sys
-import os
+import urllib.request
+import urllib.parse
 from datetime import datetime
-from typing import Dict, Any, Optional, List
-import time
+from typing import Any, Optional
 
-class AlphaVantageAPI:
-    """Alpha Vantage Global Markets API client"""
-    
-    BASE_URL = "https://www.alphavantage.co/query"
-    
-    def __init__(self, api_key: Optional[str] = None):
-        """
-        Initialize Alpha Vantage API client.
-        
-        Args:
-            api_key: API key (defaults to ALPHA_VANTAGE_API_KEY env var)
-        """
-        self.api_key = api_key or os.getenv('ALPHA_VANTAGE_API_KEY')
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'QuantClaw-DataModule/1.0'
-        })
-        self.last_request_time = 0
-        self.min_request_interval = 12  # 5 req/min = 12 sec between requests
-    
-    def _rate_limit(self):
-        """Enforce rate limiting (5 requests per minute)"""
-        elapsed = time.time() - self.last_request_time
-        if elapsed < self.min_request_interval:
-            sleep_time = self.min_request_interval - elapsed
-            time.sleep(sleep_time)
-        self.last_request_time = time.time()
-    
-    def _make_request(self, params: Dict[str, str]) -> Dict[str, Any]:
-        """
-        Make API request with error handling.
-        
-        Returns dict with data or error message
-        """
-        if not self.api_key:
-            return {
-                'error': 'Missing API key',
-                'message': 'Set ALPHA_VANTAGE_API_KEY environment variable',
-                'retry_after': None
-            }
-        
-        # Rate limiting
-        self._rate_limit()
-        
-        params['apikey'] = self.api_key
-        
-        try:
-            response = self.session.get(self.BASE_URL, params=params, timeout=15)
-            response.raise_for_status()
-            
-            data = response.json()
-            
-            # Check for API error messages
-            if 'Error Message' in data:
-                return {
-                    'error': 'API error',
-                    'message': data['Error Message'],
-                    'retry_after': None
-                }
-            
-            if 'Note' in data:
-                # Rate limit hit
-                return {
-                    'error': 'Rate limit exceeded',
-                    'message': data['Note'],
-                    'retry_after': 60  # Retry after 1 minute
-                }
-            
-            if 'Information' in data:
-                return {
-                    'error': 'API information',
-                    'message': data['Information'],
-                    'retry_after': None
-                }
-            
+
+API_BASE = "https://www.alphavantage.co/query"
+# Demo key for testing - replace with real key for production
+DEMO_KEY = "demo"
+
+# Major global indices mapped to their Alpha Vantage symbols
+GLOBAL_INDICES = {
+    "SP500": {"symbol": "SPY", "name": "S&P 500 (ETF proxy)", "exchange": "NYSE", "country": "US"},
+    "NASDAQ": {"symbol": "QQQ", "name": "NASDAQ 100 (ETF proxy)", "exchange": "NASDAQ", "country": "US"},
+    "DOW": {"symbol": "DIA", "name": "Dow Jones (ETF proxy)", "exchange": "NYSE", "country": "US"},
+    "FTSE100": {"symbol": "ISF.LON", "name": "FTSE 100 (ETF proxy)", "exchange": "LSE", "country": "UK"},
+    "DAX": {"symbol": "DAX.DEX", "name": "DAX 40", "exchange": "XETRA", "country": "Germany"},
+    "NIKKEI": {"symbol": "1321.TYO", "name": "Nikkei 225 (ETF proxy)", "exchange": "TSE", "country": "Japan"},
+    "HANGSENG": {"symbol": "2800.HKG", "name": "Hang Seng (ETF proxy)", "exchange": "HKEX", "country": "Hong Kong"},
+    "SENSEX": {"symbol": "SENSEX.BSE", "name": "BSE Sensex", "exchange": "BSE", "country": "India"},
+    "NIFTY50": {"symbol": "NIFTY50.NS", "name": "Nifty 50", "exchange": "NSE", "country": "India"},
+    "ASX200": {"symbol": "STW.AX", "name": "ASX 200 (ETF proxy)", "exchange": "ASX", "country": "Australia"},
+    "CAC40": {"symbol": "CAC.PAR", "name": "CAC 40", "exchange": "Euronext Paris", "country": "France"},
+    "IBOVESPA": {"symbol": "BOVA11.SAO", "name": "Ibovespa (ETF proxy)", "exchange": "B3", "country": "Brazil"},
+    "TSX": {"symbol": "XIU.TRT", "name": "TSX 60 (ETF proxy)", "exchange": "TSX", "country": "Canada"},
+    "KOSPI": {"symbol": "069500.KRX", "name": "KOSPI (ETF proxy)", "exchange": "KRX", "country": "South Korea"},
+}
+
+
+def _api_request(params: dict) -> dict[str, Any]:
+    """
+    Internal helper for Alpha Vantage API requests.
+
+    Args:
+        params: Query parameters dict (function, symbol, etc.)
+
+    Returns:
+        Parsed JSON response as dict
+    """
+    url = f"{API_BASE}?{urllib.parse.urlencode(params)}"
+    try:
+        with urllib.request.urlopen(url, timeout=15) as response:
+            data = json.loads(response.read().decode())
+
+            if "Error Message" in data:
+                return {"error": data["Error Message"]}
+
+            if "Note" in data:
+                return {"error": "API rate limit exceeded", "note": data["Note"]}
+
+            if "Information" in data:
+                return {"error": data["Information"]}
+
             return data
-            
-        except requests.RequestException as e:
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def get_market_status(
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get current open/close status of major global stock exchanges.
+
+    Args:
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with list of exchanges and their open/close status
+
+    Example:
+        >>> status = get_market_status()
+        >>> for mkt in status.get('markets', []):
+        ...     print(mkt['region'], mkt['market_type'], mkt['current_status'])
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "MARKET_STATUS",
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    markets = data.get("markets", [])
+    parsed = []
+    for m in markets:
+        parsed.append({
+            "market_type": m.get("market_type"),
+            "region": m.get("region"),
+            "primary_exchanges": m.get("primary_exchanges"),
+            "local_open": m.get("local_open"),
+            "local_close": m.get("local_close"),
+            "current_status": m.get("current_status"),
+            "notes": m.get("notes"),
+        })
+
+    return {
+        "count": len(parsed),
+        "markets": parsed,
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def get_forex_rate(
+    from_currency: str,
+    to_currency: str,
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get real-time exchange rate between two currencies.
+
+    Args:
+        from_currency: Source currency code (e.g., 'USD', 'EUR', 'BTC')
+        to_currency: Target currency code (e.g., 'JPY', 'GBP', 'INR')
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with exchange rate, bid/ask prices
+
+    Example:
+        >>> rate = get_forex_rate('USD', 'JPY')
+        >>> print(rate.get('exchange_rate'), rate.get('bid_price'))
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "CURRENCY_EXCHANGE_RATE",
+        "from_currency": from_currency,
+        "to_currency": to_currency,
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    rate_data = data.get("Realtime Currency Exchange Rate", {})
+    if not rate_data:
+        return {"error": "No data returned", "from": from_currency, "to": to_currency}
+
+    return {
+        "from_currency": rate_data.get("1. From_Currency Code"),
+        "from_name": rate_data.get("2. From_Currency Name"),
+        "to_currency": rate_data.get("3. To_Currency Code"),
+        "to_name": rate_data.get("4. To_Currency Name"),
+        "exchange_rate": float(rate_data.get("5. Exchange Rate", 0)),
+        "last_refreshed": rate_data.get("6. Last Refreshed"),
+        "timezone": rate_data.get("7. Time Zone"),
+        "bid_price": float(rate_data.get("8. Bid Price", 0)),
+        "ask_price": float(rate_data.get("9. Ask Price", 0)),
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def get_forex_daily(
+    from_symbol: str,
+    to_symbol: str,
+    outputsize: str = "compact",
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get daily historical forex data for a currency pair.
+
+    Args:
+        from_symbol: Source currency code (e.g., 'EUR')
+        to_symbol: Target currency code (e.g., 'USD')
+        outputsize: 'compact' (100 days) or 'full' (20+ years)
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with daily OHLC forex data
+
+    Example:
+        >>> data = get_forex_daily('EUR', 'USD')
+        >>> print(data.get('count'), data.get('prices')[0])
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "FX_DAILY",
+        "from_symbol": from_symbol,
+        "to_symbol": to_symbol,
+        "outputsize": outputsize,
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    time_series = data.get("Time Series FX (Daily)", {})
+    if not time_series:
+        return {"error": "No data returned", "pair": f"{from_symbol}/{to_symbol}"}
+
+    prices = []
+    for date_str, values in time_series.items():
+        prices.append({
+            "date": date_str,
+            "open": float(values.get("1. open", 0)),
+            "high": float(values.get("2. high", 0)),
+            "low": float(values.get("3. low", 0)),
+            "close": float(values.get("4. close", 0)),
+        })
+
+    prices.sort(key=lambda x: x["date"], reverse=True)
+
+    meta = data.get("Meta Data", {})
+    return {
+        "from_symbol": meta.get("2. From Symbol"),
+        "to_symbol": meta.get("3. To Symbol"),
+        "last_refreshed": meta.get("5. Last Refreshed"),
+        "count": len(prices),
+        "prices": prices,
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def get_forex_intraday(
+    from_symbol: str,
+    to_symbol: str,
+    interval: str = "5min",
+    outputsize: str = "compact",
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get intraday forex data at specified intervals.
+
+    Args:
+        from_symbol: Source currency code (e.g., 'EUR')
+        to_symbol: Target currency code (e.g., 'USD')
+        interval: '1min', '5min', '15min', '30min', '60min'
+        outputsize: 'compact' (latest 100) or 'full' (trailing month)
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with intraday OHLC forex data
+
+    Example:
+        >>> data = get_forex_intraday('EUR', 'USD', interval='15min')
+        >>> print(data.get('count'))
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "FX_INTRADAY",
+        "from_symbol": from_symbol,
+        "to_symbol": to_symbol,
+        "interval": interval,
+        "outputsize": outputsize,
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    ts_key = f"Time Series FX (Intraday)"
+    time_series = data.get(ts_key, {})
+    if not time_series:
+        return {"error": "No data returned", "pair": f"{from_symbol}/{to_symbol}"}
+
+    prices = []
+    for ts, values in time_series.items():
+        prices.append({
+            "timestamp": ts,
+            "open": float(values.get("1. open", 0)),
+            "high": float(values.get("2. high", 0)),
+            "low": float(values.get("3. low", 0)),
+            "close": float(values.get("4. close", 0)),
+        })
+
+    prices.sort(key=lambda x: x["timestamp"], reverse=True)
+
+    meta = data.get("Meta Data", {})
+    return {
+        "from_symbol": meta.get("2. From Symbol"),
+        "to_symbol": meta.get("3. To Symbol"),
+        "interval": meta.get("4. Interval"),
+        "last_refreshed": meta.get("5. Last Refreshed"),
+        "count": len(prices),
+        "prices": prices,
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def get_global_index_quote(
+    index_key: str,
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get real-time quote for a major global index via ETF proxy.
+
+    Args:
+        index_key: Key from GLOBAL_INDICES (e.g., 'SP500', 'NIKKEI', 'DAX')
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with index price data and metadata
+
+    Example:
+        >>> quote = get_global_index_quote('SP500')
+        >>> print(quote.get('index_name'), quote.get('price'))
+    """
+    key = apikey or DEMO_KEY
+
+    index_info = GLOBAL_INDICES.get(index_key.upper())
+    if not index_info:
+        return {
+            "error": f"Unknown index key: {index_key}",
+            "available_indices": list(GLOBAL_INDICES.keys())
+        }
+
+    data = _api_request({
+        "function": "GLOBAL_QUOTE",
+        "symbol": index_info["symbol"],
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    quote = data.get("Global Quote", {})
+    if not quote:
+        return {"error": "No data returned", "index": index_key}
+
+    return {
+        "index_key": index_key,
+        "index_name": index_info["name"],
+        "exchange": index_info["exchange"],
+        "country": index_info["country"],
+        "symbol": quote.get("01. symbol"),
+        "price": float(quote.get("05. price", 0)),
+        "volume": int(quote.get("06. volume", 0)),
+        "change": float(quote.get("09. change", 0)),
+        "change_percent": quote.get("10. change percent", "0%").rstrip('%'),
+        "open": float(quote.get("02. open", 0)),
+        "high": float(quote.get("03. high", 0)),
+        "low": float(quote.get("04. low", 0)),
+        "previous_close": float(quote.get("08. previous close", 0)),
+        "latest_trading_day": quote.get("07. latest trading day"),
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def list_global_indices() -> dict[str, Any]:
+    """
+    List all available global index keys and their metadata.
+
+    Returns:
+        dict with list of available indices
+
+    Example:
+        >>> indices = list_global_indices()
+        >>> for idx in indices['indices']:
+        ...     print(idx['key'], idx['name'], idx['country'])
+    """
+    indices = []
+    for key, info in GLOBAL_INDICES.items():
+        indices.append({
+            "key": key,
+            "symbol": info["symbol"],
+            "name": info["name"],
+            "exchange": info["exchange"],
+            "country": info["country"]
+        })
+
+    return {
+        "count": len(indices),
+        "indices": indices,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+def get_global_index_daily(
+    index_key: str,
+    outputsize: str = "compact",
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get daily historical data for a global index via ETF proxy.
+
+    Args:
+        index_key: Key from GLOBAL_INDICES (e.g., 'NIKKEI', 'FTSE100')
+        outputsize: 'compact' (100 days) or 'full' (20+ years)
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with daily OHLCV data for the index proxy
+
+    Example:
+        >>> data = get_global_index_daily('DAX')
+        >>> print(data.get('count'), data.get('prices')[0])
+    """
+    key = apikey or DEMO_KEY
+
+    index_info = GLOBAL_INDICES.get(index_key.upper())
+    if not index_info:
+        return {
+            "error": f"Unknown index key: {index_key}",
+            "available_indices": list(GLOBAL_INDICES.keys())
+        }
+
+    data = _api_request({
+        "function": "TIME_SERIES_DAILY",
+        "symbol": index_info["symbol"],
+        "outputsize": outputsize,
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    time_series = data.get("Time Series (Daily)", {})
+    if not time_series:
+        return {"error": "No data returned", "index": index_key}
+
+    prices = []
+    for date_str, values in time_series.items():
+        prices.append({
+            "date": date_str,
+            "open": float(values.get("1. open", 0)),
+            "high": float(values.get("2. high", 0)),
+            "low": float(values.get("3. low", 0)),
+            "close": float(values.get("4. close", 0)),
+            "volume": int(values.get("5. volume", 0))
+        })
+
+    prices.sort(key=lambda x: x["date"], reverse=True)
+
+    meta = data.get("Meta Data", {})
+    return {
+        "index_key": index_key,
+        "index_name": index_info["name"],
+        "exchange": index_info["exchange"],
+        "country": index_info["country"],
+        "symbol": meta.get("2. Symbol"),
+        "last_refreshed": meta.get("3. Last Refreshed"),
+        "count": len(prices),
+        "prices": prices,
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+def get_listing_status(
+    state: str = "active",
+    exchange: Optional[str] = None,
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get list of active or delisted stocks from US exchanges.
+
+    Args:
+        state: 'active' or 'delisted'
+        exchange: Filter by exchange (e.g., 'NYSE', 'NASDAQ', 'AMEX') or None for all
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with list of listed/delisted securities
+
+    Example:
+        >>> listings = get_listing_status(state='active')
+        >>> print(listings.get('count'))
+    """
+    key = apikey or DEMO_KEY
+
+    params = {
+        "function": "LISTING_STATUS",
+        "state": state,
+        "apikey": key
+    }
+
+    url = f"{API_BASE}?{urllib.parse.urlencode(params)}"
+
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            content = response.read().decode()
+
+            # This endpoint returns CSV
+            lines = content.strip().split('\n')
+            if len(lines) < 2:
+                return {"error": "No data returned", "state": state}
+
+            headers = lines[0].split(',')
+            listings = []
+            for line in lines[1:]:
+                values = line.split(',')
+                if len(values) >= len(headers):
+                    row = dict(zip(headers, values))
+                    if exchange and row.get("exchange", "").upper() != exchange.upper():
+                        continue
+                    listings.append(row)
+
             return {
-                'error': 'HTTP error',
-                'message': str(e),
-                'retry_after': None
+                "state": state,
+                "exchange_filter": exchange,
+                "count": len(listings),
+                "listings": listings[:100],  # Cap at 100 for response size
+                "total_available": len(listings),
+                "timestamp": datetime.now().isoformat()
             }
-        except json.JSONDecodeError as e:
-            return {
-                'error': 'JSON decode error',
-                'message': str(e),
-                'retry_after': None
-            }
-        except Exception as e:
-            return {
-                'error': 'Unknown error',
-                'message': str(e),
-                'retry_after': None
-            }
-    
-    def get_global_quote(self, symbol: str) -> Dict[str, Any]:
-        """
-        Get real-time quote for any global ticker.
-        
-        Args:
-            symbol: Stock symbol (e.g., 'AAPL', 'RELIANCE.BSE', '600519.SHH')
-        
-        Returns:
-            Dict with quote data:
-            {
-                'symbol': str,
-                'open': float,
-                'high': float,
-                'low': float,
-                'price': float,
-                'volume': int,
-                'latest_trading_day': str,
-                'previous_close': float,
-                'change': float,
-                'change_percent': str,
-                'timestamp': str
-            }
-        """
-        params = {
-            'function': 'GLOBAL_QUOTE',
-            'symbol': symbol.upper()
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'symbol': symbol, 'retry_after': result.get('retry_after')}
-        
-        if 'Global Quote' not in result:
-            return {'error': 'Invalid response', 'message': 'No quote data found', 'symbol': symbol}
-        
-        quote = result['Global Quote']
-        
-        return {
-            'symbol': quote.get('01. symbol', symbol),
-            'open': self._parse_float(quote.get('02. open')),
-            'high': self._parse_float(quote.get('03. high')),
-            'low': self._parse_float(quote.get('04. low')),
-            'price': self._parse_float(quote.get('05. price')),
-            'volume': self._parse_int(quote.get('06. volume')),
-            'latest_trading_day': quote.get('07. latest trading day'),
-            'previous_close': self._parse_float(quote.get('08. previous close')),
-            'change': self._parse_float(quote.get('09. change')),
-            'change_percent': quote.get('10. change percent', '').replace('%', ''),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def get_daily_prices(self, symbol: str, outputsize: str = "compact") -> Dict[str, Any]:
-        """
-        Get daily OHLCV price data.
-        
-        Args:
-            symbol: Stock symbol
-            outputsize: 'compact' (100 days) or 'full' (20+ years)
-        
-        Returns:
-            Dict with:
-            {
-                'symbol': str,
-                'data': [{'date': str, 'open': float, 'high': float, 'low': float, 
-                         'close': float, 'volume': int}, ...],
-                'count': int,
-                'timestamp': str
-            }
-        """
-        params = {
-            'function': 'TIME_SERIES_DAILY',
-            'symbol': symbol.upper(),
-            'outputsize': outputsize
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'symbol': symbol, 'retry_after': result.get('retry_after')}
-        
-        if 'Time Series (Daily)' not in result:
-            return {'error': 'Invalid response', 'message': 'No daily data found', 'symbol': symbol}
-        
-        time_series = result['Time Series (Daily)']
-        
-        data = []
-        for date, values in sorted(time_series.items(), reverse=True):
-            data.append({
-                'date': date,
-                'open': self._parse_float(values.get('1. open')),
-                'high': self._parse_float(values.get('2. high')),
-                'low': self._parse_float(values.get('3. low')),
-                'close': self._parse_float(values.get('4. close')),
-                'volume': self._parse_int(values.get('5. volume'))
-            })
-        
-        return {
-            'symbol': symbol.upper(),
-            'data': data,
-            'count': len(data),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def get_intraday(self, symbol: str, interval: str = "5min") -> Dict[str, Any]:
-        """
-        Get intraday price data.
-        
-        Args:
-            symbol: Stock symbol
-            interval: '1min', '5min', '15min', '30min', '60min'
-        
-        Returns:
-            Dict with intraday data similar to daily prices
-        """
-        params = {
-            'function': 'TIME_SERIES_INTRADAY',
-            'symbol': symbol.upper(),
-            'interval': interval,
-            'outputsize': 'compact'  # Last 100 data points
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'symbol': symbol, 'retry_after': result.get('retry_after')}
-        
-        key = f'Time Series ({interval})'
-        if key not in result:
-            return {'error': 'Invalid response', 'message': f'No {interval} data found', 'symbol': symbol}
-        
-        time_series = result[key]
-        
-        data = []
-        for timestamp, values in sorted(time_series.items(), reverse=True):
-            data.append({
-                'timestamp': timestamp,
-                'open': self._parse_float(values.get('1. open')),
-                'high': self._parse_float(values.get('2. high')),
-                'low': self._parse_float(values.get('3. low')),
-                'close': self._parse_float(values.get('4. close')),
-                'volume': self._parse_int(values.get('5. volume'))
-            })
-        
-        return {
-            'symbol': symbol.upper(),
-            'interval': interval,
-            'data': data,
-            'count': len(data),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def get_forex_rate(self, from_currency: str, to_currency: str) -> Dict[str, Any]:
-        """
-        Get foreign exchange rate.
-        
-        Args:
-            from_currency: Base currency (e.g., 'USD', 'EUR')
-            to_currency: Quote currency (e.g., 'JPY', 'GBP')
-        
-        Returns:
-            Dict with:
-            {
-                'from': str,
-                'to': str,
-                'rate': float,
-                'bid': float,
-                'ask': float,
-                'timestamp': str
-            }
-        """
-        params = {
-            'function': 'CURRENCY_EXCHANGE_RATE',
-            'from_currency': from_currency.upper(),
-            'to_currency': to_currency.upper()
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'retry_after': result.get('retry_after')}
-        
-        if 'Realtime Currency Exchange Rate' not in result:
-            return {'error': 'Invalid response', 'message': 'No forex data found'}
-        
-        fx = result['Realtime Currency Exchange Rate']
-        
-        return {
-            'from': fx.get('1. From_Currency Code'),
-            'to': fx.get('3. To_Currency Code'),
-            'rate': self._parse_float(fx.get('5. Exchange Rate')),
-            'bid': self._parse_float(fx.get('8. Bid Price')),
-            'ask': self._parse_float(fx.get('9. Ask Price')),
-            'last_refreshed': fx.get('6. Last Refreshed'),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def get_crypto_rating(self, symbol: str) -> Dict[str, Any]:
-        """
-        Get cryptocurrency fundamental rating.
-        
-        Args:
-            symbol: Crypto symbol (e.g., 'BTC', 'ETH')
-        
-        Returns:
-            Dict with crypto rating data
-        """
-        params = {
-            'function': 'CRYPTO_RATING',
-            'symbol': symbol.upper()
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'symbol': symbol, 'retry_after': result.get('retry_after')}
-        
-        if 'Crypto Rating (FCAS)' not in result:
-            return {'error': 'Invalid response', 'message': 'No crypto rating found', 'symbol': symbol}
-        
-        rating = result['Crypto Rating (FCAS)']
-        
-        return {
-            'symbol': rating.get('1. symbol', symbol),
-            'name': rating.get('2. name'),
-            'fcas_rating': rating.get('3. fcas rating'),
-            'fcas_score': self._parse_int(rating.get('4. fcas score')),
-            'developer_score': self._parse_int(rating.get('5. developer score')),
-            'market_maturity_score': self._parse_int(rating.get('6. market maturity score')),
-            'utility_score': self._parse_int(rating.get('7. utility score')),
-            'last_refreshed': rating.get('8. last refreshed'),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def search_symbols(self, keywords: str) -> List[Dict[str, Any]]:
-        """
-        Search for ticker symbols globally.
-        
-        Args:
-            keywords: Search keywords (e.g., 'Tesla', 'Microsoft')
-        
-        Returns:
-            List of matching symbols:
-            [
-                {
-                    'symbol': str,
-                    'name': str,
-                    'type': str,
-                    'region': str,
-                    'currency': str,
-                    'match_score': float
-                },
-                ...
-            ]
-        """
-        params = {
-            'function': 'SYMBOL_SEARCH',
-            'keywords': keywords
-        }
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return [{'error': result['error'], 'message': result['message'], 
-                    'retry_after': result.get('retry_after')}]
-        
-        if 'bestMatches' not in result:
-            return [{'error': 'Invalid response', 'message': 'No search results found'}]
-        
-        matches = []
-        for match in result['bestMatches']:
-            matches.append({
-                'symbol': match.get('1. symbol'),
-                'name': match.get('2. name'),
-                'type': match.get('3. type'),
-                'region': match.get('4. region'),
-                'market_open': match.get('5. marketOpen'),
-                'market_close': match.get('6. marketClose'),
-                'timezone': match.get('7. timezone'),
-                'currency': match.get('8. currency'),
-                'match_score': self._parse_float(match.get('9. matchScore'))
-            })
-        
-        return matches
-    
-    def get_economic_indicator(self, function: str, interval: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Get economic indicator data (GDP, CPI, inflation, unemployment, etc.)
-        
-        Args:
-            function: Economic indicator function name
-                     (e.g., 'REAL_GDP', 'CPI', 'INFLATION', 'UNEMPLOYMENT', 
-                      'FEDERAL_FUNDS_RATE', 'TREASURY_YIELD')
-            interval: For some indicators: 'monthly', 'quarterly', 'annual'
-        
-        Returns:
-            Dict with:
-            {
-                'indicator': str,
-                'data': [{'date': str, 'value': float}, ...],
-                'count': int,
-                'timestamp': str
-            }
-        """
-        params = {
-            'function': function.upper()
-        }
-        
-        if interval:
-            params['interval'] = interval
-        
-        result = self._make_request(params)
-        
-        if 'error' in result:
-            return {'error': result['error'], 'message': result['message'], 
-                   'retry_after': result.get('retry_after')}
-        
-        # Economic indicators have 'data' key
-        if 'data' not in result:
-            return {'error': 'Invalid response', 'message': 'No economic data found', 
-                   'function': function}
-        
-        data_points = []
-        for point in result['data']:
-            data_points.append({
-                'date': point.get('date'),
-                'value': self._parse_float(point.get('value'))
-            })
-        
-        return {
-            'indicator': function,
-            'name': result.get('name', function),
-            'interval': result.get('interval'),
-            'unit': result.get('unit'),
-            'data': data_points,
-            'count': len(data_points),
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    
-    def _parse_float(self, value: Any) -> Optional[float]:
-        """Parse float from string or number"""
-        if value is None or value == '':
-            return None
-        try:
-            return float(str(value).replace(',', ''))
-        except (ValueError, TypeError):
-            return None
-    
-    def _parse_int(self, value: Any) -> Optional[int]:
-        """Parse int from string or number"""
-        if value is None or value == '':
-            return None
-        try:
-            return int(float(str(value).replace(',', '')))
-        except (ValueError, TypeError):
-            return None
+    except Exception as e:
+        return {"error": str(e), "state": state}
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Alpha Vantage Global Markets API — Real-time Global Market Data'
-    )
-    parser.add_argument('--quote', type=str, metavar='SYMBOL',
-                       help='Get real-time quote for symbol')
-    parser.add_argument('--daily', type=str, metavar='SYMBOL',
-                       help='Get daily prices for symbol')
-    parser.add_argument('--intraday', type=str, metavar='SYMBOL',
-                       help='Get intraday prices for symbol')
-    parser.add_argument('--interval', type=str, default='5min',
-                       choices=['1min', '5min', '15min', '30min', '60min'],
-                       help='Intraday interval (default: 5min)')
-    parser.add_argument('--search', type=str, metavar='KEYWORDS',
-                       help='Search for symbols by keywords')
-    parser.add_argument('--forex', nargs=2, metavar=('FROM', 'TO'),
-                       help='Get forex rate (e.g., --forex EUR USD)')
-    parser.add_argument('--crypto', type=str, metavar='SYMBOL',
-                       help='Get crypto rating (e.g., BTC, ETH)')
-    parser.add_argument('--indicator', type=str, metavar='FUNCTION',
-                       help='Get economic indicator (e.g., REAL_GDP, CPI)')
-    parser.add_argument('--json', action='store_true',
-                       help='Output raw JSON')
-    
-    args = parser.parse_args()
-    
-    api = AlphaVantageAPI()
-    
-    # Execute requested operation
-    result = None
-    
-    if args.quote:
-        result = api.get_global_quote(args.quote)
-    elif args.daily:
-        result = api.get_daily_prices(args.daily)
-    elif args.intraday:
-        result = api.get_intraday(args.intraday, args.interval)
-    elif args.search:
-        result = api.search_symbols(args.search)
-    elif args.forex:
-        result = api.get_forex_rate(args.forex[0], args.forex[1])
-    elif args.crypto:
-        result = api.get_crypto_rating(args.crypto)
-    elif args.indicator:
-        result = api.get_economic_indicator(args.indicator)
-    else:
-        parser.print_help()
-        sys.exit(1)
-    
-    # Output
-    if args.json:
-        print(json.dumps(result, indent=2))
-        return
-    
-    # Pretty print based on operation type
-    if 'error' in result:
-        print(f"\n❌ Error: {result['error']}")
-        print(f"   {result.get('message', 'Unknown error')}")
-        if result.get('retry_after'):
-            print(f"   Retry after: {result['retry_after']} seconds")
-        sys.exit(1)
-    
-    print(f"\n{'='*70}")
-    print(f"📊 Alpha Vantage Global Markets API")
-    print(f"{'='*70}\n")
-    
-    if args.quote:
-        print(f"💹 Quote: {result['symbol']}")
-        print(f"   Price:            ${result.get('price', 0):.2f}")
-        print(f"   Change:           {result.get('change', 0):+.2f} ({result.get('change_percent', '0')}%)")
-        print(f"   Open:             ${result.get('open', 0):.2f}")
-        print(f"   High:             ${result.get('high', 0):.2f}")
-        print(f"   Low:              ${result.get('low', 0):.2f}")
-        print(f"   Volume:           {result.get('volume', 0):,}")
-        print(f"   Previous Close:   ${result.get('previous_close', 0):.2f}")
-        print(f"   Trading Day:      {result.get('latest_trading_day', 'N/A')}")
-    
-    elif args.search:
-        print(f"🔍 Search Results for '{args.search}':\n")
-        for i, match in enumerate(result[:10], 1):
-            if 'error' in match:
-                continue
-            print(f"{i}. {match['symbol']} — {match['name']}")
-            print(f"   Type: {match['type']} | Region: {match['region']} | Currency: {match['currency']}")
-            print(f"   Match Score: {match.get('match_score', 0):.4f}\n")
-        print(f"\nTimestamp: {datetime.utcnow().isoformat()}")
-        print()
-        return
-    
-    elif args.forex:
-        print(f"💱 Forex Rate: {result['from']}/{result['to']}")
-        print(f"   Exchange Rate:    {result.get('rate', 0):.6f}")
-        print(f"   Bid:              {result.get('bid', 0):.6f}")
-        print(f"   Ask:              {result.get('ask', 0):.6f}")
-        print(f"   Last Refreshed:   {result.get('last_refreshed', 'N/A')}")
-    
-    elif args.crypto:
-        print(f"🪙 Crypto Rating: {result['symbol']} ({result.get('name', 'N/A')})")
-        print(f"   FCAS Rating:      {result.get('fcas_rating', 'N/A')}")
-        print(f"   FCAS Score:       {result.get('fcas_score', 0)}/1000")
-        print(f"   Developer Score:  {result.get('developer_score', 0)}")
-        print(f"   Market Maturity:  {result.get('market_maturity_score', 0)}")
-        print(f"   Utility Score:    {result.get('utility_score', 0)}")
-    
-    elif args.daily or args.intraday:
-        print(f"📈 {'Daily' if args.daily else 'Intraday'} Prices: {result['symbol']}")
-        print(f"   Data Points:      {result['count']}")
-        if result['data']:
-            latest = result['data'][0]
-            date_key = 'date' if 'date' in latest else 'timestamp'
-            print(f"\n   Latest ({latest[date_key]}):")
-            print(f"   Open:   ${latest.get('open', 0):.2f}")
-            print(f"   High:   ${latest.get('high', 0):.2f}")
-            print(f"   Low:    ${latest.get('low', 0):.2f}")
-            print(f"   Close:  ${latest.get('close', 0):.2f}")
-            print(f"   Volume: {latest.get('volume', 0):,}")
-    
-    elif args.indicator:
-        print(f"📊 Economic Indicator: {result.get('name', result['indicator'])}")
-        print(f"   Data Points:      {result['count']}")
-        if result.get('unit'):
-            print(f"   Unit:             {result['unit']}")
-        if result.get('interval'):
-            print(f"   Interval:         {result['interval']}")
-        if result['data']:
-            print(f"\n   Latest 5 readings:")
-            for point in result['data'][:5]:
-                print(f"   {point['date']}: {point.get('value', 'N/A')}")
-    
-    print(f"\nTimestamp: {result.get('timestamp', datetime.utcnow().isoformat())}")
-    print()
+def get_top_gainers_losers(
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get top gainers, losers, and most actively traded tickers (US market).
+
+    Args:
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with top gainers, losers, and most active tickers
+
+    Example:
+        >>> movers = get_top_gainers_losers()
+        >>> print(movers.get('top_gainers')[:3])
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "TOP_GAINERS_LOSERS",
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    def _parse_movers(items: list) -> list:
+        parsed = []
+        for item in items:
+            parsed.append({
+                "ticker": item.get("ticker"),
+                "price": item.get("price"),
+                "change_amount": item.get("change_amount"),
+                "change_percentage": item.get("change_percentage", "").rstrip('%'),
+                "volume": item.get("volume"),
+            })
+        return parsed
+
+    return {
+        "metadata": data.get("metadata"),
+        "last_updated": data.get("last_updated"),
+        "top_gainers": _parse_movers(data.get("top_gainers", [])),
+        "top_losers": _parse_movers(data.get("top_losers", [])),
+        "most_actively_traded": _parse_movers(data.get("most_actively_traded", [])),
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
 
 
-if __name__ == '__main__':
-    main()
+def get_crypto_exchange_rate(
+    from_currency: str,
+    to_currency: str = "USD",
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get real-time exchange rate for a cryptocurrency pair.
+
+    Args:
+        from_currency: Crypto symbol (e.g., 'BTC', 'ETH', 'SOL')
+        to_currency: Target currency (e.g., 'USD', 'EUR', 'JPY')
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with real-time crypto exchange rate
+
+    Example:
+        >>> rate = get_crypto_exchange_rate('BTC', 'USD')
+        >>> print(rate.get('exchange_rate'))
+    """
+    # Uses same endpoint as forex
+    return get_forex_rate(from_currency, to_currency, apikey)
+
+
+def get_crypto_daily(
+    symbol: str,
+    market: str = "USD",
+    apikey: Optional[str] = None
+) -> dict[str, Any]:
+    """
+    Get daily historical data for a cryptocurrency.
+
+    Args:
+        symbol: Crypto symbol (e.g., 'BTC', 'ETH')
+        market: Exchange currency (e.g., 'USD', 'EUR')
+        apikey: Alpha Vantage API key (uses demo if not provided)
+
+    Returns:
+        dict with daily OHLCV crypto data
+
+    Example:
+        >>> data = get_crypto_daily('BTC', 'USD')
+        >>> print(data.get('count'), data.get('prices')[0])
+    """
+    key = apikey or DEMO_KEY
+
+    data = _api_request({
+        "function": "DIGITAL_CURRENCY_DAILY",
+        "symbol": symbol,
+        "market": market,
+        "apikey": key
+    })
+
+    if "error" in data:
+        return data
+
+    time_series = data.get("Time Series (Digital Currency Daily)", {})
+    if not time_series:
+        return {"error": "No data returned", "symbol": symbol}
+
+    prices = []
+    for date_str, values in time_series.items():
+        prices.append({
+            "date": date_str,
+            "open": float(values.get(f"1a. open ({market})", 0)),
+            "high": float(values.get(f"2a. high ({market})", 0)),
+            "low": float(values.get(f"3a. low ({market})", 0)),
+            "close": float(values.get(f"4a. close ({market})", 0)),
+            "volume": float(values.get("5. volume", 0)),
+            "market_cap": float(values.get("6. market cap (USD)", 0)),
+        })
+
+    prices.sort(key=lambda x: x["date"], reverse=True)
+
+    meta = data.get("Meta Data", {})
+    return {
+        "symbol": meta.get("2. Digital Currency Code"),
+        "name": meta.get("3. Digital Currency Name"),
+        "market": meta.get("4. Market Code"),
+        "last_refreshed": meta.get("6. Last Refreshed"),
+        "count": len(prices),
+        "prices": prices,
+        "timestamp": datetime.now().isoformat(),
+        "raw": data
+    }
+
+
+if __name__ == "__main__":
+    print(json.dumps({
+        "module": "alpha_vantage_global_markets_api",
+        "status": "implemented",
+        "source": "https://www.alphavantage.co/documentation/",
+        "functions": [
+            "get_market_status",
+            "get_forex_rate",
+            "get_forex_daily",
+            "get_forex_intraday",
+            "get_global_index_quote",
+            "list_global_indices",
+            "get_global_index_daily",
+            "get_listing_status",
+            "get_top_gainers_losers",
+            "get_crypto_exchange_rate",
+            "get_crypto_daily"
+        ]
+    }, indent=2))

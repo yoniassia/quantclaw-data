@@ -1,482 +1,539 @@
 #!/usr/bin/env python3
 """
-Eurostat API — European Union Statistics Module
+Eurostat API — European Union macroeconomic data via Eurostat REST API.
 
-Provides comprehensive European economic, demographic, and labor market data.
-Focused on key indicators for financial and macroeconomic analysis:
-- Employment rates and labor statistics
-- GDP growth and national accounts
-- Inflation (HICP) data
-- Population demographics
-- Trade balance and external trade
-
-Source: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/
-Category: Labor & Demographics, Macroeconomics
-Free tier: True (100 calls/hour, no registration required)
-Author: QuantClaw Data NightBuilder
-Phase: NightBuilder
+Source: https://ec.europa.eu/eurostat/web/main/data/web-services
+Category: Labor & Demographics / Macroeconomics
+Free tier: true — No API key required, rate limit ~100 calls/hour
+Update frequency: Monthly/Quarterly/Annual depending on dataset
 """
 
 import requests
 import json
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 
-# Eurostat API Configuration
-EUROSTAT_BASE_URL = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
-EUROSTAT_CATALOG_URL = "https://ec.europa.eu/eurostat/api/dissemination/catalogue/1.0/datasets"
 
-# ========== DATASET REGISTRY ==========
+BASE_URL = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+TIMEOUT = 30
 
-EUROSTAT_DATASETS = {
-    'EMPLOYMENT': {
-        'lfsa_ergan': 'Employment rate by sex, age and NUTS 2 regions',
-        'lfsa_ergaed': 'Employment rate by sex, age and educational attainment level',
-        'lfsq_ergan': 'Employment rate - quarterly data',
-    },
-    'GDP': {
-        'namq_10_gdp': 'GDP and main components - quarterly data',
-        'nama_10_gdp': 'GDP and main components - annual data',
-        'namq_10_pc': 'GDP per capita - quarterly data',
-    },
-    'INFLATION': {
-        'prc_hicp_manr': 'HICP - monthly data (annual rate of change)',
-        'prc_hicp_midx': 'HICP - monthly data (index)',
-        'prc_hicp_aind': 'HICP - annual data (index)',
-    },
-    'POPULATION': {
-        'demo_pjan': 'Population on 1st January by age and sex',
-        'demo_gind': 'Population change - demographic balance and crude rates',
-        'proj_19np': 'Population projections',
-    },
-    'TRADE': {
-        'ext_lt_maineu': 'EU trade since 1999 by HS2-4-6 and CN8',
-        'ext_lt_intratrd': 'EU trade since 1988 by SITC',
-        'bop_its6_det': 'International trade in services - detailed data',
-    },
+# Common geo codes
+GEO_EU27 = "EU27_2020"
+GEO_EA20 = "EA20"  # Euro area
+MAJOR_ECONOMIES = ["DE", "FR", "IT", "ES", "NL", "PL", "SE", "BE", "AT", "IE"]
+
+# Dataset IDs
+DATASETS = {
+    "gdp": "nama_10_gdp",
+    "gdp_growth": "namq_10_gdp",
+    "unemployment_monthly": "une_rt_m",
+    "unemployment_annual": "une_rt_a",
+    "hicp_inflation": "prc_hicp_manr",
+    "population": "demo_pjan",
+    "government_debt": "gov_10dd_edpt1",
+    "government_deficit": "gov_10dd_edpt1",
+    "trade_balance": "bop_c6_m",
+    "industrial_production": "sts_inpr_m",
 }
 
 
-def _fetch_eurostat_data(dataset_code: str, params: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+def _fetch(dataset: str, params: dict) -> dict:
     """
-    Internal function to fetch data from Eurostat API.
-    
+    Internal: fetch data from Eurostat JSON API and return parsed response.
+
     Args:
-        dataset_code: Eurostat dataset code (e.g., 'lfsa_ergan')
-        params: Optional URL parameters for filtering
-        
+        dataset: Eurostat dataset code (e.g. 'nama_10_gdp')
+        params: Query parameters dict
+
     Returns:
-        Dict containing API response data
-        
+        Parsed JSON response dict
+
     Raises:
-        requests.RequestException: If API call fails
+        requests.RequestException on network errors
+        ValueError on API errors
     """
-    url = f"{EUROSTAT_BASE_URL}/{dataset_code}"
-    
-    # Default parameters
-    default_params = {
-        'format': 'JSON',
-        'lang': 'EN'
-    }
-    
-    if params:
-        default_params.update(params)
-    
-    try:
-        response = requests.get(url, params=default_params, timeout=30)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        return {
-            'error': str(e),
-            'dataset': dataset_code,
-            'status': 'failed'
-        }
+    params.setdefault("format", "JSON")
+    params.setdefault("lang", "EN")
+    url = f"{BASE_URL}/{dataset}"
+    resp = requests.get(url, params=params, timeout=TIMEOUT)
+    resp.raise_for_status()
+    data = resp.json()
+    if "error" in data:
+        raise ValueError(f"Eurostat API error: {data['error']}")
+    return data
 
 
-def _parse_eurostat_response(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _parse_response(data: dict) -> List[dict]:
     """
-    Parse Eurostat JSON-stat format into readable records.
-    
+    Parse Eurostat JSON-stat response into a list of flat records.
+
+    Each record is a dict with dimension labels as keys plus a 'value' key.
+
     Args:
-        data: Raw API response
-        
+        data: Raw Eurostat API JSON response
+
     Returns:
-        List of data records with time periods and values
+        List of dicts, one per data point
     """
-    if 'error' in data:
-        return [data]
-    
-    try:
-        # Extract dimensions and values
-        dimension = data.get('dimension', {})
-        value = data.get('value', {})
-        
-        # Get time dimension
-        time_dimension = dimension.get('time', {}).get('category', {}).get('index', {})
-        time_labels = dimension.get('time', {}).get('category', {}).get('label', {})
-        
-        # Get geo dimension
-        geo_dimension = dimension.get('geo', {}).get('category', {}).get('index', {})
-        
-        # Parse values
-        records = []
-        for idx_str, val in value.items():
-            idx = int(idx_str)
-            
-            # Find corresponding time period
-            time_key = None
-            for t_key, t_idx in time_dimension.items():
-                if t_idx == idx % len(time_dimension):
-                    time_key = t_key
-                    break
-            
-            if time_key:
-                records.append({
-                    'period': time_key,
-                    'value': val,
-                    'label': time_labels.get(time_key, time_key)
-                })
-        
-        # Sort by period descending (most recent first)
-        records.sort(key=lambda x: x['period'], reverse=True)
-        return records
-        
-    except (KeyError, ValueError) as e:
-        return [{
-            'error': f'Parse error: {str(e)}',
-            'raw_data_keys': list(data.keys())
-        }]
+    dims = data.get("id", [])
+    sizes = data.get("size", [])
+    dimension_info = data.get("dimension", {})
+    values = data.get("value", {})
+
+    # Build index-to-label maps for each dimension
+    dim_labels = {}
+    dim_indices = {}
+    for dim_name in dims:
+        cat = dimension_info.get(dim_name, {}).get("category", {})
+        idx_map = cat.get("index", {})
+        label_map = cat.get("label", {})
+        # index maps code -> position; we need position -> code
+        pos_to_code = {v: k for k, v in idx_map.items()}
+        dim_labels[dim_name] = label_map
+        dim_indices[dim_name] = pos_to_code
+
+    # Iterate through all possible index combinations
+    records = []
+    total = 1
+    for s in sizes:
+        total *= s
+
+    for flat_idx in range(total):
+        str_idx = str(flat_idx)
+        if str_idx not in values:
+            continue
+
+        # Decompose flat index into per-dimension indices
+        record = {}
+        remainder = flat_idx
+        for i in range(len(dims) - 1, -1, -1):
+            dim_name = dims[i]
+            pos = remainder % sizes[i]
+            remainder //= sizes[i]
+            code = dim_indices[dim_name].get(pos, str(pos))
+            record[dim_name] = code
+            record[f"{dim_name}_label"] = dim_labels[dim_name].get(code, code)
+
+        record["value"] = values[str_idx]
+        records.append(record)
+
+    return records
 
 
-def get_employment_rate(country_code: str = 'EU27_2020', age_group: str = 'Y20-64') -> Dict[str, Any]:
+def get_gdp(geo: Optional[List[str]] = None, years: int = 5,
+            unit: str = "CP_MEUR") -> Dict:
     """
-    Get employment rate from Eurostat lfsa_ergan dataset.
-    
+    Get annual GDP for EU countries.
+
     Args:
-        country_code: Geographic code (default: EU27_2020)
-        age_group: Age group code (default: Y20-64 for 20-64 years)
-        
+        geo: List of country codes (default: EU27 aggregate)
+        years: Number of recent years to fetch (default: 5)
+        unit: Unit — CP_MEUR (current prices, million EUR),
+              CLV10_MEUR (chain-linked volumes 2010)
+
     Returns:
-        Dict with employment rate data including:
-        - latest_value: Most recent employment rate
-        - latest_period: Time period of latest data
-        - historical: List of historical data points
-        - metadata: Dataset information
-        
-    Example:
-        >>> data = get_employment_rate('EU27_2020', 'Y20-64')
-        >>> print(data['latest_value'])
+        Dict with 'records' list and metadata
     """
+    if geo is None:
+        geo = [GEO_EU27]
     params = {
-        'sex': 'T',  # Total (both sexes)
-        'age': age_group,
-        'geo': country_code,
-        'unit': 'PC'  # Percentage
+        "unit": unit,
+        "na_item": "B1GQ",  # GDP at market prices
+        "lastTimePeriod": str(years),
     }
-    
-    data = _fetch_eurostat_data('lfsa_ergan', params)
-    
-    if 'error' in data:
-        return data
-    
-    records = _parse_eurostat_response(data)
-    
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["gdp"], params)
+    records = _parse_response(raw)
     return {
-        'dataset': 'lfsa_ergan',
-        'indicator': 'Employment Rate',
-        'country': country_code,
-        'age_group': age_group,
-        'latest_value': records[0]['value'] if records else None,
-        'latest_period': records[0]['period'] if records else None,
-        'historical': records[:10],  # Last 10 data points
-        'metadata': {
-            'source': 'Eurostat',
-            'unit': 'Percentage',
-            'last_updated': datetime.now().isoformat()
-        }
+        "indicator": "GDP",
+        "dataset": DATASETS["gdp"],
+        "unit": unit,
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
     }
 
 
-def get_gdp_growth(country_code: str = 'EU27_2020', frequency: str = 'Q') -> Dict[str, Any]:
+def get_unemployment(geo: Optional[List[str]] = None, months: int = 12,
+                     sex: str = "T", age: str = "TOTAL") -> Dict:
     """
-    Get GDP growth from Eurostat namq_10_gdp dataset.
-    
+    Get monthly unemployment rate (seasonally adjusted).
+
     Args:
-        country_code: Geographic code (default: EU27_2020)
-        frequency: Data frequency - 'Q' for quarterly, 'A' for annual
-        
+        geo: List of country codes (default: EU27, DE, FR)
+        months: Number of recent months (default: 12)
+        sex: T (total), M (male), F (female)
+        age: TOTAL, Y_LT25 (youth), Y25-74
+
     Returns:
-        Dict with GDP growth data including:
-        - latest_value: Most recent GDP value
-        - latest_period: Time period of latest data
-        - growth_rate: Year-over-year growth rate (if available)
-        - historical: List of historical data points
-        - metadata: Dataset information
-        
-    Example:
-        >>> data = get_gdp_growth('EU27_2020', 'Q')
-        >>> print(f"GDP: {data['latest_value']}")
+        Dict with 'records' list and metadata
     """
-    dataset = 'namq_10_gdp' if frequency == 'Q' else 'nama_10_gdp'
-    
-    # Add filters to avoid 413 error (dataset too large)
+    if geo is None:
+        geo = [GEO_EU27, "DE", "FR"]
     params = {
-        'na_item': 'B1GQ',  # Gross domestic product at market prices
-        'unit': 'CLV10_MNAC',  # Chain linked volumes, million units of national currency
-        'geo': country_code,
-        's_adj': 'SCA'  # Seasonally and calendar adjusted
+        "s_adj": "SA",
+        "age": age,
+        "unit": "PC_ACT",
+        "sex": sex,
+        "lastTimePeriod": str(months),
     }
-    
-    data = _fetch_eurostat_data(dataset, params)
-    
-    if 'error' in data:
-        return data
-    
-    records = _parse_eurostat_response(data)
-    
-    # Calculate growth rate if we have enough data
-    growth_rate = None
-    if len(records) >= 2:
-        try:
-            current = float(records[0]['value'])
-            previous = float(records[1]['value'])
-            growth_rate = ((current - previous) / previous) * 100
-        except (ValueError, TypeError):
-            pass
-    
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["unemployment_monthly"], params)
+    records = _parse_response(raw)
     return {
-        'dataset': dataset,
-        'indicator': 'GDP and Main Components',
-        'country': country_code,
-        'frequency': 'Quarterly' if frequency == 'Q' else 'Annual',
-        'latest_value': records[0]['value'] if records else None,
-        'latest_period': records[0]['period'] if records else None,
-        'growth_rate': round(growth_rate, 2) if growth_rate else None,
-        'historical': records[:12],  # Last 12 data points
-        'metadata': {
-            'source': 'Eurostat',
-            'unit': 'Chain linked volumes (2010), million EUR',
-            'last_updated': datetime.now().isoformat()
-        }
+        "indicator": "Unemployment Rate",
+        "dataset": DATASETS["unemployment_monthly"],
+        "unit": "% of active population",
+        "seasonally_adjusted": True,
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
     }
 
 
-def get_inflation_rate(country_code: str = 'EU27_2020') -> Dict[str, Any]:
+def get_inflation(geo: Optional[List[str]] = None, months: int = 12,
+                  coicop: str = "CP00") -> Dict:
     """
-    Get HICP inflation rate from Eurostat prc_hicp_manr dataset.
-    
-    Args:
-        country_code: Geographic code (default: EU27_2020)
-        
-    Returns:
-        Dict with inflation data including:
-        - latest_value: Most recent inflation rate (annual % change)
-        - latest_period: Time period of latest data
-        - historical: List of historical monthly inflation rates
-        - metadata: Dataset information
-        
-    Example:
-        >>> data = get_inflation_rate('EU27_2020')
-        >>> print(f"Inflation: {data['latest_value']}%")
-    """
-    data = _fetch_eurostat_data('prc_hicp_manr')
-    
-    if 'error' in data:
-        return data
-    
-    records = _parse_eurostat_response(data)
-    
-    return {
-        'dataset': 'prc_hicp_manr',
-        'indicator': 'HICP - Harmonized Index of Consumer Prices',
-        'country': country_code,
-        'latest_value': records[0]['value'] if records else None,
-        'latest_period': records[0]['period'] if records else None,
-        'historical': records[:24],  # Last 24 months
-        'metadata': {
-            'source': 'Eurostat',
-            'unit': 'Annual rate of change (%)',
-            'last_updated': datetime.now().isoformat()
-        }
-    }
+    Get HICP inflation rate (annual rate of change, monthly).
 
-
-def get_population(country_code: str = 'EU27_2020') -> Dict[str, Any]:
-    """
-    Get population data from Eurostat demo_pjan dataset.
-    
     Args:
-        country_code: Geographic code (default: EU27_2020)
-        
+        geo: List of country codes (default: EU27, EA20)
+        months: Number of recent months (default: 12)
+        coicop: COICOP classification — CP00 (all items),
+                CP01 (food), CP04 (housing), CP07 (transport), NRG (energy)
+
     Returns:
-        Dict with population data including:
-        - latest_value: Most recent population count
-        - latest_period: Year of latest data
-        - historical: List of historical population figures
-        - metadata: Dataset information
-        
-    Example:
-        >>> data = get_population('EU27_2020')
-        >>> print(f"Population: {data['latest_value']:,}")
+        Dict with 'records' list and metadata
     """
+    if geo is None:
+        geo = [GEO_EU27, GEO_EA20]
     params = {
-        'sex': 'T',  # Total
-        'age': 'TOTAL',  # All ages
-        'geo': country_code
+        "coicop": coicop,
+        "lastTimePeriod": str(months),
     }
-    
-    data = _fetch_eurostat_data('demo_pjan', params)
-    
-    if 'error' in data:
-        return data
-    
-    records = _parse_eurostat_response(data)
-    
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["hicp_inflation"], params)
+    records = _parse_response(raw)
     return {
-        'dataset': 'demo_pjan',
-        'indicator': 'Population on 1st January',
-        'country': country_code,
-        'latest_value': records[0]['value'] if records else None,
-        'latest_period': records[0]['period'] if records else None,
-        'historical': records[:10],  # Last 10 years
-        'metadata': {
-            'source': 'Eurostat',
-            'unit': 'Number of persons',
-            'last_updated': datetime.now().isoformat()
-        }
+        "indicator": "HICP Inflation (annual rate of change)",
+        "dataset": DATASETS["hicp_inflation"],
+        "unit": "% change on same period of previous year",
+        "coicop": coicop,
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
     }
 
 
-def get_trade_balance(country_code: str = 'EU27_2020', partner: str = 'WORLD') -> Dict[str, Any]:
+def get_population(geo: Optional[List[str]] = None, years: int = 5,
+                   sex: str = "T", age: str = "TOTAL") -> Dict:
     """
-    Get trade balance data from Eurostat ext_lt_maineu dataset.
-    
+    Get annual population on 1 January.
+
     Args:
-        country_code: Geographic code (default: EU27_2020)
-        partner: Trading partner code (default: WORLD for total trade)
-        
+        geo: List of country codes (default: EU27 + major economies)
+        years: Number of recent years (default: 5)
+        sex: T (total), M (male), F (female)
+        age: TOTAL, or specific age like Y20, Y_LT15, Y_GE65
+
     Returns:
-        Dict with trade data including:
-        - latest_value: Most recent trade value
-        - latest_period: Time period of latest data
-        - historical: List of historical trade data
-        - metadata: Dataset information
-        
-    Example:
-        >>> data = get_trade_balance('EU27_2020', 'WORLD')
-        >>> print(f"Trade: {data['latest_value']}")
+        Dict with 'records' list and metadata
     """
+    if geo is None:
+        geo = [GEO_EU27, "DE", "FR", "IT", "ES"]
     params = {
-        'reporter': country_code,
-        'partner': partner,
-        'sitc06': 'TOTAL',  # All products
-        'indic_et': 'BAL'  # Balance (exports - imports)
+        "sex": sex,
+        "age": age,
+        "lastTimePeriod": str(years),
     }
-    
-    data = _fetch_eurostat_data('ext_lt_maineu', params)
-    
-    if 'error' in data:
-        return data
-    
-    records = _parse_eurostat_response(data)
-    
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["population"], params)
+    records = _parse_response(raw)
     return {
-        'dataset': 'ext_lt_maineu',
-        'indicator': 'EU Trade Balance',
-        'country': country_code,
-        'partner': partner,
-        'latest_value': records[0]['value'] if records else None,
-        'latest_period': records[0]['period'] if records else None,
-        'historical': records[:12],  # Last 12 data points
-        'metadata': {
-            'source': 'Eurostat',
-            'unit': 'Million EUR',
-            'last_updated': datetime.now().isoformat()
-        }
+        "indicator": "Population (1 January)",
+        "dataset": DATASETS["population"],
+        "unit": "Persons",
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
     }
 
 
-def search_datasets(keyword: str) -> Dict[str, Any]:
+def get_government_debt(geo: Optional[List[str]] = None, years: int = 5) -> Dict:
+    """
+    Get government consolidated gross debt as % of GDP.
+
+    Args:
+        geo: List of country codes (default: EU27 + major economies)
+        years: Number of recent years (default: 5)
+
+    Returns:
+        Dict with 'records' list and metadata
+    """
+    if geo is None:
+        geo = [GEO_EU27, "DE", "FR", "IT", "ES", "GR"]
+    params = {
+        "unit": "PC_GDP",
+        "sector": "S13",  # General government
+        "na_item": "GD",  # Gross debt
+        "lastTimePeriod": str(years),
+    }
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["government_debt"], params)
+    records = _parse_response(raw)
+    return {
+        "indicator": "Government Debt",
+        "dataset": DATASETS["government_debt"],
+        "unit": "% of GDP",
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
+    }
+
+
+def get_industrial_production(geo: Optional[List[str]] = None,
+                               months: int = 12) -> Dict:
+    """
+    Get monthly industrial production index (seasonally adjusted).
+
+    Args:
+        geo: List of country codes (default: EU27, DE, FR)
+        months: Number of recent months (default: 12)
+
+    Returns:
+        Dict with 'records' list and metadata
+    """
+    if geo is None:
+        geo = [GEO_EU27, "DE", "FR"]
+    params = {
+        "s_adj": "SCA",  # Seasonally and calendar adjusted
+        "unit": "I15",   # Index 2015=100
+        "nace_r2": "B-D",  # Total industry
+        "lastTimePeriod": str(months),
+    }
+    for g in geo:
+        params.setdefault("geo", [])
+        if isinstance(params["geo"], list):
+            params["geo"].append(g)
+        else:
+            params["geo"] = [params["geo"], g]
+
+    raw = _fetch(DATASETS["industrial_production"], params)
+    records = _parse_response(raw)
+    return {
+        "indicator": "Industrial Production Index",
+        "dataset": DATASETS["industrial_production"],
+        "unit": "Index (2015=100)",
+        "seasonally_adjusted": True,
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
+    }
+
+
+def get_dataset(dataset_code: str, params: dict) -> Dict:
+    """
+    Generic function to query any Eurostat dataset by code.
+
+    Args:
+        dataset_code: Eurostat dataset code (e.g. 'nama_10_gdp')
+        params: Dict of query parameters (geo, unit, time, etc.)
+
+    Returns:
+        Dict with parsed records and metadata
+    """
+    raw = _fetch(dataset_code, params)
+    records = _parse_response(raw)
+    return {
+        "dataset": dataset_code,
+        "label": raw.get("label", ""),
+        "source": "Eurostat",
+        "updated": raw.get("updated", ""),
+        "records": records,
+        "count": len(records),
+    }
+
+
+def search_datasets(query: str, limit: int = 10) -> List[dict]:
     """
     Search Eurostat dataset catalog by keyword.
-    
+
     Args:
-        keyword: Search term to find relevant datasets
-        
+        query: Search term (e.g. 'GDP', 'unemployment')
+        limit: Max results to return
+
     Returns:
-        Dict with search results including:
-        - keyword: Search term used
-        - matches: List of matching datasets from local registry
-        - total_matches: Number of datasets found
-        - categories: Categories containing matches
-        
-    Example:
-        >>> results = search_datasets('employment')
-        >>> for match in results['matches']:
-        ...     print(f"{match['code']}: {match['description']}")
+        List of dicts with dataset code, title, last update
     """
-    keyword_lower = keyword.lower()
-    matches = []
-    categories_found = set()
-    
-    # Search through local dataset registry
-    for category, datasets in EUROSTAT_DATASETS.items():
-        for code, description in datasets.items():
-            if (keyword_lower in code.lower() or 
-                keyword_lower in description.lower() or
-                keyword_lower in category.lower()):
-                matches.append({
-                    'code': code,
-                    'description': description,
-                    'category': category,
-                    'url': f"{EUROSTAT_BASE_URL}/{code}?format=JSON&lang=EN"
+    try:
+        url = "https://ec.europa.eu/eurostat/api/dissemination/catalogue/toc"
+        params = {"lang": "EN"}
+        resp = requests.get(url, params=params, timeout=TIMEOUT)
+        resp.raise_for_status()
+
+        items = resp.json() if isinstance(resp.json(), list) else resp.json().get("items", [])
+        query_lower = query.lower()
+        results = []
+
+        if isinstance(items, dict):
+            return _search_common_datasets(query_lower, limit)
+
+        for item in items:
+            title = item.get("title", "")
+            code = item.get("code", "")
+            if query_lower in title.lower() or query_lower in code.lower():
+                results.append({
+                    "code": code,
+                    "title": title,
+                    "last_update": item.get("lastUpdate", ""),
                 })
-                categories_found.add(category)
-    
-    return {
-        'keyword': keyword,
-        'matches': matches,
-        'total_matches': len(matches),
-        'categories': sorted(list(categories_found)),
-        'metadata': {
-            'source': 'Eurostat Dataset Registry',
-            'search_date': datetime.now().isoformat()
-        }
-    }
+                if len(results) >= limit:
+                    break
+
+        return results if results else _search_common_datasets(query_lower, limit)
+    except Exception:
+        # Catalog endpoint may not be available; use curated list
+        return _search_common_datasets(query.lower(), limit)
 
 
-# ========== MODULE INFO ==========
+def _search_common_datasets(query: str, limit: int) -> List[dict]:
+    """Fallback: search in a curated list of common Eurostat datasets."""
+    common = [
+        {"code": "nama_10_gdp", "title": "GDP and main components (output, expenditure and income)"},
+        {"code": "namq_10_gdp", "title": "GDP and main components - quarterly data"},
+        {"code": "une_rt_m", "title": "Unemployment rate - monthly data"},
+        {"code": "une_rt_a", "title": "Unemployment rate - annual data"},
+        {"code": "prc_hicp_manr", "title": "HICP - annual rate of change (monthly)"},
+        {"code": "prc_hicp_midx", "title": "HICP - monthly index"},
+        {"code": "demo_pjan", "title": "Population on 1 January by age and sex"},
+        {"code": "demo_gind", "title": "Population change - births, deaths, migration"},
+        {"code": "gov_10dd_edpt1", "title": "Government deficit/surplus, debt - annual data"},
+        {"code": "sts_inpr_m", "title": "Industrial production - monthly data"},
+        {"code": "bop_c6_m", "title": "Balance of payments - monthly data"},
+        {"code": "lfsa_ergan", "title": "Employment by sex, age and economic activity"},
+        {"code": "lfsa_urgan", "title": "Unemployment by sex, age and economic activity"},
+        {"code": "earn_ses_annual", "title": "Structure of earnings survey - annual"},
+        {"code": "tec00001", "title": "GDP per capita in PPS"},
+        {"code": "tec00115", "title": "Real GDP growth rate"},
+        {"code": "tec00118", "title": "Government deficit/surplus as % of GDP"},
+        {"code": "tipslm80", "title": "Long-term unemployment rate"},
+        {"code": "tps00001", "title": "Population total"},
+        {"code": "ei_bsci_m_r2", "title": "Economic Sentiment Indicator"},
+    ]
+    results = []
+    for ds in common:
+        if query in ds["code"].lower() or query in ds["title"].lower():
+            results.append(ds)
+            if len(results) >= limit:
+                break
+    return results
 
-def get_module_info() -> Dict[str, Any]:
+
+def get_eu_dashboard() -> Dict:
     """
-    Get information about this module.
-    
+    Get a quick EU economic dashboard: GDP, unemployment, inflation.
+
     Returns:
-        Dict with module metadata
+        Dict with key EU economic indicators
     """
-    return {
-        'module': 'eurostat_api',
-        'description': 'Eurostat API integration for EU economic and demographic data',
-        'version': '1.0.0',
-        'author': 'QuantClaw Data NightBuilder',
-        'functions': [
-            'get_employment_rate',
-            'get_gdp_growth',
-            'get_inflation_rate',
-            'get_population',
-            'get_trade_balance',
-            'search_datasets'
-        ],
-        'datasets_covered': len([d for cat in EUROSTAT_DATASETS.values() for d in cat]),
-        'categories': list(EUROSTAT_DATASETS.keys()),
-        'base_url': EUROSTAT_BASE_URL,
-        'free_tier': True,
-        'rate_limit': '100 calls/hour'
+    dashboard = {
+        "timestamp": datetime.now().isoformat(),
+        "source": "Eurostat",
+        "indicators": {},
     }
+    try:
+        dashboard["indicators"]["gdp"] = get_gdp(years=3)
+    except Exception as e:
+        dashboard["indicators"]["gdp"] = {"error": str(e)}
+    try:
+        dashboard["indicators"]["unemployment"] = get_unemployment(months=6)
+    except Exception as e:
+        dashboard["indicators"]["unemployment"] = {"error": str(e)}
+    try:
+        dashboard["indicators"]["inflation"] = get_inflation(months=6)
+    except Exception as e:
+        dashboard["indicators"]["inflation"] = {"error": str(e)}
+
+    return dashboard
+
+
+def main():
+    """CLI interface"""
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Usage: eurostat_api.py <command> [args]")
+        print("Commands: gdp, unemployment, inflation, population, debt,")
+        print("          industrial, search <query>, dashboard")
+        sys.exit(1)
+
+    command = sys.argv[1].lower()
+
+    if command == "gdp":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_gdp(geo=geo)
+    elif command == "unemployment":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_unemployment(geo=geo)
+    elif command == "inflation":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_inflation(geo=geo)
+    elif command == "population":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_population(geo=geo)
+    elif command == "debt":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_government_debt(geo=geo)
+    elif command == "industrial":
+        geo = sys.argv[2:] if len(sys.argv) > 2 else None
+        result = get_industrial_production(geo=geo)
+    elif command == "search":
+        query = sys.argv[2] if len(sys.argv) > 2 else "gdp"
+        result = search_datasets(query)
+    elif command == "dashboard":
+        result = get_eu_dashboard()
+    else:
+        print(f"Unknown command: {command}")
+        sys.exit(1)
+
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":
-    # Demo output
-    info = get_module_info()
-    print(json.dumps(info, indent=2))
+    main()

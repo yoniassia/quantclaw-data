@@ -2042,5 +2042,100 @@
     "built": "2026-03-07",
     "builder": "NightBuilder",
     "notes": "Insider trades, 13F. Demo key 404 on insider endpoints. Needs paid EODHD."
+  },
+  "sensor_tower_app_intelligence_api": {
+    "score": "A",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "App downloads, revenue, SDK, ad spend. 50 calls/mo free."
+  },
+  "semrush_traffic_analytics_api": {
+    "score": "A",
+    "functions": 11,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Already scored in batch 58."
+  },
+  "quantflow_ml": {
+    "score": "A",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Already scored in batch 58."
+  },
+  "spac_tracker_api_by_spac_research": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "SPAC tracker, mergers, redemptions, warrants. Needs SPAC_RESEARCH_API_KEY."
+  },
+  "priori_data_app_intelligence_dataset": {
+    "score": "B",
+    "functions": 10,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "iOS app intelligence via iTunes API. eToro 4.37 rating, ~557K downloads est."
+  },
+  "apptweak_api": {
+    "score": "B",
+    "functions": 13,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ASO, keyword rankings, download estimates. Needs APPTWEAK_API_KEY."
+  },
+  "data_ai_app_intelligence": {
+    "score": "A",
+    "functions": 9,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "App market intel. iOS YouTube 4.68\u2605 46M ratings. 7/9 funcs free via iTunes."
+  },
+  "factorflow_ml": {
+    "score": "B",
+    "functions": 11,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "Factor investing ML. 10 Fama-French factors, correlation, exposure, portfolio construction."
+  },
+  "nasdaq_emerging_markets": {
+    "score": "B",
+    "functions": 12,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "NSE/BSE/HKEX/SSE. WAF blocks without key. Needs NASDAQ_DATA_LINK_API_KEY."
+  },
+  "alphagenml": {
+    "score": "B",
+    "functions": 8,
+    "built": "2026-03-07",
+    "builder": "NightBuilder",
+    "notes": "ML alpha signal gen. 15 features, gradient boosting, backtest. sklearn fallback."
+  },
+  "u_s_treasury_fiscal_data_api": {
+    "score": "A",
+    "notes": "NightBuilder 2026-03-08, Treasury yield curves & rates",
+    "tested": true
+  },
+  "twelve_data_fundamentals_api": {
+    "score": "A",
+    "notes": "NightBuilder 2026-03-08, Company financials & earnings",
+    "tested": true
+  },
+  "simfin_api": {
+    "score": "A",
+    "notes": "NightBuilder 2026-03-08, Historical financial statements",
+    "tested": true
+  },
+  "sentimentinvestor_api": {
+    "score": "A",
+    "notes": "NightBuilder 2026-03-08, Social sentiment analysis",
+    "tested": true
+  },
+  "snb_data_portal_api": {
+    "score": "A",
+    "notes": "NightBuilder 2026-03-08, Swiss National Bank data",
+    "tested": true
   }
 }

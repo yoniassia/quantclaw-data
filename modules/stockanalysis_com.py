@@ -1,520 +1,524 @@
-#!/usr/bin/env python3
 """
-StockAnalysis.com Scraper — EPS Estimates & Analyst Data Module
+StockAnalysis.com — Comprehensive Stock Fundamentals & Analyst Data
 
-Critical module for Alpha Picker V3 — provides EPS estimate revisions which are
-the #1 missing signal in the current system.
+Data Source: stockanalysis.com (JSON API + page scraping)
+Update frequency: Real-time / Daily
+Category: Fundamentals, Analyst Estimates, Dividends, Price History
+Free: Yes (no API key required)
 
-Data includes:
-- EPS Estimates: Current/next quarter and year EPS forecasts
-- Estimate Revisions: 7d/30d/90d revision tracking
-- Analyst Consensus: Buy/hold/sell ratings, price targets
-- Financials: Quarterly and annual revenue/EPS data
+Provides:
+- Company overview (market cap, PE, EPS, sector, description)
+- Income statement financials (annual, multi-year)
+- Analyst price targets & ratings consensus
+- Dividend history & yield data
+- Historical price data (daily/monthly)
+- Revenue & EPS forecasts
 
 Usage:
-  python modules/stockanalysis_com.py --ticker AAPL
-  python modules/stockanalysis_com.py --ticker MSFT --json
-
-Data source: https://stockanalysis.com
+    >>> from modules.stockanalysis_com import *
+    >>> overview = get_overview("AAPL")
+    >>> financials = get_financials("AAPL")
+    >>> forecast = get_forecast("AAPL")
 """
 
-import requests
-from bs4 import BeautifulSoup
-import argparse
 import json
-import sys
 import re
+import urllib.request
+import urllib.parse
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-class StockAnalysisCom:
-    """Scrape StockAnalysis.com for EPS estimates and analyst data"""
-    
-    BASE_URL = "https://stockanalysis.com"
-    
-    def __init__(self):
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        })
-    
-    def _extract_json_data(self, soup: BeautifulSoup, data_key: str) -> Optional[Dict]:
-        """Extract JSON data from script tags"""
+
+API_BASE = "https://stockanalysis.com/api/symbol/s"
+WEB_BASE = "https://stockanalysis.com/stocks"
+
+_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/html, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+
+def _fetch_json(url: str, timeout: int = 15) -> dict:
+    """Internal: fetch JSON from stockanalysis.com API."""
+    req = urllib.request.Request(url, headers=_HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    if isinstance(data, dict) and data.get("status") == 200:
+        return data.get("data", data)
+    if isinstance(data, dict) and "data" in data:
+        return data["data"]
+    return data
+
+
+def _fetch_html(url: str, timeout: int = 15) -> str:
+    """Internal: fetch raw HTML from stockanalysis.com."""
+    req = urllib.request.Request(url, headers=_HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read().decode("utf-8")
+
+
+def _parse_number(val: str) -> Optional[float]:
+    """Parse strings like '3.78T', '435.62B', '14.68B', '32.65' into floats."""
+    if val is None:
+        return None
+    val = str(val).strip().replace(",", "").replace("$", "").replace("%", "")
+    if not val or val.lower() in ("n/a", "-", ""):
+        return None
+    multipliers = {"T": 1e12, "B": 1e9, "M": 1e6, "K": 1e3}
+    suffix = val[-1].upper()
+    if suffix in multipliers:
         try:
-            scripts = soup.find_all('script', type='application/json')
-            for script in scripts:
-                if script.string:
-                    try:
-                        data = json.loads(script.string)
-                        if data_key in data:
-                            return data[data_key]
-                    except json.JSONDecodeError:
-                        continue
-            return None
-        except Exception as e:
-            return None
-    
-    def get_eps_estimates(self, ticker: str) -> Dict[str, Any]:
-        """
-        Get current/next quarter and year EPS estimates.
-        
-        Returns dict with:
-        - current_quarter: {estimate, growth}
-        - next_quarter: {estimate, growth}
-        - current_year: {estimate, growth}
-        - next_year: {estimate, growth}
-        - timestamp: ISO timestamp
-        """
-        ticker = ticker.upper().strip()
-        
-        try:
-            url = f"{self.BASE_URL}/stocks/{ticker.lower()}/forecast/"
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Check if ticker exists
-            if "not found" in response.text.lower():
-                return {'error': f'Ticker {ticker} not found', 'ticker': ticker}
-            
-            data = {
-                'ticker': ticker,
-                'current_quarter': {},
-                'next_quarter': {},
-                'current_year': {},
-                'next_year': {},
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Extract EPS estimates from the stats cards or tables
-            # Look for "EPS This Year" and "EPS Next Year" sections
-            stats_cards = soup.find_all('div', class_=re.compile(r'.*?border.*?'))
-            
-            for card in stats_cards:
-                text = card.get_text(strip=True)
-                
-                # Current year EPS
-                if 'EPS This Year' in text or 'EPS This Quarter' in text:
-                    value_elem = card.find('div', class_=re.compile(r'.*?text-2xl.*?'))
-                    if value_elem:
-                        try:
-                            eps_val = float(value_elem.get_text(strip=True))
-                            growth_elem = card.find('span', class_=re.compile(r'.*?rg.*?'))
-                            growth = None
-                            if growth_elem:
-                                growth_text = growth_elem.get_text(strip=True).replace('%', '')
-                                growth = float(growth_text)
-                            
-                            if 'Year' in text:
-                                data['current_year'] = {'estimate': eps_val, 'growth': growth}
-                            else:
-                                data['current_quarter'] = {'estimate': eps_val, 'growth': growth}
-                        except (ValueError, AttributeError):
-                            continue
-                
-                # Next year/quarter EPS
-                elif 'EPS Next Year' in text or 'EPS Next Quarter' in text:
-                    value_elem = card.find('div', class_=re.compile(r'.*?text-2xl.*?'))
-                    if value_elem:
-                        try:
-                            eps_val = float(value_elem.get_text(strip=True))
-                            growth_elem = card.find('span', class_=re.compile(r'.*?rg.*?'))
-                            growth = None
-                            if growth_elem:
-                                growth_text = growth_elem.get_text(strip=True).replace('%', '')
-                                growth = float(growth_text)
-                            
-                            if 'Year' in text:
-                                data['next_year'] = {'estimate': eps_val, 'growth': growth}
-                            else:
-                                data['next_quarter'] = {'estimate': eps_val, 'growth': growth}
-                        except (ValueError, AttributeError):
-                            continue
-            
-            return data
-            
-        except requests.RequestException as e:
-            return {'error': f'HTTP error: {str(e)}', 'ticker': ticker}
-        except Exception as e:
-            return {'error': f'Parsing error: {str(e)}', 'ticker': ticker}
-    
-    def get_estimate_revisions(self, ticker: str) -> Dict[str, Any]:
-        """
-        Get EPS estimate revisions over 7d/30d/90d periods.
-        
-        Returns dict with:
-        - revisions_7d: {count, direction}
-        - revisions_30d: {count, direction}
-        - revisions_90d: {count, direction}
-        - analyst_count: number of analysts covering
-        - timestamp: ISO timestamp
-        """
-        ticker = ticker.upper().strip()
-        
-        try:
-            url = f"{self.BASE_URL}/stocks/{ticker.lower()}/forecast/"
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            data = {
-                'ticker': ticker,
-                'revisions_7d': {'up': 0, 'down': 0, 'unchanged': 0},
-                'revisions_30d': {'up': 0, 'down': 0, 'unchanged': 0},
-                'revisions_90d': {'up': 0, 'down': 0, 'unchanged': 0},
-                'analyst_count': None,
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Look for analyst count in the forecast tables
-            analyst_rows = soup.find_all('td', string=re.compile(r'No\.\s+Analysts'))
-            if analyst_rows:
-                for row in analyst_rows:
-                    parent_tr = row.find_parent('tr')
-                    if parent_tr:
-                        cells = parent_tr.find_all('td')
-                        for cell in cells[1:]:  # Skip the label cell
-                            try:
-                                count = int(cell.get_text(strip=True))
-                                if count > 0:
-                                    data['analyst_count'] = count
-                                    break
-                            except (ValueError, AttributeError):
-                                continue
-                    if data['analyst_count']:
-                        break
-            
-            # Note: Actual revision data by time period isn't directly available on the page
-            # This would require tracking historical changes or access to their API
-            # For now, we return structure with zeros
-            
-            return data
-            
-        except requests.RequestException as e:
-            return {'error': f'HTTP error: {str(e)}', 'ticker': ticker}
-        except Exception as e:
-            return {'error': f'Parsing error: {str(e)}', 'ticker': ticker}
-    
-    def get_analyst_consensus(self, ticker: str) -> Dict[str, Any]:
-        """
-        Get analyst consensus ratings and price targets.
-        
-        Returns dict with:
-        - consensus: Overall rating (e.g., "Buy")
-        - rating_score: Numeric score
-        - ratings: {strong_buy, buy, hold, sell, strong_sell}
-        - price_target: {low, average, median, high}
-        - analyst_count: Total number of analysts
-        - timestamp: ISO timestamp
-        """
-        ticker = ticker.upper().strip()
-        
-        try:
-            url = f"{self.BASE_URL}/stocks/{ticker.lower()}/forecast/"
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            data = {
-                'ticker': ticker,
-                'consensus': None,
-                'rating_score': None,
-                'ratings': {
-                    'strong_buy': 0,
-                    'buy': 0,
-                    'hold': 0,
-                    'sell': 0,
-                    'strong_sell': 0
-                },
-                'price_target': {
-                    'low': None,
-                    'average': None,
-                    'median': None,
-                    'high': None,
-                    'upside_pct': None
-                },
-                'analyst_count': None,
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Extract consensus rating
-            consensus_elem = soup.find(string=re.compile(r'Analyst Consensus:'))
-            if consensus_elem:
-                parent = consensus_elem.find_parent()
-                if parent:
-                    rating_span = parent.find('span', class_='font-bold')
-                    if rating_span:
-                        data['consensus'] = rating_span.get_text(strip=True)
-            
-            # Extract price target
-            target_elem = soup.find(string=re.compile(r'Price Target:'))
-            if target_elem:
-                parent = target_elem.find_parent()
-                if parent:
-                    price_span = parent.find('span', class_=re.compile(r'.*?text-green.*?'))
-                    if price_span:
-                        price_text = price_span.get_text(strip=True)
-                        # Extract price and upside: "$299.14 (+16.19%)"
-                        match = re.search(r'\$?([\d,]+\.?\d*)\s*\(([+-]?[\d.]+)%\)', price_text)
-                        if match:
-                            data['price_target']['average'] = float(match.group(1).replace(',', ''))
-                            data['price_target']['upside_pct'] = float(match.group(2))
-            
-            # Extract rating breakdown from recommendation table
-            rating_table = soup.find('table', class_=re.compile(r'.*?rating.*?'))
-            if not rating_table:
-                # Try finding the table with rating rows
-                tables = soup.find_all('table')
-                for table in tables:
-                    if any(r in table.get_text() for r in ['Strong Buy', 'Strong Sell']):
-                        rating_table = table
-                        break
-            
-            if rating_table:
-                rows = rating_table.find_all('tr')
-                for row in rows:
-                    cells = row.find_all(['td', 'th'])
-                    if len(cells) > 1:
-                        label = cells[0].get_text(strip=True).lower()
-                        
-                        # Get the most recent value (usually last non-header cell)
-                        for cell in reversed(cells[1:]):
-                            try:
-                                value = int(cell.get_text(strip=True))
-                                if 'strong buy' in label:
-                                    data['ratings']['strong_buy'] = value
-                                    break
-                                elif 'buy' in label and 'strong' not in label:
-                                    data['ratings']['buy'] = value
-                                    break
-                                elif 'hold' in label:
-                                    data['ratings']['hold'] = value
-                                    break
-                                elif 'strong sell' in label:
-                                    data['ratings']['strong_sell'] = value
-                                    break
-                                elif 'sell' in label and 'strong' not in label:
-                                    data['ratings']['sell'] = value
-                                    break
-                                elif 'total' in label:
-                                    data['analyst_count'] = value
-                                    break
-                            except (ValueError, AttributeError):
-                                continue
-            
-            # Extract price target range from table
-            target_rows = soup.find_all('th', string=re.compile(r'Target'))
-            for row in target_rows:
-                parent_tr = row.find_parent('tr')
-                if parent_tr:
-                    next_tr = parent_tr.find_next_sibling('tr')
-                    if next_tr:
-                        cells = next_tr.find_all('td')
-                        if len(cells) >= 4:
-                            try:
-                                # Usually: Low, Average, Median, High
-                                data['price_target']['low'] = float(cells[0].get_text(strip=True).replace('$', '').replace(',', ''))
-                                avg_text = cells[1].get_text(strip=True).replace('$', '').replace(',', '')
-                                if avg_text and avg_text != '-':
-                                    data['price_target']['average'] = float(avg_text)
-                                data['price_target']['median'] = float(cells[2].get_text(strip=True).replace('$', '').replace(',', ''))
-                                data['price_target']['high'] = float(cells[3].get_text(strip=True).replace('$', '').replace(',', ''))
-                            except (ValueError, IndexError):
-                                pass
-            
-            return data
-            
-        except requests.RequestException as e:
-            return {'error': f'HTTP error: {str(e)}', 'ticker': ticker}
-        except Exception as e:
-            return {'error': f'Parsing error: {str(e)}', 'ticker': ticker}
-    
-    def get_financials(self, ticker: str, period: str = 'annual') -> Dict[str, Any]:
-        """
-        Get quarterly or annual financial data.
-        
-        Args:
-            ticker: Stock ticker symbol
-            period: 'annual' or 'quarterly'
-        
-        Returns dict with:
-        - revenue: List of revenue values
-        - eps: List of EPS values
-        - dates: List of period end dates
-        - revenue_growth: List of YoY/QoQ growth rates
-        - eps_growth: List of YoY/QoQ growth rates
-        - timestamp: ISO timestamp
-        """
-        ticker = ticker.upper().strip()
-        
-        try:
-            url = f"{self.BASE_URL}/stocks/{ticker.lower()}/financials/"
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            data = {
-                'ticker': ticker,
-                'period': period,
-                'revenue': [],
-                'eps': [],
-                'dates': [],
-                'revenue_growth': [],
-                'eps_growth': [],
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Financial data is in tables - look for Revenue and EPS rows
-            tables = soup.find_all('table')
-            
-            for table in tables:
-                rows = table.find_all('tr')
-                
-                for row in rows:
-                    cells = row.find_all(['td', 'th'])
-                    if len(cells) > 1:
-                        label = cells[0].get_text(strip=True).lower()
-                        
-                        if 'revenue' in label and 'growth' not in label:
-                            # Extract revenue values
-                            for cell in cells[1:]:
-                                text = cell.get_text(strip=True)
-                                if text and text != '-':
-                                    try:
-                                        # Handle formats like "474.81B"
-                                        value = self._parse_financial_value(text)
-                                        if value:
-                                            data['revenue'].append(value)
-                                    except:
-                                        continue
-                        
-                        elif 'eps' in label and 'growth' not in label:
-                            # Extract EPS values
-                            for cell in cells[1:]:
-                                text = cell.get_text(strip=True)
-                                if text and text != '-':
-                                    try:
-                                        value = float(text.replace('$', '').replace(',', ''))
-                                        data['eps'].append(value)
-                                    except:
-                                        continue
-                        
-                        elif 'revenue' in label and 'growth' in label:
-                            # Extract revenue growth
-                            for cell in cells[1:]:
-                                text = cell.get_text(strip=True).replace('%', '')
-                                if text and text != '-':
-                                    try:
-                                        value = float(text)
-                                        data['revenue_growth'].append(value)
-                                    except:
-                                        continue
-                        
-                        elif 'eps' in label and 'growth' in label:
-                            # Extract EPS growth
-                            for cell in cells[1:]:
-                                text = cell.get_text(strip=True).replace('%', '')
-                                if text and text != '-':
-                                    try:
-                                        value = float(text)
-                                        data['eps_growth'].append(value)
-                                    except:
-                                        continue
-            
-            return data
-            
-        except requests.RequestException as e:
-            return {'error': f'HTTP error: {str(e)}', 'ticker': ticker}
-        except Exception as e:
-            return {'error': f'Parsing error: {str(e)}', 'ticker': ticker}
-    
-    def _parse_financial_value(self, text: str) -> Optional[float]:
-        """Parse financial values like '474.81B' or '95.36M' to float"""
-        text = text.strip().replace('$', '').replace(',', '')
-        
-        multiplier = 1
-        if text.endswith('T'):
-            multiplier = 1_000_000_000_000
-            text = text[:-1]
-        elif text.endswith('B'):
-            multiplier = 1_000_000_000
-            text = text[:-1]
-        elif text.endswith('M'):
-            multiplier = 1_000_000
-            text = text[:-1]
-        elif text.endswith('K'):
-            multiplier = 1_000
-            text = text[:-1]
-        
-        try:
-            return float(text) * multiplier
+            return float(val[:-1]) * multipliers[suffix]
         except ValueError:
             return None
-    
-    def get_all_data(self, ticker: str) -> Dict[str, Any]:
-        """
-        Get all available data for a ticker.
-        
-        Returns combined dict with all data types.
-        """
-        ticker = ticker.upper().strip()
-        
-        return {
-            'ticker': ticker,
-            'eps_estimates': self.get_eps_estimates(ticker),
-            'estimate_revisions': self.get_estimate_revisions(ticker),
-            'analyst_consensus': self.get_analyst_consensus(ticker),
-            'financials_annual': self.get_financials(ticker, 'annual'),
-            'financials_quarterly': self.get_financials(ticker, 'quarterly'),
-            'timestamp': datetime.utcnow().isoformat()
-        }
+    try:
+        return float(val)
+    except ValueError:
+        return None
 
 
-def main():
-    parser = argparse.ArgumentParser(description='StockAnalysis.com Data Scraper')
-    parser.add_argument('--ticker', '-t', required=True, help='Stock ticker symbol')
-    parser.add_argument('--json', action='store_true', help='Output as JSON')
-    parser.add_argument('--type', choices=['eps', 'revisions', 'consensus', 'financials', 'all'],
-                        default='all', help='Data type to fetch')
-    
-    args = parser.parse_args()
-    
-    scraper = StockAnalysisCom()
-    
-    if args.type == 'eps':
-        data = scraper.get_eps_estimates(args.ticker)
-    elif args.type == 'revisions':
-        data = scraper.get_estimate_revisions(args.ticker)
-    elif args.type == 'consensus':
-        data = scraper.get_analyst_consensus(args.ticker)
-    elif args.type == 'financials':
-        data = scraper.get_financials(args.ticker)
-    else:
-        data = scraper.get_all_data(args.ticker)
-    
-    if args.json:
-        print(json.dumps(data, indent=2))
-    else:
-        print(f"\n{'='*60}")
-        print(f"StockAnalysis.com Data for {args.ticker}")
-        print(f"{'='*60}\n")
-        
-        if 'error' in data:
-            print(f"Error: {data['error']}")
-        else:
-            for key, value in data.items():
-                if key != 'timestamp':
-                    print(f"{key}: {value}")
-        
-        print(f"\nTimestamp: {data.get('timestamp', 'N/A')}")
-        print(f"{'='*60}\n")
-    
-    return 0 if 'error' not in data else 1
+# ─── PUBLIC FUNCTIONS ─────────────────────────────────────────────────────────
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+def get_overview(ticker: str) -> Dict[str, Any]:
+    """
+    Get company overview: market cap, revenue, EPS, PE, sector, description, etc.
+
+    Args:
+        ticker: Stock ticker symbol (e.g. 'AAPL', 'MSFT')
+
+    Returns:
+        dict with keys: ticker, market_cap, revenue, net_income, eps, pe_ratio,
+        forward_pe, dividend, beta, analyst_rating, price_target, sector,
+        industry, employees, exchange, description, fetched_at
+
+    Example:
+        >>> data = get_overview("AAPL")
+        >>> print(data["market_cap"], data["pe_ratio"])
+    """
+    ticker = ticker.upper().strip()
+    url = f"{API_BASE}/{ticker}/overview"
+    try:
+        raw = _fetch_json(url)
+    except Exception as e:
+        return {"error": str(e), "ticker": ticker}
+
+    # Parse info table into dict
+    info = {}
+    for item in raw.get("infoTable", []):
+        info[item.get("t", "").lower()] = item.get("v")
+
+    # Parse target string like "297.10 (+15.4%)"
+    target_str = raw.get("target", "")
+    target_price = None
+    target_upside = None
+    if target_str:
+        m = re.match(r"([\d.]+)\s*\(([+-]?[\d.]+)%\)", target_str)
+        if m:
+            target_price = float(m.group(1))
+            target_upside = float(m.group(2))
+
+    return {
+        "ticker": ticker,
+        "market_cap": raw.get("marketCap"),
+        "market_cap_num": _parse_number(raw.get("marketCap")),
+        "revenue": raw.get("revenue"),
+        "revenue_type": raw.get("revenue_type"),
+        "net_income": raw.get("netIncome"),
+        "shares_out": raw.get("sharesOut"),
+        "eps": _parse_number(raw.get("eps")),
+        "pe_ratio": _parse_number(raw.get("peRatio")),
+        "forward_pe": _parse_number(raw.get("forwardPE")),
+        "dividend": raw.get("dividend"),
+        "ex_dividend_date": raw.get("exDividendDate"),
+        "beta": _parse_number(raw.get("beta")),
+        "analyst_rating": raw.get("analysts"),
+        "price_target": target_price,
+        "price_target_upside_pct": target_upside,
+        "earnings_date": raw.get("earningsDate"),
+        "sector": info.get("sector"),
+        "industry": info.get("industry"),
+        "employees": info.get("employees"),
+        "exchange": info.get("stock exchange"),
+        "ipo_date": info.get("ipo date"),
+        "website": info.get("website"),
+        "description": raw.get("description"),
+        "financial_intro": raw.get("financialIntro"),
+        "financial_chart": raw.get("financialChart", []),
+        "fetched_at": datetime.utcnow().isoformat(),
+    }
+
+
+def get_financials(ticker: str) -> Dict[str, Any]:
+    """
+    Get income statement financials by scraping the financials page.
+    Returns multi-year annual data (revenue, net income, EPS, margins, etc.)
+
+    Args:
+        ticker: Stock ticker symbol (e.g. 'AAPL')
+
+    Returns:
+        dict with keys: ticker, periods (list of period labels),
+        metrics (dict of metric_name -> list of values), fetched_at
+
+    Example:
+        >>> fin = get_financials("MSFT")
+        >>> print(fin["metrics"]["Revenue"])
+    """
+    ticker = ticker.upper().strip()
+    url = f"{WEB_BASE}/{ticker.lower()}/financials/"
+    try:
+        html = _fetch_html(url)
+    except Exception as e:
+        return {"error": str(e), "ticker": ticker}
+
+    # Extract the text content — look for financial rows
+    # The page renders a table; we parse the readable text
+    from html.parser import HTMLParser
+    import io
+
+    class TextExtractor(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text_parts = []
+            self._skip = False
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ("script", "style"):
+                self._skip = True
+
+        def handle_endtag(self, tag):
+            if tag in ("script", "style"):
+                self._skip = False
+
+        def handle_data(self, data):
+            if not self._skip:
+                self.text_parts.append(data)
+
+    extractor = TextExtractor()
+    extractor.feed(html)
+    text = " ".join(extractor.text_parts)
+
+    # Parse known metric rows
+    metrics = {}
+    metric_patterns = [
+        "Revenue", "Revenue Growth", "Cost of Revenue", "Gross Profit",
+        "Operating Income", "Net Income", "Net Income Growth",
+        "EPS (Basic)", "EPS (Diluted)", "EPS Growth",
+        "Free Cash Flow", "Free Cash Flow Growth", "Free Cash Flow Per Share",
+        "Dividends Per Share", "Dividend Growth",
+        "Gross Margin", "Operating Margin", "Profit Margin", "FCF Margin",
+        "EBITDA", "EBITDA Margin", "EBIT", "EBIT Margin",
+        "Effective Tax Rate", "Shares Outstanding (Diluted)",
+    ]
+
+    # Try to extract rows: metric name followed by numbers
+    for metric in metric_patterns:
+        # Escape special chars for regex
+        escaped = re.escape(metric)
+        # Match metric name then capture numbers (with optional negative, commas, decimals, %)
+        pattern = escaped + r'\s+([-\d,.%]+(?:\s+[-\d,.%]+)*)'
+        match = re.search(pattern, text)
+        if match:
+            raw_vals = match.group(1).strip()
+            values = re.findall(r'-?[\d,.]+%?', raw_vals)
+            # Clean values
+            cleaned = []
+            for v in values:
+                v_clean = v.replace(",", "").replace("%", "")
+                try:
+                    cleaned.append(float(v_clean))
+                except ValueError:
+                    cleaned.append(v)
+            if cleaned:
+                metrics[metric] = cleaned
+
+    # Try to extract period headers
+    period_match = re.search(r'(TTM\s*(?:FY\s+\d{4}\s*)+)', text)
+    periods = []
+    if period_match:
+        periods = re.findall(r'TTM|FY\s+\d{4}', period_match.group(1))
+
+    return {
+        "ticker": ticker,
+        "periods": periods,
+        "metrics": metrics,
+        "metric_count": len(metrics),
+        "fetched_at": datetime.utcnow().isoformat(),
+    }
+
+
+def get_dividend(ticker: str) -> Dict[str, Any]:
+    """
+    Get dividend data: yield, payout ratio, history, growth rate.
+
+    Args:
+        ticker: Stock ticker symbol (e.g. 'AAPL')
+
+    Returns:
+        dict with keys: ticker, yield, annual_dividend, ex_dividend_date,
+        frequency, payout_ratio, growth, years_paying, buyback_yield,
+        total_return, history (list of dicts), fetched_at
+
+    Example:
+        >>> div = get_dividend("AAPL")
+        >>> print(div["yield"], div["payout_ratio"])
+    """
+    ticker = ticker.upper().strip()
+    url = f"{API_BASE}/{ticker}/dividend"
+    try:
+        raw = _fetch_json(url)
+    except Exception as e:
+        return {"error": str(e), "ticker": ticker}
+
+    info = raw.get("infoTable", {})
+    history = raw.get("history", [])
+
+    # Parse history into clean dicts
+    clean_history = []
+    for h in history:
+        clean_history.append({
+            "ex_date": h.get("dt"),
+            "amount": h.get("amt", "").replace("$", ""),
+            "record_date": h.get("record"),
+            "pay_date": h.get("pay"),
+        })
+
+    return {
+        "ticker": ticker,
+        "yield": info.get("yield"),
+        "annual_dividend": info.get("annual"),
+        "ex_dividend_date": info.get("exdiv"),
+        "frequency": info.get("frequency"),
+        "payout_ratio": info.get("payoutRatio"),
+        "dividend_growth": info.get("growth"),
+        "years_paying": _parse_number(info.get("years")),
+        "buyback_yield": info.get("buybackYield"),
+        "total_return": info.get("totalReturn"),
+        "info_box": raw.get("infoBox"),
+        "history": clean_history[:20],  # last 20 entries
+        "fetched_at": datetime.utcnow().isoformat(),
+    }
+
+
+def get_price_history(
+    ticker: str,
+    period: str = "monthly",
+) -> Dict[str, Any]:
+    """
+    Get historical price data (OHLCV).
+
+    Args:
+        ticker: Stock ticker symbol (e.g. 'AAPL')
+        period: 'monthly' (default) or 'daily'
+
+    Returns:
+        dict with keys: ticker, period, data (list of price bars), count, fetched_at
+        Each bar: {date, open, high, low, close, adj_close, volume, change_pct}
+
+    Example:
+        >>> hist = get_price_history("AAPL", period="monthly")
+        >>> print(hist["data"][0])  # most recent bar
+    """
+    ticker = ticker.upper().strip()
+    p_param = period if period in ("monthly", "daily") else "monthly"
+    url = f"{API_BASE}/{ticker}/history?p={p_param}"
+    try:
+        raw = _fetch_json(url)
+    except Exception as e:
+        return {"error": str(e), "ticker": ticker}
+
+    bars = raw.get("data", [])
+    clean_bars = []
+    for bar in bars:
+        clean_bars.append({
+            "date": bar.get("t"),
+            "open": bar.get("o"),
+            "high": bar.get("h"),
+            "low": bar.get("l"),
+            "close": bar.get("c"),
+            "adj_close": bar.get("a"),
+            "volume": bar.get("v"),
+            "change_pct": bar.get("ch"),
+        })
+
+    return {
+        "ticker": ticker,
+        "period": p_param,
+        "data": clean_bars,
+        "count": len(clean_bars),
+        "fetched_at": datetime.utcnow().isoformat(),
+    }
+
+
+def get_forecast(ticker: str) -> Dict[str, Any]:
+    """
+    Get analyst price targets, ratings consensus, and revenue/EPS forecasts
+    by scraping the forecast page.
+
+    Args:
+        ticker: Stock ticker symbol (e.g. 'AAPL')
+
+    Returns:
+        dict with keys: ticker, current_price, analyst_count, consensus,
+        price_target_avg, price_target_low, price_target_high,
+        target_upside_pct, ratings_breakdown, revenue_estimates,
+        eps_estimates, fetched_at
+
+    Example:
+        >>> fc = get_forecast("AAPL")
+        >>> print(fc["consensus"], fc["price_target_avg"])
+    """
+    ticker = ticker.upper().strip()
+    url = f"{WEB_BASE}/{ticker.lower()}/forecast/"
+    try:
+        html = _fetch_html(url)
+    except Exception as e:
+        return {"error": str(e), "ticker": ticker}
+
+    from html.parser import HTMLParser
+
+    class TextExtractor(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text_parts = []
+            self._skip = False
+        def handle_starttag(self, tag, attrs):
+            if tag in ("script", "style"):
+                self._skip = True
+        def handle_endtag(self, tag):
+            if tag in ("script", "style"):
+                self._skip = False
+        def handle_data(self, data):
+            if not self._skip:
+                self.text_parts.append(data)
+
+    ext = TextExtractor()
+    ext.feed(html)
+    text = " ".join(ext.text_parts)
+
+    result = {"ticker": ticker}
+
+    # Current price
+    price_m = re.search(r'(\d+\.\d+)\s+[+-]?\d+\.\d+\s+\([+-]?\d+\.\d+%\)\s+At close', text)
+    if price_m:
+        result["current_price"] = float(price_m.group(1))
+
+    # Consensus summary
+    cons_m = re.search(r'(\d+)\s+analysts?\s+.*?consensus\s+rating\s+of\s+"(\w+)"', text, re.IGNORECASE)
+    if cons_m:
+        result["analyst_count"] = int(cons_m.group(1))
+        result["consensus"] = cons_m.group(2)
+
+    # Price targets
+    avg_m = re.search(r'average\s+price\s+target\s+of\s+\$?([\d,.]+)', text, re.IGNORECASE)
+    if avg_m:
+        result["price_target_avg"] = float(avg_m.group(1).replace(",", ""))
+
+    upside_m = re.search(r'forecasts?\s+a?\s*([\d.]+)%\s+(increase|decrease)', text, re.IGNORECASE)
+    if upside_m:
+        pct = float(upside_m.group(1))
+        result["target_upside_pct"] = pct if upside_m.group(2).lower() == "increase" else -pct
+
+    low_m = re.search(r'lowest\s+target\s+is\s+\$?([\d,.]+)', text, re.IGNORECASE)
+    if low_m:
+        result["price_target_low"] = float(low_m.group(1).replace(",", ""))
+
+    high_m = re.search(r'highest\s+is\s+\$?([\d,.]+)', text, re.IGNORECASE)
+    if high_m:
+        result["price_target_high"] = float(high_m.group(1).replace(",", ""))
+
+    # Ratings breakdown
+    ratings = {}
+    for rating in ("Strong Buy", "Buy", "Hold", "Sell", "Strong Sell"):
+        rm = re.search(re.escape(rating) + r'\s+([\d\s]+?)(?:Buy|Hold|Sell|Strong|Total)', text)
+        if rm:
+            nums = re.findall(r'\d+', rm.group(1))
+            if nums:
+                ratings[rating] = int(nums[-1])  # latest month
+    if ratings:
+        result["ratings_breakdown"] = ratings
+
+    # Revenue estimates from table
+    rev_m = re.search(r'Revenue\s+([\d.]+[BM](?:\s*[\d.]+[BM])*)', text)
+    if rev_m:
+        result["revenue_estimates"] = re.findall(r'[\d.]+[BM]', rev_m.group(0))
+
+    # EPS estimates
+    eps_m = re.search(r'EPS\s+([\d.]+(?:\s+[\d.]+)*)', text)
+    if eps_m:
+        vals = re.findall(r'[\d.]+', eps_m.group(1))
+        try:
+            result["eps_estimates"] = [float(v) for v in vals]
+        except ValueError:
+            pass
+
+    result["fetched_at"] = datetime.utcnow().isoformat()
+    return result
+
+
+def get_key_metrics(ticker: str) -> Dict[str, Any]:
+    """
+    Get key metrics by combining overview data with computed fields.
+    Quick snapshot for screening/comparison.
+
+    Args:
+        ticker: Stock ticker symbol
+
+    Returns:
+        dict with essential valuation and profitability metrics
+
+    Example:
+        >>> m = get_key_metrics("MSFT")
+        >>> print(m["pe_ratio"], m["analyst_rating"])
+    """
+    overview = get_overview(ticker)
+    if "error" in overview:
+        return overview
+
+    return {
+        "ticker": ticker,
+        "market_cap": overview.get("market_cap"),
+        "pe_ratio": overview.get("pe_ratio"),
+        "forward_pe": overview.get("forward_pe"),
+        "eps": overview.get("eps"),
+        "beta": overview.get("beta"),
+        "dividend": overview.get("dividend"),
+        "analyst_rating": overview.get("analyst_rating"),
+        "price_target": overview.get("price_target"),
+        "price_target_upside_pct": overview.get("price_target_upside_pct"),
+        "sector": overview.get("sector"),
+        "industry": overview.get("industry"),
+        "fetched_at": datetime.utcnow().isoformat(),
+    }
+
+
+def compare_stocks(tickers: List[str]) -> List[Dict[str, Any]]:
+    """
+    Compare multiple stocks side by side on key metrics.
+
+    Args:
+        tickers: List of ticker symbols (e.g. ['AAPL', 'MSFT', 'GOOGL'])
+
+    Returns:
+        List of key metrics dicts, one per ticker
+
+    Example:
+        >>> results = compare_stocks(["AAPL", "MSFT", "GOOGL"])
+        >>> for r in results: print(r["ticker"], r["pe_ratio"])
+    """
+    return [get_key_metrics(t) for t in tickers]
+
+
+# Module-level exports
+__all__ = [
+    "get_overview",
+    "get_financials",
+    "get_dividend",
+    "get_price_history",
+    "get_forecast",
+    "get_key_metrics",
+    "compare_stocks",
+]

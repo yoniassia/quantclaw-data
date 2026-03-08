@@ -1,273 +1,564 @@
-#!/usr/bin/env python3
 """
-Treasury FiscalData API — Federal Financial Data & Sovereign Debt Analytics
+U.S. Treasury Fiscal Data API Module
 
-Data Sources:
-- Public Debt: Total public debt outstanding (v2 API)
-- Exchange Rates: Treasury reporting rates for foreign currency conversion (v1 API)
-- Revenue Collections: Federal tax receipts and revenue by source (v1 API)
-- Operating Cash: Daily government cash balance (v1 API)
-- Interest Rates: Average interest rates on Treasury securities (v2 API)
-
-Source: https://fiscaldata.treasury.gov/api-documentation
-Category: Government & Regulatory
-Free tier: Fully free with no rate limits
-Update frequency: Daily
-
-Author: NightBuilder
-Phase: DevClaw Auto-Build
+Source: fiscaldata.treasury.gov
+Category: Government Finance
+Frequency: Daily, Monthly
+Description: Official U.S. government financial data including debt, revenue, 
+             spending, interest rates, and Treasury operations.
+API: fiscaldata.treasury.gov/api-documentation/ - No authentication required
 """
 
 import requests
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
+import json
 
-BASE_URL_V1 = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1"
-BASE_URL_V2 = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2"
+# API Configuration
+FISCAL_DATA_BASE = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service"
+
+# Major datasets
+DATASETS = {
+    "debt_to_penny": "v2/accounting/od/debt_to_penny",
+    "avg_interest_rates": "v2/accounting/od/avg_interest_rates",
+    "daily_treasury_statement": "v1/accounting/dts/dts_table_1",
+    "monthly_treasury_statement": "v1/accounting/mts/mts_table_5",
+    "treasury_offset_program": "v1/debt/top/top_federal",
+    "gift_contributions": "v2/accounting/od/gift_contributions",
+    "gold_reserve": "v1/accounting/od/gold_reserve",
+    "schedule_d": "v1/accounting/od/schedule_d",
+    "slgs_statistics": "v2/accounting/od/slgs_statistics",
+}
 
 
-def get_public_debt(lookback_days: int = 365) -> Dict:
+def get_national_debt(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 1
+) -> Dict:
     """
-    Get total public debt outstanding to the penny (V2 API)
+    Get U.S. national debt (Debt to the Penny).
     
+    Args:
+        start_date: Start date YYYY-MM-DD (default: latest)
+        end_date: End date YYYY-MM-DD (default: today)
+        limit: Number of records to return (default: 1 for latest)
+        
     Returns:
-        Dict with debt figures, composition, and latest summary
+        {
+            "success": True,
+            "date": "2026-03-07",
+            "total_debt": 35234567890123.45,
+            "public_debt": 28456789012345.67,
+            "intragovernmental_debt": 6777778877777.78,
+            "records": [...]
+        }
     """
     try:
-        url = f"{BASE_URL_V2}/accounting/od/debt_to_penny"
-        start_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['debt_to_penny']}"
         
         params = {
-            "page[size]": 100,
-            "filter": f"record_date:gte:{start_date}",
-            "sort": "-record_date"
+            "sort": "-record_date",
+            "page[size]": limit,
+            "fields": "record_date,tot_pub_debt_out_amt,intragov_hold_amt,debt_held_public_amt"
         }
         
-        response = requests.get(url, params=params, timeout=15)
+        if start_date:
+            params["filter"] = f"record_date:gte:{start_date}"
+        if end_date:
+            if "filter" in params:
+                params["filter"] += f",record_date:lte:{end_date}"
+            else:
+                params["filter"] = f"record_date:lte:{end_date}"
+        
+        response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
         
         data = response.json()
-        records = data.get("data", [])
         
-        if not records:
-            return {"success": False, "error": "No data returned"}
+        if not data.get("data"):
+            return {"success": False, "error": "No debt data available"}
         
+        records = data["data"]
         latest = records[0]
         
-        # Find record from ~365 days ago for YoY calc
-        year_ago = None
-        target_date = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
-        for record in records:
-            if record["record_date"] <= target_date:
-                year_ago = record
-                break
+        return {
+            "success": True,
+            "date": latest.get("record_date"),
+            "total_debt": float(latest.get("tot_pub_debt_out_amt", 0)),
+            "public_debt": float(latest.get("debt_held_public_amt", 0)),
+            "intragovernmental_debt": float(latest.get("intragov_hold_amt", 0)),
+            "records": records,
+            "count": len(records),
+            "source": "U.S. Treasury Fiscal Data API"
+        }
         
-        result = {
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching national debt: {str(e)}"
+        }
+
+
+def get_treasury_interest_rates(
+    security_type: Optional[str] = None,
+    limit: int = 100
+) -> Dict:
+    """
+    Get average interest rates on U.S. Treasury securities.
+    
+    Args:
+        security_type: Filter by security type (e.g., "Treasury Bills", "Treasury Notes")
+        limit: Number of records to return
+        
+    Returns:
+        {
+            "success": True,
+            "date": "2026-02-28",
+            "rates": [{
+                "security_type": "Treasury Bills",
+                "security_desc": "3-Month",
+                "avg_interest_rate": 5.23,
+                "record_date": "2026-02-28"
+            }, ...]
+        }
+    """
+    try:
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['avg_interest_rates']}"
+        
+        params = {
+            "sort": "-record_date",
+            "page[size]": limit
+        }
+        
+        if security_type:
+            params["filter"] = f"security_type_desc:eq:{security_type}"
+        
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if not data.get("data"):
+            return {"success": False, "error": "No interest rate data available"}
+        
+        records = data["data"]
+        
+        # Parse and format rates
+        rates = []
+        for record in records:
+            rates.append({
+                "security_type": record.get("security_type_desc"),
+                "security_desc": record.get("security_desc"),
+                "avg_interest_rate": float(record.get("avg_interest_rate_amt", 0)),
+                "record_date": record.get("record_date")
+            })
+        
+        return {
+            "success": True,
+            "date": records[0].get("record_date") if records else None,
+            "rates": rates,
+            "count": len(rates),
+            "source": "U.S. Treasury Fiscal Data API"
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching interest rates: {str(e)}"
+        }
+
+
+def get_daily_treasury_statement(
+    table_name: str = "dts_table_1",
+    record_date: Optional[str] = None,
+    limit: int = 10
+) -> Dict:
+    """
+    Get Daily Treasury Statement data (receipts, outlays, deficit/surplus).
+    
+    Args:
+        table_name: DTS table name (default: dts_table_1 - Operating Cash Balance)
+        record_date: Specific date YYYY-MM-DD (optional)
+        limit: Number of records
+        
+    Returns:
+        {
+            "success": True,
+            "data": [...],
+            "summary": {...}
+        }
+    """
+    try:
+        url = f"{FISCAL_DATA_BASE}/v1/accounting/dts/{table_name}"
+        
+        params = {
+            "sort": "-record_date",
+            "page[size]": limit
+        }
+        
+        if record_date:
+            params["filter"] = f"record_date:eq:{record_date}"
+        
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if not data.get("data"):
+            return {"success": False, "error": "No DTS data available"}
+        
+        records = data["data"]
+        
+        return {
+            "success": True,
+            "table": table_name,
+            "data": records,
+            "count": len(records),
+            "source": "U.S. Treasury Daily Treasury Statement"
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching DTS: {str(e)}"
+        }
+
+
+def get_monthly_treasury_statement(
+    fiscal_year: Optional[int] = None,
+    fiscal_month: Optional[int] = None,
+    limit: int = 12
+) -> Dict:
+    """
+    Get Monthly Treasury Statement (revenue and outlays by category).
+    
+    Args:
+        fiscal_year: Fiscal year (e.g., 2026)
+        fiscal_month: Fiscal month (1-12)
+        limit: Number of records
+        
+    Returns:
+        {
+            "success": True,
+            "data": [...],
+            "summary": {...}
+        }
+    """
+    try:
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['monthly_treasury_statement']}"
+        
+        params = {
+            "sort": "-record_date",
+            "page[size]": limit
+        }
+        
+        filters = []
+        if fiscal_year:
+            filters.append(f"record_fiscal_year:eq:{fiscal_year}")
+        if fiscal_month:
+            filters.append(f"record_fiscal_month:eq:{fiscal_month}")
+        
+        if filters:
+            params["filter"] = ",".join(filters)
+        
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if not data.get("data"):
+            return {"success": False, "error": "No MTS data available"}
+        
+        records = data["data"]
+        
+        return {
             "success": True,
             "data": records,
-            "latest_date": latest.get("record_date"),
-            "total_debt_usd": float(latest.get("tot_pub_debt_out_amt", 0)),
-            "public_debt_usd": float(latest.get("debt_held_public_amt", 0)),
-            "intragovernmental_usd": float(latest.get("intragov_hold_amt", 0)),
-            "source": "treasury.gov/fiscaldata"
+            "count": len(records),
+            "source": "U.S. Treasury Monthly Treasury Statement"
         }
         
-        if year_ago:
-            result["yoy_change_usd"] = result["total_debt_usd"] - float(year_ago.get("tot_pub_debt_out_amt", 0))
-            result["yoy_change_pct"] = (result["yoy_change_usd"] / float(year_ago.get("tot_pub_debt_out_amt", 1))) * 100
-        
-        return result
-    
-    except requests.exceptions.RequestException as e:
-        return {"success": False, "error": str(e)}
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching MTS: {str(e)}"
+        }
 
 
-def get_exchange_rates(record_date: Optional[str] = None) -> Dict:
+def get_treasury_offset_program(
+    fiscal_year: Optional[int] = None,
+    limit: int = 100
+) -> Dict:
     """
-    Get Treasury reporting exchange rates for foreign currencies (V1 API)
+    Get Treasury Offset Program data (federal debt collection).
     
     Args:
-        record_date: Date in YYYY-MM-DD format (defaults to 2024-09-30)
-    
+        fiscal_year: Fiscal year (optional)
+        limit: Number of records
+        
     Returns:
-        Dict with exchange rates by currency
+        {
+            "success": True,
+            "data": [...],
+            "total_offsets": 12345678.90
+        }
     """
     try:
-        url = f"{BASE_URL_V1}/accounting/od/rates_of_exchange"
-        
-        if record_date is None:
-            record_date = "2024-09-30"  # Known good quarter end
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['treasury_offset_program']}"
         
         params = {
-            "filter": f"record_date:eq:{record_date}",
-            "page[size]": 200
+            "sort": "-reporting_date",
+            "page[size]": limit
         }
         
-        response = requests.get(url, params=params, timeout=15)
+        if fiscal_year:
+            params["filter"] = f"reporting_fiscal_year:eq:{fiscal_year}"
+        
+        response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
         
         data = response.json()
         
+        if not data.get("data"):
+            return {"success": False, "error": "No TOP data available"}
+        
+        records = data["data"]
+        
+        # Calculate total offsets
+        total_offsets = sum(
+            float(r.get("total_offset_amt", 0)) 
+            for r in records 
+            if r.get("total_offset_amt")
+        )
+        
         return {
             "success": True,
-            "data": data.get("data", []),
-            "record_date": record_date,
-            "source": "treasury.gov/fiscaldata"
+            "data": records,
+            "total_offsets": total_offsets,
+            "count": len(records),
+            "source": "U.S. Treasury Offset Program"
         }
-    
-    except requests.exceptions.RequestException as e:
-        return {"success": False, "error": str(e)}
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching TOP data: {str(e)}"
+        }
 
 
-def get_revenue_collections(fiscal_year: Optional[int] = None) -> Dict:
+def get_gift_contributions(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 100
+) -> Dict:
     """
-    Get federal revenue collections by source (MTS Table 5, V1 API)
+    Get gift contributions to reduce debt held by the public.
     
     Args:
-        fiscal_year: Fiscal year (defaults to current)
-    
+        start_date: Start date YYYY-MM-DD
+        end_date: End date YYYY-MM-DD
+        limit: Number of records
+        
     Returns:
-        Dict with revenue data by classification
+        {
+            "success": True,
+            "total_contributions": 12345.67,
+            "data": [...]
+        }
     """
     try:
-        url = f"{BASE_URL_V1}/accounting/mts/mts_table_5"
-        
-        if fiscal_year is None:
-            fiscal_year = datetime.now().year
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['gift_contributions']}"
         
         params = {
-            "filter": f"record_fiscal_year:eq:{fiscal_year}",
-            "page[size]": 200,
-            "sort": "-record_date"
+            "sort": "-record_date",
+            "page[size]": limit
         }
         
-        response = requests.get(url, params=params, timeout=15)
+        filters = []
+        if start_date:
+            filters.append(f"record_date:gte:{start_date}")
+        if end_date:
+            filters.append(f"record_date:lte:{end_date}")
+        
+        if filters:
+            params["filter"] = ",".join(filters)
+        
+        response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
         
         data = response.json()
         
+        if not data.get("data"):
+            return {"success": False, "error": "No gift contribution data available"}
+        
+        records = data["data"]
+        
+        # Calculate total contributions
+        total = sum(
+            float(r.get("gift_contrib_curr_month_amt", 0)) 
+            for r in records 
+            if r.get("gift_contrib_curr_month_amt")
+        )
+        
         return {
             "success": True,
-            "data": data.get("data", []),
+            "total_contributions": total,
+            "data": records,
+            "count": len(records),
+            "source": "U.S. Treasury Gift Contributions"
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching gift contributions: {str(e)}"
+        }
+
+
+def get_gold_reserve(limit: int = 10) -> Dict:
+    """
+    Get U.S. gold reserve holdings and value.
+    
+    Args:
+        limit: Number of records
+        
+    Returns:
+        {
+            "success": True,
+            "date": "2026-02-28",
+            "fine_troy_ounces": 261498926.24,
+            "book_value": 11041051546.75,
+            "data": [...]
+        }
+    """
+    try:
+        url = f"{FISCAL_DATA_BASE}/{DATASETS['gold_reserve']}"
+        
+        params = {
+            "sort": "-record_date",
+            "page[size]": limit
+        }
+        
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if not data.get("data"):
+            return {"success": False, "error": "No gold reserve data available"}
+        
+        records = data["data"]
+        latest = records[0]
+        
+        return {
+            "success": True,
+            "date": latest.get("record_date"),
+            "fine_troy_ounces": float(latest.get("fine_troy_ounces", 0)),
+            "book_value": float(latest.get("book_value_amt", 0)),
+            "data": records,
+            "count": len(records),
+            "source": "U.S. Treasury Gold Reserve"
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching gold reserve: {str(e)}"
+        }
+
+
+def get_fiscal_summary(fiscal_year: Optional[int] = None) -> Dict:
+    """
+    Get comprehensive fiscal summary (debt, revenue, spending).
+    
+    Args:
+        fiscal_year: Fiscal year (default: current)
+        
+    Returns:
+        {
+            "success": True,
+            "fiscal_year": 2026,
+            "debt": {...},
+            "revenue": {...},
+            "spending": {...}
+        }
+    """
+    try:
+        if not fiscal_year:
+            # Current fiscal year (Oct 1 - Sep 30)
+            now = datetime.now()
+            fiscal_year = now.year if now.month >= 10 else now.year - 1
+        
+        # Get debt
+        debt_data = get_national_debt(limit=1)
+        
+        # Get monthly statement for revenue/spending
+        mts_data = get_monthly_treasury_statement(fiscal_year=fiscal_year)
+        
+        summary = {
+            "success": True,
             "fiscal_year": fiscal_year,
-            "source": "treasury.gov/fiscaldata"
+            "debt": debt_data if debt_data.get("success") else None,
+            "monthly_statement": mts_data if mts_data.get("success") else None,
+            "source": "U.S. Treasury Fiscal Data API"
         }
-    
-    except requests.exceptions.RequestException as e:
-        return {"success": False, "error": str(e)}
+        
+        return summary
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error fetching fiscal summary: {str(e)}"
+        }
 
 
-def get_operating_cash_balance(lookback_days: int = 90) -> Dict:
+def search_datasets(query: str = "") -> Dict:
     """
-    Get daily U.S. government operating cash balance (V1 API)
+    Search available Treasury datasets.
     
+    Args:
+        query: Search query (optional)
+        
     Returns:
-        Dict with operating cash levels
+        {
+            "success": True,
+            "datasets": {...}
+        }
     """
     try:
-        url = f"{BASE_URL_V1}/accounting/dts/operating_cash_balance"
-        start_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        filtered = {}
         
-        params = {
-            "filter": f"record_date:gte:{start_date}",
-            "page[size]": 100,
-            "sort": "-record_date"
-        }
-        
-        response = requests.get(url, params=params, timeout=15)
-        response.raise_for_status()
-        
-        data = response.json()
+        for name, endpoint in DATASETS.items():
+            if not query or query.lower() in name.lower():
+                filtered[name] = {
+                    "endpoint": endpoint,
+                    "url": f"{FISCAL_DATA_BASE}/{endpoint}"
+                }
         
         return {
             "success": True,
-            "data": data.get("data", []),
-            "source": "treasury.gov/fiscaldata"
-        }
-    
-    except requests.exceptions.RequestException as e:
-        return {"success": False, "error": str(e)}
-
-
-def get_avg_interest_rates(lookback_days: int = 90) -> Dict:
-    """
-    Get average interest rates on U.S. Treasury securities (V2 API)
-    
-    Returns:
-        Dict with treasury rates by security type
-    """
-    try:
-        url = f"{BASE_URL_V2}/accounting/od/avg_interest_rates"
-        start_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
-        
-        params = {
-            "filter": f"record_date:gte:{start_date}",
-            "page[size]": 200,
-            "sort": "-record_date"
+            "datasets": filtered,
+            "count": len(filtered),
+            "source": "U.S. Treasury Fiscal Data API"
         }
         
-        response = requests.get(url, params=params, timeout=15)
-        response.raise_for_status()
-        
-        data = response.json()
-        
+    except Exception as e:
         return {
-            "success": True,
-            "data": data.get("data", []),
-            "source": "treasury.gov/fiscaldata"
+            "success": False,
+            "error": f"Error searching datasets: {str(e)}"
         }
-    
-    except requests.exceptions.RequestException as e:
-        return {"success": False, "error": str(e)}
 
 
-def get_debt_summary() -> Dict:
-    """
-    Get comprehensive debt summary with latest figures
-    Convenience wrapper around get_public_debt
-    
-    Returns:
-        Dict with debt metrics and YoY growth
-    """
-    return get_public_debt(lookback_days=400)
-
-
-# CLI test
-if __name__ == "__main__":
-    print("Treasury FiscalData API Module Test\n")
-    
-    # Test 1: Public Debt Summary
-    print("=== Public Debt Summary ===")
-    debt = get_debt_summary()
-    if debt.get("success"):
-        print(f"Date: {debt['latest_date']}")
-        print(f"Total Debt: ${debt['total_debt_usd']:,.0f}")
-        if 'yoy_change_usd' in debt:
-            print(f"YoY Change: ${debt['yoy_change_usd']:,.0f} ({debt['yoy_change_pct']:.2f}%)")
-    else:
-        print(f"Error: {debt.get('error')}")
-    
-    # Test 2: Exchange Rates
-    print("\n=== Exchange Rates (Sept 2024) ===")
-    fx = get_exchange_rates()
-    if fx["success"] and fx["data"]:
-        for record in fx["data"][:5]:
-            print(f"{record['country_currency_desc']}: {record['exchange_rate']}")
-    
-    # Test 3: Operating Cash
-    print("\n=== Operating Cash Balance (Last 3 Days) ===")
-    cash = get_operating_cash_balance(lookback_days=7)
-    if cash["success"] and cash["data"]:
-        for record in cash["data"][:3]:
-            bal = record.get('close_today_bal')
-            if bal and bal != 'null':
-                print(f"{record['record_date']}: ${float(bal):,.0f}")
-    
-    # Test 4: Avg Interest Rates
-    print("\n=== Recent Treasury Interest Rates ===")
-    rates = get_avg_interest_rates(lookback_days=7)
-    if rates["success"] and rates["data"]:
-        for record in rates["data"][:5]:
-            print(f"{record['record_date']}: {record.get('security_desc', 'Unknown')} = {record.get('avg_interest_rate_amt', 'N/A')}%")
-    
-    print("\n✅ Module test complete")
+# Convenience exports
+__all__ = [
+    "get_national_debt",
+    "get_treasury_interest_rates",
+    "get_daily_treasury_statement",
+    "get_monthly_treasury_statement",
+    "get_treasury_offset_program",
+    "get_gift_contributions",
+    "get_gold_reserve",
+    "get_fiscal_summary",
+    "search_datasets"
+]
