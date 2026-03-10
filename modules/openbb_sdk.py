@@ -1,384 +1,575 @@
-#!/usr/bin/env python3
 """
-OpenBB SDK — Open-Source Financial Data Aggregator
+OpenBB SDK — Unified Financial Data Access (Lightweight)
 
-OpenBB SDK is an open-source Python library for accessing financial data from 
-multiple providers (Yahoo Finance, Alpha Vantage, FRED, etc.). Enables quant 
-analysis, backtesting, and ML model training with unified interface for stocks, 
-crypto, economics, and more.
+Provides OpenBB-style unified access to free financial data sources without
+requiring the full openbb pip package or paid API keys. Wraps the same free
+data providers that OpenBB Platform aggregates:
 
-Source: https://docs.openbb.co/sdk
+- SEC EDGAR: Company filings, insider trades, institutional holdings
+- FRED (no key): Select economic indicators via alternative endpoints
+- EconDB: Macro indicators (no key required)
+- OECD: International economic data
+- SEC Company Search & CIK resolution
+
+Source: https://docs.openbb.co/
 Category: Quant Tools & ML
-Free tier: True - Fully free and open-source; no rate limits
-Author: QuantClaw Data NightBuilder
-Phase: 105
+Free tier: True (all endpoints used are free/no-key)
+Update frequency: real-time/daily
 """
 
+import requests
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 
-# ========== OPENBB SDK IMPORT WITH GRACEFUL FALLBACK ==========
+CACHE_DIR = os.path.expanduser("~/.quantclaw/cache/openbb_sdk")
+os.makedirs(CACHE_DIR, exist_ok=True)
 
-try:
-    from openbb import obb
-    OPENBB_AVAILABLE = True
-except ImportError:
-    OPENBB_AVAILABLE = False
-    obb = None
+HEADERS = {
+    "User-Agent": "QuantClaw/1.0 (quant data platform; support@moneyclaw.com)",
+    "Accept": "application/json",
+}
 
-# ========== INSTALLATION HELPER ==========
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-def get_installation_message() -> Dict[str, Any]:
-    """Return installation instructions if OpenBB SDK is not available."""
-    return {
-        "error": "OpenBB SDK not installed",
-        "install_command": "pip install openbb",
-        "documentation": "https://docs.openbb.co/sdk",
-        "note": "After installation, restart your Python environment"
-    }
+def _cache_get(key: str, max_age_hours: int = 24) -> Optional[Any]:
+    """Read from disk cache if fresh enough."""
+    path = os.path.join(CACHE_DIR, f"{key}.json")
+    if os.path.exists(path):
+        age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(path))
+        if age < timedelta(hours=max_age_hours):
+            with open(path) as f:
+                return json.load(f)
+    return None
 
-# ========== STOCK DATA FUNCTIONS ==========
 
-def get_stock_quote(symbol: str) -> Dict[str, Any]:
+def _cache_set(key: str, data: Any) -> None:
+    """Write to disk cache."""
+    path = os.path.join(CACHE_DIR, f"{key}.json")
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2, default=str)
+
+
+def _get(url: str, params: Optional[dict] = None, timeout: int = 15) -> requests.Response:
+    """GET with standard headers and timeout."""
+    return requests.get(url, headers=HEADERS, params=params, timeout=timeout)
+
+
+# ---------------------------------------------------------------------------
+# SEC EDGAR — Company Filings & Data
+# ---------------------------------------------------------------------------
+
+def sec_cik_lookup(ticker: str) -> Dict:
     """
-    Get real-time stock quote for a given symbol.
-    
+    Resolve a stock ticker to its SEC CIK number.
+
     Args:
-        symbol: Stock ticker symbol (e.g., 'AAPL', 'TSLA')
-        
+        ticker: Stock ticker symbol (e.g. 'AAPL')
+
     Returns:
-        Dict with quote data: symbol, price, volume, change, etc.
+        dict with cik, name, ticker
     """
-    if not OPENBB_AVAILABLE:
-        return get_installation_message()
-    
+    cache_key = f"cik_{ticker.upper()}"
+    cached = _cache_get(cache_key, max_age_hours=168)  # CIKs don't change
+    if cached:
+        return cached
+
+    url = "https://efts.sec.gov/LATEST/search-index?q=%22{}%22&dateRange=custom&startdt=2020-01-01&enddt=2026-12-31&forms=10-K" .format(ticker.upper())
+    # Better approach: use the company tickers JSON
+    tickers_url = "https://www.sec.gov/files/company_tickers.json"
     try:
-        result = obb.equity.price.quote(symbol=symbol, provider="yfinance")
-        
-        if not result or not result.results:
-            return {"error": f"No data found for symbol: {symbol}"}
-        
-        data = result.results[0]
-        
-        return {
-            "symbol": symbol.upper(),
-            "price": getattr(data, 'last_price', getattr(data, 'price', None)),
-            "open": getattr(data, 'open', None),
-            "high": getattr(data, 'high', None),
-            "low": getattr(data, 'low', None),
-            "volume": getattr(data, 'volume', None),
-            "previous_close": getattr(data, 'previous_close', None),
-            "change": getattr(data, 'change', None),
-            "change_percent": getattr(data, 'change_percent', None),
-            "timestamp": datetime.now().isoformat(),
-            "provider": "yfinance"
-        }
-        
+        resp = _get(tickers_url)
+        resp.raise_for_status()
+        data = resp.json()
+        for entry in data.values():
+            if entry.get("ticker", "").upper() == ticker.upper():
+                result = {
+                    "cik": str(entry["cik_str"]).zfill(10),
+                    "cik_raw": entry["cik_str"],
+                    "name": entry["title"],
+                    "ticker": entry["ticker"],
+                    "source": "sec_edgar",
+                }
+                _cache_set(cache_key, result)
+                return result
+        return {"error": f"Ticker {ticker} not found in SEC database"}
     except Exception as e:
-        return {
-            "error": f"Failed to fetch quote for {symbol}",
-            "details": str(e),
-            "symbol": symbol
-        }
+        return {"error": str(e), "source": "sec_edgar"}
 
-def get_historical_prices(symbol: str, start: str, end: str, interval: str = "1d") -> Dict[str, Any]:
+
+def sec_company_filings(ticker: str, filing_type: str = "10-K", limit: int = 5) -> List[Dict]:
     """
-    Get historical price data for a stock.
-    
+    Get recent SEC filings for a company.
+
     Args:
-        symbol: Stock ticker symbol (e.g., 'AAPL')
-        start: Start date in YYYY-MM-DD format
-        end: End date in YYYY-MM-DD format
-        interval: Data interval ('1d', '1h', '1m', etc.)
-        
+        ticker: Stock ticker (e.g. 'AAPL')
+        filing_type: Filing type filter (10-K, 10-Q, 8-K, etc.)
+        limit: Max filings to return
+
     Returns:
-        Dict with historical prices list and metadata
+        List of filing dicts with date, type, url, description
     """
-    if not OPENBB_AVAILABLE:
-        return get_installation_message()
-    
+    cik_data = sec_cik_lookup(ticker)
+    if "error" in cik_data:
+        return [cik_data]
+
+    cik = cik_data["cik"]
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     try:
-        result = obb.equity.price.historical(
-            symbol=symbol,
-            start_date=start,
-            end_date=end,
-            interval=interval,
-            provider="yfinance"
-        )
-        
-        if not result or not result.results:
-            return {
-                "error": f"No historical data found for {symbol}",
-                "symbol": symbol,
-                "start": start,
-                "end": end
-            }
-        
-        prices = []
-        for record in result.results:
-            prices.append({
-                "date": str(getattr(record, 'date', '')),
-                "open": getattr(record, 'open', None),
-                "high": getattr(record, 'high', None),
-                "low": getattr(record, 'low', None),
-                "close": getattr(record, 'close', None),
-                "volume": getattr(record, 'volume', None),
-                "adjusted_close": getattr(record, 'adj_close', None)
+        resp = _get(url)
+        resp.raise_for_status()
+        data = resp.json()
+
+        recent = data.get("filings", {}).get("recent", {})
+        forms = recent.get("form", [])
+        dates = recent.get("filingDate", [])
+        accessions = recent.get("accessionNumber", [])
+        descriptions = recent.get("primaryDocDescription", [])
+        docs = recent.get("primaryDocument", [])
+
+        results = []
+        for i, form in enumerate(forms):
+            if filing_type and form != filing_type:
+                continue
+            if len(results) >= limit:
+                break
+            acc_clean = accessions[i].replace("-", "")
+            results.append({
+                "form": form,
+                "date": dates[i],
+                "description": descriptions[i] if i < len(descriptions) else "",
+                "url": f"https://www.sec.gov/Archives/edgar/data/{cik_data['cik_raw']}/{acc_clean}/{docs[i]}",
+                "accession": accessions[i],
             })
-        
-        return {
-            "symbol": symbol.upper(),
-            "interval": interval,
-            "start_date": start,
-            "end_date": end,
-            "count": len(prices),
-            "data": prices,
-            "provider": "yfinance"
-        }
-        
-    except Exception as e:
-        return {
-            "error": f"Failed to fetch historical data for {symbol}",
-            "details": str(e),
-            "symbol": symbol,
-            "start": start,
-            "end": end
-        }
 
-def get_company_fundamentals(symbol: str) -> Dict[str, Any]:
+        return results if results else [{"info": f"No {filing_type} filings found for {ticker}"}]
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+def sec_insider_trades(ticker: str, limit: int = 10) -> List[Dict]:
     """
-    Get company fundamental data (financials, metrics, profile).
-    
+    Get recent insider trades (Form 4) for a company via SEC EDGAR.
+
     Args:
-        symbol: Stock ticker symbol
-        
+        ticker: Stock ticker (e.g. 'AAPL')
+        limit: Max results
+
     Returns:
-        Dict with company fundamentals
+        List of insider trade filings
     """
-    if not OPENBB_AVAILABLE:
-        return get_installation_message()
-    
-    try:
-        # Get company profile
-        profile_result = obb.equity.profile(symbol=symbol, provider="yfinance")
-        
-        if not profile_result or not profile_result.results:
-            return {"error": f"No fundamental data found for {symbol}"}
-        
-        profile = profile_result.results[0]
-        
-        fundamentals = {
-            "symbol": symbol.upper(),
-            "name": getattr(profile, 'name', None),
-            "sector": getattr(profile, 'sector', None),
-            "industry": getattr(profile, 'industry', None),
-            "market_cap": getattr(profile, 'market_cap', None),
-            "employees": getattr(profile, 'employees', None),
-            "description": getattr(profile, 'description', None),
-            "website": getattr(profile, 'website', None),
-            "ceo": getattr(profile, 'ceo', None),
-            "provider": "yfinance"
-        }
-        
-        # Try to get key metrics
-        try:
-            metrics_result = obb.equity.fundamental.metrics(symbol=symbol, provider="yfinance")
-            if metrics_result and metrics_result.results:
-                metrics = metrics_result.results[0]
-                fundamentals.update({
-                    "pe_ratio": getattr(metrics, 'pe_ratio', None),
-                    "forward_pe": getattr(metrics, 'forward_pe', None),
-                    "peg_ratio": getattr(metrics, 'peg_ratio', None),
-                    "price_to_book": getattr(metrics, 'price_to_book', None),
-                    "dividend_yield": getattr(metrics, 'dividend_yield', None),
-                    "beta": getattr(metrics, 'beta', None),
-                })
-        except:
-            pass  # Metrics are optional
-        
-        return fundamentals
-        
-    except Exception as e:
-        return {
-            "error": f"Failed to fetch fundamentals for {symbol}",
-            "details": str(e),
-            "symbol": symbol
-        }
+    return sec_company_filings(ticker, filing_type="4", limit=limit)
 
-# ========== CRYPTO DATA FUNCTIONS ==========
 
-def get_crypto_price(symbol: str) -> Dict[str, Any]:
+def sec_company_facts(ticker: str) -> Dict:
     """
-    Get real-time cryptocurrency price.
-    
+    Get structured company financial facts from SEC XBRL data.
+    Includes revenue, net income, assets, etc. across all reported periods.
+
     Args:
-        symbol: Crypto symbol (e.g., 'BTC', 'ETH', 'BTCUSD')
-        
+        ticker: Stock ticker (e.g. 'AAPL')
+
     Returns:
-        Dict with crypto price data
+        dict with company facts summary (latest values for key metrics)
     """
-    if not OPENBB_AVAILABLE:
-        return get_installation_message()
-    
+    cik_data = sec_cik_lookup(ticker)
+    if "error" in cik_data:
+        return cik_data
+
+    cik = cik_data["cik"]
+    url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
+
+    cache_key = f"facts_{ticker.upper()}"
+    cached = _cache_get(cache_key, max_age_hours=24)
+    if cached:
+        return cached
+
     try:
-        # Normalize symbol (add USD if not present)
-        if not symbol.upper().endswith('USD') and len(symbol) <= 4:
-            symbol = f"{symbol}USD"
-        
-        result = obb.crypto.price.historical(
-            symbol=symbol,
-            interval="1d",
-            provider="yfinance"
-        )
-        
-        if not result or not result.results:
-            return {"error": f"No crypto data found for {symbol}"}
-        
-        # Get the latest price (most recent record)
-        latest = result.results[-1]
-        
-        return {
-            "symbol": symbol.upper(),
-            "price": getattr(latest, 'close', None),
-            "open": getattr(latest, 'open', None),
-            "high": getattr(latest, 'high', None),
-            "low": getattr(latest, 'low', None),
-            "volume": getattr(latest, 'volume', None),
-            "timestamp": str(getattr(latest, 'date', datetime.now().isoformat())),
-            "provider": "yfinance"
-        }
-        
-    except Exception as e:
-        return {
-            "error": f"Failed to fetch crypto price for {symbol}",
-            "details": str(e),
-            "symbol": symbol
-        }
+        resp = _get(url)
+        resp.raise_for_status()
+        data = resp.json()
 
-# ========== ECONOMIC DATA FUNCTIONS ==========
+        us_gaap = data.get("facts", {}).get("us-gaap", {})
 
-def get_economic_indicator(series_id: str, start: Optional[str] = None, end: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Get economic indicator data from FRED.
-    
-    Args:
-        series_id: FRED series ID (e.g., 'GDP', 'UNRATE', 'DFF')
-        start: Start date in YYYY-MM-DD format (optional)
-        end: End date in YYYY-MM-DD format (optional)
-        
-    Returns:
-        Dict with economic indicator data
-    """
-    if not OPENBB_AVAILABLE:
-        return get_installation_message()
-    
-    try:
-        # Default to last 5 years if no dates provided
-        if not end:
-            end = datetime.now().strftime("%Y-%m-%d")
-        if not start:
-            start = (datetime.now() - timedelta(days=365*5)).strftime("%Y-%m-%d")
-        
-        result = obb.economy.fred_series(
-            symbol=series_id,
-            start_date=start,
-            end_date=end,
-            provider="fred"
-        )
-        
-        if not result or not result.results:
-            return {
-                "error": f"No data found for series: {series_id}",
-                "series_id": series_id
-            }
-        
-        data_points = []
-        for record in result.results:
-            data_points.append({
-                "date": str(getattr(record, 'date', '')),
-                "value": getattr(record, 'value', None)
-            })
-        
-        return {
-            "series_id": series_id.upper(),
-            "start_date": start,
-            "end_date": end,
-            "count": len(data_points),
-            "data": data_points,
-            "provider": "fred"
-        }
-        
-    except Exception as e:
-        return {
-            "error": f"Failed to fetch economic data for {series_id}",
-            "details": str(e),
-            "series_id": series_id
-        }
-
-# ========== UTILITY FUNCTIONS ==========
-
-def list_available_providers() -> List[str]:
-    """
-    List available data providers in OpenBB SDK.
-    
-    Returns:
-        List of provider names
-    """
-    if not OPENBB_AVAILABLE:
-        return []
-    
-    try:
-        # Common providers available in OpenBB
-        providers = [
-            "yfinance",
-            "fred",
-            "alpha_vantage",
-            "polygon",
-            "fmp",
-            "intrinio",
-            "benzinga",
-            "nasdaq",
-            "sec"
+        # Extract latest values for key metrics
+        key_metrics = [
+            "Revenues", "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "NetIncomeLoss", "Assets", "Liabilities",
+            "StockholdersEquity", "EarningsPerShareBasic",
+            "EarningsPerShareDiluted", "OperatingIncomeLoss",
+            "CashAndCashEquivalentsAtCarryingValue",
         ]
-        return providers
-    except:
-        return []
 
-def get_module_status() -> Dict[str, Any]:
+        summary = {
+            "company": cik_data["name"],
+            "ticker": ticker.upper(),
+            "cik": cik,
+            "metrics": {},
+            "source": "sec_xbrl",
+        }
+
+        for metric in key_metrics:
+            if metric in us_gaap:
+                units = us_gaap[metric].get("units", {})
+                # Get USD values (or shares for EPS)
+                for unit_key in ["USD", "USD/shares"]:
+                    if unit_key in units:
+                        entries = units[unit_key]
+                        # Get most recent 10-K entry
+                        annual = [e for e in entries if e.get("form") == "10-K"]
+                        if annual:
+                            latest = sorted(annual, key=lambda x: x.get("end", ""))[-1]
+                            summary["metrics"][metric] = {
+                                "value": latest["val"],
+                                "unit": unit_key,
+                                "period_end": latest.get("end"),
+                                "filed": latest.get("filed"),
+                            }
+                        break
+
+        _cache_set(cache_key, summary)
+        return summary
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# World Bank — Macro Economic Indicators (No API Key)
+# ---------------------------------------------------------------------------
+
+# Common World Bank indicator codes
+WB_INDICATORS = {
+    "gdp": "NY.GDP.MKTP.CD",           # GDP (current US$)
+    "gdp_growth": "NY.GDP.MKTP.KD.ZG",  # GDP growth (annual %)
+    "gdp_per_capita": "NY.GDP.PCAP.CD",  # GDP per capita (current US$)
+    "cpi": "FP.CPI.TOTL.ZG",            # Inflation, consumer prices (annual %)
+    "unemployment": "SL.UEM.TOTL.ZS",    # Unemployment (% of labor force)
+    "population": "SP.POP.TOTL",         # Population, total
+    "trade_pct_gdp": "NE.TRD.GNFS.ZS",  # Trade (% of GDP)
+    "interest_rate": "FR.INR.RINR",      # Real interest rate (%)
+    "fdi": "BX.KLT.DINV.WD.GD.ZS",      # FDI net inflows (% of GDP)
+    "govt_debt": "GC.DOD.TOTL.GD.ZS",   # Central govt debt (% of GDP)
+    "current_account": "BN.CAB.XOKA.GD.ZS",  # Current account (% of GDP)
+    "exports": "NE.EXP.GNFS.CD",        # Exports (current US$)
+}
+
+
+def worldbank_indicator(indicator: str, country: str = "US",
+                        years: int = 10) -> Dict:
     """
-    Get module status and availability information.
-    
+    Fetch a World Bank economic indicator. No API key required.
+
+    Args:
+        indicator: WB indicator code (e.g. 'NY.GDP.MKTP.CD') or
+                   shorthand key from WB_INDICATORS (e.g. 'gdp', 'cpi')
+        country: 2-letter ISO country code (US, GB, DE, JP, CN, etc.)
+        years: Number of years of history
+
     Returns:
-        Dict with module status
+        dict with indicator metadata and recent values
     """
-    return {
-        "module": "openbb_sdk",
-        "available": OPENBB_AVAILABLE,
-        "version": "105",
-        "providers": list_available_providers() if OPENBB_AVAILABLE else [],
-        "functions": [
-            "get_stock_quote",
-            "get_historical_prices",
-            "get_company_fundamentals",
-            "get_crypto_price",
-            "get_economic_indicator",
-            "list_available_providers"
-        ],
-        "install_command": "pip install openbb" if not OPENBB_AVAILABLE else None
+    # Resolve shorthand
+    code = WB_INDICATORS.get(indicator.lower(), indicator)
+    cache_key = f"wb_{code}_{country}"
+    cached = _cache_get(cache_key, max_age_hours=24)
+    if cached:
+        return cached
+
+    url = f"https://api.worldbank.org/v2/country/{country}/indicator/{code}"
+    params = {"format": "json", "per_page": years, "mrv": years}
+
+    try:
+        resp = _get(url, params=params, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if len(data) < 2 or not data[1]:
+            return {"error": f"No data for {code} / {country}", "source": "worldbank"}
+
+        meta = data[0]
+        records = data[1]
+
+        values = []
+        for rec in records:
+            if rec.get("value") is not None:
+                values.append({
+                    "year": rec["date"],
+                    "value": rec["value"],
+                })
+
+        result = {
+            "indicator": code,
+            "indicator_name": records[0].get("indicator", {}).get("value", ""),
+            "country": records[0].get("country", {}).get("value", ""),
+            "country_code": country.upper(),
+            "total_records": meta.get("total", 0),
+            "recent_values": sorted(values, key=lambda x: x["year"]),
+            "source": "worldbank",
+        }
+
+        _cache_set(cache_key, result)
+        return result
+    except Exception as e:
+        return {"error": str(e), "indicator": code, "source": "worldbank"}
+
+
+def worldbank_search(query: str, limit: int = 10) -> List[Dict]:
+    """
+    Search World Bank indicators by keyword.
+
+    Args:
+        query: Search term (e.g. 'GDP', 'inflation', 'unemployment')
+        limit: Max results
+
+    Returns:
+        List of matching indicators
+    """
+    url = "https://api.worldbank.org/v2/indicator"
+    params = {"format": "json", "per_page": limit, "source": "2"}
+
+    try:
+        resp = _get(url, params=params, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if len(data) < 2:
+            return [{"error": "No results"}]
+
+        results = []
+        query_lower = query.lower()
+        for item in data[1]:
+            name = item.get("name", "")
+            if query_lower in name.lower() or query_lower in item.get("id", "").lower():
+                results.append({
+                    "id": item.get("id", ""),
+                    "name": name,
+                    "source": item.get("source", {}).get("value", ""),
+                    "topic": item.get("topics", [{}])[0].get("value", "") if item.get("topics") else "",
+                })
+                if len(results) >= limit:
+                    break
+
+        # If filtering returned nothing, return all
+        if not results:
+            for item in data[1][:limit]:
+                results.append({
+                    "id": item.get("id", ""),
+                    "name": item.get("name", ""),
+                    "source": item.get("source", {}).get("value", ""),
+                })
+
+        return results
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+# ---------------------------------------------------------------------------
+# OECD — International Economic Data (No API Key)
+# ---------------------------------------------------------------------------
+
+def oecd_indicator(dataset: str = "QNA", country: str = "USA",
+                   subject: str = "B1_GE", measure: str = "GPSA",
+                   frequency: str = "Q", limit: int = 20) -> Dict:
+    """
+    Fetch OECD economic indicator data.
+
+    Common datasets:
+        QNA = Quarterly National Accounts (GDP)
+        PRICES_CPI = Consumer Prices
+        KEI = Key Economic Indicators
+        STLABOUR = Short-Term Labour Market
+
+    Args:
+        dataset: OECD dataset code
+        country: 3-letter country code (USA, GBR, DEU, JPN, etc.)
+        subject: Subject/variable code (B1_GE=GDP, CPALTT01=CPI)
+        measure: Measure code (GPSA=growth rate seasonally adjusted)
+        frequency: Q=quarterly, M=monthly, A=annual
+        limit: Recent periods to return
+
+    Returns:
+        dict with indicator values
+    """
+    cache_key = f"oecd_{dataset}_{country}_{subject}_{frequency}"
+    cached = _cache_get(cache_key, max_age_hours=24)
+    if cached:
+        return cached
+
+    # OECD SDMX JSON API
+    url = f"https://sdmx.oecd.org/public/rest/data/OECD.SDD.SNAS,DSD_NAMAIN10@DF_QNA_EXPENDITURE_CAPITA/{country}.{frequency}.{subject}.{measure}"
+    # Simpler approach: use the stats.oecd.org JSON endpoint
+    url2 = f"https://stats.oecd.org/SDMX-JSON/data/{dataset}/{country}.{subject}.{measure}.{frequency}/all"
+
+    try:
+        resp = _get(url2, params={"lastNObservations": limit})
+        if resp.status_code != 200:
+            # Fallback to newer API
+            resp = _get(url, params={"lastNObservations": limit, "format": "jsondata"})
+
+        resp.raise_for_status()
+        data = resp.json()
+
+        # Parse SDMX-JSON structure
+        observations = {}
+        structure = data.get("structure", data.get("data", {}))
+        datasets = data.get("dataSets", [])
+
+        if datasets:
+            series_data = datasets[0].get("series", {})
+            for series_key, series_val in series_data.items():
+                obs = series_val.get("observations", {})
+                for period_idx, values in obs.items():
+                    observations[period_idx] = values[0] if values else None
+
+        result = {
+            "dataset": dataset,
+            "country": country,
+            "subject": subject,
+            "measure": measure,
+            "frequency": frequency,
+            "observations": observations,
+            "count": len(observations),
+            "source": "oecd",
+        }
+
+        if observations:
+            _cache_set(cache_key, result)
+        return result
+    except Exception as e:
+        return {"error": str(e), "source": "oecd", "dataset": dataset}
+
+
+# ---------------------------------------------------------------------------
+# SEC Full-Text Search (EFTS)
+# ---------------------------------------------------------------------------
+
+def sec_full_text_search(query: str, forms: str = "10-K,10-Q",
+                         date_start: str = "2024-01-01",
+                         limit: int = 10) -> List[Dict]:
+    """
+    Full-text search across all SEC EDGAR filings.
+
+    Args:
+        query: Search term (company name, keyword, etc.)
+        forms: Comma-separated form types to search
+        date_start: Start date (YYYY-MM-DD)
+        limit: Max results
+
+    Returns:
+        List of matching filings
+    """
+    url = "https://efts.sec.gov/LATEST/search-index"
+    params = {
+        "q": query,
+        "forms": forms,
+        "dateRange": "custom",
+        "startdt": date_start,
+        "enddt": datetime.now().strftime("%Y-%m-%d"),
     }
 
-# ========== MAIN ENTRYPOINT ==========
+    try:
+        resp = _get(url, params=params)
+        resp.raise_for_status()
+        data = resp.json()
+
+        results = []
+        for hit in data.get("hits", {}).get("hits", [])[:limit]:
+            src = hit.get("_source", {})
+            results.append({
+                "entity": src.get("entity_name", ""),
+                "form": src.get("form_type", ""),
+                "date": src.get("file_date", ""),
+                "description": src.get("display_names", [""])[0] if src.get("display_names") else "",
+                "url": f"https://www.sec.gov/Archives/edgar/data/{src.get('entity_id', '')}/{src.get('file_num', '')}",
+            })
+        return results if results else [{"info": f"No filings found for '{query}'"}]
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+# ---------------------------------------------------------------------------
+# Convenience / Unified Functions
+# ---------------------------------------------------------------------------
+
+def get_company_overview(ticker: str) -> Dict:
+    """
+    Get a comprehensive company overview combining SEC data.
+    Unified view of filings, financial facts, and insider activity.
+
+    Args:
+        ticker: Stock ticker (e.g. 'AAPL')
+
+    Returns:
+        dict with company overview
+    """
+    facts = sec_company_facts(ticker)
+    recent_10k = sec_company_filings(ticker, "10-K", limit=3)
+    recent_10q = sec_company_filings(ticker, "10-Q", limit=3)
+    insider = sec_insider_trades(ticker, limit=5)
+
+    return {
+        "ticker": ticker.upper(),
+        "company": facts.get("company", ""),
+        "financial_facts": facts.get("metrics", {}),
+        "recent_annual_filings": recent_10k,
+        "recent_quarterly_filings": recent_10q,
+        "recent_insider_filings": insider,
+        "source": "openbb_sdk_module",
+        "retrieved_at": datetime.now().isoformat(),
+    }
+
+
+def get_macro_snapshot(country: str = "US") -> Dict:
+    """
+    Get a macro economic snapshot for a country using World Bank data.
+
+    Args:
+        country: 2-letter country code (US, GB, DE, JP, CN, etc.)
+
+    Returns:
+        dict with key macro indicators and their latest values
+    """
+    indicator_keys = ["gdp", "gdp_growth", "gdp_per_capita", "cpi",
+                      "unemployment", "population", "trade_pct_gdp"]
+
+    snapshot = {
+        "country": country.upper(),
+        "indicators": {},
+        "retrieved_at": datetime.now().isoformat(),
+        "source": "worldbank",
+    }
+
+    for key in indicator_keys:
+        data = worldbank_indicator(key, country, years=5)
+        if "error" not in data and data.get("recent_values"):
+            latest = data["recent_values"][-1]
+            snapshot["indicators"][key] = {
+                "name": data.get("indicator_name", ""),
+                "latest_value": latest.get("value"),
+                "latest_year": latest.get("year"),
+            }
+        else:
+            snapshot["indicators"][key] = {
+                "status": "unavailable",
+                "detail": data.get("error", ""),
+            }
+
+    return snapshot
+
 
 if __name__ == "__main__":
-    status = get_module_status()
-    print(json.dumps(status, indent=2))
-    
-    if OPENBB_AVAILABLE:
-        print("\n✅ OpenBB SDK is available")
-        print("\nTesting stock quote for AAPL...")
-        quote = get_stock_quote("AAPL")
-        print(json.dumps(quote, indent=2))
-    else:
-        print("\n❌ OpenBB SDK is not installed")
-        print(json.dumps(get_installation_message(), indent=2))
+    print(json.dumps({
+        "module": "openbb_sdk",
+        "status": "active",
+        "source": "https://docs.openbb.co/",
+        "functions": [
+            "sec_cik_lookup", "sec_company_filings", "sec_insider_trades",
+            "sec_company_facts", "sec_full_text_search",
+            "worldbank_indicator", "worldbank_search",
+            "oecd_indicator",
+            "get_company_overview", "get_macro_snapshot",
+        ],
+    }, indent=2))

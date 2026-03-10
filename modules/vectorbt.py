@@ -1,354 +1,537 @@
 """
-VectorBT Backtesting Module
+VectorBT — Vectorized backtesting and portfolio analytics.
 
-VectorBT is an open-source Python library for backtesting and analyzing trading strategies
-at scale using vectorized operations. It enables rapid prototyping of quantitative models
-with factor analysis and ML integrations for alpha generation.
+High-performance backtesting library using vectorized operations via NumPy/Pandas.
+Supports signal-based strategies, portfolio simulation, performance metrics,
+and parameter optimization. Uses Yahoo Finance for data (no API key needed).
 
+Source: https://vectorbt.dev/
+Update frequency: Static (library-based, user-driven)
 Category: Quant Tools & ML
-Data Type: Library
-Free Tier: True (fully open source)
-Update Frequency: N/A (library)
-Relevance Score: 9/10
-Integration Ease: 8/10
-
-Installation:
-    pip install vectorbt
-
-Documentation: https://vectorbt.dev/
+Free tier: True (open-source library)
 """
 
-import pandas as pd
+import json
 import numpy as np
-from typing import Dict, List, Optional, Union
+import pandas as pd
 from datetime import datetime, timedelta
+from typing import Any, Optional, Union
 
-def get_library_info() -> Dict:
-    """Get information about the VectorBT library."""
+
+def _ensure_vbt():
+    """Lazy import vectorbt."""
     try:
         import vectorbt as vbt
-        version = vbt.__version__
+        return vbt
     except ImportError:
-        version = "Not installed"
-    
-    return {
-        "name": "VectorBT",
-        "version": version,
-        "category": "Quant Tools & ML",
-        "description": "Open-source backtesting library with vectorized operations",
-        "license": "Apache 2.0",
-        "documentation": "https://vectorbt.dev/",
-        "github": "https://github.com/polakowo/vectorbt",
-        "installation": "pip install vectorbt",
-        "key_features": [
-            "Vectorized backtesting",
-            "Portfolio optimization",
-            "Technical indicators",
-            "Performance metrics",
-            "Machine learning integration",
-            "Custom strategy creation"
-        ]
-    }
+        return None
 
-def run_simple_sma_backtest(
-    data: pd.DataFrame,
-    short_window: int = 20,
-    long_window: int = 50,
-    init_cash: float = 10000.0
-) -> Dict:
+
+def download_price_data(
+    symbols: Union[str, list[str]],
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365,
+    interval: str = "1d"
+) -> dict[str, Any]:
+    """
+    Download OHLCV price data via VectorBT's Yahoo Finance wrapper.
+
+    Args:
+        symbols: Ticker or list of tickers (e.g., 'AAPL' or ['AAPL','MSFT'])
+        start: Start date 'YYYY-MM-DD' (default: period_days ago)
+        end: End date 'YYYY-MM-DD' (default: today)
+        period_days: Lookback days if start not given
+        interval: Bar interval ('1d','1h','1wk')
+
+    Returns:
+        dict with 'symbols', 'rows', 'columns', 'date_range', 'close_last'
+
+    Example:
+        >>> data = download_price_data('AAPL', period_days=90)
+        >>> print(data['rows'], data['close_last'])
+    """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed. pip install vectorbt"}
+
+    if isinstance(symbols, str):
+        symbols = [s.strip() for s in symbols.split(",")]
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
+    try:
+        yf_data = vbt.YFData.download(symbols, start=start, end=end, interval=interval)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No data returned", "symbols": symbols}
+
+        close_last = {}
+        if isinstance(close, pd.Series):
+            close_last[symbols[0]] = round(float(close.iloc[-1]), 4)
+        else:
+            for col in close.columns:
+                close_last[col] = round(float(close[col].iloc[-1]), 4)
+
+        return {
+            "symbols": symbols,
+            "rows": len(close),
+            "columns": list(close.columns) if isinstance(close, pd.DataFrame) else symbols,
+            "date_range": [str(close.index[0].date()), str(close.index[-1].date())],
+            "close_last": close_last,
+            "status": "ok"
+        }
+    except Exception as e:
+        return {"error": str(e), "symbols": symbols}
+
+
+def run_sma_crossover(
+    symbol: str = "AAPL",
+    fast_window: int = 10,
+    slow_window: int = 50,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365,
+    init_cash: float = 10000.0,
+    fees: float = 0.001
+) -> dict[str, Any]:
     """
     Run a simple SMA crossover backtest.
-    
+
+    Buys when fast SMA crosses above slow SMA, sells on cross below.
+
     Args:
-        data: DataFrame with OHLCV price data (must have 'Close' column)
-        short_window: Short SMA period
-        long_window: Long SMA period
-        init_cash: Initial cash for the portfolio
-    
+        symbol: Ticker symbol
+        fast_window: Fast moving average period
+        slow_window: Slow moving average period
+        start: Start date 'YYYY-MM-DD'
+        end: End date 'YYYY-MM-DD'
+        period_days: Lookback if start not given
+        init_cash: Starting capital
+        fees: Trading fee fraction (0.001 = 0.1%)
+
     Returns:
-        Dict with backtest results including returns, sharpe, drawdown
+        dict with strategy performance metrics
+
+    Example:
+        >>> result = run_sma_crossover('AAPL', fast_window=10, slow_window=30)
+        >>> print(result['total_return_pct'], result['sharpe_ratio'])
     """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed"}
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
     try:
-        import vectorbt as vbt
-    except ImportError:
-        return {
-            "error": "VectorBT not installed. Run: pip install vectorbt",
-            "success": False
-        }
-    
-    try:
-        # Calculate SMAs
-        close_prices = data['Close'] if 'Close' in data.columns else data.iloc[:, 0]
-        short_sma = close_prices.rolling(window=short_window).mean()
-        long_sma = close_prices.rolling(window=long_window).mean()
-        
-        # Generate signals
-        entries = short_sma > long_sma
-        exits = short_sma < long_sma
-        
-        # Run backtest
-        portfolio = vbt.Portfolio.from_signals(
-            close_prices,
-            entries,
-            exits,
-            init_cash=init_cash,
-            freq='1D'
+        yf_data = vbt.YFData.download(symbol, start=start, end=end)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No price data", "symbol": symbol}
+
+        fast_ma = vbt.MA.run(close, window=fast_window)
+        slow_ma = vbt.MA.run(close, window=slow_window)
+
+        entries = fast_ma.ma_crossed_above(slow_ma)
+        exits = fast_ma.ma_crossed_below(slow_ma)
+
+        pf = vbt.Portfolio.from_signals(
+            close, entries, exits,
+            init_cash=init_cash, fees=fees, freq="1D"
         )
-        
-        # Extract key metrics
+
+        stats = pf.stats()
+        stats_dict = stats.to_dict() if hasattr(stats, "to_dict") else {}
+
+        total_return = float(pf.total_return()) * 100
+        trades = pf.trades.records_readable if hasattr(pf.trades, "records_readable") else None
+        n_trades = int(pf.trades.count()) if hasattr(pf.trades, "count") else 0
+
+        try:
+            sharpe = float(pf.sharpe_ratio())
+        except Exception:
+            sharpe = None
+        try:
+            max_dd = float(pf.max_drawdown()) * 100
+        except Exception:
+            max_dd = None
+        try:
+            win_rate = float(pf.trades.win_rate()) * 100 if n_trades > 0 else None
+        except Exception:
+            win_rate = None
+
         return {
-            "success": True,
-            "strategy": f"SMA Crossover ({short_window}/{long_window})",
-            "total_return": float(portfolio.total_return()),
-            "sharpe_ratio": float(portfolio.sharpe_ratio()),
-            "max_drawdown": float(portfolio.max_drawdown()),
-            "win_rate": float(portfolio.trades.win_rate()),
-            "total_trades": int(portfolio.trades.count()),
-            "final_value": float(portfolio.final_value()),
+            "symbol": symbol,
+            "strategy": f"SMA({fast_window}/{slow_window})",
+            "period": [start, end],
+            "bars": len(close),
             "init_cash": init_cash,
-            "period": {
-                "start": str(close_prices.index[0]),
-                "end": str(close_prices.index[-1]),
-                "days": len(close_prices)
-            }
+            "final_value": round(float(pf.final_value()), 2),
+            "total_return_pct": round(total_return, 2),
+            "sharpe_ratio": round(sharpe, 4) if sharpe is not None else None,
+            "max_drawdown_pct": round(max_dd, 2) if max_dd is not None else None,
+            "total_trades": n_trades,
+            "win_rate_pct": round(win_rate, 2) if win_rate is not None else None,
+            "fees": fees,
+            "status": "ok"
         }
-    
     except Exception as e:
-        return {
-            "error": str(e),
-            "success": False
-        }
+        return {"error": str(e), "symbol": symbol}
 
-def calculate_technical_indicators(
-    data: pd.DataFrame,
-    indicators: Optional[List[str]] = None
-) -> pd.DataFrame:
+
+def run_rsi_strategy(
+    symbol: str = "AAPL",
+    rsi_window: int = 14,
+    entry_threshold: float = 30.0,
+    exit_threshold: float = 70.0,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365,
+    init_cash: float = 10000.0,
+    fees: float = 0.001
+) -> dict[str, Any]:
     """
-    Calculate technical indicators using VectorBT.
-    
+    Run an RSI mean-reversion backtest.
+
+    Buys when RSI drops below entry_threshold, sells above exit_threshold.
+
     Args:
-        data: DataFrame with OHLCV data
-        indicators: List of indicators to calculate. Defaults to ['RSI', 'MACD', 'BB']
-    
+        symbol: Ticker symbol
+        rsi_window: RSI calculation period
+        entry_threshold: Buy when RSI below this (default 30)
+        exit_threshold: Sell when RSI above this (default 70)
+        start: Start date
+        end: End date
+        period_days: Lookback if start not given
+        init_cash: Starting capital
+        fees: Trading fee fraction
+
     Returns:
-        DataFrame with original data and calculated indicators
+        dict with strategy performance metrics
+
+    Example:
+        >>> result = run_rsi_strategy('MSFT', rsi_window=14)
+        >>> print(result['total_return_pct'])
     """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed"}
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
     try:
-        import vectorbt as vbt
-    except ImportError:
-        print("VectorBT not installed. Run: pip install vectorbt")
-        return data
-    
-    if indicators is None:
-        indicators = ['RSI', 'MACD', 'BB']
-    
-    result = data.copy()
-    close = data['Close'] if 'Close' in data.columns else data.iloc[:, 0]
-    
-    try:
-        if 'RSI' in indicators:
-            rsi = vbt.RSI.run(close, window=14)
-            result['RSI'] = rsi.rsi
-        
-        if 'MACD' in indicators:
-            macd = vbt.MACD.run(close, fast_window=12, slow_window=26, signal_window=9)
-            result['MACD'] = macd.macd
-            result['MACD_signal'] = macd.signal
-            result['MACD_hist'] = macd.hist
-        
-        if 'BB' in indicators:
-            bb = vbt.BBANDS.run(close, window=20, alpha=2)
-            result['BB_upper'] = bb.upper
-            result['BB_middle'] = bb.middle
-            result['BB_lower'] = bb.lower
-        
-        return result
-    
+        yf_data = vbt.YFData.download(symbol, start=start, end=end)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No price data", "symbol": symbol}
+
+        rsi = vbt.RSI.run(close, window=rsi_window)
+
+        entries = rsi.rsi_crossed_below(entry_threshold)
+        exits = rsi.rsi_crossed_above(exit_threshold)
+
+        pf = vbt.Portfolio.from_signals(
+            close, entries, exits,
+            init_cash=init_cash, fees=fees, freq="1D"
+        )
+
+        total_return = float(pf.total_return()) * 100
+        n_trades = int(pf.trades.count()) if hasattr(pf.trades, "count") else 0
+
+        try:
+            sharpe = float(pf.sharpe_ratio())
+        except Exception:
+            sharpe = None
+        try:
+            max_dd = float(pf.max_drawdown()) * 100
+        except Exception:
+            max_dd = None
+        try:
+            win_rate = float(pf.trades.win_rate()) * 100 if n_trades > 0 else None
+        except Exception:
+            win_rate = None
+
+        return {
+            "symbol": symbol,
+            "strategy": f"RSI({rsi_window}, {entry_threshold}/{exit_threshold})",
+            "period": [start, end],
+            "bars": len(close),
+            "init_cash": init_cash,
+            "final_value": round(float(pf.final_value()), 2),
+            "total_return_pct": round(total_return, 2),
+            "sharpe_ratio": round(sharpe, 4) if sharpe is not None else None,
+            "max_drawdown_pct": round(max_dd, 2) if max_dd is not None else None,
+            "total_trades": n_trades,
+            "win_rate_pct": round(win_rate, 2) if win_rate is not None else None,
+            "fees": fees,
+            "status": "ok"
+        }
     except Exception as e:
-        print(f"Error calculating indicators: {e}")
-        return data
+        return {"error": str(e), "symbol": symbol}
 
-def optimize_strategy_parameters(
-    data: pd.DataFrame,
-    short_windows: List[int] = [10, 20, 30],
-    long_windows: List[int] = [50, 100, 150],
-    init_cash: float = 10000.0
-) -> Dict:
+
+def optimize_sma_windows(
+    symbol: str = "AAPL",
+    fast_range: tuple = (5, 30, 5),
+    slow_range: tuple = (20, 100, 10),
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365,
+    init_cash: float = 10000.0,
+    fees: float = 0.001,
+    top_n: int = 5
+) -> dict[str, Any]:
     """
-    Optimize SMA crossover parameters using grid search.
-    
+    Optimize SMA crossover parameters over a grid of fast/slow windows.
+
     Args:
-        data: DataFrame with price data
-        short_windows: List of short SMA periods to test
-        long_windows: List of long SMA periods to test
-        init_cash: Initial cash
-    
+        symbol: Ticker symbol
+        fast_range: (start, stop, step) for fast window
+        slow_range: (start, stop, step) for slow window
+        start: Start date
+        end: End date
+        period_days: Lookback if start not given
+        init_cash: Starting capital
+        fees: Trading fee fraction
+        top_n: Number of top combinations to return
+
     Returns:
-        Dict with best parameters and performance metrics
+        dict with top_n best parameter combos ranked by total return
+
+    Example:
+        >>> result = optimize_sma_windows('AAPL', fast_range=(5,25,5), slow_range=(20,60,10))
+        >>> for combo in result['top_combos']: print(combo)
     """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed"}
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
     try:
-        import vectorbt as vbt
-    except ImportError:
-        return {
-            "error": "VectorBT not installed",
-            "success": False
-        }
-    
-    try:
-        close = data['Close'] if 'Close' in data.columns else data.iloc[:, 0]
-        best_sharpe = -np.inf
-        best_params = {}
+        yf_data = vbt.YFData.download(symbol, start=start, end=end)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No price data", "symbol": symbol}
+
+        fast_windows = np.arange(*fast_range)
+        slow_windows = np.arange(*slow_range)
+
+        # Filter: fast must be < slow
         results = []
-        
-        for short in short_windows:
-            for long in long_windows:
-                if short >= long:
+        for fw in fast_windows:
+            for sw in slow_windows:
+                if fw >= sw:
                     continue
-                
-                short_sma = close.rolling(window=short).mean()
-                long_sma = close.rolling(window=long).mean()
-                entries = short_sma > long_sma
-                exits = short_sma < long_sma
-                
+                fast_ma = vbt.MA.run(close, window=int(fw))
+                slow_ma = vbt.MA.run(close, window=int(sw))
+                entries = fast_ma.ma_crossed_above(slow_ma)
+                exits = fast_ma.ma_crossed_below(slow_ma)
                 pf = vbt.Portfolio.from_signals(
-                    close, entries, exits, init_cash=init_cash, freq='1D'
+                    close, entries, exits,
+                    init_cash=init_cash, fees=fees, freq="1D"
                 )
-                
-                sharpe = float(pf.sharpe_ratio())
-                total_return = float(pf.total_return())
-                
-                result = {
-                    "short_window": short,
-                    "long_window": long,
-                    "sharpe_ratio": sharpe,
-                    "total_return": total_return,
-                    "max_drawdown": float(pf.max_drawdown())
-                }
-                results.append(result)
-                
-                if sharpe > best_sharpe:
-                    best_sharpe = sharpe
-                    best_params = result
-        
+                ret = float(pf.total_return()) * 100
+                try:
+                    sharpe = float(pf.sharpe_ratio())
+                except Exception:
+                    sharpe = 0.0
+                n_trades = int(pf.trades.count()) if hasattr(pf.trades, "count") else 0
+                results.append({
+                    "fast": int(fw),
+                    "slow": int(sw),
+                    "return_pct": round(ret, 2),
+                    "sharpe": round(sharpe, 4),
+                    "trades": n_trades
+                })
+
+        results.sort(key=lambda x: x["return_pct"], reverse=True)
+
         return {
-            "success": True,
-            "best_parameters": best_params,
-            "all_results": sorted(results, key=lambda x: x['sharpe_ratio'], reverse=True)[:10],
-            "search_space": {
-                "short_windows": short_windows,
-                "long_windows": long_windows,
-                "combinations_tested": len(results)
+            "symbol": symbol,
+            "period": [start, end],
+            "bars": len(close),
+            "combos_tested": len(results),
+            "top_combos": results[:top_n],
+            "worst_combo": results[-1] if results else None,
+            "status": "ok"
+        }
+    except Exception as e:
+        return {"error": str(e), "symbol": symbol}
+
+
+def get_portfolio_stats(
+    symbols: Union[str, list[str]],
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365
+) -> dict[str, Any]:
+    """
+    Get portfolio-level statistics for a basket of assets (equal-weight buy & hold).
+
+    Args:
+        symbols: Ticker or list of tickers
+        start: Start date
+        end: End date
+        period_days: Lookback if start not given
+
+    Returns:
+        dict with per-asset and portfolio-level metrics
+
+    Example:
+        >>> stats = get_portfolio_stats(['AAPL','MSFT','GOOGL'], period_days=180)
+        >>> print(stats['portfolio_return_pct'])
+    """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed"}
+
+    if isinstance(symbols, str):
+        symbols = [s.strip() for s in symbols.split(",")]
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
+    try:
+        yf_data = vbt.YFData.download(symbols, start=start, end=end)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No price data", "symbols": symbols}
+
+        if isinstance(close, pd.Series):
+            close = close.to_frame(name=symbols[0])
+
+        # Equal weight buy & hold
+        pf = vbt.Portfolio.from_holding(close, init_cash=10000.0, freq="1D")
+
+        asset_stats = {}
+        for col in close.columns:
+            col_close = close[col].dropna()
+            if len(col_close) < 2:
+                continue
+            ret = (col_close.iloc[-1] / col_close.iloc[0] - 1) * 100
+            vol = float(col_close.pct_change().std() * np.sqrt(252)) * 100
+            asset_stats[col] = {
+                "return_pct": round(float(ret), 2),
+                "annualized_vol_pct": round(vol, 2),
+                "last_price": round(float(col_close.iloc[-1]), 4)
             }
-        }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "success": False
-        }
 
-def get_portfolio_metrics(
-    returns: Union[pd.Series, np.ndarray],
-    freq: str = '1D'
-) -> Dict:
-    """
-    Calculate comprehensive portfolio metrics.
-    
-    Args:
-        returns: Series or array of portfolio returns
-        freq: Frequency of returns ('1D' for daily, '1H' for hourly, etc.)
-    
-    Returns:
-        Dict with performance metrics
-    """
-    try:
-        import vectorbt as vbt
-    except ImportError:
-        return {"error": "VectorBT not installed"}
-    
-    try:
-        if isinstance(returns, np.ndarray):
-            returns = pd.Series(returns)
-        
-        # Create a portfolio object from returns
-        portfolio = vbt.Portfolio.from_orders(
-            close=returns.cumsum() + 100,  # Simple price series from returns
-            size=0,  # No orders, just metrics
-            freq=freq
-        )
-        
-        return {
-            "total_return": float(returns.sum()),
-            "annualized_return": float(returns.mean() * 252),  # Assuming daily
-            "volatility": float(returns.std() * np.sqrt(252)),
-            "sharpe_ratio": float(returns.mean() / returns.std() * np.sqrt(252)) if returns.std() != 0 else 0,
-            "max_drawdown": float((returns.cumsum() - returns.cumsum().cummax()).min()),
-            "win_rate": float((returns > 0).sum() / len(returns)),
-            "positive_periods": int((returns > 0).sum()),
-            "negative_periods": int((returns < 0).sum()),
-            "total_periods": len(returns)
-        }
-    
-    except Exception as e:
-        return {"error": str(e)}
+        total_return = float(pf.total_return())
+        if hasattr(total_return, "__iter__"):
+            total_return = float(np.mean(list(total_return)))
+        total_return *= 100
 
-def backtest_buy_and_hold(
-    data: pd.DataFrame,
-    init_cash: float = 10000.0
-) -> Dict:
+        return {
+            "symbols": symbols,
+            "period": [start, end],
+            "bars": len(close),
+            "portfolio_return_pct": round(total_return, 2),
+            "asset_stats": asset_stats,
+            "status": "ok"
+        }
+    except Exception as e:
+        return {"error": str(e), "symbols": symbols}
+
+
+def run_custom_signals(
+    symbol: str = "AAPL",
+    entry_dates: Optional[list[str]] = None,
+    exit_dates: Optional[list[str]] = None,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    period_days: int = 365,
+    init_cash: float = 10000.0,
+    fees: float = 0.001
+) -> dict[str, Any]:
     """
-    Run a simple buy-and-hold benchmark backtest.
-    
+    Backtest custom entry/exit date signals.
+
     Args:
-        data: DataFrame with price data
-        init_cash: Initial cash
-    
+        symbol: Ticker symbol
+        entry_dates: List of entry dates ['2024-01-15', '2024-03-01']
+        exit_dates: List of exit dates ['2024-02-01', '2024-04-01']
+        start: Start date
+        end: End date
+        period_days: Lookback if start not given
+        init_cash: Starting capital
+        fees: Fee fraction
+
     Returns:
-        Dict with benchmark performance
+        dict with backtest results
+
+    Example:
+        >>> r = run_custom_signals('AAPL', ['2024-01-15'], ['2024-02-15'])
+        >>> print(r['total_return_pct'])
     """
+    vbt = _ensure_vbt()
+    if vbt is None:
+        return {"error": "vectorbt not installed"}
+
+    if not entry_dates or not exit_dates:
+        return {"error": "Must provide entry_dates and exit_dates lists"}
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=period_days)).strftime("%Y-%m-%d")
+    if not end:
+        end = datetime.utcnow().strftime("%Y-%m-%d")
+
     try:
-        import vectorbt as vbt
-    except ImportError:
-        return {"error": "VectorBT not installed"}
-    
-    try:
-        close = data['Close'] if 'Close' in data.columns else data.iloc[:, 0]
-        
-        # Buy at start, hold till end
+        yf_data = vbt.YFData.download(symbol, start=start, end=end)
+        close = yf_data.get("Close")
+        if close is None or close.empty:
+            return {"error": "No price data", "symbol": symbol}
+
         entries = pd.Series(False, index=close.index)
-        entries.iloc[0] = True
         exits = pd.Series(False, index=close.index)
-        
-        portfolio = vbt.Portfolio.from_signals(
-            close, entries, exits, init_cash=init_cash, freq='1D'
-        )
-        
-        return {
-            "success": True,
-            "strategy": "Buy and Hold",
-            "total_return": float(portfolio.total_return()),
-            "sharpe_ratio": float(portfolio.sharpe_ratio()),
-            "max_drawdown": float(portfolio.max_drawdown()),
-            "final_value": float(portfolio.final_value()),
-            "init_cash": init_cash
-        }
-    
-    except Exception as e:
-        return {"error": str(e)}
 
-# Example usage and tests
+        for d in entry_dates:
+            dt = pd.Timestamp(d, tz=close.index.tz)
+            idx = close.index.get_indexer([dt], method="nearest")
+            if idx[0] >= 0:
+                entries.iloc[idx[0]] = True
+
+        for d in exit_dates:
+            dt = pd.Timestamp(d, tz=close.index.tz)
+            idx = close.index.get_indexer([dt], method="nearest")
+            if idx[0] >= 0:
+                exits.iloc[idx[0]] = True
+
+        pf = vbt.Portfolio.from_signals(
+            close, entries, exits,
+            init_cash=init_cash, fees=fees, freq="1D"
+        )
+
+        total_return = float(pf.total_return()) * 100
+        n_trades = int(pf.trades.count()) if hasattr(pf.trades, "count") else 0
+
+        return {
+            "symbol": symbol,
+            "strategy": "custom_signals",
+            "entry_dates": entry_dates,
+            "exit_dates": exit_dates,
+            "total_return_pct": round(total_return, 2),
+            "final_value": round(float(pf.final_value()), 2),
+            "total_trades": n_trades,
+            "status": "ok"
+        }
+    except Exception as e:
+        return {"error": str(e), "symbol": symbol}
+
+
 if __name__ == "__main__":
-    print("VectorBT Module - Library Info:")
-    print("=" * 50)
-    info = get_library_info()
-    for k, v in info.items():
-        print(f"{k}: {v}")
-    
-    print("\n" + "=" * 50)
-    print("To use VectorBT in your strategies:")
-    print("1. pip install vectorbt")
-    print("2. Import the module and run backtests")
-    print("3. See functions: run_simple_sma_backtest(), optimize_strategy_parameters()")
-    print("\nExample:")
-    print("  result = run_simple_sma_backtest(price_data, short_window=20, long_window=50)")
-    print("  print(result)")
+    print(json.dumps({"module": "vectorbt", "status": "ready", "source": "https://vectorbt.dev/"}, indent=2))

@@ -1,384 +1,354 @@
-#!/usr/bin/env python3
 """
-BLS Public Data API — Labor Statistics & Economic Indicators
+BLS Public Data API — U.S. Bureau of Labor Statistics
 
-The U.S. Bureau of Labor Statistics provides access to comprehensive labor market data 
-including employment, unemployment, wages, productivity, and price indices.
+Data Source: https://www.bls.gov/developers/
+Update: Monthly (most series)
+Free: Yes — No API key required (v2 public access: 500 daily queries, 10 series/request)
 
-Specialized module for:
-- Unemployment rates (national, state, demographic)
-- Nonfarm payrolls and employment
-- Consumer Price Index (CPI) and inflation
-- Labor force participation rates
-- Productivity and costs
-- Job openings and labor turnover (JOLTS)
+Provides:
+- Unemployment rate (national, state, metro)
+- Consumer Price Index (CPI) / Inflation
+- Producer Price Index (PPI)
+- Employment / Nonfarm Payrolls
+- Average hourly earnings / wages
+- Job Openings (JOLTS)
+- Labor productivity
+- Import/Export price indexes
 
-Source: https://www.bls.gov/developers/
-Category: Labor & Demographics
-Free tier: True (25 queries/day without key, 500/day with registration)
-Update frequency: Monthly, Quarterly
-Author: QuantClaw Data NightBuilder
+Key Series IDs:
+- LNS14000000  — National unemployment rate (seasonally adjusted)
+- CUUR0000SA0  — CPI-U All Items (US city average)
+- CES0000000001 — Total nonfarm employment
+- JTS000000000000000JOL — JOLTS job openings
+- PRS85006092  — Nonfarm business labor productivity
 """
 
-import os
-import json
 import requests
+import json
+import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-from pathlib import Path
+from typing import Dict, List, Optional, Union
 
-# BLS API Configuration
-BLS_BASE_URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
-BLS_API_KEY = os.environ.get("BLS_API_KEY", "")
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
-# ========== BLS SERIES REGISTRY ==========
+BASE_URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
 
-BLS_SERIES = {
-    # ===== UNEMPLOYMENT =====
-    'UNEMPLOYMENT': {
-        'LNS14000000': 'Unemployment Rate (Seasonally Adjusted)',
-        'LNS14000001': 'Unemployment Rate - Men',
-        'LNS14000002': 'Unemployment Rate - Women',
-        'LNS14000003': 'Unemployment Rate - 16-19 years',
-        'LNS14000006': 'Unemployment Rate - White',
-        'LNS14000009': 'Unemployment Rate - Black or African American',
-        'LNS14032183': 'Unemployment Rate - Asian',
-        'LNS14000012': 'Unemployment Rate - Hispanic or Latino',
-    },
-    
-    # ===== EMPLOYMENT & PAYROLLS =====
-    'EMPLOYMENT': {
-        'CES0000000001': 'Total Nonfarm Employment (Seasonally Adjusted)',
-        'CES0500000001': 'Total Private Employment',
-        'CES0600000001': 'Goods-Producing Employment',
-        'CES0700000001': 'Service-Providing Employment',
-        'CES0800000001': 'Private Service-Providing Employment',
-        'LNS12000000': 'Employment Level (Household Survey)',
-        'LNS11300000': 'Labor Force Level',
-    },
-    
-    # ===== CONSUMER PRICE INDEX (CPI) =====
-    'CPI': {
-        'CUUR0000SA0': 'CPI-U: All Items (Urban Consumers, SA)',
-        'CUUR0000SA0L1E': 'CPI-U: All Items Less Food and Energy (Core CPI)',
-        'CUUR0000SAF': 'CPI-U: Food',
-        'CUUR0000SAH': 'CPI-U: Housing',
-        'CUUR0000SETB01': 'CPI-U: Gasoline (All Types)',
-        'CUUR0000SAM': 'CPI-U: Medical Care',
-        'CUUR0000SAE': 'CPI-U: Energy',
-        'CUSR0000SA0': 'CPI-U: All Items (Not Seasonally Adjusted)',
-    },
-    
-    # ===== LABOR FORCE PARTICIPATION =====
-    'LABOR_FORCE': {
-        'LNS11300000': 'Civilian Labor Force Level',
-        'LNS11300001': 'Labor Force - Men',
-        'LNS11300002': 'Labor Force - Women',
-        'LNS11300012': 'Labor Force - Hispanic or Latino',
-        'LNS11324230': 'Labor Force Participation Rate',
-        'LNS11324887': 'Labor Force Participation Rate - Prime Age (25-54)',
-    },
-    
-    # ===== PRODUCTIVITY =====
-    'PRODUCTIVITY': {
-        'PRS85006092': 'Nonfarm Business Sector: Labor Productivity',
-        'PRS85006112': 'Nonfarm Business Sector: Unit Labor Costs',
-        'PRS85006152': 'Nonfarm Business Sector: Real Compensation Per Hour',
-        'PRS88003092': 'Manufacturing Sector: Labor Productivity',
-    },
-    
-    # ===== JOB OPENINGS & LABOR TURNOVER (JOLTS) =====
-    'JOLTS': {
-        'JTS000000000000000JOL': 'Job Openings: Total Nonfarm',
-        'JTS000000000000000HIL': 'Hires: Total Nonfarm',
-        'JTS000000000000000TSL': 'Total Separations: Total Nonfarm',
-        'JTS000000000000000QUL': 'Quits: Total Nonfarm',
-        'JTS000000000000000LDL': 'Layoffs and Discharges: Total Nonfarm',
-    },
+CACHE_DIR = os.path.expanduser("~/.quantclaw/cache/bls")
+os.makedirs(CACHE_DIR, exist_ok=True)
+
+# Well-known series IDs for convenience functions
+SERIES = {
+    # Labor force
+    "unemployment_rate": "LNS14000000",
+    "labor_force": "LNS11000000",
+    "employment_level": "LNS12000000",
+    "participation_rate": "LNS11300000",
+    # Prices
+    "cpi_all_items": "CUUR0000SA0",
+    "cpi_food": "CUUR0000SAF1",
+    "cpi_energy": "CUUR0000SA0E",
+    "cpi_core": "CUUR0000SA0L1E",  # All items less food & energy
+    "ppi_final_demand": "WPSFD4",
+    # Employment
+    "nonfarm_payrolls": "CES0000000001",
+    "avg_hourly_earnings": "CES0500000003",
+    "avg_weekly_hours": "CES0500000002",
+    # JOLTS
+    "job_openings": "JTS000000000000000JOL",
+    "hires": "JTS000000000000000HIR",
+    "quits": "JTS000000000000000QUR",
+    # Productivity
+    "labor_productivity": "PRS85006092",
+    # Import/Export
+    "import_price_index": "EIUIR",
+    "export_price_index": "EIUIQ",
 }
 
-# ========== CORE API FUNCTIONS ==========
+TIMEOUT = 30
 
-def _make_bls_request(series_ids: List[str], start_year: Optional[str] = None, 
-                      end_year: Optional[str] = None, catalog: bool = False) -> Dict:
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+def _cache_key(series_ids: list, start: str, end: str) -> str:
+    """Generate a cache filename."""
+    ids = "_".join(sorted(series_ids))[:80]
+    return os.path.join(CACHE_DIR, f"{ids}_{start}_{end}.json")
+
+
+def _read_cache(path: str, max_age_hours: int = 12) -> Optional[dict]:
+    """Return cached data if fresh enough."""
+    if not os.path.exists(path):
+        return None
+    age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(path))
+    if age > timedelta(hours=max_age_hours):
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+
+def _write_cache(path: str, data: dict):
+    with open(path, "w") as f:
+        json.dump(data, f)
+
+
+def _post_series(series_ids: List[str], start_year: int, end_year: int) -> dict:
     """
-    Internal helper to make BLS API requests.
-    
-    Args:
-        series_ids: List of BLS series IDs to fetch
-        start_year: Starting year (YYYY format), defaults to 10 years ago
-        end_year: Ending year (YYYY format), defaults to current year
-        catalog: Include series catalog metadata
-        
-    Returns:
-        Dictionary with BLS API response
+    Core POST request to BLS API v2.
+    Returns raw JSON response dict.
     """
-    if not start_year:
-        start_year = str(datetime.now().year - 10)
-    if not end_year:
-        end_year = str(datetime.now().year)
-    
+    if len(series_ids) > 10:
+        raise ValueError("BLS public API allows max 10 series per request (no registration key)")
+
     payload = {
         "seriesid": series_ids,
-        "startyear": start_year,
-        "endyear": end_year,
-        "catalog": catalog
+        "startyear": str(start_year),
+        "endyear": str(end_year),
     }
-    
-    headers = {"Content-type": "application/json"}
-    
-    # Add API key if available
-    if BLS_API_KEY:
-        payload["registrationkey"] = BLS_API_KEY
-    
-    try:
-        response = requests.post(BLS_BASE_URL, 
-                                data=json.dumps(payload),
-                                headers=headers,
-                                timeout=30)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        return {"status": "error", "message": str(e)}
+    headers = {"Content-Type": "application/json"}
 
-def _parse_bls_series(data: Dict, series_id: str) -> List[Dict]:
-    """
-    Parse BLS API response into clean list of data points.
-    
-    Args:
-        data: BLS API response dictionary
-        series_id: Series ID to extract
-        
-    Returns:
-        List of dictionaries with {year, period, value, date}
-    """
+    resp = requests.post(BASE_URL, json=payload, headers=headers, timeout=TIMEOUT)
+    resp.raise_for_status()
+    data = resp.json()
+
     if data.get("status") != "REQUEST_SUCCEEDED":
+        msgs = data.get("message", [])
+        raise RuntimeError(f"BLS API error: {msgs}")
+
+    return data
+
+
+# ---------------------------------------------------------------------------
+# Public functions
+# ---------------------------------------------------------------------------
+
+def get_series(series_id: str,
+               start_year: Optional[int] = None,
+               end_year: Optional[int] = None,
+               use_cache: bool = True) -> List[Dict]:
+    """
+    Fetch time-series data for a single BLS series.
+
+    Args:
+        series_id: BLS series identifier (e.g. 'LNS14000000')
+        start_year: First year of data (default: current year - 2)
+        end_year: Last year of data (default: current year)
+        use_cache: Whether to use local file cache
+
+    Returns:
+        List of dicts with keys: year, period, periodName, value, footnotes
+        Sorted newest-first.
+    """
+    now = datetime.now()
+    end_year = end_year or now.year
+    start_year = start_year or (end_year - 2)
+
+    cache_path = _cache_key([series_id], str(start_year), str(end_year))
+    if use_cache:
+        cached = _read_cache(cache_path)
+        if cached:
+            return cached
+
+    raw = _post_series([series_id], start_year, end_year)
+    series_list = raw.get("Results", {}).get("series", [])
+    if not series_list:
         return []
-    
-    results = []
-    for series in data.get("Results", {}).get("series", []):
-        if series.get("seriesID") == series_id:
-            for item in series.get("data", []):
-                # Parse period (M01-M12, Q01-Q04, or A01 for annual)
-                period = item.get("period", "")
-                year = item.get("year", "")
-                value = item.get("value", "")
-                
-                # Create approximate date
-                if period.startswith("M"):
-                    month = int(period[1:])
-                    date_str = f"{year}-{month:02d}-01"
-                elif period.startswith("Q"):
-                    quarter = int(period[1:])
-                    month = (quarter - 1) * 3 + 1
-                    date_str = f"{year}-{month:02d}-01"
-                else:
-                    date_str = f"{year}-01-01"
-                
-                # Handle BLS missing value indicators ("-", empty string)
-                parsed_value = None
-                if value and value != "-":
-                    try:
-                        parsed_value = float(value)
-                    except (ValueError, TypeError):
-                        parsed_value = None
-                
-                results.append({
-                    "date": date_str,
-                    "year": year,
-                    "period": period,
-                    "value": parsed_value,
-                    "footnotes": item.get("footnotes", [])
-                })
-    
-    # Sort by date descending (newest first)
-    results.sort(key=lambda x: x["date"], reverse=True)
-    return results
 
-# ========== PUBLIC API FUNCTIONS ==========
+    records = series_list[0].get("data", [])
+    # Normalise values to float where possible
+    for rec in records:
+        try:
+            rec["value"] = float(rec["value"])
+        except (ValueError, TypeError):
+            pass
 
-def get_unemployment_rate(start_year: Optional[str] = None, 
-                         end_year: Optional[str] = None) -> Dict:
-    """
-    Get U.S. unemployment rate (seasonally adjusted).
-    
-    Args:
-        start_year: Starting year (YYYY), defaults to 10 years ago
-        end_year: Ending year (YYYY), defaults to current year
-        
-    Returns:
-        Dictionary with unemployment rate data
-    """
-    series_id = "LNS14000000"
-    data = _make_bls_request([series_id], start_year, end_year)
-    
-    return {
-        "series_id": series_id,
-        "title": "Unemployment Rate (Seasonally Adjusted)",
-        "data": _parse_bls_series(data, series_id),
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
-    }
+    if use_cache:
+        _write_cache(cache_path, records)
 
-def get_nonfarm_payrolls(start_year: Optional[str] = None,
-                        end_year: Optional[str] = None) -> Dict:
-    """
-    Get total nonfarm employment (payrolls).
-    
-    Args:
-        start_year: Starting year (YYYY), defaults to 10 years ago
-        end_year: Ending year (YYYY), defaults to current year
-        
-    Returns:
-        Dictionary with nonfarm payrolls data (in thousands)
-    """
-    series_id = "CES0000000001"
-    data = _make_bls_request([series_id], start_year, end_year)
-    
-    return {
-        "series_id": series_id,
-        "title": "Total Nonfarm Employment (Thousands, SA)",
-        "data": _parse_bls_series(data, series_id),
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
-    }
+    return records
 
-def get_cpi_data(start_year: Optional[str] = None,
-                end_year: Optional[str] = None,
-                include_core: bool = True) -> Dict:
-    """
-    Get Consumer Price Index (CPI) data.
-    
-    Args:
-        start_year: Starting year (YYYY), defaults to 10 years ago
-        end_year: Ending year (YYYY), defaults to current year
-        include_core: Also fetch core CPI (excluding food & energy)
-        
-    Returns:
-        Dictionary with CPI data (headline and optionally core)
-    """
-    series_ids = ["CUUR0000SA0"]  # Headline CPI
-    if include_core:
-        series_ids.append("CUUR0000SA0L1E")  # Core CPI
-    
-    data = _make_bls_request(series_ids, start_year, end_year)
-    
-    result = {
-        "headline": {
-            "series_id": "CUUR0000SA0",
-            "title": "CPI-U: All Items",
-            "data": _parse_bls_series(data, "CUUR0000SA0")
-        },
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
-    }
-    
-    if include_core:
-        result["core"] = {
-            "series_id": "CUUR0000SA0L1E",
-            "title": "CPI-U: All Items Less Food and Energy",
-            "data": _parse_bls_series(data, "CUUR0000SA0L1E")
-        }
-    
-    return result
-
-def get_labor_force_participation(start_year: Optional[str] = None,
-                                 end_year: Optional[str] = None) -> Dict:
-    """
-    Get labor force participation rate.
-    
-    Args:
-        start_year: Starting year (YYYY), defaults to 10 years ago
-        end_year: Ending year (YYYY), defaults to current year
-        
-    Returns:
-        Dictionary with labor force participation rate
-    """
-    series_id = "LNS11324230"
-    data = _make_bls_request([series_id], start_year, end_year)
-    
-    return {
-        "series_id": series_id,
-        "title": "Labor Force Participation Rate",
-        "data": _parse_bls_series(data, series_id),
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
-    }
 
 def get_multiple_series(series_ids: List[str],
-                       start_year: Optional[str] = None,
-                       end_year: Optional[str] = None) -> Dict:
+                        start_year: Optional[int] = None,
+                        end_year: Optional[int] = None) -> Dict[str, List[Dict]]:
     """
-    Fetch multiple BLS series in a single request.
-    
-    Args:
-        series_ids: List of BLS series IDs (max 25 without API key)
-        start_year: Starting year (YYYY), defaults to 10 years ago
-        end_year: Ending year (YYYY), defaults to current year
-        
+    Fetch data for multiple BLS series in one request (max 10).
+
     Returns:
-        Dictionary with data for each series
+        Dict mapping series_id -> list of data points.
     """
-    data = _make_bls_request(series_ids, start_year, end_year)
-    
-    result = {
-        "series": {},
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
-    }
-    
-    for series_id in series_ids:
-        result["series"][series_id] = _parse_bls_series(data, series_id)
-    
+    now = datetime.now()
+    end_year = end_year or now.year
+    start_year = start_year or (end_year - 2)
+
+    raw = _post_series(series_ids, start_year, end_year)
+    result = {}
+    for s in raw.get("Results", {}).get("series", []):
+        sid = s.get("seriesID", "")
+        records = s.get("data", [])
+        for rec in records:
+            try:
+                rec["value"] = float(rec["value"])
+            except (ValueError, TypeError):
+                pass
+        result[sid] = records
     return result
 
-def get_latest_release(series_id: str = "LNS14000000") -> Dict:
+
+def get_unemployment_rate(start_year: Optional[int] = None,
+                          end_year: Optional[int] = None) -> List[Dict]:
     """
-    Get the most recent data point for a series.
-    
-    Args:
-        series_id: BLS series ID, defaults to unemployment rate
-        
-    Returns:
-        Dictionary with latest data point
+    Get U.S. national unemployment rate (seasonally adjusted).
+
+    Returns list of monthly readings, newest first.
     """
-    # Fetch just the current year
-    current_year = str(datetime.now().year)
-    data = _make_bls_request([series_id], current_year, current_year)
-    
-    parsed = _parse_bls_series(data, series_id)
-    
-    return {
-        "series_id": series_id,
-        "latest": parsed[0] if parsed else None,
-        "source": "BLS",
-        "fetched_at": datetime.now().isoformat()
+    return get_series(SERIES["unemployment_rate"], start_year, end_year)
+
+
+def get_cpi(start_year: Optional[int] = None,
+            end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Consumer Price Index — All Urban Consumers, All Items (CPI-U).
+
+    Returns list of monthly index values, newest first.
+    """
+    return get_series(SERIES["cpi_all_items"], start_year, end_year)
+
+
+def get_core_cpi(start_year: Optional[int] = None,
+                 end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Core CPI (All Items Less Food and Energy).
+    """
+    return get_series(SERIES["cpi_core"], start_year, end_year)
+
+
+def get_nonfarm_payrolls(start_year: Optional[int] = None,
+                         end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Total Nonfarm Employment (thousands, seasonally adjusted).
+
+    Key monthly economic indicator watched by markets.
+    """
+    return get_series(SERIES["nonfarm_payrolls"], start_year, end_year)
+
+
+def get_avg_hourly_earnings(start_year: Optional[int] = None,
+                            end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Average Hourly Earnings of All Employees (Total Private).
+    """
+    return get_series(SERIES["avg_hourly_earnings"], start_year, end_year)
+
+
+def get_job_openings(start_year: Optional[int] = None,
+                     end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get JOLTS Job Openings (thousands).
+    """
+    return get_series(SERIES["job_openings"], start_year, end_year)
+
+
+def get_labor_productivity(start_year: Optional[int] = None,
+                           end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Nonfarm Business Sector Labor Productivity index.
+    """
+    return get_series(SERIES["labor_productivity"], start_year, end_year)
+
+
+def get_ppi(start_year: Optional[int] = None,
+            end_year: Optional[int] = None) -> List[Dict]:
+    """
+    Get Producer Price Index — Final Demand.
+    """
+    return get_series(SERIES["ppi_final_demand"], start_year, end_year)
+
+
+def get_inflation_snapshot() -> Dict:
+    """
+    Get a quick snapshot of key inflation indicators (latest values).
+
+    Returns dict with CPI, Core CPI, and PPI latest readings + YoY context.
+    """
+    result = {}
+    for label, sid in [("cpi", "cpi_all_items"),
+                       ("core_cpi", "cpi_core"),
+                       ("ppi", "ppi_final_demand")]:
+        try:
+            data = get_series(SERIES[sid])
+            if data:
+                latest = data[0]
+                result[label] = {
+                    "value": latest["value"],
+                    "period": latest.get("periodName", ""),
+                    "year": latest.get("year", ""),
+                    "series_id": SERIES[sid],
+                }
+        except Exception as e:
+            result[label] = {"error": str(e)}
+    result["fetched_at"] = datetime.now().isoformat()
+    return result
+
+
+def get_labor_market_dashboard() -> Dict:
+    """
+    Comprehensive labor market dashboard — pulls unemployment, payrolls,
+    earnings, JOLTS, and participation rate in one call.
+
+    Returns dict keyed by indicator name with latest values.
+    """
+    ids_map = {
+        "unemployment_rate": SERIES["unemployment_rate"],
+        "participation_rate": SERIES["participation_rate"],
+        "nonfarm_payrolls": SERIES["nonfarm_payrolls"],
+        "avg_hourly_earnings": SERIES["avg_hourly_earnings"],
+        "job_openings": SERIES["job_openings"],
     }
+    try:
+        multi = get_multiple_series(list(ids_map.values()))
+    except Exception as e:
+        return {"error": str(e)}
 
-# ========== UTILITY FUNCTIONS ==========
-
-def list_series(category: Optional[str] = None) -> Dict:
-    """
-    List available BLS series IDs.
-    
-    Args:
-        category: Filter by category (UNEMPLOYMENT, EMPLOYMENT, CPI, etc.)
-        
-    Returns:
-        Dictionary of series by category
-    """
-    if category:
-        category_upper = category.upper()
-        if category_upper in BLS_SERIES:
-            return {category_upper: BLS_SERIES[category_upper]}
+    dashboard = {}
+    for name, sid in ids_map.items():
+        records = multi.get(sid, [])
+        if records:
+            latest = records[0]
+            dashboard[name] = {
+                "value": latest["value"],
+                "period": latest.get("periodName", ""),
+                "year": latest.get("year", ""),
+            }
         else:
-            return {"error": f"Category '{category}' not found"}
-    
-    return BLS_SERIES
+            dashboard[name] = {"value": None}
 
-# ========== MAIN / TESTING ==========
+    dashboard["fetched_at"] = datetime.now().isoformat()
+    return dashboard
+
+
+def list_available_series() -> Dict[str, str]:
+    """
+    Return the built-in mapping of friendly names → BLS series IDs.
+    Useful for discovering what's available without looking up docs.
+    """
+    return dict(SERIES)
+
 
 if __name__ == "__main__":
-    # Quick test - fetch latest unemployment rate
-    result = get_latest_release("LNS14000000")
-    print(json.dumps(result, indent=2))
+    print(json.dumps({
+        "module": "bls_public_data_api",
+        "status": "ready",
+        "source": "https://www.bls.gov/developers/",
+        "series_count": len(SERIES),
+        "functions": [
+            "get_series", "get_multiple_series",
+            "get_unemployment_rate", "get_cpi", "get_core_cpi",
+            "get_nonfarm_payrolls", "get_avg_hourly_earnings",
+            "get_job_openings", "get_labor_productivity", "get_ppi",
+            "get_inflation_snapshot", "get_labor_market_dashboard",
+            "list_available_series",
+        ]
+    }, indent=2))

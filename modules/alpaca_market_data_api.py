@@ -1,466 +1,475 @@
 #!/usr/bin/env python3
 """
-Alpaca Market Data API — Stock & Crypto Market Data Module
+Alpaca Market Data API — US Stocks, Crypto, Options Market Data
 
-Provides free access to U.S. stock and crypto market data including:
-- Historical OHLCV bars (stocks & crypto)
-- Real-time quotes (bid/ask)
-- Latest trades
-- Market snapshots
-- Multi-timeframe support
+Data Source: Alpaca Markets (https://alpaca.markets)
+Update: Real-time (IEX free tier) / 15-min delayed
+History: 5+ years of bars, trades, quotes
+Free: Yes (free tier with paper trading API keys — no payment required)
 
-Source: https://alpaca.markets/docs/api-references/market-data-api/
-Category: Exchanges & Market Microstructure
-Free tier: True (some endpoints require API key for extended limits)
-Author: QuantClaw Data NightBuilder
-Phase: 106
+Provides:
+- Historical OHLCV bars (minute, hour, day, week, month)
+- Latest trade / quote / snapshot per symbol
+- Multi-symbol snapshots for screening
+- Crypto bars and snapshots (BTC, ETH, etc.)
+- Trade and quote history
+
+Setup:
+  1. Create free account at https://app.alpaca.markets/signup
+  2. Generate paper trading API keys (no payment needed)
+  3. Export: APCA_API_KEY_ID and APCA_API_SECRET_KEY
+
+Usage as Signal:
+- Bar data for technical analysis (SMA, RSI, MACD)
+- Quote spread analysis for liquidity assessment
+- Snapshot data for real-time screening
+- Crypto data for cross-asset correlation
 """
 
-import os
-import json
 import requests
+import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Union
-from pathlib import Path
 
-# Alpaca API Configuration
-STOCKS_BASE_URL = "https://data.alpaca.markets/v2"
-CRYPTO_BASE_URL = "https://data.alpaca.markets/v1beta3/crypto/us"
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
 
-# Check for API credentials (optional for free tier)
-ALPACA_API_KEY = os.environ.get("ALPACA_API_KEY") or os.environ.get("APCA_API_KEY_ID")
-ALPACA_SECRET_KEY = os.environ.get("ALPACA_SECRET_KEY") or os.environ.get("APCA_API_SECRET_KEY")
+CACHE_DIR = os.path.expanduser("~/.quantclaw/cache/alpaca")
+os.makedirs(CACHE_DIR, exist_ok=True)
 
-# Timeframe mapping
-TIMEFRAME_MAP = {
-    "1Min": "1Min",
-    "5Min": "5Min",
-    "15Min": "15Min",
-    "1Hour": "1Hour",
-    "1Day": "1Day",
-    "1Week": "1Week",
-    "1Month": "1Month",
+# Alpaca data API base URLs
+STOCK_BASE = "https://data.alpaca.markets/v2/stocks"
+CRYPTO_BASE = "https://data.alpaca.markets/v1beta3/crypto/us"
+
+# Auth from environment (free paper-trading keys)
+_KEY_ID = os.environ.get("APCA_API_KEY_ID", "")
+_SECRET_KEY = os.environ.get("APCA_API_SECRET_KEY", "")
+
+_HEADERS = {
+    "APCA-API-KEY-ID": _KEY_ID,
+    "APCA-API-SECRET-KEY": _SECRET_KEY,
+    "Accept": "application/json",
 }
 
+_TIMEFRAMES = ("1Min", "5Min", "15Min", "30Min", "1Hour", "4Hour", "1Day", "1Week", "1Month")
 
-def _get_headers() -> Dict[str, str]:
-    """Generate request headers with optional authentication."""
-    headers = {
-        "accept": "application/json",
-    }
-    
-    if ALPACA_API_KEY and ALPACA_SECRET_KEY:
-        headers["APCA-API-KEY-ID"] = ALPACA_API_KEY
-        headers["APCA-API-SECRET-KEY"] = ALPACA_SECRET_KEY
-    
-    return headers
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _check_keys() -> None:
+    """Raise if API keys are not configured."""
+    if not _KEY_ID or not _SECRET_KEY:
+        raise EnvironmentError(
+            "Alpaca API keys not set. Export APCA_API_KEY_ID and "
+            "APCA_API_SECRET_KEY (free paper-trading keys from https://app.alpaca.markets)."
+        )
 
 
-def _make_request(url: str, params: Optional[Dict] = None) -> Dict:
+def _get(url: str, params: Optional[dict] = None, timeout: int = 15) -> dict:
+    """Execute authenticated GET request and return JSON."""
+    _check_keys()
+    resp = requests.get(url, headers=_HEADERS, params=params or {}, timeout=timeout)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def _cache_get(key: str, max_age_seconds: int = 300) -> Optional[dict]:
+    """Return cached JSON if fresh enough, else None."""
+    path = os.path.join(CACHE_DIR, f"{key}.json")
+    if os.path.exists(path):
+        age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(path))
+        if age.total_seconds() < max_age_seconds:
+            with open(path) as f:
+                return json.load(f)
+    return None
+
+
+def _cache_set(key: str, data) -> None:
+    """Write data to cache file."""
+    path = os.path.join(CACHE_DIR, f"{key}.json")
+    with open(path, "w") as f:
+        json.dump(data, f)
+
+
+# ===================================================================
+# STOCK FUNCTIONS
+# ===================================================================
+
+def get_stock_bars(
+    symbol: str,
+    timeframe: str = "1Day",
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    limit: int = 100,
+    adjustment: str = "split",
+) -> List[Dict]:
     """
-    Make HTTP request to Alpaca API with error handling.
-    
+    Fetch historical OHLCV bars for a US stock.
+
     Args:
-        url: Full API endpoint URL
-        params: Query parameters
-        
+        symbol: Ticker symbol (e.g. 'AAPL', 'SPY').
+        timeframe: Bar size — one of 1Min, 5Min, 15Min, 30Min,
+                   1Hour, 4Hour, 1Day, 1Week, 1Month.
+        start: Start date (RFC-3339 or YYYY-MM-DD). Default: 30 days ago.
+        end: End date. Default: now.
+        limit: Max bars to return (1-10000). Default 100.
+        adjustment: Price adjustment — raw, split, dividend, all. Default split.
+
     Returns:
-        JSON response as dict
-        
-    Raises:
-        Exception on HTTP errors
+        List of bar dicts with keys: t, o, h, l, c, v, n, vw
+        (timestamp, open, high, low, close, volume, trade_count, vwap)
     """
-    try:
-        response = requests.get(url, headers=_get_headers(), params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        return {
-            "error": str(e),
-            "status_code": getattr(e.response, 'status_code', None) if hasattr(e, 'response') else None,
-            "message": "Failed to fetch data from Alpaca API"
-        }
+    if timeframe not in _TIMEFRAMES:
+        raise ValueError(f"Invalid timeframe '{timeframe}'. Must be one of {_TIMEFRAMES}")
 
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%d")
 
-# ========== STOCK MARKET DATA ==========
-
-def get_stock_bars(symbol: str, timeframe: str = "1Day", limit: int = 100, 
-                   start: Optional[str] = None, end: Optional[str] = None) -> Dict:
-    """
-    Get historical OHLCV bars for a stock.
-    
-    Args:
-        symbol: Stock ticker (e.g., "AAPL", "TSLA")
-        timeframe: Bar duration - "1Min", "5Min", "15Min", "1Hour", "1Day", "1Week", "1Month"
-        limit: Number of bars to return (max 10000)
-        start: Start date in RFC-3339 format or YYYY-MM-DD (optional)
-        end: End date in RFC-3339 format or YYYY-MM-DD (optional)
-        
-    Returns:
-        {
-            "symbol": "AAPL",
-            "bars": [
-                {
-                    "t": "2024-01-01T00:00:00Z",
-                    "o": 185.50,
-                    "h": 187.20,
-                    "l": 184.80,
-                    "c": 186.75,
-                    "v": 75000000,
-                    "n": 550000,
-                    "vw": 186.25
-                },
-                ...
-            ],
-            "next_page_token": null
-        }
-    """
-    symbol = symbol.upper()
-    timeframe = TIMEFRAME_MAP.get(timeframe, timeframe)
-    
-    url = f"{STOCKS_BASE_URL}/stocks/{symbol}/bars"
     params = {
         "timeframe": timeframe,
+        "start": start,
         "limit": min(limit, 10000),
+        "adjustment": adjustment,
     }
-    
-    if start:
-        params["start"] = start
     if end:
         params["end"] = end
-    
-    return _make_request(url, params)
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/bars", params)
+    return data.get("bars", [])
 
 
-def get_latest_quote(symbol: str) -> Dict:
+def get_stock_latest_trade(symbol: str) -> Dict:
     """
-    Get the latest bid/ask quote for a stock.
-    
+    Get the latest trade for a stock symbol.
+
     Args:
-        symbol: Stock ticker (e.g., "AAPL")
-        
+        symbol: Ticker symbol (e.g. 'AAPL').
+
     Returns:
-        {
-            "symbol": "AAPL",
-            "quote": {
-                "t": "2024-01-01T16:00:00Z",
-                "ax": "Q",  # ask exchange
-                "ap": 186.50,  # ask price
-                "as": 100,  # ask size
-                "bx": "Q",  # bid exchange
-                "bp": 186.48,  # bid price
-                "bs": 200,  # bid size
-                "c": ["R"]  # conditions
-            }
-        }
+        Dict with keys: t (timestamp), x (exchange), p (price),
+        s (size), c (conditions), i (id), z (tape).
     """
-    symbol = symbol.upper()
-    url = f"{STOCKS_BASE_URL}/stocks/{symbol}/quotes/latest"
-    
-    return _make_request(url)
+    cache_key = f"latest_trade_{symbol.upper()}"
+    cached = _cache_get(cache_key, max_age_seconds=60)
+    if cached:
+        return cached
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/trades/latest")
+    result = data.get("trade", data)
+    _cache_set(cache_key, result)
+    return result
 
 
-def get_latest_trade(symbol: str) -> Dict:
+def get_stock_latest_quote(symbol: str) -> Dict:
     """
-    Get the latest trade for a stock.
-    
+    Get the latest NBBO quote for a stock symbol.
+
     Args:
-        symbol: Stock ticker (e.g., "AAPL")
-        
+        symbol: Ticker symbol (e.g. 'AAPL').
+
     Returns:
-        {
-            "symbol": "AAPL",
-            "trade": {
-                "t": "2024-01-01T16:00:00Z",
-                "x": "Q",  # exchange
-                "p": 186.49,  # price
-                "s": 100,  # size
-                "c": ["@"],  # conditions
-                "i": 12345,  # trade ID
-                "z": "C"  # tape
-            }
-        }
+        Dict with keys: t, ax, ap, as, bx, bp, bs, c, z
+        (timestamp, ask exchange/price/size, bid exchange/price/size, conditions, tape)
     """
-    symbol = symbol.upper()
-    url = f"{STOCKS_BASE_URL}/stocks/{symbol}/trades/latest"
-    
-    return _make_request(url)
+    cache_key = f"latest_quote_{symbol.upper()}"
+    cached = _cache_get(cache_key, max_age_seconds=30)
+    if cached:
+        return cached
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/quotes/latest")
+    result = data.get("quote", data)
+    _cache_set(cache_key, result)
+    return result
 
 
 def get_stock_snapshot(symbol: str) -> Dict:
     """
-    Get full snapshot of current market state for a stock.
-    Includes latest trade, quote, minute bar, daily bar, and previous daily bar.
-    
+    Get a comprehensive snapshot for a stock: latest trade, quote,
+    minute bar, daily bar, and previous daily bar.
+
     Args:
-        symbol: Stock ticker (e.g., "AAPL")
-        
+        symbol: Ticker symbol (e.g. 'SPY').
+
     Returns:
-        {
-            "symbol": "AAPL",
-            "latestTrade": {...},
-            "latestQuote": {...},
-            "minuteBar": {...},
-            "dailyBar": {...},
-            "prevDailyBar": {...}
-        }
+        Dict with keys: latestTrade, latestQuote, minuteBar,
+        dailyBar, prevDailyBar.
     """
-    symbol = symbol.upper()
-    url = f"{STOCKS_BASE_URL}/stocks/{symbol}/snapshot"
-    
-    return _make_request(url)
+    cache_key = f"snapshot_{symbol.upper()}"
+    cached = _cache_get(cache_key, max_age_seconds=60)
+    if cached:
+        return cached
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/snapshot")
+    _cache_set(cache_key, data)
+    return data
 
 
-def get_stock_snapshots(symbols: List[str]) -> Dict:
+def get_multi_stock_snapshots(symbols: List[str]) -> Dict:
     """
     Get snapshots for multiple stocks in a single request.
-    
+
     Args:
-        symbols: List of stock tickers (e.g., ["AAPL", "TSLA", "MSFT"])
-        
+        symbols: List of ticker symbols (e.g. ['AAPL', 'MSFT', 'SPY']).
+
     Returns:
-        {
-            "AAPL": {...},
-            "TSLA": {...},
-            "MSFT": {...}
-        }
+        Dict mapping symbol -> snapshot dict.
     """
-    symbols_str = ",".join([s.upper() for s in symbols])
-    url = f"{STOCKS_BASE_URL}/stocks/snapshots"
-    params = {"symbols": symbols_str}
-    
-    return _make_request(url, params)
+    sym_str = ",".join(s.upper() for s in symbols)
+    data = _get(f"{STOCK_BASE}/snapshots", {"symbols": sym_str})
+    return data
 
 
-# ========== CRYPTO MARKET DATA ==========
-
-def get_crypto_bars(symbol: str, timeframe: str = "1Day", limit: int = 100,
-                    start: Optional[str] = None, end: Optional[str] = None) -> Dict:
+def get_stock_trades(
+    symbol: str,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict]:
     """
-    Get historical OHLCV bars for cryptocurrency pairs.
-    
+    Fetch historical trades for a stock.
+
     Args:
-        symbol: Crypto pair (e.g., "BTC/USD", "ETH/USD", "BTCUSD")
-        timeframe: Bar duration - "1Min", "5Min", "15Min", "1Hour", "1Day"
-        limit: Number of bars to return (max 10000)
-        start: Start date in RFC-3339 format or YYYY-MM-DD (optional)
-        end: End date in RFC-3339 format or YYYY-MM-DD (optional)
-        
+        symbol: Ticker symbol.
+        start: Start timestamp (RFC-3339 or YYYY-MM-DD).
+        end: End timestamp.
+        limit: Max trades (1-10000).
+
     Returns:
-        {
-            "symbol": "BTC/USD",
-            "bars": [
-                {
-                    "t": "2024-01-01T00:00:00Z",
-                    "o": 42000.50,
-                    "h": 42500.00,
-                    "l": 41800.00,
-                    "c": 42300.00,
-                    "v": 1250.5,
-                    "n": 15000,
-                    "vw": 42150.25
-                },
-                ...
-            ],
-            "next_page_token": null
-        }
+        List of trade dicts with keys: t, x, p, s, c, i, z.
     """
-    # Normalize symbol format (BTC/USD or BTCUSD -> BTC/USD)
-    if "/" not in symbol:
-        if symbol.endswith("USD"):
-            symbol = f"{symbol[:-3]}/USD"
-        elif symbol.endswith("USDT"):
-            symbol = f"{symbol[:-4]}/USDT"
-    
-    symbol = symbol.upper()
-    timeframe = TIMEFRAME_MAP.get(timeframe, timeframe)
-    
-    url = f"{CRYPTO_BASE_URL}/bars"
-    params = {
-        "symbols": symbol,
-        "timeframe": timeframe,
-        "limit": min(limit, 10000),
-    }
-    
+    params = {"limit": min(limit, 10000)}
     if start:
         params["start"] = start
     if end:
         params["end"] = end
-    
-    return _make_request(url, params)
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/trades", params)
+    return data.get("trades", [])
 
 
-def get_latest_crypto_quote(symbol: str) -> Dict:
+def get_stock_quotes(
+    symbol: str,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict]:
     """
-    Get the latest bid/ask quote for a cryptocurrency pair.
-    
+    Fetch historical quotes (NBBO) for a stock.
+
     Args:
-        symbol: Crypto pair (e.g., "BTC/USD", "ETH/USD")
-        
+        symbol: Ticker symbol.
+        start: Start timestamp (RFC-3339 or YYYY-MM-DD).
+        end: End timestamp.
+        limit: Max quotes (1-10000).
+
     Returns:
-        {
-            "symbol": "BTC/USD",
-            "quote": {
-                "t": "2024-01-01T16:00:00Z",
-                "bp": 42000.50,  # bid price
-                "bs": 1.5,  # bid size
-                "ap": 42001.00,  # ask price
-                "as": 1.2  # ask size
-            }
-        }
+        List of quote dicts.
     """
-    if "/" not in symbol:
-        if symbol.endswith("USD"):
-            symbol = f"{symbol[:-3]}/USD"
-    
-    symbol = symbol.upper()
-    url = f"{CRYPTO_BASE_URL}/latest/quotes"
-    params = {"symbols": symbol}
-    
-    return _make_request(url, params)
+    params = {"limit": min(limit, 10000)}
+    if start:
+        params["start"] = start
+    if end:
+        params["end"] = end
+
+    data = _get(f"{STOCK_BASE}/{symbol.upper()}/quotes", params)
+    return data.get("quotes", [])
 
 
-def get_latest_crypto_trade(symbol: str) -> Dict:
+# ===================================================================
+# CRYPTO FUNCTIONS
+# ===================================================================
+
+def get_crypto_bars(
+    symbol: str = "BTC/USD",
+    timeframe: str = "1Day",
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict]:
     """
-    Get the latest trade for a cryptocurrency pair.
-    
+    Fetch historical OHLCV bars for a crypto pair.
+
     Args:
-        symbol: Crypto pair (e.g., "BTC/USD")
-        
+        symbol: Crypto pair (e.g. 'BTC/USD', 'ETH/USD').
+        timeframe: Bar size (1Min through 1Month).
+        start: Start date (RFC-3339 or YYYY-MM-DD). Default: 30 days ago.
+        end: End date.
+        limit: Max bars (1-10000).
+
     Returns:
-        {
-            "symbol": "BTC/USD",
-            "trade": {
-                "t": "2024-01-01T16:00:00Z",
-                "p": 42000.75,  # price
-                "s": 0.5,  # size
-                "tks": "B"  # taker side
-            }
-        }
+        List of bar dicts with keys: t, o, h, l, c, v, n, vw.
     """
-    if "/" not in symbol:
-        if symbol.endswith("USD"):
-            symbol = f"{symbol[:-3]}/USD"
-    
-    symbol = symbol.upper()
-    url = f"{CRYPTO_BASE_URL}/latest/trades"
-    params = {"symbols": symbol}
-    
-    return _make_request(url, params)
+    if timeframe not in _TIMEFRAMES:
+        raise ValueError(f"Invalid timeframe '{timeframe}'. Must be one of {_TIMEFRAMES}")
+
+    if not start:
+        start = (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    params = {
+        "timeframe": timeframe,
+        "start": start,
+        "limit": min(limit, 10000),
+    }
+    if end:
+        params["end"] = end
+
+    data = _get(f"{CRYPTO_BASE}/{symbol}/bars", params)
+    return data.get("bars", [])
 
 
-def get_crypto_snapshot(symbol: str) -> Dict:
+def get_crypto_latest_trade(symbol: str = "BTC/USD") -> Dict:
     """
-    Get full snapshot for a cryptocurrency pair.
-    
+    Get the latest trade for a crypto pair.
+
     Args:
-        symbol: Crypto pair (e.g., "BTC/USD")
-        
+        symbol: Crypto pair (e.g. 'BTC/USD').
+
     Returns:
-        {
-            "symbol": "BTC/USD",
-            "latestTrade": {...},
-            "latestQuote": {...},
-            "minuteBar": {...},
-            "dailyBar": {...},
-            "prevDailyBar": {...}
-        }
+        Dict with keys: t (timestamp), p (price), s (size), tks (taker side).
     """
-    if "/" not in symbol:
-        if symbol.endswith("USD"):
-            symbol = f"{symbol[:-3]}/USD"
-    
-    symbol = symbol.upper()
-    url = f"{CRYPTO_BASE_URL}/snapshots"
-    params = {"symbols": symbol}
-    
-    return _make_request(url, params)
+    data = _get(f"{CRYPTO_BASE}/{symbol}/trades/latest")
+    return data.get("trade", data)
 
 
-# ========== UTILITY FUNCTIONS ==========
-
-def get_market_status() -> Dict:
+def get_crypto_latest_quote(symbol: str = "BTC/USD") -> Dict:
     """
-    Get current market status (open/closed).
-    
-    Returns:
-        {
-            "clock": {
-                "timestamp": "2024-01-01T16:00:00Z",
-                "is_open": false,
-                "next_open": "2024-01-02T09:30:00Z",
-                "next_close": "2024-01-02T16:00:00Z"
-            }
-        }
-    """
-    # Note: This endpoint requires API key
-    url = "https://api.alpaca.markets/v2/clock"
-    
-    return _make_request(url)
+    Get the latest quote for a crypto pair.
 
-
-def validate_symbol(symbol: str, asset_class: str = "stock") -> bool:
-    """
-    Validate if a symbol exists by attempting to fetch its snapshot.
-    
     Args:
-        symbol: Ticker symbol
-        asset_class: "stock" or "crypto"
-        
+        symbol: Crypto pair (e.g. 'BTC/USD').
+
     Returns:
-        True if symbol is valid, False otherwise
+        Dict with keys: t, bp, bs, ap, as (bid/ask price/size).
+    """
+    data = _get(f"{CRYPTO_BASE}/{symbol}/quotes/latest")
+    return data.get("quote", data)
+
+
+def get_crypto_snapshot(symbol: str = "BTC/USD") -> Dict:
+    """
+    Get a snapshot for a crypto pair: latest trade, quote,
+    minute bar, daily bar, previous daily bar.
+
+    Args:
+        symbol: Crypto pair (e.g. 'BTC/USD').
+
+    Returns:
+        Dict with snapshot data.
+    """
+    data = _get(f"{CRYPTO_BASE}/{symbol}/snapshot")
+    return data
+
+
+# ===================================================================
+# UTILITY FUNCTIONS
+# ===================================================================
+
+def get_most_active_stocks(top: int = 20) -> List[Dict]:
+    """
+    Get snapshots of the most active US stocks by volume.
+    Uses the /screener/stocks/most-actives endpoint.
+
+    Args:
+        top: Number of results (max 50).
+
+    Returns:
+        List of dicts with symbol, trade_count, volume, etc.
+    """
+    _check_keys()
+    url = "https://data.alpaca.markets/v1beta1/screener/stocks/most-actives"
+    params = {"top": min(top, 50)}
+    resp = requests.get(url, headers=_HEADERS, params=params, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+    return data.get("most_actives", [])
+
+
+def get_market_movers(market_type: str = "stocks", top: int = 20) -> Dict:
+    """
+    Get top gainers and losers.
+
+    Args:
+        market_type: 'stocks' or 'crypto'.
+        top: Number per category (max 50).
+
+    Returns:
+        Dict with 'gainers' and 'losers' lists.
+    """
+    _check_keys()
+    base = "https://data.alpaca.markets/v1beta1/screener"
+    url = f"{base}/{market_type}/movers"
+    params = {"top": min(top, 50)}
+    resp = requests.get(url, headers=_HEADERS, params=params, timeout=15)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def check_api_status() -> Dict:
+    """
+    Quick health check — verifies API keys work by fetching AAPL latest trade.
+
+    Returns:
+        Dict with status, symbol, price, timestamp.
     """
     try:
-        if asset_class == "stock":
-            result = get_stock_snapshot(symbol)
-        else:
-            result = get_crypto_snapshot(symbol)
-        
-        return "error" not in result
-    except:
-        return False
+        trade = get_stock_latest_trade("AAPL")
+        return {
+            "status": "ok",
+            "symbol": "AAPL",
+            "price": trade.get("p"),
+            "timestamp": trade.get("t"),
+            "api_keys_configured": bool(_KEY_ID and _SECRET_KEY),
+        }
+    except EnvironmentError:
+        return {
+            "status": "error",
+            "error": "API keys not configured",
+            "api_keys_configured": False,
+            "setup": "Export APCA_API_KEY_ID and APCA_API_SECRET_KEY",
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "api_keys_configured": bool(_KEY_ID and _SECRET_KEY),
+        }
 
 
-# ========== MODULE INFO ==========
+# ===================================================================
+# MODULE INFO
+# ===================================================================
 
-def get_module_info() -> Dict:
-    """
-    Get module metadata and available functions.
-    
-    Returns:
-        Module information dictionary
-    """
-    return {
-        "module": "alpaca_market_data_api",
-        "version": "1.0.0",
-        "phase": 106,
-        "source": "https://alpaca.markets/docs/api-references/market-data-api/",
-        "category": "Exchanges & Market Microstructure",
-        "free_tier": True,
-        "authenticated": ALPACA_API_KEY is not None,
-        "functions": {
-            "stocks": [
-                "get_stock_bars",
-                "get_latest_quote",
-                "get_latest_trade",
-                "get_stock_snapshot",
-                "get_stock_snapshots",
-            ],
-            "crypto": [
-                "get_crypto_bars",
-                "get_latest_crypto_quote",
-                "get_latest_crypto_trade",
-                "get_crypto_snapshot",
-            ],
-            "utility": [
-                "get_market_status",
-                "validate_symbol",
-                "get_module_info",
-            ]
-        },
-        "note": "Free tier available. API key optional for extended limits."
-    }
-
+MODULE_INFO = {
+    "name": "alpaca_market_data_api",
+    "description": "Alpaca Market Data — US stocks, crypto OHLCV, quotes, trades, snapshots",
+    "source": "https://alpaca.markets",
+    "category": "Exchanges & Market Microstructure",
+    "free_tier": True,
+    "requires_key": True,
+    "key_env_vars": ["APCA_API_KEY_ID", "APCA_API_SECRET_KEY"],
+    "update_frequency": "real-time",
+    "functions": [
+        "get_stock_bars",
+        "get_stock_latest_trade",
+        "get_stock_latest_quote",
+        "get_stock_snapshot",
+        "get_multi_stock_snapshots",
+        "get_stock_trades",
+        "get_stock_quotes",
+        "get_crypto_bars",
+        "get_crypto_latest_trade",
+        "get_crypto_latest_quote",
+        "get_crypto_snapshot",
+        "get_most_active_stocks",
+        "get_market_movers",
+        "check_api_status",
+    ],
+}
 
 if __name__ == "__main__":
-    print(json.dumps(get_module_info(), indent=2))
+    print(json.dumps(MODULE_INFO, indent=2))
+    print("\n--- API Status ---")
+    print(json.dumps(check_api_status(), indent=2))
