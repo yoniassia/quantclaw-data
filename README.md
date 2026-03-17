@@ -137,6 +137,10 @@ Discovers new free data sources across 24 rotating categories. 179 sources catal
 git clone https://github.com/yoniassia/quantclaw-data.git
 cd quantclaw-data
 pip install requests beautifulsoup4 pandas numpy
+npm install
+
+# Create your .env with API keys (see Environment Variables below)
+cp .env.example .env  # then fill in your keys
 
 # Run any module
 python3 modules/cnn_fear_greed.py
@@ -149,8 +153,39 @@ python3 run_v3_signal.py
 python3 mcp_server.py
 
 # Dashboard
-npm install && npm run dev
+npm run dev
 ```
+
+## 🔐 Environment Variables
+
+API keys are encrypted with [dotenvx](https://dotenvx.com). The encrypted `.env` is in the repo — contributors with the decryption key can use it directly.
+
+**For contributors with access to the decryption key:**
+```bash
+# Set the private key (shared securely by maintainers)
+export DOTENV_PRIVATE_KEY="your-key-here"
+
+# Run any command — dotenvx auto-decrypts
+npx dotenvx run -- python3 modules/cnn_fear_greed.py
+npx dotenvx run -- npm run dev
+```
+
+**For new contributors (bring your own keys):**
+```bash
+cp .env.example .env
+# Fill in your own API keys — most have free tiers:
+# FRED, Census, Finnhub, Etherscan, Polygon.io, USDA NASS
+```
+
+| Variable | Source | Free Tier |
+|----------|--------|-----------|
+| `FRED_API_KEY` | [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html) | ✅ |
+| `CENSUS_API_KEY` | [census.gov](https://api.census.gov/data/key_signup.html) | ✅ |
+| `FINNHUB_API_KEY` | [finnhub.io](https://finnhub.io/) | ✅ |
+| `FD_API_KEY` | [financialdatasets.ai](https://financialdatasets.ai) | ✅ |
+| `ETHERSCAN_API_KEY` | [etherscan.io](https://etherscan.io/apis) | ✅ |
+| `POLYGONIO_API_KEY` | [polygon.io](https://polygon.io/) | ✅ |
+| `USDA_NASS_API_KEY` | [quickstats.nass.usda.gov](https://quickstats.nass.usda.gov/api) | ✅ |
 
 ---
 
