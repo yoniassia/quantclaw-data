@@ -1,6 +1,6 @@
 # 📈 QuantClaw Data — AI-Built Financial Intelligence Platform
 
-> **452 production modules. 259 data sources. 167K+ lines of Python. $0/month. Built autonomously by AI agents.**
+> **965 production modules. 353K+ lines of Python. 179 data sources cataloged. $0/month. Built autonomously by AI agents.**
 
 🌐 **Live**: [quantclaw.org](https://quantclaw.org) | 📊 **Dashboard**: [data.quantclaw.org](https://data.quantclaw.org)
 
@@ -16,16 +16,15 @@ The platform powers **Alpha Picker V3**, an autonomous stock-picking algorithm t
 
 | Metric | Value |
 |--------|-------|
-| 965 |
-| 352,949+ |
-| 524 |
-| **API-Calling Modules** | 253 |
-| **Web Scrapers** | 47 |
-| **Derived/Calculated Signals** | 199 |
-| **MCP Server** | 12,711 LOC |
+| **Python Data Modules** | 965 |
+| **Lines of Python (modules)** | 352,949+ |
+| **Total Python (all files)** | 416,255+ |
+| **Data Sources Cataloged** | 179 (DataScout) |
+| **MCP Server** | 12,769 LOC |
+| **CLI** | 1,776 LOC |
+| **Cached Data** | 378 MB |
 | **Monthly Cost** | **$0** |
 | **Countries Covered** | 40+ |
-| **Roadmap Phases** | 713 built, 714-800 in progress |
 
 ---
 
@@ -33,21 +32,21 @@ The platform powers **Alpha Picker V3**, an autonomous stock-picking algorithm t
 
 ```
 quantclaw-data/
-├── modules/              452 Python data modules (167K LOC)
+├── modules/              965 Python data modules (353K LOC)
 │   ├── alpha_picker.py        Stock scoring algorithm (970 lines)
 │   ├── sa_quant_replica.py    SA Quant reverse-engineering (1,232 lines)
 │   ├── live_paper_trading.py  Portfolio engine (594 lines)
 │   ├── signal_fusion.py       Multi-signal combiner
-│   └── ...448 more modules
-├── data/                 370 MB cached financial data
+│   └── ...961 more modules
+├── data/                 378 MB cached financial data
 │   ├── signals/               Live trading signals
-│   ├── datascout/             Discovery database
+│   ├── datascout/             179 cataloged data sources
 │   └── live_portfolio.db      Paper trading SQLite DB
 ├── src/app/              Next.js dashboard + roadmap UI
-├── mcp_server.py         MCP API server (12.7K lines)
+├── mcp_server.py         MCP API server (12.8K lines)
 ├── run_v3_signal.py      Alpha Picker live signal runner
 ├── run_param_sweep_v2.py Backtesting engine
-├── cli.py                CLI interface (1.7K lines)
+├── cli.py                CLI interface (1.8K lines)
 ├── datascout.py          Continuous data source discovery agent
 └── tests/                Integration & QA tests
 ```
@@ -73,7 +72,7 @@ quantclaw-data/
 | 🌱 ESG & Climate | 5 | Carbon markets, green bonds |
 | 🎯 Portfolio & Risk | 5 | Optimization, rebalancing, drawdown |
 | 💬 Sentiment & NLP | 4 | FinBERT, earnings call NLP |
-| 🔧 Cross-domain | 268+ | Country stats, ML/AI, infrastructure |
+| 🔧 Cross-domain | 781+ | Country stats, ML/AI, infrastructure, extended sources |
 
 ---
 
@@ -102,7 +101,7 @@ Autonomous stock-picking engine reverse-engineering institutional quant strategi
 
 ## 🔌 MCP Server (Model Context Protocol)
 
-All 452 modules exposed as AI-callable tools:
+All 965 modules exposed as AI-callable tools:
 
 ```bash
 python3 mcp_server.py  # Port 3055
@@ -112,7 +111,7 @@ python3 mcp_server.py  # Port 3055
 
 ## 🔍 DataScout — Continuous Discovery
 
-Runs hourly across 24 rotating categories discovering new free data sources. 259 domains cataloged.
+Discovers new free data sources across 24 rotating categories. 179 sources cataloged and growing.
 
 ---
 
@@ -126,9 +125,9 @@ Runs hourly across 24 rotating categories discovering new free data sources. 259
 | 301-400 | ✅ | ML/AI models, NLP, factor engines |
 | 401-500 | ✅ | Infrastructure, streaming |
 | 501-699 | ✅ | Advanced analytics, emerging markets |
-| 700-713 | ✅ | Free no-API-key sources (DataScout) |
-| 714-800 | 🔄 | Extended free sources, ML signals |
-| 800+ | 📋 | Premium integrations, real-time |
+| 700-800 | ✅ | Free no-API-key sources (DataScout) |
+| 800-965 | ✅ | Extended free sources, ML signals |
+| 965+ | 🔄 | Continuous autonomous expansion |
 
 ---
 
@@ -167,4 +166,4 @@ npm install && npm run dev
 
 ---
 
-*Built with ❤️ by AI agents. $0/month. 452 modules and counting.*
+*Built with ❤️ by AI agents. $0/month. 965 modules and counting.*
