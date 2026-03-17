@@ -16,9 +16,9 @@ The platform powers **Alpha Picker V3**, an autonomous stock-picking algorithm t
 
 | Metric | Value |
 |--------|-------|
-| **Python Modules** | 452 |
-| **Lines of Code** | 167,000+ |
-| **Data Source Domains** | 259 |
+| 965 |
+| 352,949+ |
+| 524 |
 | **API-Calling Modules** | 253 |
 | **Web Scrapers** | 47 |
 | **Derived/Calculated Signals** | 199 |
