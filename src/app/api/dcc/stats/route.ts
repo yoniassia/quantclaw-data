@@ -70,6 +70,20 @@ export async function GET() {
       FROM modules WHERE is_active = true
     `);
 
+    const [platinumStats] = await query<{
+      total_records: string;
+      unique_symbols: string;
+      avg_score: string;
+      latest_refresh: string;
+    }>(`
+      SELECT
+        COUNT(*) as total_records,
+        COUNT(DISTINCT symbol) as unique_symbols,
+        COALESCE(ROUND(AVG(composite_score)::numeric, 1), 0) as avg_score,
+        MAX(generated_at) as latest_refresh
+      FROM platinum_records
+    `);
+
     return NextResponse.json({
       modules: {
         total: +moduleStats.total,
@@ -101,6 +115,12 @@ export async function GET() {
       freshness: {
         onSchedule: +(freshness?.on_schedule ?? 0),
         overdue: +(freshness?.overdue ?? 0),
+      },
+      platinum: {
+        totalRecords: +(platinumStats?.total_records ?? 0),
+        uniqueSymbols: +(platinumStats?.unique_symbols ?? 0),
+        avgCompositeScore: +(platinumStats?.avg_score ?? 0),
+        latestRefresh: platinumStats?.latest_refresh,
       },
     });
   } catch (err) {

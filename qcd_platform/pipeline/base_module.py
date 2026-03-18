@@ -228,6 +228,17 @@ class BaseModule(ABC):
                     "ts": datetime.now(timezone.utc).isoformat(),
                 })
                 tier_reached = "gold"
+
+                # Platinum: score >= 95, at least 2 runs, no consecutive failures
+                if quality.overall_score >= 95:
+                    rows = db.execute_query(
+                        "SELECT run_count, consecutive_failures FROM modules WHERE id = %s",
+                        (self.module_id,), fetch=True,
+                    )
+                    if rows and rows[0]["run_count"] >= 2 and rows[0]["consecutive_failures"] == 0:
+                        tier_reached = "platinum"
+                        for p in clean_points:
+                            p.tier = "platinum"
             else:
                 tier_reached = "silver" if clean_points else "bronze"
 

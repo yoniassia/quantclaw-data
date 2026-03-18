@@ -13,6 +13,14 @@ cd /home/quant/apps/quantclaw-data
 # Run the pipeline
 python3 qcd_platform/scripts/run_pipeline.py --overnight --workers 4 2>&1
 
+# Refresh Platinum enriched records (all 200 symbols)
+echo "$LOG_PREFIX Starting Platinum universe refresh..."
+python3 -c "
+from modules.platinum_enriched import refresh_universe
+result = refresh_universe(max_workers=4)
+print(f'Platinum refresh: {result[\"success\"]}/{result[\"total\"]} success, {result[\"elapsed_seconds\"]}s')
+" 2>&1
+
 # Send any pending critical alerts to WhatsApp
 python3 qcd_platform/scripts/alert_notifier.py 2>&1
 
