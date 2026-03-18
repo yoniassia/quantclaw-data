@@ -1,0 +1,83 @@
+"""
+Financial Datasets API — News & Sentiment
+
+Source: financialdatasets.ai
+Cadence: Hourly
+Granularity: Symbol-level
+Tags: Sentiment, News, US Equities
+"""
+import os
+import requests
+from datetime import datetime, timezone, timedelta
+from typing import List
+
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from qcd_platform.pipeline.base_module import BaseModule, DataPoint
+from qcd_platform.pipeline.db import execute_query
+
+API_KEY = os.getenv("FINANCIAL_DATASETS_API_KEY", "f4cd5217-2afe-4d8e-9031-1328633c8532")
+BASE_URL = "https://api.financialdatasets.ai"
+
+
+class FinancialDatasetsNews(BaseModule):
+    name = "financial_datasets_news"
+    display_name = "Financial Datasets — News & Sentiment"
+    cadence = "daily"
+    granularity = "symbol"
+    tags = ["Sentiment", "News", "US Equities"]
+
+    def _get_symbols(self) -> List[str]:
+        rows = execute_query(
+            """SELECT symbol FROM symbol_universe
+               WHERE asset_class = 'stocks' AND is_active = true
+               AND symbol NOT LIKE '%.%'
+               ORDER BY symbol LIMIT 200""",
+            fetch=True,
+        )
+        return [r["symbol"] for r in (rows or [])]
+
+    def fetch(self, symbols: List[str] = None) -> List[DataPoint]:
+        if symbols is None:
+            symbols = self._get_symbols()[:30]
+
+        headers = {"X-API-KEY": API_KEY}
+        points = []
+        end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        start_date = (datetime.now(timezone.utc) - timedelta(days=3)).strftime("%Y-%m-%d")
+
+        for symbol in symbols:
+            try:
+                url = f"{BASE_URL}/news?ticker={symbol}&published_date_gte={start_date}&published_date_lte={end_date}&limit=5"
+                resp = requests.get(url, headers=headers, timeout=10)
+                if resp.status_code != 200:
+                    continue
+
+                data = resp.json()
+                articles = data.get("news", [])
+                for article in articles:
+                    pub_date = article.get("date") or article.get("published_date")
+                    try:
+                        ts = datetime.fromisoformat(pub_date.replace("Z", "+00:00")) if pub_date else datetime.now(timezone.utc)
+                    except (ValueError, TypeError):
+                        ts = datetime.now(timezone.utc)
+
+                    points.append(DataPoint(
+                        ts=ts,
+                        symbol=symbol,
+                        cadence="daily",
+                        payload={
+                            "title": article.get("title"),
+                            "source": article.get("source"),
+                            "url": article.get("url"),
+                            "sentiment": article.get("sentiment"),
+                            "sentiment_score": article.get("sentiment_score"),
+                            "published_date": pub_date,
+                            "api_source": "financial_datasets",
+                        },
+                    ))
+            except requests.RequestException as e:
+                self.logger.warning(f"Failed for {symbol}: {e}")
+                continue
+
+        return points
