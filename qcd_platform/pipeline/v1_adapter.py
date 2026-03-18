@@ -82,11 +82,15 @@ class V1ModuleAdapter(BaseModule):
                     break
 
         if self._v1_callable is None:
+            import typing
+            _typing_names = {n for n in dir(typing) if not n.startswith("_")}
             for attr_name in dir(mod):
-                if attr_name.startswith("_"):
+                if attr_name.startswith("_") or attr_name in _typing_names:
                     continue
                 attr = getattr(mod, attr_name)
                 if callable(attr) and not isinstance(attr, type):
+                    if hasattr(attr, "__origin__"):
+                        continue
                     self._v1_callable = attr
                     self._main_callable_name = attr_name
                     break

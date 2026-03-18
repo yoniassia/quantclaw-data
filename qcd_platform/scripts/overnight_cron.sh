@@ -13,4 +13,7 @@ cd /home/quant/apps/quantclaw-data
 # Run the pipeline
 python3 qcd_platform/scripts/run_pipeline.py --overnight --workers 4 2>&1
 
+# Send any pending critical alerts to WhatsApp
+python3 qcd_platform/scripts/alert_notifier.py 2>&1
+
 echo "$LOG_PREFIX Overnight pipeline complete"

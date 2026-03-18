@@ -158,6 +158,12 @@ class PipelineOrchestrator:
                 "ts": datetime.now(timezone.utc).isoformat(),
             })
 
+            try:
+                from ..scripts.alert_notifier import check_and_notify
+                check_and_notify()
+            except Exception as e:
+                logger.warning(f"WhatsApp alert delivery failed: {e}")
+
         return last_result
 
     def run_batch(self, module_names: List[str] = None, symbols: List[str] = None) -> List[Dict]:
