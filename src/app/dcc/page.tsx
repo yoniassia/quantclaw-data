@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDCCStore, Module, DCCView, ModuleDetail } from '@/store/dcc-store';
 
 function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color?: string }) {
@@ -1034,6 +1034,478 @@ function Configuration() {
   );
 }
 
+// --------------- Symbol View ---------------
+
+interface PlatinumRecord {
+  ticker: string;
+  generated_at: string;
+  tier: string;
+  version: string;
+  profile: { name: string; sector: string; industry: string; market_cap: number; employees: number; country: string; exchange: string } | null;
+  price: { current: number; previous_close: number; change_pct: number; day_high: number; day_low: number; volume: number; avg_volume: number } | null;
+  technicals: Record<string, number | null> | null;
+  valuation: Record<string, number | null> | null;
+  fundamentals: Record<string, number | null> | null;
+  dividend: Record<string, number | string | null> | null;
+  estimate_revisions: Record<string, unknown> | null;
+  analyst_targets: { mean_target: number | null; median_target: number | null; high_target: number | null; low_target: number | null; upside_pct: number | null; num_analysts: number | null; assessment: { rating: string; color: string } | null } | null;
+  earnings_quality: Record<string, unknown> | null;
+  earnings_surprises: Record<string, unknown> | null;
+  composite: { composite_score: number; component_scores: Record<string, number>; weights_used: Record<string, number>; coverage: number; max_coverage: number } | null;
+  _meta: { elapsed_seconds: number; sections_populated: number; total_sections: number } | null;
+}
+
+interface DashboardItem {
+  ticker: string;
+  name: string;
+  sector: string;
+  market_cap: number;
+  price: number;
+  change_pct: number;
+  composite_score: number;
+  rating: string | null;
+  gf_score: number | null;
+  pe_forward: number | null;
+  rsi_14: number | null;
+  profit_margin: number | null;
+  analyst_upside: number | null;
+  beat_rate: number | null;
+  generated_at: string;
+}
+
+type TreeNode = { label: string; children: TreeNode[]; symbols: DashboardItem[] };
+
+function buildTree(items: DashboardItem[]): TreeNode[] {
+  const sectorMap = new Map<string, Map<string, DashboardItem[]>>();
+  for (const item of items) {
+    const sector = item.sector || 'Other';
+    if (!sectorMap.has(sector)) sectorMap.set(sector, new Map());
+    const industryMap = sectorMap.get(sector)!;
+    const industry = 'All';
+    if (!industryMap.has(industry)) industryMap.set(industry, []);
+    industryMap.get(industry)!.push(item);
+  }
+
+  return [...sectorMap.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([sector, industryMap]) => ({
+      label: sector,
+      children: [],
+      symbols: [...industryMap.values()].flat().sort((a, b) => (b.composite_score ?? 0) - (a.composite_score ?? 0)),
+    }));
+}
+
+function ScoreRing({ score, size = 120 }: { score: number; size?: number }) {
+  const r = (size - 12) / 2;
+  const circ = 2 * Math.PI * r;
+  const pct = Math.max(0, Math.min(100, score)) / 100;
+  const color = score >= 80 ? '#00d26a' : score >= 60 ? '#fbbf24' : score >= 40 ? '#f97316' : '#ef4444';
+
+  return (
+    <svg width={size} height={size} style={{ display: 'block' }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(224,232,240,0.08)" strokeWidth={8} />
+      <circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={8} strokeLinecap="round"
+        strokeDasharray={`${pct * circ} ${circ}`}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        style={{ transition: 'stroke-dasharray 0.6s ease' }}
+      />
+      <text x={size / 2} y={size / 2 - 6} textAnchor="middle" fill={color} fontSize={size * 0.28} fontWeight={700} fontFamily="inherit">
+        {score.toFixed(1)}
+      </text>
+      <text x={size / 2} y={size / 2 + 14} textAnchor="middle" fill="rgba(224,232,240,0.5)" fontSize={10} fontFamily="inherit">
+        PLATINUM
+      </text>
+    </svg>
+  );
+}
+
+function ComponentBar({ label, score, weight }: { label: string; score: number; weight: number }) {
+  const color = score >= 80 ? 'var(--terminal-green)' : score >= 60 ? '#fbbf24' : score >= 40 ? '#f97316' : 'var(--terminal-red)';
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 4 }}>
+        <span style={{ color: 'var(--terminal-text)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: 1 }}>{label}</span>
+        <span style={{ color, fontWeight: 700 }}>{score.toFixed(1)} <span style={{ color: 'rgba(224,232,240,0.3)', fontWeight: 400 }}>({(weight * 100).toFixed(0)}%)</span></span>
+      </div>
+      <div style={{ height: 6, background: 'rgba(224,232,240,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${Math.min(100, score)}%`, background: color, borderRadius: 3, transition: 'width 0.5s ease' }} />
+      </div>
+    </div>
+  );
+}
+
+function DataSection({ title, data, color }: { title: string; data: Record<string, unknown> | null; color?: string }) {
+  const [open, setOpen] = useState(true);
+  if (!data) return null;
+  const entries = Object.entries(data).filter(([, v]) => v != null && v !== '' && typeof v !== 'object');
+
+  if (entries.length === 0) return null;
+
+  const fmt = (key: string, val: unknown): string => {
+    if (val == null) return '—';
+    if (typeof val === 'number') {
+      if (key.includes('margin') || key.includes('growth') || key.includes('roe') || key.includes('roa') || key.includes('yield') || key.includes('payout') || key.includes('pct') || key.includes('percent'))
+        return `${(val * (Math.abs(val) < 5 ? 100 : 1)).toFixed(2)}%`;
+      if (key.includes('cap') || key.includes('revenue') || key.includes('flow') || key.includes('volume'))
+        return val >= 1e12 ? `$${(val / 1e12).toFixed(2)}T` : val >= 1e9 ? `$${(val / 1e9).toFixed(2)}B` : val >= 1e6 ? `$${(val / 1e6).toFixed(1)}M` : val.toLocaleString();
+      return val.toFixed(2);
+    }
+    return String(val);
+  };
+
+  const labelMap: Record<string, string> = {
+    pe_trailing: 'P/E (TTM)', pe_forward: 'P/E (Fwd)', peg_ratio: 'PEG', pb_ratio: 'P/B', ps_ratio: 'P/S',
+    ev_ebitda: 'EV/EBITDA', ev_revenue: 'EV/Revenue', price_to_fcf: 'P/FCF',
+    sma_20: 'SMA 20', sma_50: 'SMA 50', sma_200: 'SMA 200', rsi_14: 'RSI 14',
+    price_vs_sma20: 'vs SMA20', price_vs_sma50: 'vs SMA50',
+    high_52w: '52W High', low_52w: '52W Low', pct_from_52w_high: 'From 52W High',
+    revenue_growth: 'Rev Growth', gross_margin: 'Gross Margin', operating_margin: 'Op Margin', profit_margin: 'Profit Margin',
+    debt_to_equity: 'D/E', current_ratio: 'Current Ratio', free_cash_flow: 'FCF',
+    eps_trailing: 'EPS (TTM)', eps_forward: 'EPS (Fwd)',
+    mean_target: 'Mean Target', median_target: 'Median Target', upside_pct: 'Upside %',
+    beat_rate: 'Beat Rate', avg_surprise_pct: 'Avg Surprise', consecutive_beats: 'Consec Beats',
+    accruals_ratio: 'Accruals Ratio', beneish_m_score: 'Beneish M', altman_z_score: 'Altman Z',
+    change_pct: 'Change %', day_high: 'Day High', day_low: 'Day Low', avg_volume: 'Avg Volume',
+    previous_close: 'Prev Close', current: 'Price', num_analysts: '# Analysts', ex_date: 'Ex-Date',
+  };
+
+  return (
+    <div style={{ background: 'var(--terminal-panel-bg)', border: '1px solid var(--terminal-panel-border)', marginBottom: 8, overflow: 'hidden' }}>
+      <button onClick={() => setOpen(!open)} style={{
+        width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+      }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: color ?? 'var(--terminal-blue)', letterSpacing: 1.5, textTransform: 'uppercase' }}>{title}</span>
+        <span style={{ color: 'rgba(224,232,240,0.4)', fontSize: 12 }}>{open ? '▾' : '▸'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 14px 12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px 20px' }}>
+          {entries.map(([key, val]) => (
+            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '3px 0', borderBottom: '1px solid rgba(26,35,64,0.3)' }}>
+              <span style={{ fontSize: 10, color: 'rgba(224,232,240,0.5)' }}>{labelMap[key] ?? key.replace(/_/g, ' ')}</span>
+              <span style={{ fontSize: 11, color: 'var(--terminal-text)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                {fmt(key, val)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SymbolView() {
+  const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<DashboardItem[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [allSymbols, setAllSymbols] = useState<DashboardItem[]>([]);
+  const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+  const [symbolData, setSymbolData] = useState<PlatinumRecord | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [treeData, setTreeData] = useState<TreeNode[]>([]);
+  const [expandedSectors, setExpandedSectors] = useState<Set<string>>(new Set());
+  const searchRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const [highlightIdx, setHighlightIdx] = useState(-1);
+
+  useEffect(() => {
+    fetch('/api/v1/platinum/dashboard?sort=composite_score&limit=200')
+      .then(r => r.json())
+      .then(d => {
+        const items: DashboardItem[] = d.data ?? [];
+        setAllSymbols(items);
+        setTreeData(buildTree(items));
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!search.trim()) { setSuggestions([]); return; }
+    const q = search.toUpperCase();
+    const filtered = allSymbols.filter(s =>
+      s.ticker.includes(q) || (s.name && s.name.toUpperCase().includes(q))
+    ).slice(0, 12);
+    setSuggestions(filtered);
+    setHighlightIdx(-1);
+  }, [search, allSymbols]);
+
+  const loadSymbol = useCallback(async (ticker: string) => {
+    setSelectedSymbol(ticker);
+    setSymbolData(null);
+    setLoading(true);
+    setShowSuggestions(false);
+    setSearch('');
+    try {
+      const res = await fetch(`/api/v1/platinum/${ticker}?mode=full`);
+      const data = await res.json();
+      setSymbolData(data);
+    } catch { /* ignore */ }
+    setLoading(false);
+  }, []);
+
+  const handleSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightIdx(prev => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightIdx(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (highlightIdx >= 0 && suggestions[highlightIdx]) {
+        loadSymbol(suggestions[highlightIdx].ticker);
+      } else if (search.trim()) {
+        loadSymbol(search.trim().toUpperCase());
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) && e.target !== searchRef.current) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  const toggleSector = (sector: string) => {
+    setExpandedSectors(prev => {
+      const next = new Set(prev);
+      if (next.has(sector)) next.delete(sector); else next.add(sector);
+      return next;
+    });
+  };
+
+  const scoreColor = (s: number) => s >= 80 ? 'var(--terminal-green)' : s >= 60 ? '#fbbf24' : s >= 40 ? '#f97316' : 'var(--terminal-red)';
+
+  return (
+    <div style={{ padding: 16, height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#a855f7', letterSpacing: 2 }}>SYMBOL VIEW</div>
+          <div style={{ fontSize: 10, color: 'rgba(224,232,240,0.4)', marginTop: 2 }}>Platinum Enriched Records — {allSymbols.length} symbols</div>
+        </div>
+      </div>
+
+      {/* Search with autocomplete */}
+      <div style={{ position: 'relative', maxWidth: 500 }}>
+        <input
+          ref={searchRef}
+          value={search}
+          onChange={e => { setSearch(e.target.value); setShowSuggestions(true); }}
+          onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
+          onKeyDown={handleSearchKey}
+          placeholder="Search symbol or company name..."
+          style={{
+            width: '100%', background: 'var(--terminal-panel-bg)', border: '1px solid var(--terminal-panel-border)',
+            color: 'var(--terminal-text)', padding: '10px 14px 10px 36px', fontSize: 12,
+            fontFamily: 'inherit', outline: 'none', letterSpacing: 0.5,
+          }}
+        />
+        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'rgba(224,232,240,0.3)', fontSize: 14 }}>⌕</span>
+
+        {showSuggestions && suggestions.length > 0 && (
+          <div ref={suggestionsRef} style={{
+            position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+            background: '#0f1117', border: '1px solid var(--terminal-panel-border)', borderTop: 'none',
+            maxHeight: 320, overflow: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+          }}>
+            {suggestions.map((s, i) => (
+              <div
+                key={s.ticker}
+                onClick={() => loadSymbol(s.ticker)}
+                onMouseEnter={() => setHighlightIdx(i)}
+                style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '8px 14px', cursor: 'pointer',
+                  background: i === highlightIdx ? 'rgba(168,85,247,0.12)' : 'transparent',
+                  borderBottom: '1px solid rgba(26,35,64,0.3)',
+                }}
+              >
+                <div>
+                  <span style={{ color: '#a855f7', fontWeight: 700, marginRight: 8, fontSize: 12 }}>{s.ticker}</span>
+                  <span style={{ color: 'rgba(224,232,240,0.6)', fontSize: 11 }}>{s.name}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <span style={{ fontSize: 10, color: 'rgba(224,232,240,0.4)' }}>{s.sector}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: scoreColor(s.composite_score) }}>{s.composite_score?.toFixed(1) ?? '—'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Main area: Tree + Detail */}
+      <div style={{ display: 'flex', gap: 12, flex: 1, minHeight: 0 }}>
+        {/* Left: Tree */}
+        <div style={{
+          width: 280, minWidth: 280, overflow: 'auto',
+          background: 'var(--terminal-panel-bg)', border: '1px solid var(--terminal-panel-border)',
+        }}>
+          <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--terminal-panel-border)', fontSize: 10, fontWeight: 700, color: 'var(--terminal-blue)', letterSpacing: 1.5 }}>
+            ASSET CLASS TREE
+          </div>
+          {treeData.map(sector => (
+            <div key={sector.label}>
+              <button
+                onClick={() => toggleSector(sector.label)}
+                style={{
+                  width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '8px 14px', background: expandedSectors.has(sector.label) ? 'rgba(168,85,247,0.06)' : 'transparent',
+                  border: 'none', borderBottom: '1px solid rgba(26,35,64,0.3)',
+                  cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+                }}
+              >
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--terminal-text)' }}>
+                  {expandedSectors.has(sector.label) ? '▾' : '▸'} {sector.label}
+                </span>
+                <span style={{ fontSize: 9, color: 'rgba(224,232,240,0.4)' }}>{sector.symbols.length}</span>
+              </button>
+              {expandedSectors.has(sector.label) && sector.symbols.map(sym => (
+                <button
+                  key={sym.ticker}
+                  onClick={() => loadSymbol(sym.ticker)}
+                  style={{
+                    width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '5px 14px 5px 28px',
+                    background: selectedSymbol === sym.ticker ? 'rgba(168,85,247,0.12)' : 'transparent',
+                    borderLeft: selectedSymbol === sym.ticker ? '3px solid #a855f7' : '3px solid transparent',
+                    border: 'none', borderBottom: '1px solid rgba(26,35,64,0.15)',
+                    cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+                  }}
+                >
+                  <div>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: selectedSymbol === sym.ticker ? '#a855f7' : 'var(--terminal-text)', marginRight: 6 }}>{sym.ticker}</span>
+                    <span style={{ fontSize: 9, color: 'rgba(224,232,240,0.4)' }}>{sym.name?.slice(0, 20)}</span>
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: scoreColor(sym.composite_score), fontVariantNumeric: 'tabular-nums' }}>
+                    {sym.composite_score?.toFixed(1) ?? '—'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Right: Detail */}
+        <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {!selectedSymbol && !loading && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%',
+              color: 'rgba(224,232,240,0.3)', fontSize: 13,
+            }}>
+              Select a symbol from the tree or search above
+            </div>
+          )}
+
+          {loading && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#a855f7', fontSize: 12 }}>
+              Loading {selectedSymbol}...
+            </div>
+          )}
+
+          {symbolData && !loading && (
+            <div>
+              {/* Hero: Score + Profile */}
+              <div style={{
+                display: 'flex', gap: 24, alignItems: 'center',
+                background: 'var(--terminal-panel-bg)', border: '1px solid var(--terminal-panel-border)',
+                padding: 20, marginBottom: 8,
+              }}>
+                <ScoreRing score={symbolData.composite?.composite_score ?? 0} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+                    <span style={{ fontSize: 22, fontWeight: 700, color: '#a855f7', letterSpacing: 1 }}>{symbolData.ticker}</span>
+                    <span style={{ fontSize: 13, color: 'var(--terminal-text)' }}>{symbolData.profile?.name}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 16, fontSize: 10, color: 'rgba(224,232,240,0.5)', marginBottom: 12, flexWrap: 'wrap' }}>
+                    {symbolData.profile?.sector && <span>{symbolData.profile.sector}</span>}
+                    {symbolData.profile?.industry && <span>• {symbolData.profile.industry}</span>}
+                    {symbolData.profile?.exchange && <span>• {symbolData.profile.exchange}</span>}
+                    {symbolData.profile?.country && <span>• {symbolData.profile.country}</span>}
+                    {symbolData.profile?.market_cap && (
+                      <span>• MCap {symbolData.profile.market_cap >= 1e12 ? `$${(symbolData.profile.market_cap / 1e12).toFixed(2)}T` : `$${(symbolData.profile.market_cap / 1e9).toFixed(1)}B`}</span>
+                    )}
+                  </div>
+
+                  {/* Price strip */}
+                  {symbolData.price && (
+                    <div style={{ display: 'flex', gap: 20, alignItems: 'baseline' }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--terminal-text)' }}>${symbolData.price.current?.toFixed(2)}</span>
+                      <span style={{
+                        fontSize: 13, fontWeight: 600,
+                        color: (symbolData.price.change_pct ?? 0) >= 0 ? 'var(--terminal-green)' : 'var(--terminal-red)',
+                      }}>
+                        {(symbolData.price.change_pct ?? 0) >= 0 ? '+' : ''}{symbolData.price.change_pct?.toFixed(2)}%
+                      </span>
+                      <span style={{ fontSize: 10, color: 'rgba(224,232,240,0.4)' }}>
+                        Vol {symbolData.price.volume != null ? (symbolData.price.volume >= 1e6 ? `${(symbolData.price.volume / 1e6).toFixed(1)}M` : symbolData.price.volume.toLocaleString()) : '—'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Analyst target */}
+                {symbolData.analyst_targets?.assessment && (
+                  <div style={{ textAlign: 'right', minWidth: 120 }}>
+                    <div style={{ fontSize: 9, color: 'rgba(224,232,240,0.5)', letterSpacing: 1, marginBottom: 4 }}>ANALYST</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: symbolData.analyst_targets.assessment.color === 'green' ? 'var(--terminal-green)' : symbolData.analyst_targets.assessment.color === 'red' ? 'var(--terminal-red)' : '#fbbf24' }}>
+                      {symbolData.analyst_targets.assessment.rating?.split(' - ')[0]}
+                    </div>
+                    {symbolData.analyst_targets.mean_target != null && (
+                      <div style={{ fontSize: 11, color: 'rgba(224,232,240,0.5)', marginTop: 4 }}>
+                        Target ${symbolData.analyst_targets.mean_target.toFixed(0)} ({symbolData.analyst_targets.upside_pct?.toFixed(1)}%)
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Score breakdown */}
+              {symbolData.composite && (
+                <div style={{ background: 'var(--terminal-panel-bg)', border: '1px solid var(--terminal-panel-border)', padding: '14px 16px', marginBottom: 8 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#a855f7', letterSpacing: 1.5, marginBottom: 12 }}>SCORE COMPOSITION</div>
+                  {Object.entries(symbolData.composite.component_scores).map(([key, score]) => (
+                    <ComponentBar key={key} label={key} score={score} weight={symbolData.composite!.weights_used[key] ?? 0} />
+                  ))}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: 'rgba(224,232,240,0.4)', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(26,35,64,0.3)' }}>
+                    <span>Coverage: {symbolData.composite.coverage}/{symbolData.composite.max_coverage} sources</span>
+                    <span>Generated: {new Date(symbolData.generated_at).toLocaleString('en-US', { hour12: false })}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Data sections */}
+              <DataSection title="Price & Trading" data={symbolData.price} color="#22d3ee" />
+              <DataSection title="Technicals" data={symbolData.technicals} color="#3b82f6" />
+              <DataSection title="Valuation" data={symbolData.valuation} color="#8b5cf6" />
+              <DataSection title="Fundamentals" data={symbolData.fundamentals} color="#10b981" />
+              <DataSection title="Dividend" data={symbolData.dividend as Record<string, unknown> | null} color="#f59e0b" />
+              <DataSection title="Analyst Targets" data={symbolData.analyst_targets ? { mean_target: symbolData.analyst_targets.mean_target, median_target: symbolData.analyst_targets.median_target, upside_pct: symbolData.analyst_targets.upside_pct, num_analysts: symbolData.analyst_targets.num_analysts } : null} color="#06b6d4" />
+              <DataSection title="Earnings Quality" data={symbolData.earnings_quality as Record<string, unknown> | null} color="#ec4899" />
+              <DataSection title="Earnings Surprises" data={symbolData.earnings_surprises as Record<string, unknown> | null} color="#f97316" />
+              <DataSection title="Estimate Revisions" data={symbolData.estimate_revisions as Record<string, unknown> | null} color="#14b8a6" />
+
+              {symbolData._meta && (
+                <div style={{ fontSize: 9, color: 'rgba(224,232,240,0.3)', padding: '8px 0', textAlign: 'right' }}>
+                  {symbolData._meta.sections_populated}/{symbolData._meta.total_sections} sections • {symbolData._meta.elapsed_seconds?.toFixed(1)}s
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DCCPage() {
   const { view } = useDCCStore();
 
@@ -1042,7 +1514,7 @@ export default function DCCPage() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       const viewMap: Record<string, DCCView> = {
         '1': 'mission-control', '2': 'module-explorer', '3': 'pipeline',
-        '4': 'quality', '5': 'alerts', '6': 'sources', '7': 'config',
+        '4': 'quality', '5': 'alerts', '6': 'sources', '7': 'config', '8': 'symbol-view',
       };
       if (viewMap[e.key]) {
         useDCCStore.getState().setView(viewMap[e.key]);
@@ -1060,6 +1532,7 @@ export default function DCCPage() {
     case 'alerts': return <AlertCenter />;
     case 'sources': return <SourceHealth />;
     case 'config': return <Configuration />;
+    case 'symbol-view': return <SymbolView />;
     default: return <MissionControl />;
   }
 }

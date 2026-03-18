@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type DCCView = 'mission-control' | 'module-explorer' | 'pipeline' | 'quality' | 'alerts' | 'sources' | 'config';
+export type DCCView = 'mission-control' | 'module-explorer' | 'pipeline' | 'quality' | 'alerts' | 'sources' | 'config' | 'symbol-view';
 
 export interface TierDistribution {
   bronze: number;
