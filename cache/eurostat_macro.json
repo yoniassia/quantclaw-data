@@ -3,7 +3,7 @@
   "class": "dataset",
   "label": "Gross domestic product (GDP) and main components (output, expenditure and income)",
   "source": "ESTAT",
-  "updated": "2026-03-05T11:00:00+0100",
+  "updated": "2026-03-13T23:00:00+0100",
   "value": {
     "81": 0.8,
     "82": 0.3,
@@ -76,7 +76,7 @@
     "149": -0.3,
     "150": -0.1,
     "151": -0.4,
-    "152": -0.3,
+    "152": -0.2,
     "153": 0.6,
     "154": 0.4,
     "155": 0.3,
@@ -120,14 +120,20 @@
     "193": 0.1,
     "194": 0.1,
     "195": 0.1,
-    "196": 0.3,
+    "196": 0.4,
     "197": 0.3,
     "198": 0.4,
     "199": 0.5,
     "200": 0.5,
     "201": 0.3,
     "202": 0.4,
-    "203": 0.3
+    "203": 0.2
+  },
+  "status": {
+    "81": "e",
+    "82": "e",
+    "83": "e",
+    "84": "e"
   },
   "id": [
     "freq",
@@ -627,7 +633,7 @@
     "datastructure": {
       "id": "NAMQ_10_GDP",
       "agencyId": "ESTAT",
-      "version": "149.0"
+      "version": "149.1"
     },
     "annotation": [
       {
@@ -644,15 +650,15 @@
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_DATA",
-        "date": "2026-03-05T11:00:00+0100"
+        "date": "2026-03-13T23:00:00+0100"
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_GLOBAL",
-        "date": "2026-03-05T11:00:00+0100"
+        "date": "2026-03-13T23:00:00+0100"
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_PLANNED",
-        "date": "2026-03-05T11:00:00+0100"
+        "date": "2026-03-13T23:00:00+0100"
       },
       {
         "type": "ESMS_HTML",
@@ -671,7 +677,7 @@
       },
       {
         "type": "OBS_COUNT",
-        "title": "8321590"
+        "title": "8344357"
       },
       {
         "type": "OBS_PERIOD_OVERALL_LATEST",
@@ -687,7 +693,7 @@
       },
       {
         "type": "UPDATE_DATA",
-        "date": "2026-03-05T11:00:00+0100"
+        "date": "2026-03-13T23:00:00+0100"
       },
       {
         "type": "UPDATE_FOOTNOTES",
@@ -698,6 +704,11 @@
         "date": "2026-01-29T23:00:00+0100"
       }
     ],
+    "status": {
+      "label": {
+        "e": "estimated"
+      }
+    },
     "positions-with-no-data": {
       "freq": [],
       "unit": [],

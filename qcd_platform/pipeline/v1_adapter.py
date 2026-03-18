@@ -140,30 +140,42 @@ class V1ModuleAdapter(BaseModule):
         if df.empty:
             return points
 
-        has_symbol = any(col in df.columns for col in ["symbol", "ticker", "Symbol", "Ticker"])
         symbol_col = next((c for c in ["symbol", "ticker", "Symbol", "Ticker"] if c in df.columns), None)
+        date_col = next((c for c in ["date", "Date", "timestamp", "ts", "datetime"] if c in df.columns), None)
 
-        has_date = any(col in df.columns for col in ["date", "Date", "timestamp", "ts"])
-        date_col = next((c for c in ["date", "Date", "timestamp", "ts"] if c in df.columns), None)
-
-        if df.index.name and df.index.name.lower() in ("date", "timestamp", "ts"):
+        if df.index.name and df.index.name.lower() in ("date", "timestamp", "ts", "datetime"):
             df = df.reset_index()
-            date_col = df.columns[0]
+            if date_col is None:
+                date_col = df.columns[0]
 
         for _, row in df.head(500).iterrows():
             row_dict = {}
             for k, v in row.items():
-                if pd.isna(v):
-                    continue
+                try:
+                    if pd.isna(v):
+                        continue
+                except (TypeError, ValueError):
+                    pass
                 if hasattr(v, "item"):
                     v = v.item()
+                elif isinstance(v, pd.Timestamp):
+                    if pd.isna(v):
+                        continue
+                    v = v.isoformat()
+                elif hasattr(v, "isoformat"):
+                    v = v.isoformat()
+                elif isinstance(v, (dict, list)):
+                    pass
+                elif not isinstance(v, (str, int, float, bool, type(None))):
+                    v = str(v)
                 row_dict[str(k)] = v
 
             symbol = row_dict.pop(symbol_col, None) if symbol_col else None
             ts = now
             if date_col and date_col in row_dict:
                 try:
-                    ts = pd.Timestamp(row_dict.pop(date_col)).to_pydatetime()
+                    raw_ts = row_dict.pop(date_col)
+                    ts = pd.Timestamp(raw_ts).to_pydatetime()
                     if ts.tzinfo is None:
                         ts = ts.replace(tzinfo=timezone.utc)
                 except Exception:

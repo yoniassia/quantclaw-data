@@ -14,14 +14,14 @@
     },
     {
       "month": "February",
-      "loaded_imports": 0.0,
-      "empty_imports": 0.0,
-      "total_imports": 0.0,
-      "loaded_exports": 0.0,
-      "empty_exports": 0.0,
-      "total_exports": 0.0,
-      "total_teus": 0.0,
-      "yoy_change_pct": ""
+      "loaded_imports": 433812.25,
+      "empty_imports": 17.25,
+      "total_imports": 433829.5,
+      "loaded_exports": 116633.25,
+      "empty_exports": 273860.5,
+      "total_exports": 390493.75,
+      "total_teus": 824323.25,
+      "yoy_change_pct": "2.86%"
     },
     {
       "month": "March",
@@ -134,6 +134,6 @@
       "yoy_change_pct": ""
     }
   ],
-  "last_updated": "2026-03-06T20:22:38.094195",
+  "last_updated": "2026-03-18T10:16:05.161601",
   "source": "https://www.portoflosangeles.org/Business/statistics/Container-Statistics/Historical-TEU-Statistics-2026"
 }

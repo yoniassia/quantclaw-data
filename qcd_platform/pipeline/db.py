@@ -64,14 +64,37 @@ def insert_data_points(module_id: int, points: List[Dict]):
     """
     values = []
     for p in points:
+        ts = p["ts"]
+        if isinstance(ts, str) and ts in ("NaT", "None", ""):
+            continue
+        try:
+            import math
+            payload = p.get("payload", {})
+            cleaned_payload = {}
+            for k, v in payload.items():
+                if v is None:
+                    continue
+                try:
+                    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                        continue
+                except (TypeError, ValueError):
+                    pass
+                cleaned_payload[k] = v
+            raw_json = json.dumps(cleaned_payload, default=str)
+            raw_json = raw_json.replace(": NaN", ": null").replace(":NaN", ":null")
+            raw_json = raw_json.replace(": Infinity", ": null").replace(": -Infinity", ": null")
+            payload_json = raw_json
+        except (TypeError, ValueError):
+            payload_json = "{}"
+
         values.append((
-            p["ts"],
+            ts,
             module_id,
             p.get("symbol"),
             p.get("cadence", "daily"),
             p.get("tier", "bronze"),
             p.get("quality_score", 0),
-            json.dumps(p.get("payload", {})),
+            payload_json,
             p.get("source_hash"),
         ))
 
