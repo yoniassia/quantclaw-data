@@ -358,5 +358,13 @@ def cli():
                   f"Reaffirms: {guidance['reaffirm']}, Withdrawals: {guidance['withdraw']}")
 
 
+def get_data(ticker: str = "AAPL") -> Dict:
+    """
+    V1 pipeline adapter entry point. Returns earnings transcript NLP analysis as dict.
+    """
+    analyzer = EarningsTranscriptsNLP()
+    return analyzer.full_analysis(ticker)
+
+
 if __name__ == '__main__':
     cli()

@@ -436,6 +436,23 @@ def cli_crisis_probability(country: str = "US") -> None:
     print(f"   Model accuracy: {result['historical_accuracy']:.1%}")
 
 
+def get_data() -> List[Dict]:
+    """
+    V1 pipeline adapter entry point. Returns BIS credit gap data as list of dicts.
+    """
+    analyzer = BISCreditGap()
+    df = analyzer.get_g20_heatmap()
+    if df.empty:
+        df = analyzer.get_credit_gap("US")
+    if df.empty:
+        return [{"error": "No data available", "country": "US"}]
+    records = df.to_dict(orient="records")
+    for r in records:
+        if "date" in r and hasattr(r["date"], "isoformat"):
+            r["date"] = r["date"].isoformat()
+    return records
+
+
 if __name__ == "__main__":
     # Test functionality
     analyzer = BISCreditGap()

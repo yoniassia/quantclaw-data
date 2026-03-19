@@ -401,6 +401,21 @@ def cmd_report():
     print(report)
 
 
+def get_data() -> Dict:
+    """
+    V1 pipeline adapter entry point. Returns live flight count data as dict.
+    """
+    tracker = FlightDataTracker()
+    result = tracker.get_live_flight_count()
+    if result.get("flight_count") is None:
+        return {
+            "flight_count": 0,
+            "source": "OpenSky Network",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    return result
+
+
 if __name__ == "__main__":
     import sys
     

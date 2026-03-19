@@ -399,6 +399,19 @@ def cli_reserves():
     print(json.dumps(reserves, indent=2, default=str))
 
 
+def get_data():
+    """Pipeline entry point: return Israel economic dashboard."""
+    cbs = IsraelCBSStatistics()
+    dashboard = cbs.get_dashboard()
+    indicators = dashboard.get("indicators", {})
+    result = []
+    for name, data in indicators.items():
+        data["indicator_name"] = name
+        data["country"] = "Israel"
+        result.append(data)
+    return result if result else [{"country": "Israel", "source": "CBS", "error": "no data"}]
+
+
 if __name__ == "__main__":
     import sys
     

@@ -502,6 +502,21 @@ def asx_indices() -> Dict:
     client = ASXClient()
     return client.get_index_comparison()
 
+def get_data():
+    """Pipeline entry point: return ASX market summary + top holdings."""
+    client = ASXClient()
+    summary = client.get_market_summary()
+    if not summary:
+        summary = {"index": "ASX 200", "level": 0, "source": "Yahoo Finance"}
+    holdings = client.get_asx200_composition()
+    result = []
+    if summary:
+        result.append({"ticker": "^AXJO", **summary})
+    for h in holdings:
+        result.append(h)
+    return result if result else [{"ticker": "^AXJO", "source": "ASX", "error": "no data"}]
+
+
 if __name__ == "__main__":
     import sys
     
