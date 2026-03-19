@@ -65,30 +65,41 @@ class PipelineOrchestrator:
         return due
 
     def load_module_class(self, module_name: str):
-        """Dynamically load a module class from modules_v2 directory."""
+        """Load module: first try modules_v2 (native), then fall back to V1 adapter."""
         if module_name in self._module_cache:
             return self._module_cache[module_name]
 
         module_path = os.path.join(self.modules_dir, f"{module_name}.py")
-        if not os.path.exists(module_path):
-            logger.warning(f"Module file not found: {module_path}")
-            return None
+        if os.path.exists(module_path):
+            spec = importlib.util.spec_from_file_location(f"modules_v2.{module_name}", module_path)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
 
-        spec = importlib.util.spec_from_file_location(f"modules_v2.{module_name}", module_path)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+            from .base_module import BaseModule
+            for attr_name in dir(mod):
+                attr = getattr(mod, attr_name)
+                if (isinstance(attr, type) and issubclass(attr, BaseModule)
+                        and attr is not BaseModule):
+                    instance = attr()
+                    self._module_cache[module_name] = instance
+                    return instance
 
-        # Find the BaseModule subclass
-        from .base_module import BaseModule
-        for attr_name in dir(mod):
-            attr = getattr(mod, attr_name)
-            if (isinstance(attr, type) and issubclass(attr, BaseModule)
-                    and attr is not BaseModule):
-                instance = attr()
-                self._module_cache[module_name] = instance
-                return instance
+            logger.warning(f"No BaseModule subclass found in {module_path}")
 
-        logger.warning(f"No BaseModule subclass found in {module_path}")
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        v1_path = os.path.join(project_root, "modules", f"{module_name}.py")
+        if os.path.exists(v1_path):
+            from .v1_adapter import V1ModuleAdapter
+            module_meta = db.execute_query(
+                "SELECT cadence, name FROM modules WHERE name = %s",
+                (module_name,), fetch=True
+            )
+            cadence = module_meta[0]["cadence"] if module_meta else "daily"
+            adapter = V1ModuleAdapter(module_name, cadence=cadence)
+            self._module_cache[module_name] = adapter
+            return adapter
+
+        logger.warning(f"Module not found in v2 or v1: {module_name}")
         return None
 
     def run_module(self, module_name: str, symbols: List[str] = None) -> Dict:

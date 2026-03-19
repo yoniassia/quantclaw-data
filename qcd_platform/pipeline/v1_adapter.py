@@ -350,7 +350,53 @@ class V1ModuleAdapter(BaseModule):
                 elif pname in ("address", "wallet"):
                     call_args[param.name] = "0x0000000000000000000000000000000000000000"
                 elif pname in ("url",):
-                    pass  # skip URL params
+                    pass
+                elif pname in ("from_currency", "base", "base_currency"):
+                    call_args[param.name] = "USD"
+                elif pname in ("to_currency", "quote", "quote_currency"):
+                    call_args[param.name] = "EUR"
+                elif pname in ("currency",):
+                    call_args[param.name] = "USD"
+                elif pname in ("commodity",):
+                    call_args[param.name] = "WTI"
+                elif pname in ("airport_code", "iata"):
+                    call_args[param.name] = "JFK"
+                elif pname in ("package_id", "app_id", "bundle_id"):
+                    call_args[param.name] = "com.etoro.openbook"
+                elif pname in ("alert_type", "check_type"):
+                    call_args[param.name] = "price"
+                elif pname in ("series_codes", "series_code"):
+                    call_args[param.name] = ["IUQAAJNB"] if "codes" in pname else "IUQAAJNB"
+                elif pname in ("code",):
+                    call_args[param.name] = "CL00000FM"
+                elif pname in ("north",):
+                    call_args[param.name] = 40.0
+                elif pname in ("south",):
+                    call_args[param.name] = 30.0
+                elif pname in ("east",):
+                    call_args[param.name] = -70.0
+                elif pname in ("west",):
+                    call_args[param.name] = -80.0
+                elif pname in ("month",):
+                    call_args[param.name] = 12
+                elif pname in ("df", "data", "dataframe"):
+                    call_args[param.name] = pd.DataFrame({"close": [100, 101, 99, 102, 103]})
+                elif pname in ("prices", "equity_curve"):
+                    call_args[param.name] = pd.Series([100, 101, 99, 102, 103])
+                elif pname in ("scores", "weights", "values"):
+                    call_args[param.name] = [0.2, 0.3, 0.5]
+                elif pname in ("z_score",):
+                    call_args[param.name] = 2.5
+                elif pname in ("service",):
+                    call_args[param.name] = "default"
+                elif pname in ("limit", "n", "count", "num", "top_n"):
+                    call_args[param.name] = 10
+                elif pname in ("interval",):
+                    call_args[param.name] = "1d"
+                elif pname in ("region",):
+                    call_args[param.name] = "US"
+                elif pname in ("index", "benchmark"):
+                    call_args[param.name] = "SPY"
 
             if symbols and self.granularity == "symbol":
                 for param_name in ("ticker", "symbol", "tickers", "symbols"):
@@ -363,20 +409,52 @@ class V1ModuleAdapter(BaseModule):
         old_exit = sys.exit
         sys.exit = lambda *a, **kw: None
         try:
-            raw_data = self._v1_callable(**call_args)
-        except (TypeError, SystemExit) as te:
+            import io as _io
+            capture = _io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = capture
             try:
-                raw_data = self._v1_callable()
-            except SystemExit:
-                raw_data = None
-            except Exception:
-                raise RuntimeError(f"V1 callable {self._main_callable_name} failed: {te}")
+                raw_data = self._v1_callable(**call_args)
+            except (TypeError, SystemExit) as te:
+                try:
+                    raw_data = self._v1_callable()
+                except SystemExit:
+                    raw_data = None
+                except Exception:
+                    raise RuntimeError(f"V1 callable {self._main_callable_name} failed: {te}")
+            finally:
+                sys.stdout = old_stdout
+                stdout_text = capture.getvalue().strip()
+
+            if raw_data is None and stdout_text:
+                raw_data = self._try_parse_stdout(stdout_text)
+        except RuntimeError:
+            raise
         except Exception as e:
             raise RuntimeError(f"V1 callable {self._main_callable_name} failed: {e}")
         finally:
             sys.exit = old_exit
 
         return self._convert_to_datapoints(raw_data, symbols)
+
+    @staticmethod
+    def _try_parse_stdout(text: str):
+        """Attempt to parse captured stdout as JSON data."""
+        for line in reversed(text.split("\n")):
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith(("{", "[")):
+                try:
+                    return json.loads(line)
+                except json.JSONDecodeError:
+                    pass
+        if text.startswith(("{", "[")):
+            try:
+                return json.loads(text)
+            except json.JSONDecodeError:
+                pass
+        return None
 
 
 def create_adapter_from_manifest(entry: dict) -> V1ModuleAdapter:

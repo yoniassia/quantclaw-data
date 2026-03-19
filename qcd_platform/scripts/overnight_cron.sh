@@ -21,6 +21,10 @@ result = refresh_universe(max_workers=4)
 print(f'Platinum refresh: {result[\"success\"]}/{result[\"total\"]} success, {result[\"elapsed_seconds\"]}s')
 " 2>&1
 
+# Refresh materialized views (cross-cadence joins, symbol snapshots, module health)
+echo "$LOG_PREFIX Refreshing materialized views..."
+sudo -u postgres psql -d quantclaw_data -c "SELECT refresh_all_matviews();" 2>&1
+
 # Send any pending critical alerts to WhatsApp
 python3 qcd_platform/scripts/alert_notifier.py 2>&1
 
