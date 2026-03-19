@@ -2,6 +2,7 @@
 # QuantClaw Data Platform — Overnight Pipeline Run
 # Cron: 0 1 * * * /home/quant/apps/quantclaw-data/qcd_platform/scripts/overnight_run.sh
 set -euo pipefail
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"

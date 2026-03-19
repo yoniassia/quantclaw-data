@@ -284,13 +284,13 @@ def transform_valuations(conn, files: List[Tuple[str, dict]], dry_run: bool) -> 
         fcf_yield = _safe_float(ttm_ratios.get("fcf_yield") or latest_ratios.get("fcf_yield"))
         div_yield = _safe_float(ttm_ratios.get("dividend_yield") or latest_ratios.get("dividend_yield"))
 
-        gf_value = None
-        dcf_value = None
-        graham_number = None
-        peter_lynch = None
-        median_ps_value = None
-
         bi = data.get("basic_information", {})
+        rankings = data.get("guru_focus_rankings", {})
+        gf_value = _safe_float(rankings.get("gf_value") if isinstance(rankings, dict) else None)
+        dcf_value = _safe_float(bi.get("dcf_value"))
+        graham_number = _safe_float(bi.get("graham_number"))
+        peter_lynch = _safe_float(bi.get("peter_lynch_value"))
+        median_ps_value = _safe_float(bi.get("median_ps_value"))
 
         price_to_gf = None
         if current_price and gf_value and gf_value > 0:

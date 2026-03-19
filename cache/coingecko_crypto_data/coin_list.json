@@ -2510,11 +2510,6 @@
     "name": "AI Analysis Token"
   },
   {
-    "id": "aiapis",
-    "symbol": "apis",
-    "name": "aiAPIS"
-  },
-  {
     "id": "aibattleground",
     "symbol": "aibg",
     "name": "AIBattleGround"
@@ -3478,6 +3473,11 @@
     "id": "aliens",
     "symbol": "aliens",
     "name": "Aliens"
+  },
+  {
+    "id": "aliens-gov",
+    "symbol": "aliens",
+    "name": "Aliens.GOV"
   },
   {
     "id": "alienswap",
@@ -4510,6 +4510,11 @@
     "name": "ANGL TOKEN"
   },
   {
+    "id": "angland-fish",
+    "symbol": "fish",
+    "name": "Angland FISH"
+  },
+  {
     "id": "angle-protocol",
     "symbol": "angle",
     "name": "ANGLE"
@@ -4916,6 +4921,11 @@
   },
   {
     "id": "apes-2",
+    "symbol": "apes",
+    "name": "APES [OLD]"
+  },
+  {
+    "id": "apes-2-2",
     "symbol": "apes",
     "name": "APES"
   },
@@ -6380,6 +6390,11 @@
     "name": "Atlantis Coin"
   },
   {
+    "id": "atlas-2",
+    "symbol": "atlas",
+    "name": "ATLAS"
+  },
+  {
     "id": "atlas-navi",
     "symbol": "navi",
     "name": "Atlas Navi"
@@ -6513,11 +6528,6 @@
     "id": "audit",
     "symbol": "audit",
     "name": "Audit"
-  },
-  {
-    "id": "auditai",
-    "symbol": "audai",
-    "name": "AuditAI"
   },
   {
     "id": "auditchain",
@@ -9035,11 +9045,6 @@
     "name": "Bear"
   },
   {
-    "id": "bear-3",
-    "symbol": "bear",
-    "name": "BEAR"
-  },
-  {
     "id": "bear-bull",
     "symbol": "brb",
     "name": "Bear Bull"
@@ -9081,7 +9086,7 @@
   },
   {
     "id": "bearxrpl",
-    "symbol": "$bear",
+    "symbol": "bear",
     "name": "BEARXRPL"
   },
   {
@@ -9893,6 +9898,11 @@
     "id": "biden-coin",
     "symbol": "biden",
     "name": "Biden Coin"
+  },
+  {
+    "id": "bid-launch",
+    "symbol": "bid",
+    "name": "bid.launch"
   },
   {
     "id": "bido-staked-bitcoin",
@@ -11745,11 +11755,6 @@
     "name": "Blockface"
   },
   {
-    "id": "blockgames",
-    "symbol": "block",
-    "name": "BlockProtocol"
-  },
-  {
     "id": "blocklens-ai",
     "symbol": "bls",
     "name": "Blocklens AI"
@@ -12363,11 +12368,6 @@
     "id": "bobby",
     "symbol": "bobby",
     "name": "Bobby"
-  },
-  {
-    "id": "bobby-rizz",
-    "symbol": "bobby",
-    "name": "BOBBY Rizz"
   },
   {
     "id": "bobby-the-cat",
@@ -14833,11 +14833,6 @@
     "id": "buttman",
     "symbol": "butt",
     "name": "Buttman"
-  },
-  {
-    "id": "buttpay",
-    "symbol": "bpay",
-    "name": "Buttpay"
   },
   {
     "id": "but-why",
@@ -17603,11 +17598,6 @@
     "id": "citadel-by-virtuals",
     "symbol": "citdel",
     "name": "Citadel by Virtuals"
-  },
-  {
-    "id": "citadel-one",
-    "symbol": "xct",
-    "name": "Citadel.one"
   },
   {
     "id": "citigroup-ondo-tokenized-stock",
@@ -28955,6 +28945,11 @@
     "name": "Feed The World"
   },
   {
+    "id": "feeliq",
+    "symbol": "fliq",
+    "name": "FeeLiq"
+  },
+  {
     "id": "feels-good",
     "symbol": "good",
     "name": "Feels Good"
@@ -31663,6 +31658,31 @@
     "id": "gala",
     "symbol": "gala",
     "name": "GALA"
+  },
+  {
+    "id": "galaconnect-bridged-solana-usdt-galachain",
+    "symbol": "gsusdt",
+    "name": "GalaConnect Bridged Solana USDT (GalaChain)"
+  },
+  {
+    "id": "galaconnect-bridged-usdc-galachain",
+    "symbol": "gusdc",
+    "name": "GalaConnect Bridged USDC (GalaChain)"
+  },
+  {
+    "id": "galaconnect-bridged-usdt-galachain",
+    "symbol": "gusdt",
+    "name": "GalaConnect Bridged USDT (GalaChain)"
+  },
+  {
+    "id": "galaconnect-bridged-wbtc-galachain",
+    "symbol": "gwbtc",
+    "name": "GalaConnect Bridged WBTC (GalaChain)"
+  },
+  {
+    "id": "galaconnect-bridged-weth-galachain",
+    "symbol": "gweth",
+    "name": "GalaConnect Bridged WETH (GalaChain)"
   },
   {
     "id": "galactica-com",
@@ -35833,11 +35853,6 @@
     "id": "headstarter",
     "symbol": "hst",
     "name": "HeadStarter"
-  },
-  {
-    "id": "healix-ai",
-    "symbol": "hxai",
-    "name": "Healix AI"
   },
   {
     "id": "health-and-wealth",
@@ -40333,11 +40348,6 @@
     "id": "jewels-da-goat",
     "symbol": "jewels",
     "name": "Jewels Da Goat"
-  },
-  {
-    "id": "jexchange",
-    "symbol": "jex",
-    "name": "JEXchange"
   },
   {
     "id": "jfin-coin",
@@ -45525,11 +45535,6 @@
     "name": "LogX Network"
   },
   {
-    "id": "lok",
-    "symbol": "lok",
-    "name": "LOK"
-  },
-  {
     "id": "lokr",
     "symbol": "lkr",
     "name": "Lokr"
@@ -46386,6 +46391,11 @@
   },
   {
     "id": "lux-token",
+    "symbol": "lux",
+    "name": "Lux Token"
+  },
+  {
+    "id": "lux-token-2",
     "symbol": "lux",
     "name": "Lux Token"
   },
@@ -47875,6 +47885,11 @@
     "name": "Matrixdock Gold"
   },
   {
+    "id": "matrixdock-silver",
+    "symbol": "xagm",
+    "name": "Matrixdock Silver"
+  },
+  {
     "id": "matrixetf",
     "symbol": "mdf",
     "name": "MatrixETF"
@@ -48048,6 +48063,11 @@
     "id": "mayhem-mode",
     "symbol": "mayhem",
     "name": "Mayhem Mode"
+  },
+  {
+    "id": "maza",
+    "symbol": "mzc",
+    "name": "Maza"
   },
   {
     "id": "mazimatic",
@@ -49975,6 +49995,11 @@
     "name": "Mind"
   },
   {
+    "id": "mindless-coin",
+    "symbol": "mindless",
+    "name": "MINDLESS COIN"
+  },
+  {
     "id": "mind-network",
     "symbol": "fhe",
     "name": "Mind Network"
@@ -50835,9 +50860,19 @@
     "name": "\u3082\u3082"
   },
   {
+    "id": "momo-5",
+    "symbol": "momo",
+    "name": "Momo"
+  },
+  {
     "id": "momoai",
     "symbol": "mtos",
     "name": "MomoAI"
+  },
+  {
+    "id": "momo-chan",
+    "symbol": "momo-chan",
+    "name": "\u30e2\u30e2\u3061\u3083\u3093 (Momo-chan)"
   },
   {
     "id": "momofun",
@@ -55420,11 +55455,6 @@
     "name": "Luce"
   },
   {
-    "id": "officat",
-    "symbol": "officat",
-    "name": "Officat"
-  },
-  {
     "id": "official-arbitrum-bridged-usdc-arbitrum-nova",
     "symbol": "usdc",
     "name": "Arbitrum Bridged USDC (Arbitrum Nova)"
@@ -55990,6 +56020,11 @@
     "name": "OneLedger"
   },
   {
+    "id": "one-life-its-worth-an-attempt",
+    "symbol": "worth",
+    "name": "one life, its worth an attempt"
+  },
+  {
     "id": "oneoneone",
     "symbol": "sn111",
     "name": "Oneoneone"
@@ -56386,6 +56421,11 @@
   },
   {
     "id": "openvpp",
+    "symbol": "ovpp",
+    "name": "OpenVPP"
+  },
+  {
+    "id": "openvpp-2",
     "symbol": "ovpp",
     "name": "OpenVPP"
   },
@@ -58020,6 +58060,11 @@
     "name": "PathPulse"
   },
   {
+    "id": "pathusd",
+    "symbol": "pathusd",
+    "name": "pathUSD"
+  },
+  {
     "id": "patic",
     "symbol": "ptc",
     "name": "PATIC"
@@ -58638,11 +58683,6 @@
     "id": "pepeai-2",
     "symbol": "pepeai",
     "name": "pepeAI"
-  },
-  {
-    "id": "pepeapukekiussimonpepuhoppymysterygroyperfefe6900",
-    "symbol": "pepe",
-    "name": "PepeApuKekiusSimonPepuHoppyMysteryGroyperFefe6900"
   },
   {
     "id": "pepe-black",
@@ -62955,11 +62995,6 @@
     "name": "Quan2um"
   },
   {
-    "id": "quant",
-    "symbol": "quant",
-    "name": "QUANT"
-  },
-  {
     "id": "quant-fun",
     "symbol": "quant",
     "name": "Quant.Fun"
@@ -63728,11 +63763,6 @@
     "id": "ratcoin",
     "symbol": "rat",
     "name": "RatCoin"
-  },
-  {
-    "id": "ratecoin-2",
-    "symbol": "rate",
-    "name": "Ratecoin"
   },
   {
     "id": "rat-escape",
@@ -68955,11 +68985,6 @@
     "name": "Shopify (Ondo Tokenized Stock)"
   },
   {
-    "id": "shopnext-loyalty-token",
-    "symbol": "next",
-    "name": "ShopNext Loyalty Token"
-  },
-  {
     "id": "shopping-io-2",
     "symbol": "spi",
     "name": "Shopping.io"
@@ -70040,6 +70065,11 @@
     "name": "Smoking Giraffe"
   },
   {
+    "id": "smoking-wizard",
+    "symbol": "wizard",
+    "name": "Smoking Wizard"
+  },
+  {
     "id": "smolano",
     "symbol": "slo",
     "name": "SmoLanO"
@@ -70858,6 +70888,11 @@
     "id": "solice",
     "symbol": "slc",
     "name": "Solice"
+  },
+  {
+    "id": "soli-coin",
+    "symbol": "soli",
+    "name": "Soli Coin"
   },
   {
     "id": "solid",
@@ -74980,11 +75015,6 @@
     "name": "SWORD"
   },
   {
-    "id": "swtcoin",
-    "symbol": "swat",
-    "name": "SWTCoin"
-  },
-  {
     "id": "swusd",
     "symbol": "swusd",
     "name": "Swerve.fi USD"
@@ -77200,11 +77230,6 @@
     "name": "The Righteous Sheep"
   },
   {
-    "id": "the-right-wing",
-    "symbol": "right",
-    "name": "The Right Wing"
-  },
-  {
     "id": "thermo-fisher-scientific-ondo-tokenized-stock",
     "symbol": "tmoon",
     "name": "Thermo Fisher Scientific (Ondo Tokenized Stock)"
@@ -77515,11 +77540,6 @@
     "name": "theydontloveyoulikeiloveyou"
   },
   {
-    "id": "the-year-of-the-snake",
-    "symbol": "2025",
-    "name": "The Year Of The Snake"
-  },
-  {
     "id": "thgold",
     "symbol": "thgold",
     "name": "thGOLD"
@@ -77608,11 +77628,6 @@
     "id": "tholana",
     "symbol": "thol",
     "name": "Tholana"
-  },
-  {
-    "id": "thor",
-    "symbol": "thor",
-    "name": "ThorFi"
   },
   {
     "id": "thorchain",
@@ -80173,11 +80188,6 @@
     "id": "umee",
     "symbol": "ux",
     "name": "UX Chain"
-  },
-  {
-    "id": "umi-2",
-    "symbol": "umi",
-    "name": "Umi"
   },
   {
     "id": "unagii-dai",
@@ -86300,11 +86310,6 @@
     "name": "Wrapped HLUSD"
   },
   {
-    "id": "wrapped-hns",
-    "symbol": "whns",
-    "name": "Wrapped HNS"
-  },
-  {
     "id": "wrapped-home-depot-xstock",
     "symbol": "whdx",
     "name": "Wrapped Home Depot xStock"
@@ -90103,11 +90108,6 @@
     "id": "zoa-ai",
     "symbol": "zoa",
     "name": "ZOA AI"
-  },
-  {
-    "id": "zodia",
-    "symbol": "zodia",
-    "name": "ZODIA"
   },
   {
     "id": "zodor",

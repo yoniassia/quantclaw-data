@@ -24,35 +24,33 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 logger = logging.getLogger("gurufocus.runner")
 
 TIER_1 = [
-    "gurufocus_rankings",
-    "gurufocus_valuations",
-    "gurufocus_fundamentals",
-    "gurufocus_insider_trading",
-    "gurufocus_profile",
-    "gurufocus_guru_tracker",
+    "rankings",
+    "valuations",
+    "fundamentals",
 ]
 
 TIER_2 = [
-    "gurufocus_segments",
-    "gurufocus_etf_holdings",
-    "gurufocus_fund_letters",
-    "gurufocus_stock_universe",
-    "gurufocus_guru_portfolio",
+    "segments",
+    "universe",
 ]
 
-TIER_3 = [
-    "gurufocus_news",
-    "gurufocus_bulk_downloader",
+TIER_3_COMPOSITE = [
+    "fair_value_gap",
+    "quality_factor",
+    "screener",
+    "segment_momentum",
 ]
 
-TIER_4_COMPOSITE = [
-    "gurufocus_value_screener",
-    "gurufocus_insider_sentiment",
-    "gurufocus_fair_value_gap",
-    "gurufocus_guru_rebalance_alert",
-    "gurufocus_quality_factor",
-    "gurufocus_segment_momentum",
-    "gurufocus_etf_flow_tracker",
+TIER_BLOCKED_403 = [
+    "insider",
+    "guru_tracker",
+    "etf",
+    "news",
+    "bulk",
+    "guru_portfolio",
+    "guru_alerts",
+    "insider_sentiment",
+    "etf_flow",
 ]
 
 MODULE_MAP = {
@@ -129,15 +127,15 @@ def main():
     if args.module:
         modules = [args.module]
     elif args.tier == 1:
-        modules = list(MODULE_MAP.keys())[:6]
+        modules = TIER_1
     elif args.tier == 2:
-        modules = list(MODULE_MAP.keys())[6:11]
+        modules = TIER_2
     elif args.tier == 3:
-        modules = list(MODULE_MAP.keys())[11:13]
+        modules = TIER_3_COMPOSITE
     elif args.tier == 4:
-        modules = list(MODULE_MAP.keys())[13:]
+        modules = TIER_1 + TIER_2 + TIER_3_COMPOSITE
     else:
-        modules = list(MODULE_MAP.keys())
+        modules = TIER_1 + TIER_2 + TIER_3_COMPOSITE
 
     logger.info(f"Running {len(modules)} GuruFocus modules")
     if symbols:

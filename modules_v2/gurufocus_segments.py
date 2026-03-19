@@ -52,45 +52,51 @@ class GurufocusSegments(BaseModule):
                     errors += 1
                     continue
 
-                segments = data if isinstance(data, list) else data.get("data", data.get("segments", []))
-                if not isinstance(segments, list):
-                    segments = [data] if isinstance(data, dict) else []
-
-                for seg in segments:
-                    seg_name = seg.get("name", seg.get("segment_name", "Unknown"))
-                    seg_type = seg.get("type", seg.get("segment_type", "business"))
-                    revenue = _safe_float(seg.get("revenue"))
-                    profit = _safe_float(seg.get("profit", seg.get("operating_income")))
-                    period = seg.get("period_end", seg.get("date"))
+                for period_entry in (data.get("annually", []) or []):
+                    if not isinstance(period_entry, dict):
+                        continue
+                    period = period_entry.get("date")
                     period_date = None
                     if period:
                         try:
-                            period_date = datetime.strptime(str(period)[:10], "%Y-%m-%d").date()
-                        except ValueError:
+                            parts = str(period).split("-")
+                            if len(parts) == 2:
+                                period_date = datetime(int(parts[0]), int(parts[1]), 1).date()
+                            elif len(parts) >= 3:
+                                period_date = datetime.strptime(str(period)[:10], "%Y-%m-%d").date()
+                        except (ValueError, IndexError):
                             pass
 
-                    execute_query(
-                        """INSERT INTO gf_segments (symbol, gf_symbol, segment_name, segment_type,
-                            revenue, profit, period_end, payload)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                        (etoro_sym, gf_sym, seg_name, seg_type, revenue, profit, period_date,
-                         json.dumps(seg, default=str)[:5000]),
-                    )
+                    for seg_type_key in ["segment_business", "segment_geographic"]:
+                        seg_dict = period_entry.get(seg_type_key)
+                        if not isinstance(seg_dict, dict):
+                            continue
+                        seg_type = "business" if "business" in seg_type_key else "geographic"
+                        for seg_name, rev_val in seg_dict.items():
+                            revenue = _safe_float(rev_val)
 
-                    points.append(DataPoint(
-                        ts=datetime.now(timezone.utc),
-                        symbol=etoro_sym,
-                        cadence="weekly",
-                        tier="bronze",
-                        payload={
-                            "source": "gurufocus",
-                            "gf_symbol": gf_sym,
-                            "segment_name": seg_name,
-                            "segment_type": seg_type,
-                            "revenue": revenue,
-                            "profit": profit,
-                        },
-                    ))
+                            execute_query(
+                                """INSERT INTO gf_segments (symbol, gf_symbol, segment_name, segment_type,
+                                    revenue, profit, period_end, payload)
+                                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                                (etoro_sym, gf_sym, seg_name, seg_type, revenue, None, period_date,
+                                 json.dumps({"name": seg_name, "type": seg_type, "revenue": revenue, "date": period}, default=str)),
+                            )
+
+                            points.append(DataPoint(
+                                ts=datetime.now(timezone.utc),
+                                symbol=etoro_sym,
+                                cadence="weekly",
+                                tier="bronze",
+                                payload={
+                                    "source": "gurufocus",
+                                    "gf_symbol": gf_sym,
+                                    "segment_name": seg_name,
+                                    "segment_type": seg_type,
+                                    "revenue": revenue,
+                                    "period": period,
+                                },
+                            ))
             except Exception as e:
                 errors += 1
                 logger.warning(f"Segments failed for {gf_sym}: {e}")

@@ -3,7 +3,7 @@
   "class": "dataset",
   "label": "Gross domestic product (GDP) and main components (output, expenditure and income)",
   "source": "ESTAT",
-  "updated": "2026-03-13T23:00:00+0100",
+  "updated": "2026-03-19T11:00:00+0100",
   "value": {
     "81": 0.8,
     "82": 0.3,
@@ -650,15 +650,15 @@
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_DATA",
-        "date": "2026-03-13T23:00:00+0100"
+        "date": "2026-03-19T11:00:00+0100"
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_GLOBAL",
-        "date": "2026-03-13T23:00:00+0100"
+        "date": "2026-03-19T11:00:00+0100"
       },
       {
         "type": "DISSEMINATION_TIMESTAMP_PLANNED",
-        "date": "2026-03-13T23:00:00+0100"
+        "date": "2026-03-19T11:00:00+0100"
       },
       {
         "type": "ESMS_HTML",
@@ -677,7 +677,7 @@
       },
       {
         "type": "OBS_COUNT",
-        "title": "8344357"
+        "title": "8347700"
       },
       {
         "type": "OBS_PERIOD_OVERALL_LATEST",
@@ -693,7 +693,7 @@
       },
       {
         "type": "UPDATE_DATA",
-        "date": "2026-03-13T23:00:00+0100"
+        "date": "2026-03-19T11:00:00+0100"
       },
       {
         "type": "UPDATE_FOOTNOTES",

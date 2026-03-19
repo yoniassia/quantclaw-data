@@ -1,11 +1,11 @@
 {
   "symbol": "AAPL",
-  "price": 254.23,
+  "price": 249.94,
   "bid": null,
   "ask": null,
   "bid_size": null,
   "ask_size": null,
-  "volume": 27556024,
-  "timestamp": "2026-03-17T20:00:02",
+  "volume": 34652568,
+  "timestamp": "2026-03-18T20:00:01",
   "exchange": "NMS"
 }
