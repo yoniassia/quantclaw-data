@@ -9,6 +9,8 @@ Usage: python3 scripts/validate_module.py modules/my_module.py
 """
 import ast, sys, os, re, importlib
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+
 def validate_static(path: str) -> list:
     """Layer 1: Static regex checks"""
     issues = []
