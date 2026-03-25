@@ -4,3 +4,26 @@ out/
 data/
 *.log
 .env.keys
+
+# Caches (runtime-generated, not source)
+cache/
+.cache/
+__pycache__/
+*.pyc
+
+# Backups & old exports
+backups_api_migration/
+public-site/
+
+# Temp & output files
+*.tmp
+*.pkl
+.lme_app_snip.txt
+mcp_server_patch.txt
+mcp_server_options_flow_additions.txt
+efficient_frontier.csv
+portfolio_optimized.json
+portfolio_risk.json
+rebalance_plan.json
+quality-map.json
+live_earnings_*.json
