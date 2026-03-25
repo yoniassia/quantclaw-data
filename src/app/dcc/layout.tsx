@@ -11,6 +11,8 @@ const NAV_ITEMS: { key: DCCView; label: string; icon: string; shortcut: string }
   { key: 'sources', label: 'SOURCES', icon: '⊕', shortcut: '6' },
   { key: 'config', label: 'CONFIG', icon: '⚙', shortcut: '7' },
   { key: 'symbol-view', label: 'SYMBOL', icon: '◈', shortcut: '8' },
+  { key: 'instrument-view', label: 'INSTRUMENTS', icon: '📊', shortcut: '9' },
+  { key: 'nl-query', label: 'NL QUERY', icon: '💬', shortcut: '0' },
 ];
 
 export default function DCCLayout({ children }: { children: React.ReactNode }) {

@@ -5,4 +5,5 @@ pandas
 statsmodels
 pandas-datareader
 requests
+aiohttp
 beautifulsoup4
