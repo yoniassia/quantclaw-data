@@ -28,8 +28,8 @@ case "$CADENCE" in
   daily)
     # Price-sensitive data — shifts with daily price moves
     echo "$LOG_PREFIX GuruFocus: rankings, valuations"
-    python3 scripts/run_gurufocus.py --module rankings 2>&1 || echo "$LOG_PREFIX rankings had errors (continuing)"
-    python3 scripts/run_gurufocus.py --module valuations 2>&1 || echo "$LOG_PREFIX valuations had errors (continuing)"
+    python3 scripts/infra/run_gurufocus.py --module rankings 2>&1 || echo "$LOG_PREFIX rankings had errors (continuing)"
+    python3 scripts/infra/run_gurufocus.py --module valuations 2>&1 || echo "$LOG_PREFIX valuations had errors (continuing)"
 
     echo "$LOG_PREFIX Gold Transformer (rankings + valuations)"
     python3 modules_v2/gf_gold_transformer.py --category rankings 2>&1 || echo "$LOG_PREFIX Gold transformer (rankings) had errors (continuing)"
@@ -39,19 +39,19 @@ case "$CADENCE" in
   weekly)
     # Quarterly filings + derived composites — weekly is plenty
     echo "$LOG_PREFIX GuruFocus: fundamentals"
-    python3 scripts/run_gurufocus.py --module fundamentals 2>&1 || echo "$LOG_PREFIX fundamentals had errors (continuing)"
+    python3 scripts/infra/run_gurufocus.py --module fundamentals 2>&1 || echo "$LOG_PREFIX fundamentals had errors (continuing)"
 
     echo "$LOG_PREFIX Gold Transformer (fundamentals)"
     python3 modules_v2/gf_gold_transformer.py --category fundamentals 2>&1 || echo "$LOG_PREFIX Gold transformer had errors (continuing)"
 
     echo "$LOG_PREFIX GuruFocus Tier 3: composites"
-    python3 scripts/run_gurufocus.py --tier 3 2>&1 || echo "$LOG_PREFIX Tier 3 composites had errors (continuing)"
+    python3 scripts/infra/run_gurufocus.py --tier 3 2>&1 || echo "$LOG_PREFIX Tier 3 composites had errors (continuing)"
     ;;
 
   monthly)
     # Rarely-changing structural data
     echo "$LOG_PREFIX GuruFocus: segments, universe"
-    python3 scripts/run_gurufocus.py --tier 2 2>&1 || echo "$LOG_PREFIX Tier 2 had errors (continuing)"
+    python3 scripts/infra/run_gurufocus.py --tier 2 2>&1 || echo "$LOG_PREFIX Tier 2 had errors (continuing)"
 
     echo "$LOG_PREFIX Gold Transformer (all — monthly full refresh)"
     python3 modules_v2/gf_gold_transformer.py --category all 2>&1 || echo "$LOG_PREFIX Gold transformer had errors (continuing)"

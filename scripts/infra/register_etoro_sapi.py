@@ -3,7 +3,7 @@
 Register eToro SAPI modules, run a small SAPI fetch, verify data_points, optional platinum bridge.
 
 Usage:
-  python3 scripts/register_etoro_sapi.py [--full-fetch] [--bridge] [--batch N]
+  python3 scripts/infra/register_etoro_sapi.py [--full-fetch] [--bridge] [--batch N]
 
 Default: first N instrument IDs (discovery or fallback), fetch, query stats.
 """

@@ -5,11 +5,23 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const maxRatio = parseFloat(searchParams.get('max_ratio') || '1.0');
+  const maxRatio = parseFloat(searchParams.get('max_ratio') || '999');
   const minScore = parseFloat(searchParams.get('min_gf_score') || '0');
-  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200);
+  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 600);
+  const index = searchParams.get('index');
 
   try {
+    let indexFilter = '';
+    const params: unknown[] = [maxRatio, minScore];
+
+    if (index) {
+      params.push(index.toLowerCase());
+      indexFilter = `AND EXISTS (
+        SELECT 1 FROM symbol_universe su
+        WHERE su.symbol = v.symbol AND su.metadata->>'indices' LIKE '%' || $${params.length} || '%'
+      )`;
+    }
+
     const rows = await query(
       `SELECT DISTINCT ON (v.symbol)
           v.symbol, v.gf_symbol, v.gf_value, v.dcf_value, v.graham_number,
@@ -18,13 +30,16 @@ export async function GET(request: NextRequest) {
        FROM gf_valuations v
        LEFT JOIN LATERAL (
           SELECT gf_score, financial_strength, profitability_rank, growth_rank
-          FROM gf_rankings WHERE symbol = v.symbol ORDER BY fetched_at DESC LIMIT 1
+          FROM gf_rankings WHERE symbol = v.symbol
+            AND gf_score IS NOT NULL
+          ORDER BY fetched_at DESC LIMIT 1
        ) r ON true
        WHERE v.price_to_gf_value IS NOT NULL
          AND v.price_to_gf_value <= $1
          AND (r.gf_score IS NULL OR r.gf_score >= $2)
+         ${indexFilter}
        ORDER BY v.symbol, v.fetched_at DESC`,
-      [maxRatio, minScore]
+      params
     );
 
     const enriched = rows.map((r: any) => ({
@@ -38,7 +53,7 @@ export async function GET(request: NextRequest) {
     enriched.sort((a: any, b: any) => (b.opportunity_score || 0) - (a.opportunity_score || 0));
 
     return NextResponse.json({
-      filter: { max_ratio: maxRatio, min_gf_score: minScore },
+      filter: { max_ratio: maxRatio, min_gf_score: minScore, index: index || null },
       count: Math.min(enriched.length, limit),
       data: enriched.slice(0, limit),
     });

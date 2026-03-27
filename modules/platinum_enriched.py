@@ -36,7 +36,7 @@ DB_DSN = "dbname=quantclaw_data host=/var/run/postgresql user=quant"
 # Universe — top 200 symbols across sectors
 # ---------------------------------------------------------------------------
 TOP_200 = [
-    "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "BRK-B", "UNH", "LLY",
+    "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "BRK.B", "UNH", "LLY",
     "JPM", "XOM", "V", "JNJ", "AVGO", "PG", "MA", "HD", "COST", "MRK",
     "ABBV", "CVX", "CRM", "NFLX", "AMD", "KO", "PEP", "ADBE", "WMT", "TMO",
     "LIN", "ACN", "CSCO", "MCD", "ABT", "DHR", "INTC", "ORCL", "VZ", "CMCSA",

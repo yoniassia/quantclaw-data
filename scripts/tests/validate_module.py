@@ -4,8 +4,8 @@ Layer 1: Static regex checks (fast)
 Layer 2: AST parse + import check
 Layer 3: Function signature validation
 
-Usage: python3 scripts/validate_module.py modules/my_module.py
-       python3 scripts/validate_module.py --all  (validate all)
+Usage: python3 scripts/tests/validate_module.py modules/my_module.py
+       python3 scripts/tests/validate_module.py --all  (validate all)
 """
 import ast, sys, os, re, importlib
 
@@ -94,7 +94,7 @@ def validate(path: str, do_import=True) -> dict:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python3 scripts/validate_module.py modules/my_module.py [--all]")
+        print("Usage: python3 scripts/tests/validate_module.py modules/my_module.py [--all]")
         sys.exit(1)
     
     if sys.argv[1] == "--all":

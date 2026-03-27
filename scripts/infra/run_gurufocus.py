@@ -3,11 +3,11 @@
 GuruFocus Pipeline Runner — Execute all GF modules in correct order.
 
 Usage:
-  python3 scripts/run_gurufocus.py                    # Run all modules
-  python3 scripts/run_gurufocus.py --tier 1           # Run Tier 1 only (rankings, valuations, fundamentals, insider, profile, guru_tracker)
-  python3 scripts/run_gurufocus.py --tier 2           # Run Tier 2 only (segments, ETF, fund_letters, universe, guru_portfolio)
-  python3 scripts/run_gurufocus.py --module rankings  # Run single module
-  python3 scripts/run_gurufocus.py --symbols AAPL,MSFT,GOOGL  # Specific symbols
+  python3 scripts/infra/run_gurufocus.py                    # Run all modules
+  python3 scripts/infra/run_gurufocus.py --tier 1           # Run Tier 1 only (rankings, valuations, fundamentals, insider, profile, guru_tracker)
+  python3 scripts/infra/run_gurufocus.py --tier 2           # Run Tier 2 only (segments, ETF, fund_letters, universe, guru_portfolio)
+  python3 scripts/infra/run_gurufocus.py --module rankings  # Run single module
+  python3 scripts/infra/run_gurufocus.py --symbols AAPL,MSFT,GOOGL  # Specific symbols
 
 Requires GURUFOCUS_DATA_API_KEY env var (vault, never git).
 """

@@ -1,7 +1,7 @@
 #!/bin/bash
 # QuantClaw Data — CI Test Runner
 # Run locally or in any CI environment
-# Usage: bash scripts/ci-test.sh
+# Usage: bash scripts/tests/ci-test.sh
 
 set -e
 echo "🧪 QuantClaw Data CI Test Suite"

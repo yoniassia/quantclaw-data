@@ -10,7 +10,7 @@ When a new signal module is added to modules/, run this script to:
 5. Update services.ts registry
 6. Regenerate Zvec search index
 
-Usage: python3 scripts/signal_pipeline.py [--dry-run]
+Usage: python3 scripts/infra/signal_pipeline.py [--dry-run]
 """
 
 import importlib
@@ -215,7 +215,7 @@ def run_pipeline(dry_run=False):
     if not dry_run:
         # Regenerate search index
         print("🔍 Regenerating Zvec search index...")
-        os.system(f"cd {PROJECT_ROOT} && python3 scripts/generate_index.py")
+        os.system(f"cd {PROJECT_ROOT} && python3 scripts/infra/generate_index.py")
 
     print(f"\n✅ Pipeline complete. {len(new_modules)} modules processed.")
     print(f"   Run `npm run build` to compile new API routes.")

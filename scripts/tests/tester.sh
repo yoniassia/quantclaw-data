@@ -22,7 +22,7 @@ CRITICALS=""
 
 for MOD in $(ls modules/*.py | shuf -n $SAMPLE_SIZE); do
   NAME=$(basename "$MOD" .py)
-  RESULT=$(python3 scripts/validate_module.py "$MOD" 2>&1 || true)
+  RESULT=$(python3 scripts/tests/validate_module.py "$MOD" 2>&1 || true)
 
   if echo "$RESULT" | grep -q "FAIL"; then
     FAILED=$((FAILED + 1))

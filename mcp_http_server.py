@@ -15,6 +15,8 @@ from datetime import datetime
 MODULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'modules')
 sys.path.insert(0, MODULES_PATH)
 
+import sapi_postgres as sapi
+
 
 def _yf_ticker(symbol):
     import yfinance as yf
@@ -601,6 +603,118 @@ def tool_monte_carlo(params):
         }
 
 
+def tool_sapi_quote(params):
+    """eToro SAPI instrument data — 10K+ symbols with price, fundamentals, analyst, social, ESG."""
+    symbol = params.get('symbol', params.get('ticker', ''))
+    if not symbol:
+        return {'error': 'symbol required'}
+    inst = sapi.fetch_instruments(symbol)
+    if not inst:
+        return {'error': f'Symbol {symbol} not found in SAPI database (10,409 instruments)'}
+    prices = sapi.fetch_instrument_prices(symbol, limit=1)
+    fundies = sapi.fetch_instrument_fundamentals(symbol, limit=1)
+    analysts = sapi.fetch_instrument_analysts(symbol, limit=1)
+    social_data = sapi.fetch_instrument_social(symbol, limit=1)
+    esg_data = sapi.fetch_instrument_esg(symbol, limit=1)
+    betas = sapi.fetch_instrument_betas(symbol, limit=1)
+    result = {'instrument': inst}
+    if prices:
+        result['latest_price'] = prices[0]
+    if fundies:
+        result['fundamentals'] = fundies[0]
+    if analysts:
+        result['analysts'] = analysts[0]
+    if social_data:
+        result['social'] = social_data[0]
+    if esg_data:
+        result['esg'] = esg_data[0]
+    if betas:
+        result['betas'] = betas[0]
+    result['source'] = 'etoro_sapi_postgres'
+    result['timestamp'] = datetime.now().isoformat()
+    return result
+
+
+def tool_sapi_prices(params):
+    """Historical SAPI price snapshots for a symbol."""
+    symbol = params.get('symbol', params.get('ticker', ''))
+    limit = int(params.get('limit', 30))
+    if not symbol:
+        return {'error': 'symbol required'}
+    prices = sapi.fetch_instrument_prices(symbol, limit=limit)
+    if not prices:
+        return {'error': f'No price data for {symbol}'}
+    return {'symbol': symbol, 'count': len(prices), 'prices': prices, 'source': 'etoro_sapi_postgres'}
+
+
+def tool_sapi_fundamentals(params):
+    """SAPI fundamentals history for a symbol (PE, margins, ROE, debt, etc.)."""
+    symbol = params.get('symbol', params.get('ticker', ''))
+    limit = int(params.get('limit', 12))
+    if not symbol:
+        return {'error': 'symbol required'}
+    data = sapi.fetch_instrument_fundamentals(symbol, limit=limit)
+    if not data:
+        return {'error': f'No fundamentals for {symbol}'}
+    return {'symbol': symbol, 'count': len(data), 'fundamentals': data, 'source': 'etoro_sapi_postgres'}
+
+
+def tool_sapi_analysts(params):
+    """SAPI analyst consensus, target prices, and ratings."""
+    symbol = params.get('symbol', params.get('ticker', ''))
+    limit = int(params.get('limit', 12))
+    if not symbol:
+        return {'error': 'symbol required'}
+    data = sapi.fetch_instrument_analysts(symbol, limit=limit)
+    if not data:
+        return {'error': f'No analyst data for {symbol}'}
+    return {'symbol': symbol, 'count': len(data), 'analysts': data, 'source': 'etoro_sapi_postgres'}
+
+
+def tool_sapi_social(params):
+    """SAPI social/trader sentiment (popularity, trader changes)."""
+    symbol = params.get('symbol', params.get('ticker', ''))
+    limit = int(params.get('limit', 30))
+    if not symbol:
+        return {'error': 'symbol required'}
+    data = sapi.fetch_instrument_social(symbol, limit=limit)
+    if not data:
+        return {'error': f'No social data for {symbol}'}
+    return {'symbol': symbol, 'count': len(data), 'social': data, 'source': 'etoro_sapi_postgres'}
+
+
+def tool_sapi_search(params):
+    """Search/list SAPI instruments by name, symbol, sector, or asset class."""
+    query = params.get('query', params.get('q', ''))
+    sector = params.get('sector', '')
+    asset_class = params.get('asset_class', '')
+    limit = min(int(params.get('limit', 50)), 500)
+
+    with sapi._connect() as conn:
+        with conn.cursor() as cur:
+            conditions = []
+            bind_params = []
+            if query:
+                conditions.append("(UPPER(symbol) LIKE UPPER(%s) OR UPPER(display_name) LIKE UPPER(%s))")
+                bind_params.extend([f'%{query}%', f'%{query}%'])
+            if sector:
+                conditions.append("UPPER(umbrella_sector) LIKE UPPER(%s)")
+                bind_params.append(f'%{sector}%')
+            if asset_class:
+                conditions.append("UPPER(asset_class) LIKE UPPER(%s)")
+                bind_params.append(f'%{asset_class}%')
+
+            where = 'WHERE ' + ' AND '.join(conditions) if conditions else ''
+            cur.execute(
+                f"SELECT instrument_id, symbol, display_name, exchange, umbrella_sector, asset_class, market_cap_class, is_tradable FROM instruments {where} ORDER BY symbol LIMIT %s",
+                (*bind_params, limit),
+            )
+            rows = [sapi._serialize_row(dict(r)) for r in cur.fetchall()]
+            cur.execute(f"SELECT COUNT(*) as total FROM instruments {where}", tuple(bind_params))
+            total = cur.fetchone()['total']
+    return {'count': len(rows), 'total_matching': total, 'instruments': rows, 'source': 'etoro_sapi_postgres'}
+
+
 # Tool registry
 TOOLS = {
     'market_quote': {'fn': tool_market_quote, 'desc': 'Real-time stock quote (price, volume, market cap, ratios)'},
@@ -633,6 +747,12 @@ TOOLS = {
     'factor_attribution': {'fn': tool_factor_attribution, 'desc': 'Factor return attribution'},
     'factor_returns': {'fn': tool_factor_returns, 'desc': 'Factor return data'},
     'monte_carlo': {'fn': tool_monte_carlo, 'desc': 'Monte Carlo price simulation'},
+    'sapi_quote': {'fn': tool_sapi_quote, 'desc': 'eToro SAPI full instrument data (price, fundamentals, analysts, social, ESG, betas) — 10K+ symbols'},
+    'sapi_prices': {'fn': tool_sapi_prices, 'desc': 'SAPI price history snapshots'},
+    'sapi_fundamentals': {'fn': tool_sapi_fundamentals, 'desc': 'SAPI fundamentals history (PE, margins, ROE, debt)'},
+    'sapi_analysts': {'fn': tool_sapi_analysts, 'desc': 'SAPI analyst consensus and target prices'},
+    'sapi_social': {'fn': tool_sapi_social, 'desc': 'SAPI trader sentiment and popularity'},
+    'sapi_search': {'fn': tool_sapi_search, 'desc': 'Search/list eToro SAPI instruments (10,409 symbols)'},
 }
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """BM25 search over QuantClaw Data modules — inspired by pinescript-ai RAG pattern.
-Usage: python3 scripts/search_modules.py "OPEC oil compliance" [top_k]
+Usage: python3 scripts/infra/search_modules.py "OPEC oil compliance" [top_k]
 """
 import json, re, sys
 

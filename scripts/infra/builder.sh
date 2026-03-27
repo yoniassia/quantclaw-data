@@ -202,7 +202,7 @@ print(f"README: {mc} modules, {loc:,}+ LOC, {ds} sources")
 PYEOF
 
 # --- Phase 5: Regenerate index ---
-python3 scripts/generate_index.py 2>/dev/null || log "WARN: index generation failed"
+python3 scripts/infra/generate_index.py 2>/dev/null || log "WARN: index generation failed"
 
 # --- Phase 6: Git commit + push ---
 git add -A

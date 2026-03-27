@@ -69,9 +69,21 @@ class PipelineOrchestrator:
         if module_name in self._module_cache:
             return self._module_cache[module_name]
 
-        module_path = os.path.join(self.modules_dir, f"{module_name}.py")
-        if os.path.exists(module_path):
-            spec = importlib.util.spec_from_file_location(f"modules_v2.{module_name}", module_path)
+        file_bases = [module_name]
+        if "-" in module_name:
+            file_bases.append(module_name.replace("-", "_"))
+
+        module_path = None
+        file_base = None
+        for base in file_bases:
+            candidate = os.path.join(self.modules_dir, f"{base}.py")
+            if os.path.exists(candidate):
+                module_path = candidate
+                file_base = base
+                break
+
+        if module_path:
+            spec = importlib.util.spec_from_file_location(f"modules_v2.{file_base}", module_path)
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
 
@@ -87,8 +99,13 @@ class PipelineOrchestrator:
             logger.warning(f"No BaseModule subclass found in {module_path}")
 
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        v1_path = os.path.join(project_root, "modules", f"{module_name}.py")
-        if os.path.exists(v1_path):
+        v1_path = None
+        for base in file_bases:
+            candidate = os.path.join(project_root, "modules", f"{base}.py")
+            if os.path.exists(candidate):
+                v1_path = candidate
+                break
+        if v1_path:
             from .v1_adapter import V1ModuleAdapter
             module_meta = db.execute_query(
                 "SELECT cadence, name FROM modules WHERE name = %s",
@@ -218,7 +235,7 @@ class PipelineOrchestrator:
 
     def run_overnight(self, cadences: List[str] = None):
         """Overnight batch: run all modules matching given cadences."""
-        cadences = cadences or ["daily", "weekly", "monthly", "quarterly"]
+        cadences = cadences or ["daily", "weekly", "monthly", "quarterly", "4h"]
         now = datetime.now(timezone.utc)
 
         modules = db.execute_query(
