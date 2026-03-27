@@ -8,6 +8,8 @@ data/
 # Caches (runtime-generated, not source)
 cache/
 .cache/
+modules/cache/
+modules/.cache/
 __pycache__/
 *.pyc
 
