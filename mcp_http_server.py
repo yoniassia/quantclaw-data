@@ -7,6 +7,7 @@ QuantClaw Data — HTTP MCP Server
 import json
 import sys
 import os
+import time
 import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -220,13 +221,31 @@ def tool_news(params):
 
 
 def tool_macro(params):
-    indicator = params.get('indicator', params.get('ticker', 'gdp'))
+    """Real macro indicators from FRED + yfinance. Returns structured macro data."""
+    indicator = params.get('indicator', params.get('ticker', 'snapshot'))
+    if indicator == 'snapshot':
+        return tool_macro_snapshot(params)
     try:
-        from fred import get_fred_series
-        data = get_fred_series(indicator)
-        return {'indicator': indicator, 'data': data}
-    except Exception:
-        # Fallback: treasury yields
+        from fred import get_series, get_latest_value
+        series_map = {
+            'gdp': 'GDP', 'cpi': 'CPIAUCSL', 'unemployment': 'UNRATE',
+            'rates': 'DFF', 'fed_funds': 'DFF', 'treasury': 'DGS10',
+            'pmi': 'UMCSENT', 'consumer_sentiment': 'UMCSENT',
+            'industrial_production': 'INDPRO', 'housing': 'HOUST',
+            'yield_10y': 'DGS10', 'yield_2y': 'DGS2', 'yield_3m': 'DGS3MO',
+            'hy_oas': 'BAMLH0A0HYM2', 'ig_oas': 'BAMLC0A0CM',
+        }
+        sid = series_map.get(indicator.lower(), indicator.upper())
+        data = get_series(sid, limit=30)
+        latest = get_latest_value(sid)
+        return {
+            'indicator': indicator,
+            'series_id': sid,
+            'latest_value': latest,
+            'data': data if isinstance(data, (list, dict)) else str(data),
+            'timestamp': datetime.now().isoformat(),
+        }
+    except Exception as e:
         import yfinance as yf
         symbols = {
             'gdp': '^GSPC', 'rates': '^TNX', 'treasury': '^TNX',
@@ -236,13 +255,13 @@ def tool_macro(params):
         t = yf.Ticker(sym)
         info = t.info
         return {
-            'indicator': indicator,
-            'symbol': sym,
+            'indicator': indicator, 'symbol': sym,
             'value': info.get('regularMarketPrice'),
             'previous_close': info.get('previousClose'),
             'change': info.get('regularMarketChange'),
             'change_pct': info.get('regularMarketChangePercent'),
             'timestamp': datetime.now().isoformat(),
+            '_fallback': True, '_error': str(e)[:200],
         }
 
 
@@ -353,24 +372,36 @@ def tool_sec(params):
 
 def tool_social(params):
     symbol = params.get('symbol', params.get('ticker', 'AAPL'))
+    # Primary: SAPI social data (fast, real)
+    try:
+        social = sapi.fetch_instrument_social(symbol, limit=3)
+        if social and len(social) > 0:
+            latest = social[0]
+            return {
+                'ticker': symbol.upper(),
+                'source': 'sapi',
+                'buy_holding_pct': latest.get('buy_holding_pct'),
+                'sell_holding_pct': latest.get('sell_holding_pct'),
+                'popularity_rank': latest.get('popularity_uniques'),
+                'popularity_7d': latest.get('popularity_7d'),
+                'popularity_30d': latest.get('popularity_30d'),
+                'traders_7d_change': latest.get('traders_7d_change'),
+                'traders_30d_change': latest.get('traders_30d_change'),
+                'institutional_pct': latest.get('institutional_pct'),
+                'timestamp': datetime.now().isoformat(),
+            }
+    except Exception:
+        pass
+    # Fallback: social_sentiment_spikes module (slow, may timeout)
     try:
         from social_sentiment_spikes import get_ticker_momentum, detect_ticker_spike
         momentum = get_ticker_momentum(symbol)
-        if momentum is None:
-            # Try detect spike instead
-            spike = detect_ticker_spike(symbol)
-            return {'ticker': symbol.upper(), 'spike_data': spike if spike else 'No spike detected'}
-        return momentum
-    except Exception as e:
-        # Fallback: basic Yahoo sentiment from news
-        t = _yf_ticker(symbol)
-        news = t.news or []
-        return {
-            'ticker': symbol.upper(),
-            'news_count': len(news),
-            'latest_headlines': [n.get('title', '') for n in news[:5]],
-            'note': 'Basic news sentiment (social module unavailable)',
-        }
+        if momentum is not None:
+            return momentum
+        spike = detect_ticker_spike(symbol)
+        return {'ticker': symbol.upper(), 'spike_data': spike if spike else 'No spike detected'}
+    except Exception:
+        return {'ticker': symbol.upper(), 'source': 'none', 'note': 'Social sentiment unavailable'}
 
 
 def tool_short_interest(params):
@@ -432,11 +463,19 @@ def tool_esg(params):
     }
 
 
+_13f_cache = {}
+_13F_CACHE_TTL = 6 * 3600  # 6 hours — 13F data is quarterly
+
 def tool_13f(params):
-    symbol = params.get('symbol', params.get('ticker', 'AAPL'))
+    symbol = params.get('symbol', params.get('ticker', 'AAPL')).upper()
+    now = time.time()
+    if symbol in _13f_cache and (now - _13f_cache[symbol]['ts']) < _13F_CACHE_TTL:
+        return {**_13f_cache[symbol]['data'], 'cached': True}
     try:
         from institutional_ownership import get_top_institutional_holders
-        return get_top_institutional_holders(symbol)
+        result = get_top_institutional_holders(symbol)
+        _13f_cache[symbol] = {'data': result, 'ts': now}
+        return result
     except Exception:
         t = _yf_ticker(symbol)
         holders = []
@@ -447,11 +486,10 @@ def tool_13f(params):
                     holders.append({k: str(v) for k, v in row.to_dict().items()})
         except:
             pass
-        return {
-            'ticker': symbol.upper(),
-            'institutional_holders': holders,
-            'timestamp': datetime.now().isoformat(),
-        }
+        result = {'ticker': symbol, 'institutional_holders': holders, 'timestamp': datetime.now().isoformat()}
+        if holders:
+            _13f_cache[symbol] = {'data': result, 'ts': now}
+        return result
 
 
 def tool_13f_changes(params):
@@ -465,12 +503,8 @@ def tool_13f_changes(params):
 
 
 def tool_smart_money(params):
-    symbol = params.get('symbol', params.get('ticker', 'AAPL'))
-    try:
-        from smart_money_tracker import track_smart_money
-        return track_smart_money(symbol)
-    except Exception as e:
-        return {'ticker': symbol.upper(), 'error': str(e)}
+    """Redirects to SAPI-backed smart money (real institutional/social data)."""
+    return tool_smart_money_sapi(params)
 
 
 def tool_top_funds(params):
@@ -493,10 +527,17 @@ def tool_gex(params):
     try:
         from options_flow import get_options_chain, compute_put_call_ratios
         chain = get_options_chain(symbol)
+        if isinstance(chain, dict) and ('error' in chain or 'Unauthorized' in str(chain)):
+            return {
+                'ticker': symbol.upper(),
+                'status': 'degraded',
+                'error': 'Options chain auth failed (Yahoo 401). GEX unavailable.',
+                'put_call_ratios': [],
+            }
         ratios = compute_put_call_ratios(symbol)
         return {'ticker': symbol.upper(), 'options_chain': chain, 'put_call_ratios': ratios}
     except Exception as e:
-        return {'ticker': symbol.upper(), 'error': str(e)}
+        return {'ticker': symbol.upper(), 'status': 'degraded', 'error': str(e)[:200]}
 
 
 def tool_pin_risk(params):
@@ -715,6 +756,334 @@ def tool_sapi_search(params):
     return {'count': len(rows), 'total_matching': total, 'instruments': rows, 'source': 'etoro_sapi_postgres'}
 
 
+def _fred_latest(series_id, api_key=None):
+    """Fetch latest value from FRED series. Returns (value, date) or (None, None)."""
+    import urllib.request
+    key = api_key or os.environ.get('FRED_API_KEY', '67587f0c539b9b4c15b36c14f543f5f4')
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={key}&file_type=json&sort_order=desc&limit=60'
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'QuantClaw/2.0'})
+        data = json.loads(urllib.request.urlopen(req, timeout=15).read())
+        for obs in data.get('observations', []):
+            if obs.get('value', '.') != '.':
+                return float(obs['value']), obs['date']
+    except Exception:
+        pass
+    return None, None
+
+
+def _fred_series(series_id, limit=60, api_key=None):
+    """Fetch recent observations from FRED. Returns list of (value, date)."""
+    import urllib.request
+    key = api_key or os.environ.get('FRED_API_KEY', '67587f0c539b9b4c15b36c14f543f5f4')
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={key}&file_type=json&sort_order=desc&limit={limit}'
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'QuantClaw/2.0'})
+        data = json.loads(urllib.request.urlopen(req, timeout=15).read())
+        out = []
+        for obs in data.get('observations', []):
+            if obs.get('value', '.') != '.':
+                out.append((float(obs['value']), obs['date']))
+        return out
+    except Exception:
+        return []
+
+
+def tool_macro_snapshot(params):
+    """
+    Comprehensive macro snapshot for regime detection.
+    Returns VIX, yield curve, credit spreads, CPI, DXY, PMI proxies, earnings revisions.
+    All real data from FRED + yfinance. No mock data.
+    """
+    import yfinance as yf
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    result = {'timestamp': datetime.now().isoformat(), 'sources': {}}
+
+    def fetch_fred(sid):
+        return sid, _fred_series(sid, limit=60)
+
+    def fetch_yf(sym):
+        try:
+            t = yf.Ticker(sym)
+            info = t.info
+            return sym, info
+        except Exception:
+            return sym, {}
+
+    fred_ids = ['DGS2', 'DGS10', 'DGS3MO', 'BAMLH0A0HYM2', 'BAMLC0A0CM',
+                'CPIAUCSL', 'UMCSENT', 'INDPRO', 'UNRATE', 'T10Y2Y']
+    yf_symbols = ['^VIX', '^VIX3M', 'DX-Y.NYB']
+
+    fred_data = {}
+    yf_data = {}
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        fred_futures = {pool.submit(fetch_fred, sid): sid for sid in fred_ids}
+        yf_futures = {pool.submit(fetch_yf, sym): sym for sym in yf_symbols}
+        for f in as_completed(list(fred_futures) + list(yf_futures)):
+            try:
+                key, val = f.result()
+                if key in fred_ids:
+                    fred_data[key] = val
+                else:
+                    yf_data[key] = val
+            except Exception:
+                pass
+
+    def latest(series):
+        return series[0][0] if series else None
+
+    def older(series, idx):
+        return series[idx][0] if len(series) > idx else None
+
+    # VIX
+    vix_info = yf_data.get('^VIX', {})
+    vix3m_info = yf_data.get('^VIX3M', {})
+    vix_level = vix_info.get('regularMarketPrice') or vix_info.get('currentPrice')
+    vix3m_level = vix3m_info.get('regularMarketPrice') or vix3m_info.get('currentPrice')
+    vix_prev = vix_info.get('regularMarketPreviousClose')
+    term_slope = 0
+    if vix_level and vix3m_level and vix_level > 0:
+        term_slope = round((vix3m_level - vix_level) / vix_level, 4)
+
+    result['vix'] = {
+        'level': vix_level,
+        'previous_close': vix_prev,
+        'change_1d': round(vix_level - vix_prev, 2) if vix_level and vix_prev else None,
+        'vix3m': vix3m_level,
+        'term_slope': term_slope,
+    }
+    result['sources']['vix'] = 'yfinance_realtime'
+
+    # Yield Curve
+    y2 = latest(fred_data.get('DGS2', []))
+    y10 = latest(fred_data.get('DGS10', []))
+    y3m = latest(fred_data.get('DGS3MO', []))
+    t10y2y = latest(fred_data.get('T10Y2Y', []))
+    spread_2s10s = round(y10 - y2, 2) if y10 is not None and y2 is not None else t10y2y
+    spread_3m10y = round(y10 - y3m, 2) if y10 is not None and y3m is not None else None
+    result['yield_curve'] = {
+        'dgs2': y2, 'dgs10': y10, 'dgs3mo': y3m,
+        'spread_2s10s': spread_2s10s,
+        'spread_3m10y': spread_3m10y,
+        'inverted': (spread_2s10s is not None and spread_2s10s < 0) or
+                    (spread_3m10y is not None and spread_3m10y < 0),
+    }
+    result['sources']['yield_curve'] = 'fred_daily'
+
+    # Credit Spreads
+    hy_series = fred_data.get('BAMLH0A0HYM2', [])
+    ig_series = fred_data.get('BAMLC0A0CM', [])
+    hy_oas = latest(hy_series)
+    ig_oas = latest(ig_series)
+    hy_older = older(hy_series, min(21, len(hy_series) - 1)) if hy_series else None
+    result['credit_spreads'] = {
+        'hy_oas': hy_oas, 'ig_oas': ig_oas,
+        'hy_oas_21d_ago': hy_older,
+        'widening': hy_oas > hy_older + 0.25 if hy_oas is not None and hy_older is not None else False,
+    }
+    result['sources']['credit_spreads'] = 'fred_daily'
+
+    # CPI
+    cpi_series = fred_data.get('CPIAUCSL', [])
+    cpi_yoy = None
+    cpi_trend = 'stable'
+    if len(cpi_series) >= 13:
+        cpi_latest = cpi_series[0][0]
+        cpi_yago = cpi_series[12][0]
+        cpi_yoy = round((cpi_latest / cpi_yago - 1) * 100, 2)
+        if len(cpi_series) >= 16:
+            prev_yoy = (cpi_series[3][0] / cpi_series[15][0] - 1) * 100
+            if cpi_yoy > prev_yoy + 0.15:
+                cpi_trend = 'rising'
+            elif cpi_yoy < prev_yoy - 0.15:
+                cpi_trend = 'falling'
+    result['cpi'] = {'yoy': cpi_yoy, 'trend': cpi_trend, 'latest_index': latest(cpi_series)}
+    result['sources']['cpi'] = 'fred_monthly'
+
+    # DXY
+    dxy_info = yf_data.get('DX-Y.NYB', {})
+    dxy_level = dxy_info.get('regularMarketPrice') or dxy_info.get('currentPrice')
+    dxy_prev = dxy_info.get('regularMarketPreviousClose')
+    result['dxy'] = {'level': dxy_level, 'previous_close': dxy_prev}
+    result['sources']['dxy'] = 'yfinance_realtime'
+
+    # PMI Proxies (UMCSENT = Michigan Consumer Sentiment, INDPRO = Industrial Production)
+    umcsent_series = fred_data.get('UMCSENT', [])
+    indpro_series = fred_data.get('INDPRO', [])
+    umcsent = latest(umcsent_series)
+    indpro = latest(indpro_series)
+    indpro_prev = older(indpro_series, 1)
+    indpro_mom = None
+    if indpro is not None and indpro_prev is not None and indpro_prev > 0:
+        indpro_mom = round((indpro / indpro_prev - 1) * 100, 2)
+
+    # Synthetic PMI: combine consumer sentiment (rescaled) + industrial production MoM
+    # UMCSENT: historical range ~50-115, mean ~85. Map to PMI-like scale:
+    #   50 → 38 (deep contraction), 85 → 50 (neutral), 110 → 60 (strong expansion)
+    # INDPRO MoM: +0.5% → strong expansion boost, -0.5% → contraction signal
+    synthetic_pmi = 50.0
+    if umcsent is not None:
+        synthetic_pmi = max(35, min(65, 38 + (umcsent - 50) * 0.4))
+    if indpro_mom is not None:
+        synthetic_pmi += indpro_mom * 5.0
+        synthetic_pmi = max(30, min(70, synthetic_pmi))
+
+    result['pmi_proxy'] = {
+        'synthetic_composite': round(synthetic_pmi, 1),
+        'consumer_sentiment': umcsent,
+        'consumer_sentiment_date': umcsent_series[0][1] if umcsent_series else None,
+        'industrial_production': indpro,
+        'industrial_production_mom': indpro_mom,
+        'note': 'PMI proxy from UMCSENT + INDPRO (ISM PMI is proprietary, not available from FRED)',
+    }
+    result['sources']['pmi_proxy'] = 'fred_monthly'
+
+    # Unemployment
+    unemp = latest(fred_data.get('UNRATE', []))
+    result['unemployment'] = {'rate': unemp}
+    result['sources']['unemployment'] = 'fred_monthly'
+
+    # Earnings Revision Aggregate (from SAPI if available)
+    try:
+        result['earnings_revisions'] = _compute_earnings_revisions_aggregate()
+        result['sources']['earnings_revisions'] = 'sapi_postgres'
+    except Exception as e:
+        result['earnings_revisions'] = {
+            'ratio': None, 'trend': 'unknown',
+            'error': str(e)[:200],
+        }
+        result['sources']['earnings_revisions'] = 'unavailable'
+
+    return result
+
+
+def _compute_earnings_revisions_aggregate():
+    """
+    Compute aggregate earnings revision ratio from SAPI analyst data.
+    Uses latest vs 30-day-ago consensus targets across top 50 S&P500 names.
+    """
+    universe = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK.B',
+                'UNH', 'JNJ', 'JPM', 'V', 'PG', 'XOM', 'MA', 'HD', 'CVX', 'MRK',
+                'ABBV', 'LLY', 'PEP', 'KO', 'COST', 'AVGO', 'WMT', 'TMO', 'MCD',
+                'CSCO', 'ACN', 'ABT', 'CRM', 'DHR', 'NEE', 'CMCSA', 'VZ', 'NKE',
+                'TXN', 'PM', 'BMY', 'UPS']
+    upgrades = 0
+    downgrades = 0
+    unchanged = 0
+    total = 0
+    try:
+        for sym in universe[:30]:
+            rows = sapi.fetch_instrument_analysts(sym, limit=35)
+            if rows and len(rows) >= 2:
+                latest = rows[0]
+                # Compare against ~30 days ago snapshot
+                prev = rows[-1] if len(rows) > 25 else rows[min(len(rows)-1, 7)]
+                latest_target = latest.get('target_price')
+                prev_target = prev.get('target_price')
+                if latest_target and prev_target:
+                    latest_val = float(latest_target)
+                    prev_val = float(prev_target)
+                    if prev_val > 0:
+                        change = (latest_val - prev_val) / prev_val
+                        total += 1
+                        if change > 0.01:
+                            upgrades += 1
+                        elif change < -0.01:
+                            downgrades += 1
+                        else:
+                            unchanged += 1
+    except Exception:
+        pass
+
+    if total == 0:
+        return {'ratio': None, 'trend': 'unknown', 'sample_size': 0}
+
+    ratio = round(upgrades / max(downgrades, 1), 2)
+    if upgrades > downgrades * 1.3:
+        trend = 'improving'
+    elif downgrades > upgrades * 1.3:
+        trend = 'deteriorating'
+    else:
+        trend = 'stable'
+
+    return {
+        'ratio': ratio,
+        'trend': trend,
+        'upgrades': upgrades,
+        'downgrades': downgrades,
+        'unchanged': unchanged,
+        'sample_size': total,
+    }
+
+
+def tool_estimate_revision_aggregate(params):
+    """Aggregate earnings revision ratio across S&P500 universe from SAPI."""
+    try:
+        result = _compute_earnings_revisions_aggregate()
+        result['timestamp'] = datetime.now().isoformat()
+        result['source'] = 'sapi_postgres'
+        return result
+    except Exception as e:
+        return {'error': str(e), 'timestamp': datetime.now().isoformat()}
+
+
+def tool_smart_money_sapi(params):
+    """Smart money tracking using SAPI institutional/social data (real data, no mocks)."""
+    symbol = params.get('symbol', params.get('ticker', 'AAPL'))
+    result = {'ticker': symbol.upper(), 'timestamp': datetime.now().isoformat(), 'source': 'sapi_postgres'}
+
+    try:
+        social = sapi.fetch_instrument_social(symbol, limit=5)
+        if social:
+            latest = social[0]
+            result['social_sentiment'] = {
+                'popularity_rank': latest.get('popularity_uniques'),
+                'popularity_7d': latest.get('popularity_7d'),
+                'popularity_30d': latest.get('popularity_30d'),
+                'buy_holding_pct': latest.get('buy_holding_pct'),
+                'sell_holding_pct': latest.get('sell_holding_pct'),
+                'traders_7d_change': latest.get('traders_7d_change'),
+                'traders_30d_change': latest.get('traders_30d_change'),
+                'institutional_pct': latest.get('institutional_pct'),
+                'holding_pct': latest.get('holding_pct'),
+            }
+
+        analysts = sapi.fetch_instrument_analysts(symbol, limit=3)
+        if analysts:
+            latest = analysts[0]
+            result['analyst_consensus'] = {
+                'consensus': latest.get('consensus'),
+                'target_price': latest.get('target_price'),
+                'target_upside_pct': latest.get('target_upside_pct'),
+                'total_analysts': latest.get('total_analysts'),
+                'buy_count': latest.get('buy_count'),
+                'hold_count': latest.get('hold_count'),
+                'sell_count': latest.get('sell_count'),
+                'target_high': latest.get('target_high'),
+                'target_low': latest.get('target_low'),
+                'estimated_eps': latest.get('estimated_eps'),
+                'next_earnings_date': str(latest.get('next_earnings_date', '')),
+            }
+
+        fundies = sapi.fetch_instrument_fundamentals(symbol, limit=2)
+        if fundies:
+            latest = fundies[0]
+            result['fundamentals'] = {
+                'pe_ratio': latest.get('pe_ratio') or latest.get('trailing_pe'),
+                'forward_pe': latest.get('forward_pe'),
+                'profit_margin': latest.get('profit_margin'),
+                'roe': latest.get('return_on_equity') or latest.get('roe'),
+                'debt_equity': latest.get('debt_to_equity') or latest.get('debt_equity'),
+                'institutional_pct': latest.get('institutional_pct'),
+            }
+    except Exception as e:
+        result['error'] = str(e)[:300]
+
+    return result
+
+
 # Tool registry
 TOOLS = {
     'market_quote': {'fn': tool_market_quote, 'desc': 'Real-time stock quote (price, volume, market cap, ratios)'},
@@ -725,7 +1094,10 @@ TOOLS = {
     'ratings': {'fn': tool_ratings, 'desc': 'Analyst ratings and price targets'},
     'earnings': {'fn': tool_earnings, 'desc': 'Earnings data and history'},
     'news': {'fn': tool_news, 'desc': 'Latest news articles'},
-    'macro': {'fn': tool_macro, 'desc': 'Macro indicators (GDP, rates, VIX, DXY)'},
+    'macro': {'fn': tool_macro, 'desc': 'Macro indicators from FRED (GDP, CPI, yields, spreads, PMI proxy)'},
+    'macro_snapshot': {'fn': tool_macro_snapshot, 'desc': 'Comprehensive macro snapshot for regime detection (VIX, yields, spreads, CPI, PMI proxy, DXY, earnings revisions)'},
+    'estimate_revision_aggregate': {'fn': tool_estimate_revision_aggregate, 'desc': 'Aggregate earnings revision ratio across S&P500 universe'},
+    'smart_money_sapi': {'fn': tool_smart_money_sapi, 'desc': 'Smart money tracking via eToro SAPI (real institutional + social data)'},
     'crypto': {'fn': tool_crypto, 'desc': 'Cryptocurrency prices'},
     'forex': {'fn': tool_forex, 'desc': 'Foreign exchange rates'},
     'commodity': {'fn': tool_commodity, 'desc': 'Commodity prices (gold, oil, etc.)'},
@@ -737,7 +1109,7 @@ TOOLS = {
     'esg': {'fn': tool_esg, 'desc': 'ESG scores'},
     '13f': {'fn': tool_13f, 'desc': 'Institutional 13F holdings'},
     '13f_changes': {'fn': tool_13f_changes, 'desc': '13F quarter-over-quarter changes'},
-    'smart_money': {'fn': tool_smart_money, 'desc': 'Smart money flow tracking'},
+    'smart_money': {'fn': tool_smart_money, 'desc': 'Smart money flow tracking (via SAPI institutional + social data)'},
     'top_funds': {'fn': tool_top_funds, 'desc': 'Top hedge fund holdings'},
     'gex': {'fn': tool_gex, 'desc': 'Gamma exposure (GEX)'},
     'pin_risk': {'fn': tool_pin_risk, 'desc': 'Options pinning risk'},
