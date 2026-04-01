@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,050 Financial Data Modules
+# QuantClaw Data — 1,051 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,050 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,051 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,050 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,051 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,050** Python data modules
+- **1,051** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,050 modules)             │
+│  ├── Module browser (1,051 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,050 modules      │
+│  ├── Tool definitions for all 1,051 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,050 Python Modules                            │
+│  1,051 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics & Central Banks (Autobuilder Batches 1–5)
+### Government Statistics & Central Banks (Autobuilder Batches 1–7)
 
-Twenty-six modules covering 21 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, and Oceania with 460+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
+Twenty-seven modules covering 21 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, and Oceania with 500+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -179,6 +179,7 @@ Twenty-six modules covering 21 countries across Europe, Scandinavia, Central Eur
 || `edinet_japan` | EDINET (FSA Japan) | Japan | `https://api.edinet-fsa.go.jp/api/v2` | Annual securities reports (Yuho), quarterly reports, semi-annual reports, large shareholding reports (5%+), tender offer filings, securities registration (IPOs), company search, XBRL/PDF/CSV document downloads |
 || `fca_uk` | FCA Financial Services Register | United Kingdom | `https://register.fca.org.uk/services/V0.1` | Authorized firm search/details (by FRN), individual search (by IRN), fund/CIS search, firm permissions, disciplinary history, passports, requirements, addresses, regulated markets |
 || `abs_australia_sdmx` | ABS (Australian Bureau of Statistics) | Australia | `https://data.api.abs.gov.au/rest` | GDP (chain volume/growth/per capita), terms of trade, household saving ratio, CPI (index/quarterly change/annual monthly indicator), unemployment/employment/participation rate, labour force, current account, goods balance, retail trade, building approvals, trade balance, exports |
+|| `rba_enhanced` | Reserve Bank of Australia (RBA) | Australia / International | `https://www.rba.gov.au/statistics/tables/csv` | Cash rate target, overnight cash rate, 3M BABs/OIS/T-note, AU govt bond yields (2Y–10Y + indexed), housing loan rates (variable/discounted/3Y fixed), credit card rate, SME lending rate, AUD FX (USD/EUR/GBP/JPY/CNY + TWI), international official rates (Fed/BOJ/ECB/BOE/BOC/RBA), credit growth (housing/total MoM & YoY), M3 growth, broad money, real & nominal GDP, terms of trade |
 
 #### Global Coverage Map
 
@@ -205,6 +206,7 @@ Twenty-six modules covering 21 countries across Europe, Scandinavia, Central Eur
 🇩🇪 Germany (ext)  — Destatis GENESIS (GDP, CPI/HICP, employment, trade, IPI, PPI, construction)
 🇯🇵 Japan (ext)    — EDINET (annual/quarterly securities filings, large shareholding, tender offers)
 🇬🇧 UK (ext)       — FCA Register (authorized firms, individuals, permissions, disciplinary, markets)
+🇦🇺 Australia (ext) — RBA Enhanced (cash rate, money market, govt bonds, lending rates, AUD FX, intl rates, credit, GDP)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -241,7 +243,7 @@ python3 modules/cnb_czech.py PRIBOR_3M
 python3 modules/cnb_czech.py CNB_2W_REPO
 python3 modules/cnb_czech.py pribor-curve
 python3 modules/cnb_czech.py policy-rates
-# Australia, UAE, Germany (ext), Japan (ext), UK (ext) — Batch 6
+# Australia, UAE, Germany (ext), Japan (ext), UK (ext) — Batch 6–7
 python3 modules/abs_australia_sdmx.py GDP_GROWTH
 python3 modules/abs_australia_sdmx.py UNEMPLOYMENT_RATE
 python3 modules/abs_australia_sdmx.py dashboard
@@ -255,6 +257,15 @@ python3 modules/edinet_japan.py ANNUAL_REPORTS
 python3 modules/edinet_japan.py search "Toyota"
 python3 modules/fca_uk.py FIRM_SEARCH "barclays"
 python3 modules/fca_uk.py REGULATED_MARKETS
+# RBA Australia Enhanced — Batch 7
+python3 modules/rba_enhanced.py F1_CASH_RATE_TARGET
+python3 modules/rba_enhanced.py F2_GOVT_10Y
+python3 modules/rba_enhanced.py F5_HOUSING_VARIABLE
+python3 modules/rba_enhanced.py F11_AUD_USD
+python3 modules/rba_enhanced.py F13_US_FED_FUNDS
+python3 modules/rba_enhanced.py yield-curve
+python3 modules/rba_enhanced.py rates
+python3 modules/rba_enhanced.py fx
 ```
 
 **REST API:**
@@ -286,6 +297,11 @@ GET /api/v1/destatis-germany?indicator=GDP_QUARTERLY
 GET /api/v1/edinet-japan?indicator=ANNUAL_REPORTS&start_date=2026-04-01
 GET /api/v1/fca-uk?indicator=FIRM_SEARCH&query=barclays
 GET /api/v1/fca-uk?indicator=REGULATED_MARKETS
+GET /api/v1/rba-enhanced?indicator=F1_CASH_RATE_TARGET
+GET /api/v1/rba-enhanced?indicator=F2_GOVT_10Y
+GET /api/v1/rba-enhanced?indicator=F5_HOUSING_VARIABLE
+GET /api/v1/rba-enhanced?indicator=F11_AUD_USD
+GET /api/v1/rba-enhanced?indicator=H1_REAL_GDP_GROWTH
 ```
 
 **MCP Tool Call:**
@@ -547,6 +563,73 @@ Batch 6 adds **5 new modules** expanding to **Australia, UAE, and deeper German/
 - 460+ macroeconomic indicators from official government sources
 - Asset classes covered: FX rates, policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment, trade, housing, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade
 
+#### Batch 7: Australia Central Bank — Reserve Bank of Australia
+
+Batch 7 adds the **Reserve Bank of Australia (RBA) Enhanced** module, providing comprehensive coverage of all major RBA statistical tables. This is the deepest Australian financial data module in the platform, complementing the ABS macro statistics module added in Batch 6 with central bank rates, bond yields, lending rates, FX, credit aggregates, and GDP from the RBA's own statistical publications.
+
+**RBA Australia Enhanced** (`rba_enhanced`) — Reserve Bank of Australia:
+- **Table F1 — Money Market:** RBA cash rate target, interbank overnight cash rate, 3-month BABs/NCDs, 3-month OIS, 3-month Treasury note yield (daily)
+- **Table F2 — Capital Market Yields:** Australian government bond yields at 2Y, 3Y, 5Y, 10Y maturities + 10Y indexed bond yield (daily, % p.a.)
+- **Table F5 — Indicator Lending Rates:** Housing loan rates (variable standard, variable discounted, 3-year fixed for owner-occupiers), credit card standard rate, small business variable term lending rate (monthly)
+- **Table F11 — Exchange Rates:** AUD/USD, AUD/EUR, AUD/GBP, AUD/JPY, AUD/CNY exchange rates + AUD Trade-Weighted Index (TWI, May 1970=100) (monthly)
+- **Table F13 — International Official Interest Rates:** US Fed Funds max target, Bank of Japan policy rate, ECB refinancing rate, UK Bank Rate, Bank of Canada overnight target, RBA target cash rate — enabling cross-country rate comparisons (monthly)
+- **Table D1 — Financial Aggregates Growth:** Housing credit (MoM & 12M), total credit (MoM & 12M), M3 monetary aggregate (MoM & 12M), broad money 12M growth — all seasonally adjusted incl. securitisations (monthly)
+- **Table H1 — GDP and Income:** Real GDP (chain volume, AUD mn), real GDP year-ended growth (%), nominal GDP (current price, AUD mn), nominal GDP year-ended growth (%), terms of trade index (quarterly, SA)
+- **39 indicators** across 7 RBA statistical tables (F1, F2, F5, F11, F13, D1, H1)
+- **Special commands:** `yield-curve` (AU govt bond yield curve), `rates` (all interest/policy rates), `fx` (all AUD exchange rates)
+- API: `https://www.rba.gov.au/statistics/tables/csv` (direct CSV download, open access, no auth)
+- Cache TTL: 1h for daily tables (F1/F2), 24h for monthly/quarterly tables (F5/F11/F13/D1/H1)
+
+**Example response — `F1_CASH_RATE_TARGET`:**
+```json
+{
+  "success": true,
+  "indicator": "F1_CASH_RATE_TARGET",
+  "name": "RBA Cash Rate Target (%)",
+  "description": "Official RBA cash rate target",
+  "unit": "%",
+  "frequency": "daily",
+  "latest_value": 4.10,
+  "latest_period": "2026-03-31",
+  "period_change": 0.0,
+  "period_change_pct": 0.0,
+  "data_points": [{"period": "2026-03-31", "value": 4.10}, "..."],
+  "total_observations": 250,
+  "source": "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv"
+}
+```
+
+**Example — Australian government bond yield curve:**
+```bash
+python3 modules/rba_enhanced.py yield-curve
+# Returns: {"curve": [{"maturity": "2Y", "yield_pct": 3.85}, {"maturity": "3Y", "yield_pct": 3.92}, {"maturity": "5Y", "yield_pct": 4.01}, {"maturity": "10Y", "yield_pct": 4.28}, {"maturity": "INDEXED", "yield_pct": 1.65}]}
+```
+
+**Batch MCP — Central Bank Rate Comparison (New in Batch 7):**
+```typescript
+const centralBankRates = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'rba_enhanced', params: { indicator: 'F1_CASH_RATE_TARGET' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F13_US_FED_FUNDS' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F13_ECB_REFI' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F13_UK_BANK_RATE' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F13_JAPAN_RATE' } },
+      { tool: 'riksbank_sweden', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'cnb_czech', params: { indicator: 'CNB_2W_REPO' } },
+      { tool: 'Danmarks_nationalbank', params: { indicator: 'DN_DISCOUNT_RATE' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 7:**
+- 27 government/central bank/regulatory modules
+- 21 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇩🇪+ 🇯🇵+ 🇬🇧+
+- 500+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates, policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment, trade, housing, lending rates, credit growth, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves)
+
 ---
 
 ## MCP Server
@@ -605,7 +688,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,050 modules gets an auto-generated REST endpoint:
+Each of the 1,051 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -618,7 +701,7 @@ Each of the 1,050 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,050 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,051 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -644,7 +727,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,050 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,051 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -710,6 +793,7 @@ screen --min-cap 10B --sector Technology
 | Destatis GENESIS (Germany) | Yes (free) | Open | German GDP, CPI/HICP, employment, trade, IPI, PPI, construction |
 | EDINET Japan (FSA) | Yes (free) | Open | Japanese securities filings, annual/quarterly reports, shareholding, M&A |
 | FCA UK Register | Yes (free) | Open | UK authorized firms, individuals, permissions, disciplinary, regulated markets |
+| RBA Australia (CSV) | No | Open | RBA cash rate, money market, AU govt bond yields, lending rates, AUD FX/TWI, international official rates, credit growth, M3, GDP |
 
 ---
 
@@ -751,7 +835,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,050 Python data modules
+├── modules/                          # 1,051 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -785,7 +869,8 @@ quantclaw-data/
 │   ├── destatis_germany.py          # Destatis GENESIS-Online (GDP, CPI, trade)
 │   ├── edinet_japan.py              # EDINET Japan securities filings
 │   ├── fca_uk.py                    # FCA UK Financial Services Register
-│   ├── ... (1,050 modules total)
+│   ├── rba_enhanced.py              # Reserve Bank of Australia (7 statistical tables)
+│   ├── ... (1,051 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -916,4 +1001,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,050 modules • 47 phases • 21 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE) • The data layer powering the MoneyClawX ecosystem*
+*1,051 modules • 47 phases • 21 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE) • 27 government/central bank modules • 500+ macro indicators • The data layer powering the MoneyClawX ecosystem*

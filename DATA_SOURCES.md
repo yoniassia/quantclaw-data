@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,050 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,051 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,7 +12,7 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `eurostat_macro` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `eurostat_macro` |
 | Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `bls` |
 | Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
@@ -25,8 +25,8 @@
 | PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
-| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo) |
+| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `treasury_curve`, `yield_curve` |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -45,7 +45,7 @@
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
 | Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `fred_housing`, `zillow_zhvi` |
 | Gold price (PLN) | `nbp_poland` |
-| Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade) |
+| Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade), `rba_enhanced` (RBA cash rate, govt bonds, lending rates, AUD FX, credit growth, M3, GDP) |
 | UAE macro / FX | `uae_data` (CBUAE 76-currency FX, GDP, CPI, M2, reserves, trade) |
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
 | Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
@@ -56,6 +56,10 @@
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
 | Short interest | `short_interest`, `short_volume`, `finra_short_interest` |
 | IPO / SPAC | `ipo_pipeline`, `spac_tracker`, `spac_lifecycle` |
+| AUD exchange rates | `rba_enhanced` (AUD/USD, AUD/EUR, AUD/GBP, AUD/JPY, AUD/CNY, TWI) |
+| AU lending rates | `rba_enhanced` (housing variable/discounted/3Y fixed, credit card, SME lending) |
+| AU credit growth | `rba_enhanced` (housing credit MoM/YoY, total credit MoM/YoY, M3 MoM/YoY, broad money) |
+| International rate comparison | `rba_enhanced` (F13: Fed, BOJ, ECB, BOE, BOC, RBA side-by-side) |
 | Energy data | `eia_energy`, `crude_oil_fundamentals`, `natural_gas_supply_demand`, `opec` |
 | Agriculture | `usda_agriculture`, `crop_yield_forecaster`, `agricultural_commodities` |
 
@@ -1253,6 +1257,99 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### rba_enhanced.py — Reserve Bank of Australia (RBA Enhanced)
+
+- **Source:** Reserve Bank of Australia
+- **API:** `https://www.rba.gov.au/statistics/tables/csv`
+- **Protocol:** Direct CSV download (stable URLs per table)
+- **Auth:** None (open access, no rate limits)
+- **Freshness:** Daily (F1 money market, F2 bond yields), Monthly (F5 lending rates, F11 FX, F13 international rates, D1 financial aggregates), Quarterly (H1 GDP/income)
+- **Coverage:** Australia / International comparison (F13)
+
+**Tables Covered:**
+
+| Table | Name | Frequency |
+|-------|------|-----------|
+| F1 | Interest Rates & Yields — Money Market | Daily |
+| F2 | Capital Market Yields — Government Bonds | Daily |
+| F5 | Indicator Lending Rates | Monthly |
+| F11 | Exchange Rates | Monthly |
+| F13 | International Official Interest Rates | Monthly |
+| D1 | Growth in Financial Aggregates | Monthly |
+| H1 | GDP and Income | Quarterly |
+
+**Indicators:**
+
+| Key | Name | Table | Frequency | Unit |
+|-----|------|-------|-----------|------|
+| `F1_CASH_RATE_TARGET` | RBA Cash Rate Target | F1 | Daily | % |
+| `F1_OVERNIGHT_RATE` | Interbank Overnight Cash Rate | F1 | Daily | % |
+| `F1_3M_BABS` | 3-Month BABs/NCDs Rate | F1 | Daily | % |
+| `F1_3M_OIS` | 3-Month OIS Rate | F1 | Daily | % |
+| `F1_3M_TREASURY_NOTE` | 3-Month Treasury Note Rate | F1 | Daily | % |
+| `F2_GOVT_2Y` | AU Govt Bond Yield 2Y | F2 | Daily | % p.a. |
+| `F2_GOVT_3Y` | AU Govt Bond Yield 3Y | F2 | Daily | % p.a. |
+| `F2_GOVT_5Y` | AU Govt Bond Yield 5Y | F2 | Daily | % p.a. |
+| `F2_GOVT_10Y` | AU Govt Bond Yield 10Y | F2 | Daily | % p.a. |
+| `F2_GOVT_INDEXED` | AU Govt Indexed Bond Yield 10Y | F2 | Daily | % p.a. |
+| `F5_HOUSING_VARIABLE` | Housing Loan Rate — Variable Standard Owner-Occ | F5 | Monthly | % p.a. |
+| `F5_HOUSING_DISCOUNTED` | Housing Loan Rate — Variable Discounted Owner-Occ | F5 | Monthly | % p.a. |
+| `F5_HOUSING_3YR_FIXED` | Housing Loan Rate — 3-Year Fixed Owner-Occ | F5 | Monthly | % p.a. |
+| `F5_CREDIT_CARD_STD` | Credit Card Rate — Standard | F5 | Monthly | % p.a. |
+| `F5_SME_VARIABLE` | Small Business Lending Rate — Variable Term | F5 | Monthly | % p.a. |
+| `F11_AUD_USD` | AUD/USD Exchange Rate | F11 | Monthly | USD |
+| `F11_TWI` | AUD Trade-Weighted Index | F11 | Monthly | Index |
+| `F11_AUD_CNY` | AUD/CNY Exchange Rate | F11 | Monthly | CNY |
+| `F11_AUD_JPY` | AUD/JPY Exchange Rate | F11 | Monthly | JPY |
+| `F11_AUD_EUR` | AUD/EUR Exchange Rate | F11 | Monthly | EUR |
+| `F11_AUD_GBP` | AUD/GBP Exchange Rate | F11 | Monthly | GBP |
+| `F13_US_FED_FUNDS` | US Federal Funds Max Target Rate | F13 | Monthly | % p.a. |
+| `F13_JAPAN_RATE` | Japan Policy Rate (BOJ) | F13 | Monthly | % p.a. |
+| `F13_ECB_REFI` | ECB Refinancing Rate | F13 | Monthly | % p.a. |
+| `F13_UK_BANK_RATE` | UK Bank Rate (BOE) | F13 | Monthly | % p.a. |
+| `F13_CANADA_RATE` | Canada Target Rate (BOC) | F13 | Monthly | % p.a. |
+| `F13_AUSTRALIA_RATE` | Australia Target Cash Rate (RBA, F13 intl) | F13 | Monthly | % p.a. |
+| `D1_CREDIT_HOUSING_MOM` | Housing Credit — Monthly Growth | D1 | Monthly | % |
+| `D1_CREDIT_HOUSING_YOY` | Housing Credit — 12-Month Growth | D1 | Monthly | % |
+| `D1_CREDIT_TOTAL_MOM` | Total Credit — Monthly Growth | D1 | Monthly | % |
+| `D1_CREDIT_TOTAL_YOY` | Total Credit — 12-Month Growth | D1 | Monthly | % |
+| `D1_M3_MOM` | M3 — Monthly Growth | D1 | Monthly | % |
+| `D1_M3_YOY` | M3 — 12-Month Growth | D1 | Monthly | % |
+| `D1_BROAD_MONEY_YOY` | Broad Money — 12-Month Growth | D1 | Monthly | % |
+| `H1_REAL_GDP` | Real GDP (AUD mn, chain volume) | H1 | Quarterly | AUD mn |
+| `H1_REAL_GDP_GROWTH` | Real GDP Growth — Year-Ended | H1 | Quarterly | % |
+| `H1_NOMINAL_GDP` | Nominal GDP (AUD mn, current price) | H1 | Quarterly | AUD mn |
+| `H1_NOMINAL_GDP_GROWTH` | Nominal GDP Growth — Year-Ended | H1 | Quarterly | % |
+| `H1_TERMS_OF_TRADE` | Terms of Trade (Index) | H1 | Quarterly | Index |
+
+**CLI Examples:**
+```bash
+python3 modules/rba_enhanced.py F1_CASH_RATE_TARGET      # RBA cash rate target
+python3 modules/rba_enhanced.py F2_GOVT_10Y              # 10Y AU govt bond yield
+python3 modules/rba_enhanced.py F5_HOUSING_VARIABLE      # Variable housing loan rate
+python3 modules/rba_enhanced.py F11_AUD_USD              # AUD/USD exchange rate
+python3 modules/rba_enhanced.py F13_US_FED_FUNDS         # US Fed Funds from RBA table
+python3 modules/rba_enhanced.py D1_CREDIT_HOUSING_YOY    # Housing credit 12M growth
+python3 modules/rba_enhanced.py H1_REAL_GDP_GROWTH       # Real GDP year-ended growth
+python3 modules/rba_enhanced.py yield-curve              # AU govt bond yield curve
+python3 modules/rba_enhanced.py rates                    # All interest/policy rates
+python3 modules/rba_enhanced.py fx                       # All AUD exchange rates
+python3 modules/rba_enhanced.py list                     # List all 39 indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'rba_enhanced',
+    params: { indicator: 'F1_CASH_RATE_TARGET' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1388,10 +1485,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,050 modules in `modules/` directory, sorted alphabetically:
+All 1,051 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,050 modules)</summary>
+<summary>Click to expand full module list (1,051 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -1419,12 +1516,13 @@ fca_uk                       fred_enhanced                 istat_italy
 insee_france
 nbb_belgium                  nbp_poland                    ons_uk
 options_chain                polygon_io                    prices
-riksbank_sweden              scb_sweden                    screener
+rba_enhanced                 riksbank_sweden               scb_sweden
+screener
 sec_edgar_api                statcan_canada                statistics_denmark
 statistics_finland           technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
-... (1,050 total — run `ls modules/*.py | wc -l` to verify)
+... (1,051 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1451,8 +1549,8 @@ yield_curve
 | EDINET Japan | `EDINET_API_KEY` | Open | https://disclosure.edinet-fsa.go.jp |
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank) require **NO API key** for core data. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia) require **NO API key** for core data. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,050 modules — 21 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,051 modules — 21 countries — 27 government/central bank modules — 500+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
