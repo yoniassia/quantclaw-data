@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,063 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,068 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -94,6 +94,24 @@
 | Cross-border investment | `imf_enhanced` (CPIS: portfolio equity/debt assets; CDIS: inward/outward FDI equity & debt — 190+ countries) |
 | Government fiscal accounts | `imf_enhanced` (GFS: revenue, expense, tax, expenditure, social benefits, interest, investment, liabilities — 190+ countries), `eurostat_enhanced` (EU27 deficit/debt) |
 | IMF data | `imf_enhanced` (FAS + FSI + CPIS + CDIS + GFS via DBnomics — 29 indicators, 190+ countries) |
+| OECD leading indicators | `oecd_enhanced` (CLI amplitude-adjusted for USA/GBR/DEU/JPN/FRA/OECD, BCI/CCI confidence) |
+| OECD economic data | `oecd_enhanced` (KEI: unemployment, CPI YoY, GDP, short/long rates — USA) |
+| Tax revenue structure | `oecd_enhanced` (REV: total tax, income tax, corporate tax, SSC, goods & services — % GDP) |
+| Pension adequacy | `oecd_enhanced` (PAG: gross replacement rates, life expectancy at 65, employment 55-64) |
+| R&D expenditure | `oecd_enhanced` (MSTI: GERD, BERD, HERD as % GDP — USA, DEU, JPN) |
+| BoE Bank Rate | `boe_iadb_enhanced` (Bank Rate, M4, M4 lending growth, mortgage SVR, consumer credit) |
+| UK gilt yields | `boe_iadb_enhanced` (gilt zero-coupon 5Y/10Y/20Y + moving averages, Svensson model) |
+| GBP exchange rates | `boe_iadb_enhanced` (GBP/USD, GBP/EUR, GBP/JPY, GBP/CHF + sterling EER narrow/broad) |
+| UK money supply M4 | `boe_iadb_enhanced` (M4 outstanding, M4 lending, growth rates 12M/1M/3M) |
+| Hungary monetary policy | `mnb_hungary` (MNB base rate, HUF FX crosses, CEE/G4 baskets) |
+| HUF exchange rates | `mnb_hungary` (EUR/USD/GBP/CHF/JPY/CZK/PLN/RON/SEK/CNY/TRY/CAD vs HUF) |
+| Small EU central banks | `eu_small_central_banks` (HICP, MFI rates, FX for BG/HR/CY/LV/LT/LU/MT/SK/SI) |
+| Small EU macro data | `eu_small_statistics` (GDP, CPI, unemployment, govt debt/deficit for 12 EU states) |
+| Bulgarian macro | `eu_small_central_banks` (BG_HICP, BG_LENDING_RATE_HH, BG_FX_USD) + `eu_small_statistics` (GDP, CPI) |
+| Croatian macro | `eu_small_central_banks` (HR_HICP, HR_LENDING_RATE_HH, HR_FX_USD) + `eu_small_statistics` (GDP, CPI) |
+| Greek macro | `eu_small_statistics` (GDP, CPI, unemployment, govt debt — Eurostat data) |
+| Slovenian macro | `eu_small_central_banks` (SI_HICP, SI_INFLATION_DOMESTIC, ECB rates, FX) + `eu_small_statistics` (GDP) |
+| Hungarian macro | `mnb_hungary` (base rate, FX) + `eu_small_statistics` (GDP, CPI, unemployment, govt debt — HU) |
 
 ---
 
@@ -2123,6 +2141,294 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### oecd_enhanced.py — OECD Enhanced (CLI, KEI, REV, PAG, MSTI)
+
+- **Source:** Organisation for Economic Co-operation and Development
+- **API:** `https://sdmx.oecd.org/public/rest/data`
+- **Protocol:** SDMX 3.0 REST (CSV/JSON)
+- **Auth:** None (open access, ~60 req/hr)
+- **Freshness:** Monthly (CLI, KEI), Annual (REV, PAG, MSTI)
+- **Coverage:** 38 OECD members + key partner economies
+
+**Indicators (30):**
+
+| Key | Name | Dataflow | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `CLI_USA` | Composite Leading Indicator — USA | CLI | Monthly | index (100=trend) |
+| `CLI_GBR` | Composite Leading Indicator — UK | CLI | Monthly | index |
+| `CLI_DEU` | Composite Leading Indicator — Germany | CLI | Monthly | index |
+| `CLI_JPN` | Composite Leading Indicator — Japan | CLI | Monthly | index |
+| `CLI_FRA` | Composite Leading Indicator — France | CLI | Monthly | index |
+| `CLI_OECD` | Composite Leading Indicator — OECD Total | CLI | Monthly | index |
+| `BCI_USA` | Business Confidence Index — USA | KEI | Monthly | index (100=neutral) |
+| `CCI_USA` | Consumer Confidence Index — USA | KEI | Monthly | index (100=neutral) |
+| `KEI_UNEMP_USA` | Harmonised Unemployment Rate — USA | KEI | Monthly | % |
+| `KEI_CPI_YOY_USA` | CPI Year-on-Year — USA | KEI | Monthly | % |
+| `KEI_GDP_USA` | GDP Volume at Market Prices — USA | KEI | Quarterly | index |
+| `KEI_STIR_USA` | Short-term Interest Rate — USA | KEI | Monthly | % p.a. |
+| `KEI_LTIR_USA` | Long-term Interest Rate — USA | KEI | Monthly | % p.a. |
+| `TAX_TOTAL_USA` | Total Tax Revenue — USA | REV | Annual | % GDP |
+| `TAX_INCOME_USA` | Income Tax Revenue — USA | REV | Annual | % GDP |
+| `TAX_CORP_USA` | Corporate Tax Revenue — USA | REV | Annual | % GDP |
+| `TAX_SSC_USA` | Social Security Contributions — USA | REV | Annual | % GDP |
+| `TAX_GOODS_USA` | Taxes on Goods & Services — USA | REV | Annual | % GDP |
+| `TAX_TOTAL_GBR` | Total Tax Revenue — UK | REV | Annual | % GDP |
+| `TAX_TOTAL_DEU` | Total Tax Revenue — Germany | REV | Annual | % GDP |
+| `PENSION_GRR_USA` | Gross Replacement Rate — USA | PAG | Annual | % |
+| `PENSION_GRR_GBR` | Gross Replacement Rate — UK | PAG | Annual | % |
+| `PENSION_GRR_DEU` | Gross Replacement Rate — Germany | PAG | Annual | % |
+| `PENSION_LE_USA` | Life Expectancy at 65 — USA | PAG | Annual | years |
+| `PENSION_EMPRATE_USA` | Employment Rate 55-64 — USA | PAG | Annual | % |
+| `RD_GERD_USA` | GERD as % GDP — USA | MSTI | Annual | % GDP |
+| `RD_BERD_USA` | BERD as % GDP — USA | MSTI | Annual | % GDP |
+| `RD_HERD_USA` | HERD as % GDP — USA | MSTI | Annual | % GDP |
+| `RD_GERD_DEU` | GERD as % GDP — Germany | MSTI | Annual | % GDP |
+| `RD_GERD_JPN` | GERD as % GDP — Japan | MSTI | Annual | % GDP |
+
+**CLI Examples:**
+```bash
+python3 modules/oecd_enhanced.py CLI_USA              # US leading indicator
+python3 modules/oecd_enhanced.py CLI_OECD             # OECD total CLI
+python3 modules/oecd_enhanced.py BCI_USA              # US business confidence
+python3 modules/oecd_enhanced.py TAX_TOTAL_USA        # US tax revenue % GDP
+python3 modules/oecd_enhanced.py PENSION_GRR_GBR      # UK pension replacement rate
+python3 modules/oecd_enhanced.py RD_GERD_JPN          # Japan R&D spending
+python3 modules/oecd_enhanced.py list                 # All available indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'oecd_enhanced',
+    params: { indicator: 'CLI_USA' }
+  })
+});
+```
+
+---
+
+### boe_iadb_enhanced.py — Bank of England (IADB)
+
+- **Source:** Bank of England — Interactive Analytical Database
+- **API:** `https://www.bankofengland.co.uk/boeapps/iadb/FromShowColumns.asp`
+- **Protocol:** XML (custom BoE namespace)
+- **Auth:** None (open access)
+- **Freshness:** Daily (yields, FX, EER), Monthly (Bank Rate, M4, mortgage, credit)
+- **Coverage:** United Kingdom
+
+**Indicators (22):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `GILT_NZC_5Y` | Gilt Zero-Coupon Yield 5Y | yield_curve | Daily | % |
+| `GILT_NZC_10Y` | Gilt Zero-Coupon Yield 10Y | yield_curve | Daily | % |
+| `GILT_NZC_20Y` | Gilt Zero-Coupon Yield 20Y | yield_curve | Daily | % |
+| `GILT_NZC_5Y_MAVG` | Gilt ZC 5Y (3M Moving Avg) | yield_curve | Daily | % |
+| `GILT_NZC_10Y_MAVG` | Gilt ZC 10Y (3M Moving Avg) | yield_curve | Daily | % |
+| `GILT_NZC_20Y_MAVG` | Gilt ZC 20Y (3M Moving Avg) | yield_curve | Daily | % |
+| `BANK_RATE` | Bank of England Official Bank Rate | policy_rate | Monthly | % |
+| `M4_OUTSTANDING` | M4 Outstanding (SA) | money_supply | Monthly | GBP mn |
+| `M4_LENDING_OUTSTANDING` | M4 Lending Outstanding | money_supply | Monthly | GBP mn |
+| `M4_LENDING_12M_GROWTH` | M4 Lending 12-Month Growth | money_supply | Monthly | % |
+| `M4_LENDING_1M_GROWTH` | M4 Lending 1-Month Growth | money_supply | Monthly | % |
+| `M4_LENDING_3M_GROWTH` | M4 Lending 3-Month Growth (Ann.) | money_supply | Monthly | % |
+| `MORTGAGE_SVR` | Mortgage Standard Variable Rate | mortgage | Monthly | % |
+| `CONSUMER_CREDIT_EXCL_CARD` | Consumer Credit Excl. Cards (Net Flow) | consumer_credit | Monthly | GBP mn |
+| `CONSUMER_CREDIT_TOTAL_EXCL_CARD` | Consumer Credit Excl. Cards (Outstanding) | consumer_credit | Monthly | GBP mn |
+| `CONSUMER_CREDIT_EXCL_CARD_1M_GROWTH` | Consumer Credit 1M Growth | consumer_credit | Monthly | % |
+| `GBP_USD` | GBP/USD Spot Rate | fx_rates | Daily | USD |
+| `GBP_EUR` | GBP/EUR Spot Rate | fx_rates | Daily | EUR |
+| `GBP_JPY` | GBP/JPY Spot Rate | fx_rates | Daily | JPY |
+| `GBP_CHF` | GBP/CHF Spot Rate | fx_rates | Daily | CHF |
+| `STERLING_EER` | Sterling Effective Exchange Rate (Narrow) | eer | Daily | index |
+| `STERLING_BROAD_EER` | Sterling Effective Exchange Rate (Broad) | eer | Daily | index |
+
+**CLI Examples:**
+```bash
+python3 modules/boe_iadb_enhanced.py BANK_RATE               # BoE Bank Rate
+python3 modules/boe_iadb_enhanced.py GILT_NZC_10Y            # 10Y gilt ZC yield
+python3 modules/boe_iadb_enhanced.py M4_OUTSTANDING           # M4 money supply
+python3 modules/boe_iadb_enhanced.py GBP_USD                  # GBP/USD FX
+python3 modules/boe_iadb_enhanced.py STERLING_EER             # Sterling EER index
+python3 modules/boe_iadb_enhanced.py MORTGAGE_SVR             # Mortgage SVR rate
+python3 modules/boe_iadb_enhanced.py CONSUMER_CREDIT_EXCL_CARD  # Consumer credit
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'boe_iadb_enhanced',
+    params: { indicator: 'BANK_RATE' }
+  })
+});
+```
+
+---
+
+### mnb_hungary.py — Magyar Nemzeti Bank (MNB)
+
+- **Source:** Magyar Nemzeti Bank (Hungarian Central Bank)
+- **API:** `http://www.mnb.hu/arfolyamok.asmx` (FX), `http://www.mnb.hu/alapkamat.asmx` (base rate)
+- **Protocol:** SOAP/XML web services
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX, base rate)
+- **Coverage:** Hungary
+
+**Indicators (16):**
+
+| Key | Name | Source | Frequency | Unit |
+|-----|------|--------|-----------|------|
+| `MNB_BASE_RATE` | MNB Base Rate (Policy Rate) | base_rate | Monthly | % |
+| `FX_EUR_HUF` | EUR/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_USD_HUF` | USD/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_GBP_HUF` | GBP/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_CHF_HUF` | CHF/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_JPY_HUF` | JPY/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_CZK_HUF` | CZK/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_PLN_HUF` | PLN/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_RON_HUF` | RON/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_SEK_HUF` | SEK/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_CNY_HUF` | CNY/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_TRY_HUF` | TRY/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_CAD_HUF` | CAD/HUF Exchange Rate | fx | Daily | HUF |
+| `FX_CEE_BASKET` | CEE Equal-Weight Basket vs HUF | aggregate | Daily | index |
+| `FX_G4_BASKET` | G4 Equal-Weight Basket vs HUF | aggregate | Daily | index |
+
+**CLI Examples:**
+```bash
+python3 modules/mnb_hungary.py MNB_BASE_RATE        # MNB policy rate
+python3 modules/mnb_hungary.py FX_EUR_HUF           # EUR/HUF rate
+python3 modules/mnb_hungary.py FX_USD_HUF           # USD/HUF rate
+python3 modules/mnb_hungary.py FX_CEE_BASKET        # CEE currency basket
+python3 modules/mnb_hungary.py FX_G4_BASKET         # G4 basket vs HUF
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'mnb_hungary',
+    params: { indicator: 'MNB_BASE_RATE' }
+  })
+});
+```
+
+---
+
+### eu_small_central_banks.py — 9 Smaller EU Central Banks (Unified)
+
+- **Source:** ECB SDMX + BNB (Bulgaria) + HNB (Croatia) + Lietuvos bankas (Lithuania) + NBS (Slovakia) + BSI (Slovenia)
+- **APIs:** ECB: `https://data-api.ecb.europa.eu/service/data`; HNB: `https://api.hnb.hr/tecajn-eur/v3`; BSI: `https://api.bsi.si`; BNB: `https://www.bnb.bg`; LB: `https://www.lb.lt/webservices`; NBS: `https://nbs.sk/export`
+- **Protocol:** Mixed (SDMX-JSON, XML, JSON, CSV)
+- **Auth:** None (all open access)
+- **Freshness:** Monthly (HICP, MFI rates via ECB), Daily (FX from national feeds)
+- **Coverage:** Bulgaria, Croatia, Cyprus, Latvia, Lithuania, Luxembourg, Malta, Slovakia, Slovenia
+
+**Indicators (47):** For each country code {CC} in [BG, HR, CY, LV, LT, LU, MT, SK, SI]:
+
+| Pattern | Name | Source | Frequency |
+|---------|------|--------|-----------|
+| `{CC}_HICP` | HICP Annual Rate — {country} | ECB SDMX | Monthly |
+| `{CC}_LENDING_RATE_HH` | MFI Lending Rate Households — {country} | ECB SDMX | Monthly |
+| `{CC}_DEPOSIT_RATE_HH` | MFI Deposit Rate Households — {country} | ECB SDMX | Monthly |
+
+For countries with national FX feeds [BG, HR, LT, SK, SI]:
+
+| Pattern | Name | Source | Frequency |
+|---------|------|--------|-----------|
+| `{CC}_FX_USD` | {country} EUR/USD Rate | National CB | Daily |
+| `{CC}_FX_GBP` | {country} EUR/GBP Rate | National CB | Daily |
+| `{CC}_FX_CHF` | {country} EUR/CHF Rate | National CB | Daily |
+
+Slovenia extras (5):
+
+| Key | Name | Source | Frequency |
+|-----|------|--------|-----------|
+| `SI_INFLATION_DOMESTIC` | Slovenia Domestic Inflation | BSI | Monthly |
+| `SI_INFLATION_EU` | Slovenia EU-Harmonised Inflation | BSI | Monthly |
+| `SI_ECB_DEPOSIT_RATE` | ECB Deposit Facility Rate | BSI | Monthly |
+| `SI_ECB_REFI_RATE` | ECB Main Refinancing Rate | BSI | Monthly |
+| `SI_ECB_MARGINAL_RATE` | ECB Marginal Lending Rate | BSI | Monthly |
+
+**CLI Examples:**
+```bash
+python3 modules/eu_small_central_banks.py BG_HICP              # Bulgaria HICP
+python3 modules/eu_small_central_banks.py HR_FX_USD             # Croatia EUR/USD
+python3 modules/eu_small_central_banks.py SI_INFLATION_DOMESTIC  # Slovenia domestic CPI
+python3 modules/eu_small_central_banks.py SK_LENDING_RATE_HH    # Slovakia lending rate
+python3 modules/eu_small_central_banks.py list                  # All 47 indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'eu_small_central_banks',
+    params: { indicator: 'BG_HICP' }
+  })
+});
+```
+
+---
+
+### eu_small_statistics.py — Eurostat Batch (12 Smaller EU NSOs)
+
+- **Source:** Eurostat (JSON-stat 2.0) — batch queries for smaller EU members
+- **API:** `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data`
+- **Protocol:** Eurostat REST API (JSON-stat 2.0)
+- **Auth:** None (open access, ~100 req/hr)
+- **Freshness:** Quarterly (GDP, labour), Monthly (CPI), Annual (govt finance, trade)
+- **Coverage:** Bulgaria (BG), Croatia (HR), Cyprus (CY), Greece (EL), Hungary (HU), Latvia (LV), Lithuania (LT), Luxembourg (LU), Malta (MT), Romania (RO), Slovakia (SK), Slovenia (SI)
+
+**Indicators (15 per country × 12 countries = 180 combinations):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `GDP_NOMINAL` | Nominal GDP | GDP & National Accounts | Quarterly | EUR mn |
+| `GDP_REAL` | Real GDP (chain-linked volumes) | GDP & National Accounts | Quarterly | EUR mn |
+| `GDP_GROWTH` | Real GDP Growth Rate | GDP & National Accounts | Quarterly | % |
+| `GDP_PER_CAPITA` | GDP per Capita in PPS | GDP & National Accounts | Annual | PPS |
+| `CPI_YOY` | CPI Year-on-Year Change | Consumer Prices | Monthly | % |
+| `CPI_FOOD_YOY` | CPI Food & Beverages YoY | Consumer Prices | Monthly | % |
+| `CPI_ENERGY_YOY` | CPI Energy YoY | Consumer Prices | Monthly | % |
+| `CPI_INDEX` | CPI Index Level (2015=100) | Consumer Prices | Monthly | index |
+| `UNEMPLOYMENT_RATE` | ILO Unemployment Rate | Labour Market | Quarterly | % |
+| `YOUTH_UNEMPLOYMENT` | Youth Unemployment Rate (<25) | Labour Market | Quarterly | % |
+| `EMPLOYMENT_RATE` | Employment Rate (20-64) | Labour Market | Quarterly | % |
+| `GOV_DEBT` | General Government Gross Debt (% GDP) | Government Finance | Annual | % GDP |
+| `GOV_DEFICIT` | Government Deficit/Surplus (% GDP) | Government Finance | Annual | % GDP |
+| `GVA_MANUFACTURING` | GVA in Manufacturing | Industry | Annual | EUR mn |
+| `CURRENT_ACCOUNT` | Current Account Balance (% GDP) | External Balance | Annual | % GDP |
+
+**CLI Examples:**
+```bash
+python3 modules/eu_small_statistics.py GDP_GROWTH BG          # Bulgaria GDP growth
+python3 modules/eu_small_statistics.py CPI_YOY HU             # Hungary CPI
+python3 modules/eu_small_statistics.py UNEMPLOYMENT_RATE EL    # Greece unemployment
+python3 modules/eu_small_statistics.py GOV_DEBT HR             # Croatia govt debt
+python3 modules/eu_small_statistics.py CURRENT_ACCOUNT LT      # Lithuania current account
+python3 modules/eu_small_statistics.py list                    # All available indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'eu_small_statistics',
+    params: { indicator: 'GDP_GROWTH', geo: 'HU' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -2301,7 +2607,9 @@ technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
 imf_enhanced
-... (1,063 total — run `ls modules/*.py | wc -l` to verify)
+oecd_enhanced                boe_iadb_enhanced             mnb_hungary
+eu_small_central_banks       eu_small_statistics
+... (1,068 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -2329,8 +2637,8 @@ imf_enhanced
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,063 modules — 24 countries + EU-wide + global + 190 IMF member nations — 39 government/central bank/institutional modules — 755+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,068 modules — 33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 44 government/central bank/institutional modules — 885+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*

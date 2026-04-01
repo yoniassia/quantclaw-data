@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,063 Financial Data Modules
+# QuantClaw Data — 1,068 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,063 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,068 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,12 +30,12 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,063 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,068 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,063** Python data modules
+- **1,068** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
-- **47** completed development phases
+- **48** completed development phases
 - **30+** external API integrations
 - **MCP protocol** support for AI agent tool calling
 - **Natural language** query engine (DCC — Data Command Center)
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,063 modules)             │
+│  ├── Module browser (1,068 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,063 modules      │
+│  ├── Tool definitions for all 1,068 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,063 Python Modules                            │
+│  1,068 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks & International Institutions (Autobuilder Batches 1–11)
+### Government Statistics, Central Banks & International Institutions (Autobuilder Batches 1–12)
 
-Thirty-nine modules covering 24 countries plus EU-wide and global data (190+ IMF member nations) across Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 755+ macroeconomic indicators from official government statistical offices, central banks, international institutions, and financial regulators:
+Forty-four modules covering 33 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Asia-Pacific, Middle East, Oceania, and international institutions with 885+ macroeconomic indicators from official government statistical offices, central banks, international institutions, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -192,6 +192,11 @@ Thirty-nine modules covering 24 countries plus EU-wide and global data (190+ IMF
 || `eurostat_enhanced` | Eurostat (JSON-stat 2.0) | EU27 + Members | `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data` | Gov deficit/surplus & debt (% GDP), gov expenditure & revenue, energy production/consumption/dependency, renewable energy share (total/electricity/transport/heating), GHG emissions (total/energy/industry/transport/agriculture), environmental taxes (total/energy/transport), digital economy (internet access/use/e-commerce) |
 || `bis_enhanced` | BIS (Bank for International Settlements) | Global / 60+ countries | `https://stats.bis.org/api/v2` | OTC derivatives outstanding (total notional/swaps/GMV/NFC counterparties), exchange-traded derivatives OI (FX/IR/equity/commodity) & turnover, FX spot & OTC IR derivatives turnover (triennial), international debt securities (US/GB/JP/CN/DE), CPMI cashless payments, CPMI macro indicators |
 || `imf_enhanced` | IMF (5 Databases: FAS, FSI, CPIS, CDIS, GFS) | Global / 190+ countries | `https://api.db.nomics.world/v22` | Financial Access Survey (ATMs, branches, deposit accounts, mobile money per capita), Financial Soundness Indicators (NPL ratio, regulatory capital, CET1, ROA, ROE), Coordinated Portfolio Investment Survey (total/equity/debt assets), Coordinated Direct Investment Survey (inward/outward FDI equity & debt), Government Finance Statistics (revenue, expense, tax, expenditure, social benefits, interest, investment, liabilities) |
+|| `oecd_enhanced` | OECD (5 Dataflows: CLI, KEI, REV, PAG, MSTI) | 38 OECD members + partners | `https://sdmx.oecd.org/public/rest/data` | Composite Leading Indicators (USA/GBR/DEU/JPN/FRA/OECD), Business & Consumer Confidence (BCI/CCI), Key Economic Indicators (unemployment/CPI YoY/GDP/short-term & long-term interest rates), Revenue Statistics (total tax/income tax/corporate tax/SSC/goods & services as % GDP for USA/GBR/DEU), Pensions at a Glance (gross replacement rates, life expectancy, employment rates), Main Science & Technology Indicators (GERD/BERD/HERD R&D expenditure) |
+|| `boe_iadb_enhanced` | Bank of England (IADB) | United Kingdom | `https://www.bankofengland.co.uk/boeapps/iadb` | Gilt zero-coupon yields (5Y/10Y/20Y nominal + 3M moving averages), Bank Rate, M4 outstanding & lending (12M/1M/3M growth rates), mortgage SVR, consumer credit (excl. cards total & flow + 1M growth), GBP FX crosses (USD/EUR/JPY/CHF), Sterling Effective Exchange Rate (EER narrow & broad) |
+|| `mnb_hungary` | Magyar Nemzeti Bank (MNB) | Hungary | `http://www.mnb.hu/arfolyamok.asmx` | MNB base rate (policy rate history), HUF FX crosses (EUR/USD/GBP/CHF/JPY/CZK/PLN/RON/SEK/CNY/TRY/CAD), CEE equal-weight basket (CZK+PLN+RON+HUF vs EUR), G4 basket (USD+EUR+GBP+JPY vs HUF) |
+|| `eu_small_central_banks` | 9 EU Central Banks + ECB SDMX | BG, HR, CY, LV, LT, LU, MT, SK, SI | ECB: `https://data-api.ecb.europa.eu/service/data` + national APIs | HICP annual inflation for all 9 countries, MFI lending & deposit rates (household) for all 9, FX rates (EUR/USD/GBP/CHF) for BG/HR/LT/SK/SI from national central banks (BNB/HNB/Lietuvos bankas/NBS/BSI), Slovenia extras (domestic & EU inflation, ECB deposit/refi/marginal rates) |
+|| `eu_small_statistics` | Eurostat (batch for 12 smaller EU NSOs) | BG, HR, CY, EL, HU, LV, LT, LU, MT, RO, SK, SI | `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data` | GDP (nominal/real/growth/per capita), CPI (overall YoY/food/energy/index level), unemployment rate (total + youth), employment rate, government debt & deficit (% GDP), GVA manufacturing, current account balance — all filterable by country |
 
 #### Global Coverage Map
 
@@ -231,6 +236,19 @@ Thirty-nine modules covering 24 countries plus EU-wide and global data (190+ IMF
 🇪🇺 EU27             — Eurostat Enhanced (govt deficit/debt, energy balances, renewables, GHG emissions, env taxes, digital economy)
 🌍 Global            — BIS Enhanced (OTC/exchange-traded derivatives, FX turnover, international debt securities, cashless payments)
 🌐 190+ Countries    — IMF Enhanced (financial access, banking soundness, portfolio/FDI investment, government finance)
+🇭🇺 Hungary          — MNB (base rate, HUF FX crosses, CEE/G4 baskets)
+🇬🇧 UK (ext)         — BoE IADB (gilt yields, Bank Rate, M4/lending, mortgage SVR, consumer credit, GBP FX, sterling EER)
+🇧🇬 Bulgaria         — ECB SDMX + BNB (HICP, MFI rates, FX USD/GBP/CHF)
+🇭🇷 Croatia          — ECB SDMX + HNB (HICP, MFI rates, FX USD/GBP/CHF)
+🇨🇾 Cyprus           — ECB SDMX (HICP, MFI lending & deposit rates)
+🇱🇻 Latvia           — ECB SDMX (HICP, MFI lending & deposit rates)
+🇱🇹 Lithuania        — ECB SDMX + Lietuvos bankas (HICP, MFI rates, FX)
+🇱🇺 Luxembourg       — ECB SDMX (HICP, MFI lending & deposit rates)
+🇲🇹 Malta            — ECB SDMX (HICP, MFI lending & deposit rates)
+🇸🇰 Slovakia         — ECB SDMX + NBS (HICP, MFI rates, FX USD/GBP/CHF)
+🇸🇮 Slovenia         — ECB SDMX + BSI (HICP, MFI rates, FX, domestic/EU inflation, ECB policy rates)
+🇬🇷 Greece           — Eurostat batch (GDP, CPI, unemployment, govt finance, trade)
+🌍 OECD (38 members) — OECD Enhanced (CLI, BCI/CCI, KEI, tax revenue, pensions, R&D/MSTI)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -364,6 +382,43 @@ python3 modules/imf_enhanced.py gfs JP
 python3 modules/imf_enhanced.py banking-health CN
 python3 modules/imf_enhanced.py access NG
 python3 modules/imf_enhanced.py list
+# OECD Enhanced — 38 OECD members, CLI/KEI/tax/pensions/R&D (Batch 12)
+python3 modules/oecd_enhanced.py CLI_USA
+python3 modules/oecd_enhanced.py CLI_DEU
+python3 modules/oecd_enhanced.py BCI_USA
+python3 modules/oecd_enhanced.py KEI_GDP_USA
+python3 modules/oecd_enhanced.py TAX_TOTAL_USA
+python3 modules/oecd_enhanced.py PENSION_GRR_USA
+python3 modules/oecd_enhanced.py RD_GERD_USA
+python3 modules/oecd_enhanced.py list
+# Bank of England IADB Enhanced (Batch 12)
+python3 modules/boe_iadb_enhanced.py BANK_RATE
+python3 modules/boe_iadb_enhanced.py GILT_NZC_10Y
+python3 modules/boe_iadb_enhanced.py M4_OUTSTANDING
+python3 modules/boe_iadb_enhanced.py GBP_USD
+python3 modules/boe_iadb_enhanced.py STERLING_EER
+python3 modules/boe_iadb_enhanced.py MORTGAGE_SVR
+python3 modules/boe_iadb_enhanced.py CONSUMER_CREDIT_EXCL_CARD
+# MNB Hungary (Batch 12)
+python3 modules/mnb_hungary.py MNB_BASE_RATE
+python3 modules/mnb_hungary.py FX_EUR_HUF
+python3 modules/mnb_hungary.py FX_USD_HUF
+python3 modules/mnb_hungary.py FX_CEE_BASKET
+python3 modules/mnb_hungary.py FX_G4_BASKET
+# EU Small Central Banks — 9 countries (Batch 12)
+python3 modules/eu_small_central_banks.py BG_HICP
+python3 modules/eu_small_central_banks.py HR_HICP
+python3 modules/eu_small_central_banks.py SI_INFLATION_DOMESTIC
+python3 modules/eu_small_central_banks.py BG_FX_USD
+python3 modules/eu_small_central_banks.py SK_LENDING_RATE_HH
+python3 modules/eu_small_central_banks.py list
+# EU Small Statistics — 12 countries (Batch 12)
+python3 modules/eu_small_statistics.py GDP_NOMINAL BG
+python3 modules/eu_small_statistics.py CPI_YOY HU
+python3 modules/eu_small_statistics.py UNEMPLOYMENT_RATE EL
+python3 modules/eu_small_statistics.py GOV_DEBT HR
+python3 modules/eu_small_statistics.py CURRENT_ACCOUNT LT
+python3 modules/eu_small_statistics.py list
 ```
 
 **REST API:**
@@ -447,6 +502,27 @@ GET /api/v1/imf-enhanced?indicator=CPIS_TOTAL_ASSETS&country=US
 GET /api/v1/imf-enhanced?indicator=CDIS_INWARD_EQUITY&country=GB
 GET /api/v1/imf-enhanced?indicator=GFS_REVENUE&country=US
 GET /api/v1/imf-enhanced?indicator=GFS_TAX_REVENUE&country=FR
+GET /api/v1/oecd-enhanced?indicator=CLI_USA
+GET /api/v1/oecd-enhanced?indicator=KEI_GDP_USA
+GET /api/v1/oecd-enhanced?indicator=TAX_TOTAL_USA
+GET /api/v1/oecd-enhanced?indicator=PENSION_GRR_GBR
+GET /api/v1/oecd-enhanced?indicator=RD_GERD_DEU
+GET /api/v1/boe-iadb-enhanced?indicator=BANK_RATE
+GET /api/v1/boe-iadb-enhanced?indicator=GILT_NZC_10Y
+GET /api/v1/boe-iadb-enhanced?indicator=M4_OUTSTANDING
+GET /api/v1/boe-iadb-enhanced?indicator=GBP_USD
+GET /api/v1/boe-iadb-enhanced?indicator=STERLING_EER
+GET /api/v1/boe-iadb-enhanced?indicator=MORTGAGE_SVR
+GET /api/v1/mnb-hungary?indicator=MNB_BASE_RATE
+GET /api/v1/mnb-hungary?indicator=FX_EUR_HUF
+GET /api/v1/mnb-hungary?indicator=FX_CEE_BASKET
+GET /api/v1/eu-small-central-banks?indicator=BG_HICP
+GET /api/v1/eu-small-central-banks?indicator=HR_FX_USD
+GET /api/v1/eu-small-central-banks?indicator=SI_INFLATION_DOMESTIC
+GET /api/v1/eu-small-statistics?indicator=GDP_NOMINAL&geo=BG
+GET /api/v1/eu-small-statistics?indicator=CPI_YOY&geo=HU
+GET /api/v1/eu-small-statistics?indicator=UNEMPLOYMENT_RATE&geo=EL
+GET /api/v1/eu-small-statistics?indicator=GOV_DEBT&geo=HR
 ```
 
 **MCP Tool Call:**
@@ -1244,6 +1320,194 @@ const investmentFlows = await fetch('http://localhost:3056/api/data/batch', {
 - 755+ indicators from official government, central bank, and international institution sources
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED), policy rates, interbank rates, monetary aggregates (incl. EA M1/M2/M3), GDP (incl. Czech/Estonian national accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts (IMF GFS revenue/expenditure/tax/social benefits/interest/investment/borrowing), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. full GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations, investment (GFCF), OTC/exchange-traded derivatives (notional/GMV/open interest), FX turnover surveys, international debt securities, energy production/consumption/dependency, renewable energy share, greenhouse gas emissions by sector, environmental taxes, digital economy indicators, cashless payments, financial inclusion metrics (ATM/branch/account density, mobile money penetration), banking soundness indicators (NPL ratios, capital adequacy CET1/RWA, ROA/ROE), cross-border portfolio investment (CPIS equity/debt), foreign direct investment positions (CDIS inward/outward)
 
+#### Batch 12: OECD, Bank of England, Hungary, EU Small States Expansion
+
+Batch 12 adds **5 new modules** completing coverage of the broader European economic area and expanding into OECD-wide composite indicators, UK central bank statistical depth, Hungarian monetary policy, and unified data access for 9 smaller EU central banks plus 12 smaller EU statistical offices. This brings total coverage to **33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **44 government/institutional/regulatory modules** and **885+ indicators**.
+
+**OECD Enhanced** (`oecd_enhanced`) — Organisation for Economic Co-operation and Development:
+- **Composite Leading Indicators (CLI):** Monthly CLI amplitude-adjusted for USA, GBR, DEU, JPN, FRA, and OECD total — designed to provide early signals of turning points in business cycles relative to trend
+- **Business & Consumer Confidence:** Business Confidence Index (BCI) and Consumer Confidence Index (CCI) for USA — standardized to long-term average = 100
+- **Key Economic Indicators (KEI/MEI):** Harmonised unemployment rate, CPI year-on-year, GDP volume at market prices, short-term interest rates, long-term interest rates — all for USA, comparable across OECD
+- **Revenue Statistics (REV):** Total tax revenue, income tax, corporate tax, social security contributions, taxes on goods & services — all as % of GDP for USA, GBR, DEU; enables cross-country fiscal structure comparison
+- **Pensions at a Glance (PAG):** Gross replacement rates (earnings-related pension/pre-retirement earnings), life expectancy at 65, employment rate 55-64 for USA, GBR, DEU — measures adequacy of pension systems
+- **Main Science & Technology Indicators (MSTI):** Gross domestic expenditure on R&D (GERD), business enterprise R&D (BERD), higher education R&D (HERD) as % GDP for USA, DEU, JPN — tracks innovation investment
+- **30 indicators** across 5 OECD SDMX dataflows with per-indicator country customization
+- **Special commands:** `list` (all indicators with metadata), `cli` (leading indicators), `tax` (fiscal structure), `pension` (retirement adequacy), `rd` (R&D)
+- API: `https://sdmx.oecd.org/public/rest/data` (SDMX 3.0 REST, open access, ~60 req/hr rate limit)
+- Cache TTL: 24h (monthly for CLI/KEI, annual for REV/PAG/MSTI)
+
+**Bank of England IADB Enhanced** (`boe_iadb_enhanced`) — Bank of England Interactive Analytical Database:
+- **Gilt Yield Curve:** Zero-coupon nominal gilt yields at 5Y, 10Y, 20Y maturities + 3-month moving averages for each (daily, % p.a., Svensson method)
+- **Monetary Policy:** Bank Rate — the BoE's official policy interest rate (monthly)
+- **Money Supply:** M4 outstanding stock (seasonally adjusted, GBP mn); M4 lending outstanding; M4 lending growth rates (12-month, 1-month, 3-month annualized)
+- **Mortgage & Consumer Credit:** Mortgage standard variable rate (monthly, %); consumer credit excluding credit cards (total outstanding & net monthly flow, GBP mn); consumer credit 1-month growth rate
+- **FX Rates:** GBP/USD, GBP/EUR, GBP/JPY, GBP/CHF spot exchange rates (daily)
+- **Effective Exchange Rates:** Sterling narrow EER index, sterling broad EER index (January 2005=100, daily)
+- **22 indicators** across 7 categories (yield_curve, policy_rate, money_supply, mortgage, consumer_credit, fx_rates, eer)
+- **Special commands:** `yield-curve` (gilt ZC yields), `monetary` (M4 + lending), `fx` (all GBP crosses + EER)
+- API: `https://www.bankofengland.co.uk/boeapps/iadb/FromShowColumns.asp` (XML, open access, no auth)
+- Cache TTL: 1h for daily (gilt yields, FX), 24h for monthly (M4, rates)
+
+**MNB Hungary** (`mnb_hungary`) — Magyar Nemzeti Bank:
+- **Policy Rate:** MNB base rate — Hungary's main policy instrument, with full historical series since 1999 (monthly)
+- **FX Rates:** Official HUF exchange rates for 12 currencies: EUR/HUF, USD/HUF, GBP/HUF, CHF/HUF, JPY/HUF, CZK/HUF, PLN/HUF, RON/HUF, SEK/HUF, CNY/HUF, TRY/HUF, CAD/HUF (daily, MNB reference rates)
+- **Regional Baskets:** CEE equal-weight basket (CZK+PLN+RON average rate vs HUF for regional comparison), G4 basket (USD+EUR+GBP+JPY average vs HUF for global comparison) — derived indicators
+- **16 indicators** covering policy rates, FX crosses, and composite baskets
+- API: SOAP web services at `http://www.mnb.hu/arfolyamok.asmx` (FX) and `http://www.mnb.hu/alapkamat.asmx` (base rate), open access
+- Cache TTL: 1h (rates updated daily on business days)
+
+**EU Small Central Banks** (`eu_small_central_banks`) — Unified access to 9 smaller Euro Area and EU central banks:
+- **Coverage:** Bulgaria (BNB), Croatia (HNB), Cyprus (CBC), Latvia (BoL), Lithuania (Lietuvos bankas), Luxembourg (BCL), Malta (CBM), Slovakia (NBS), Slovenia (BSI)
+- **HICP Inflation:** Annual rate of change for all 9 countries (monthly, via ECB SDMX ICP dataflow)
+- **MFI Interest Rates:** Lending rate to households and deposit rate for households with agreed maturity, new business, for all 9 countries (monthly, via ECB SDMX MIR dataflow)
+- **FX Rates:** Daily EUR/USD, EUR/GBP, EUR/CHF from national central bank feeds for Bulgaria, Croatia, Lithuania, Slovakia, and Slovenia — sourced from BNB XML, HNB JSON API, Lietuvos bankas SOAP, NBS CSV, and BSI REST respectively
+- **Slovenia Extras:** Domestic inflation rate, EU-harmonised inflation, ECB deposit facility rate, ECB main refinancing rate, ECB marginal lending rate (via Banka Slovenije API)
+- **47 indicators** (27 ECB macro + 15 national FX + 5 Slovenia-specific) from 6 distinct API sources
+- APIs: ECB `https://data-api.ecb.europa.eu/service/data`; HNB `https://api.hnb.hr/tecajn-eur/v3`; BSI `https://api.bsi.si`; BNB `https://www.bnb.bg`; LB `https://www.lb.lt/webservices`; NBS `https://nbs.sk/export`
+- Cache TTL: 6h for ECB SDMX data, 1h for national FX feeds
+
+**EU Small Statistics** (`eu_small_statistics`) — Eurostat batch module for 12 smaller EU national statistical offices:
+- **Coverage:** Bulgaria (NSI), Croatia (DZS), Cyprus (CYSTAT), Greece (ELSTAT), Hungary (KSH), Latvia (CSP), Lithuania (OSP), Luxembourg (STATEC), Malta (NSO), Romania (INS), Slovakia (SUSR), Slovenia (SURS)
+- **GDP & National Accounts:** Nominal GDP, real GDP, GDP growth rate, GDP per capita in PPS (annual/quarterly)
+- **Consumer Prices:** CPI year-on-year, food CPI YoY, energy CPI YoY, CPI index level (monthly/annual)
+- **Labour Market:** Unemployment rate (total), youth unemployment rate (under 25), employment rate (20-64) — all ILO definitions (quarterly)
+- **Government Finance:** General government gross debt (% GDP), general government deficit/surplus (% GDP) — Maastricht criteria (annual)
+- **Industry & Trade:** GVA in manufacturing (EUR mn, annual), current account balance (% GDP, annual)
+- **15 indicators** per country × 12 countries = 180 country-indicator combinations, unified interface with geo parameter
+- API: `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data` (JSON-stat 2.0, open access, ~100 req/hr)
+- Cache TTL: 24h (quarterly/annual data from Eurostat)
+
+**Example response — `oecd_enhanced` `CLI_USA`:**
+```json
+{
+  "success": true,
+  "indicator": "CLI_USA",
+  "name": "Composite Leading Indicator — United States",
+  "description": "OECD CLI amplitude adjusted, long-term trend = 100",
+  "unit": "index",
+  "frequency": "monthly",
+  "category": "cli",
+  "country": "USA",
+  "latest_value": 100.85,
+  "latest_period": "2026-01",
+  "period_change": 0.12,
+  "period_change_pct": 0.119,
+  "data_points": [{"period": "2026-01", "value": 100.85}, "..."],
+  "total_observations": 60,
+  "source": "OECD CLI via SDMX"
+}
+```
+
+**Example response — `boe_iadb_enhanced` `BANK_RATE`:**
+```json
+{
+  "success": true,
+  "indicator": "BANK_RATE",
+  "name": "Bank of England Official Bank Rate",
+  "description": "BoE policy rate — the rate paid on commercial bank reserves",
+  "unit": "%",
+  "frequency": "monthly",
+  "category": "policy_rate",
+  "latest_value": 4.50,
+  "latest_period": "2026-03",
+  "period_change": 0.0,
+  "period_change_pct": 0.0,
+  "data_points": [{"period": "2026-03", "value": 4.50}, "..."],
+  "total_observations": 120,
+  "source": "https://www.bankofengland.co.uk/boeapps/iadb"
+}
+```
+
+**Example — MNB Hungary base rate + CEE basket:**
+```bash
+python3 modules/mnb_hungary.py MNB_BASE_RATE
+# Returns: {"success": true, "indicator": "MNB_BASE_RATE", "latest_value": 6.50, "latest_period": "2026-03", ...}
+python3 modules/mnb_hungary.py FX_CEE_BASKET
+# Returns: {"success": true, "indicator": "FX_CEE_BASKET", "currencies": ["CZK","PLN","RON"], "basket_value": 95.42, ...}
+```
+
+**Batch MCP — OECD Leading Indicators vs Policy Rates (New in Batch 12):**
+```typescript
+const oecdDashboard = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_DEU' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_JPN' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_GBR' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'BCI_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CCI_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'KEI_STIR_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'KEI_LTIR_USA' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — UK Financial Deep Dive (New in Batch 12):**
+```typescript
+const ukFinancial = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'BANK_RATE' } },
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'GILT_NZC_10Y' } },
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'M4_OUTSTANDING' } },
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'MORTGAGE_SVR' } },
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'GBP_USD' } },
+      { tool: 'boe_iadb_enhanced', params: { indicator: 'STERLING_EER' } },
+      { tool: 'ons_uk', params: { indicator: 'GDP_MONTHLY' } },
+      { tool: 'ons_uk', params: { indicator: 'CPIH_ALL' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Central European Monetary Policy Comparison (New in Batch 12):**
+```typescript
+const ceeRates = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'mnb_hungary', params: { indicator: 'MNB_BASE_RATE' } },
+      { tool: 'cnb_czech', params: { indicator: 'CNB_2W_REPO' } },
+      { tool: 'riksbank_sweden', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'Danmarks_nationalbank', params: { indicator: 'DN_DISCOUNT_RATE' } },
+      { tool: 'mnb_hungary', params: { indicator: 'FX_EUR_HUF' } },
+      { tool: 'cnb_czech', params: { indicator: 'FX_EUR' } },
+      { tool: 'bnr_romania', params: { indicator: 'RON_EUR' } },
+      { tool: 'eu_small_central_banks', params: { indicator: 'HR_HICP' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Small EU States GDP Comparison (New in Batch 12):**
+```typescript
+const smallEuGdp = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'BG' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'HR' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'HU' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'EL' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'RO' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GDP_GROWTH', geo: 'SI' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'UNEMPLOYMENT_RATE', geo: 'EL' } },
+      { tool: 'eu_small_statistics', params: { indicator: 'GOV_DEBT', geo: 'EL' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 12:**
+- 44 government/central bank/regulatory/institutional modules
+- 33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇪🇺 🌍 🌐
+- 885+ indicators from official government, central bank, and international institution sources
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX), policy rates (incl. MNB base rate, BoE Bank Rate), interbank rates, monetary aggregates (incl. EA M1/M2/M3, UK M4/M4 lending growth), GDP (incl. EU-12 small state accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics, EU-12 youth), trade, housing prices, lending rates, mortgage rates (incl. UK SVR), credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus (Maastricht criteria for EU-12), fiscal accounts (IMF GFS, OECD REV tax structure), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. gilt ZC curve, GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators (CLI/BCI/CCI), pension adequacy metrics (replacement rates, life expectancy), R&D expenditure (GERD/BERD/HERD), consumer credit, gilt yield curves
+
 ---
 
 ## MCP Server
@@ -1302,7 +1566,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,063 data modules gets an auto-generated REST endpoint:
+Each of the 1,068 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -1315,7 +1579,7 @@ Each of the 1,063 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,063 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,068 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -1341,7 +1605,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,063 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,068 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -1461,7 +1725,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,063 Python data modules
+├── modules/                          # 1,068 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -1508,7 +1772,7 @@ quantclaw-data/
 │   ├── eurostat_enhanced.py        # Eurostat Enhanced (govt finance, energy, emissions, digital)
 │   ├── bis_enhanced.py             # BIS Enhanced (derivatives, FX turnover, debt, payments)
 │   ├── imf_enhanced.py             # IMF Enhanced (FAS, FSI, CPIS, CDIS, GFS — 190+ countries)
-│   ├── ... (1,063 modules total)
+│   ├── ... (1,068 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -1640,4 +1904,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,063 modules • 47 phases • 24 countries + EU-wide + global + 190 IMF member nations (12 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Euro Area + EU27 + BIS global + IMF global) • 39 government/central bank/institutional modules • 755+ macro indicators • The data layer powering the MoneyClawX ecosystem*
+*1,068 modules • 48 phases • 33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Euro Area + EU27 + BIS global + IMF global + OECD) • 44 government/central bank/institutional modules • 885+ macro indicators • The data layer powering the MoneyClawX ecosystem*
