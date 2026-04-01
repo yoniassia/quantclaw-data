@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,051 Financial Data Modules
+# QuantClaw Data — 1,056 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,051 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,056 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,051 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,056 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,051** Python data modules
+- **1,056** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,051 modules)             │
+│  ├── Module browser (1,056 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,051 modules      │
+│  ├── Tool definitions for all 1,056 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,051 Python Modules                            │
+│  1,056 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -149,7 +149,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 
 ### Government Statistics & Central Banks (Autobuilder Batches 1–7)
 
-Twenty-seven modules covering 21 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, and Oceania with 500+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
+Thirty-two modules covering 22 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 620+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -180,6 +180,11 @@ Twenty-seven modules covering 21 countries across Europe, Scandinavia, Central E
 || `fca_uk` | FCA Financial Services Register | United Kingdom | `https://register.fca.org.uk/services/V0.1` | Authorized firm search/details (by FRN), individual search (by IRN), fund/CIS search, firm permissions, disciplinary history, passports, requirements, addresses, regulated markets |
 || `abs_australia_sdmx` | ABS (Australian Bureau of Statistics) | Australia | `https://data.api.abs.gov.au/rest` | GDP (chain volume/growth/per capita), terms of trade, household saving ratio, CPI (index/quarterly change/annual monthly indicator), unemployment/employment/participation rate, labour force, current account, goods balance, retail trade, building approvals, trade balance, exports |
 || `rba_enhanced` | Reserve Bank of Australia (RBA) | Australia / International | `https://www.rba.gov.au/statistics/tables/csv` | Cash rate target, overnight cash rate, 3M BABs/OIS/T-note, AU govt bond yields (2Y–10Y + indexed), housing loan rates (variable/discounted/3Y fixed), credit card rate, SME lending rate, AUD FX (USD/EUR/GBP/JPY/CNY + TWI), international official rates (Fed/BOJ/ECB/BOE/BOC/RBA), credit growth (housing/total MoM & YoY), M3 growth, broad money, real & nominal GDP, terms of trade |
+|| `bank_of_canada_valet` | Bank of Canada (Valet API) | Canada | `https://www.bankofcanada.ca/valet` | BoC overnight rate, bank rate, CORRA, GoC benchmark bond yields (2Y–30Y + RRB), marketable bond avg yields, T-bill yields (1M–1Y), CAD FX rates (26 currency pairs), prime rate, posted mortgage rates (1Y/3Y/5Y), GIC rates, GoC yield volatility, ACM term premiums (2Y/5Y/10Y), BCPI commodity index, BOS survey indicator |
+|| `ine_spain` | INE (Instituto Nacional de Estadística) | Spain | `https://servicios.ine.es/wstempus/js/EN/` | GDP (current prices/QoQ/YoY growth), CPI (index/MoM/YoY), unemployment rate (total + youth <25), active population, employed persons, industrial production index (SA total + MoM), housing price index (HPI general/YoY/QoQ), exports & imports volume indices + YoY growth |
+|| `dnb_netherlands` | De Nederlandsche Bank (DNB) | Netherlands | `https://api.dnb.nl/statpub-intapi-prd/v1` | Financial stability indicators (quarterly/yearly), banking structure (domestic/foreign/EU/non-EU), insurance & pension fund balance sheets, insurer cash flows, payment transactions & infrastructure, monetary aggregates (M1/M2/M3 Dutch contribution), household deposit & lending rates |
+|| `bnr_romania` | National Bank of Romania (BNR) | Romania | `https://www.bnr.ro/nbrfxrates.xml` | RON daily reference FX rates for 37 currencies (EUR/USD/GBP/CHF/JPY/AUD/CAD/CNY/CZK/DKK/HUF/PLN/SEK/NOK/TRY/ZAR/KRW/INR/BRL/MXN/SGD/HKD/NZD/THB/PHP/MYR/IDR/ILS/EGP/MDL/RSD/RUB/UAH/ISK/AED + gold XAU + IMF SDR XDR), 10-day history |
+|| `statbel_belgium` | Statbel (Statistics Belgium) | Belgium | `https://opendata-api.statbel.fgov.be` | CPI index (base 2013=100), CPI inflation (YoY), health index, CPI excl. energy, HICP by COICOP (food/housing/transport/restaurants), unemployment by age & sex (male/female × youth/prime), retail trade turnover index, Gini coefficient (income inequality), birth rate, death rate |
 
 #### Global Coverage Map
 
@@ -207,6 +212,11 @@ Twenty-seven modules covering 21 countries across Europe, Scandinavia, Central E
 🇯🇵 Japan (ext)    — EDINET (annual/quarterly securities filings, large shareholding, tender offers)
 🇬🇧 UK (ext)       — FCA Register (authorized firms, individuals, permissions, disciplinary, markets)
 🇦🇺 Australia (ext) — RBA Enhanced (cash rate, money market, govt bonds, lending rates, AUD FX, intl rates, credit, GDP)
+🇨🇦 Canada (ext)    — Bank of Canada Valet (overnight/bank rate, CORRA, GoC yield curve, T-bills, 26 FX pairs, mortgage rates, BCPI)
+🇪🇸 Spain (ext)     — INE Tempus3 (GDP, CPI, EPA unemployment, IPI, housing prices, trade)
+🇳🇱 Netherlands (ext) — DNB (FSIs, banking structure, insurance/pension, payments, monetary aggregates, household rates)
+🇷🇴 Romania         — BNR (37-currency daily FX reference rates + gold + SDR, 10-day history)
+🇧🇪 Belgium (ext)   — Statbel (CPI/health index, HICP by COICOP, unemployment by demographics, retail, Gini, demographics)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -266,6 +276,28 @@ python3 modules/rba_enhanced.py F13_US_FED_FUNDS
 python3 modules/rba_enhanced.py yield-curve
 python3 modules/rba_enhanced.py rates
 python3 modules/rba_enhanced.py fx
+# Bank of Canada Enhanced, INE Spain, DNB Netherlands, BNR Romania, Statbel Belgium — Batch 8
+python3 modules/bank_of_canada_valet.py GOC_10Y
+python3 modules/bank_of_canada_valet.py OVERNIGHT_RATE
+python3 modules/bank_of_canada_valet.py FX_USD_CAD
+python3 modules/bank_of_canada_valet.py yield-curve
+python3 modules/bank_of_canada_valet.py fx-rates
+python3 modules/bank_of_canada_valet.py policy-rates
+python3 modules/ine_spain.py GDP_QOQ
+python3 modules/ine_spain.py CPI_YOY
+python3 modules/ine_spain.py UNEMPLOYMENT_RATE
+python3 modules/ine_spain.py HPI_INDEX
+python3 modules/dnb_netherlands.py FINANCIAL_STABILITY_Q
+python3 modules/dnb_netherlands.py HOUSEHOLD_RATES
+python3 modules/dnb_netherlands.py MONETARY_AGGREGATES
+python3 modules/bnr_romania.py RON_EUR
+python3 modules/bnr_romania.py RON_USD
+python3 modules/bnr_romania.py rates
+python3 modules/bnr_romania.py history
+python3 modules/statbel_belgium.py CPI_INDEX
+python3 modules/statbel_belgium.py CPI_INFLATION
+python3 modules/statbel_belgium.py HICP_FOOD
+python3 modules/statbel_belgium.py GINI_COEFFICIENT
 ```
 
 **REST API:**
@@ -302,6 +334,19 @@ GET /api/v1/rba-enhanced?indicator=F2_GOVT_10Y
 GET /api/v1/rba-enhanced?indicator=F5_HOUSING_VARIABLE
 GET /api/v1/rba-enhanced?indicator=F11_AUD_USD
 GET /api/v1/rba-enhanced?indicator=H1_REAL_GDP_GROWTH
+GET /api/v1/bank-of-canada-valet?indicator=GOC_10Y
+GET /api/v1/bank-of-canada-valet?indicator=OVERNIGHT_RATE
+GET /api/v1/bank-of-canada-valet?indicator=FX_USD_CAD
+GET /api/v1/bank-of-canada-valet?indicator=PRIME_RATE
+GET /api/v1/ine-spain?indicator=GDP_QOQ
+GET /api/v1/ine-spain?indicator=CPI_YOY
+GET /api/v1/ine-spain?indicator=UNEMPLOYMENT_RATE
+GET /api/v1/dnb-netherlands?indicator=FINANCIAL_STABILITY_Q
+GET /api/v1/dnb-netherlands?indicator=HOUSEHOLD_RATES
+GET /api/v1/bnr-romania?indicator=RON_EUR
+GET /api/v1/bnr-romania?indicator=RON_USD
+GET /api/v1/statbel-belgium?indicator=CPI_INDEX
+GET /api/v1/statbel-belgium?indicator=GINI_COEFFICIENT
 ```
 
 **MCP Tool Call:**
@@ -630,6 +675,123 @@ const centralBankRates = await fetch('http://localhost:3056/api/data/batch', {
 - 500+ macroeconomic indicators from official government sources
 - Asset classes covered: FX rates, policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment, trade, housing, lending rates, credit growth, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves)
 
+#### Batch 8: Extended Coverage — Canada, Spain, Netherlands, Romania, Belgium
+
+Batch 8 adds **5 new modules** deepening existing country coverage and expanding into **Romania** as the first Southeast European nation. This brings total coverage to **22 countries** and **32 government/central bank/regulatory modules** with **620+ indicators**.
+
+**Bank of Canada Valet Enhanced** (`bank_of_canada_valet`) — Bank of Canada:
+- Policy rates: BoC overnight rate, bank rate, CORRA (Canadian Overnight Repo Rate Average)
+- GoC benchmark bond yield curve: 2Y, 3Y, 5Y, 7Y, 10Y, long-term (30Y), real return bonds
+- Marketable bond average yields: 1–3Y, 3–5Y, 5–10Y, over-10Y
+- Treasury bill yields: 1M, 3M, 6M, 1Y + 90-day mid rate
+- Daily FX rates: CAD against 26 currencies (USD/EUR/GBP/JPY/CHF/AUD/NZD/CNY/HKD/INR/IDR/MYR/MXN/NOK/PEN/RUB/SAR/SGD/ZAR/KRW/SEK/TWD/THB/TRY/BRL/VND)
+- Chartered bank posted rates: prime rate, mortgage rates (1Y/3Y/5Y fixed), GIC rates (1Y/5Y)
+- Financial conditions: GoC yield volatility, ACM term premiums (2Y/5Y/10Y)
+- Bank of Canada Commodity Price Index (BCPI): total, energy, metals & minerals
+- Business Outlook Survey (BOS) composite indicator
+- **44 indicators** across 9 groups (policy, bonds, T-bills, money market, FX, bank rates, financial conditions, commodities, surveys)
+- API: `https://www.bankofcanada.ca/valet` (REST JSON, open access, no auth)
+
+**INE Spain** (`ine_spain`) — Instituto Nacional de Estadística:
+- GDP: current prices (EUR mn), QoQ growth (SA volume), YoY growth (SA volume)
+- CPI: overall index (base 2024=100), monthly variation, annual inflation rate
+- Labour market (EPA survey): unemployment rate (all ages), youth unemployment (<25), active population, employed persons
+- Industrial production: IPI total SA (2021=100), monthly variation
+- Housing: HPI general index (2015=100), YoY change, QoQ change
+- Foreign trade: exports & imports volume indices + YoY growth (SA chain-linked)
+- **19 indicators** via INE Tempus3 API with series-level data access
+- API: `https://servicios.ine.es/wstempus/js/EN/` (REST JSON, open access, no auth)
+
+**DNB Netherlands** (`dnb_netherlands`) — De Nederlandsche Bank:
+- Financial stability indicators: quarterly and yearly FSIs for Dutch banking (capital adequacy, asset quality, profitability, liquidity)
+- Banking structure: number of banks and balance sheet totals by type (domestic, foreign, EU, non-EU)
+- Institutional investors: insurance corporation balance sheets, pension fund balance sheets, insurer cash flow statements
+- Payment system: transaction volumes and values (card, credit transfer, direct debit), payment infrastructure units (POS, ATMs, cards)
+- Monetary aggregates: Dutch contribution to Euro Area M1/M2/M3 (stocks and flows)
+- Interest rates: MFI rates on household deposits, consumer credit, and mortgage loans
+- **9 indicators** (resource-based datasets with multi-dimensional filtering)
+- API: `https://api.dnb.nl/statpub-intapi-prd/v1` (REST JSON via Azure APIM, subscription key — `DNB_SUBSCRIPTION_KEY` env var, public fallback available)
+
+**BNR Romania** (`bnr_romania`) — National Bank of Romania:
+- Daily reference exchange rates for RON against 37 currencies: EUR, USD, GBP, CHF, JPY, AUD, CAD, CNY, CZK, DKK, EGP, HKD, HUF, IDR, ILS, INR, ISK, KRW, MDL, MXN, MYR, NOK, NZD, PHP, PLN, RSD, RUB, SEK, SGD, THB, TRY, UAH, ZAR, AED, BRL + gold (XAU) per troy oz + IMF SDR (XDR)
+- 10-day historical rates via extended XML feed
+- Multiplier-normalized values (HUF, IDR, ISK, JPY, KRW published per 100 units)
+- Date-specific rate queries and full rate snapshots
+- **37 indicators** covering all published BNR FX pairs + precious metals
+- API: `https://www.bnr.ro/nbrfxrates.xml` (daily XML) + `nbrfxrates10days.xml` (10-day history), open access, no auth
+- Cache TTL: 1h (rates updated ~13:00 EET on business days)
+
+**Statbel Belgium** (`statbel_belgium`) — Statistics Belgium Open Data:
+- Consumer Price Index: overall CPI (base 2013=100), YoY inflation rate, health index (excl. tobacco/alcohol/fuel), CPI excluding energy
+- Harmonised Index of Consumer Prices (HICP) by COICOP division: food & beverages, housing/water/energy, transport, restaurants & hotels (2015=100)
+- Labour force: unemployment rates by sex and age group (male/female × youth 15-24 / prime 25-54), national annual averages
+- Retail trade: total turnover index (base 2021=100, non-adjusted, NACE G47)
+- Income inequality: Gini coefficient of equivalised disposable income
+- Demographics: crude birth rate, crude death rate per 1,000 population
+- **15 indicators** via two data sources: CPI from pipe-delimited ZIP archive, all others via PostgREST HVD API
+- APIs: CPI ZIP at `https://statbel.fgov.be/sites/default/files/...CPI%20All%20base%20years.zip`; HVD at `https://opendata-api.statbel.fgov.be` (PostgREST JSON, open access, CC BY 4.0)
+
+**Example response — `RON_EUR`:**
+```json
+{
+  "success": true,
+  "indicator": "RON_EUR",
+  "name": "RON/EUR (Euro)",
+  "description": "BNR reference rate, 1 EUR in RON",
+  "unit": "RON",
+  "frequency": "daily",
+  "latest_value": 4.9768,
+  "latest_period": "2026-03-31",
+  "period_change": 0.0012,
+  "period_change_pct": 0.0241,
+  "data_points": [{"period": "2026-03-31", "value": 4.9768}, "..."],
+  "total_observations": 10,
+  "source": "https://www.bnr.ro/nbrfxrates10days.xml"
+}
+```
+
+**Batch MCP — Multi-Country Yield Curve Comparison (New in Batch 8):**
+```typescript
+const yieldCurves = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'bank_of_canada_valet', params: { indicator: 'GOC_2Y' } },
+      { tool: 'bank_of_canada_valet', params: { indicator: 'GOC_10Y' } },
+      { tool: 'bank_of_canada_valet', params: { indicator: 'GOC_LONG' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F2_GOVT_2Y' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F2_GOVT_10Y' } },
+      { tool: 'bundesbank_sdmx', params: { indicator: 'BUND_10Y' } },
+      { tool: 'riksbank_sweden', params: { indicator: 'GVB_10Y' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — European CPI Comparison (New in Batch 8):**
+```typescript
+const cpiComparison = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ine_spain', params: { indicator: 'CPI_YOY' } },
+      { tool: 'statbel_belgium', params: { indicator: 'CPI_INFLATION' } },
+      { tool: 'insee_france', params: { indicator: 'CPI_YOY' } },
+      { tool: 'istat_italy', params: { indicator: 'CPI_NIC' } },
+      { tool: 'destatis_germany', params: { indicator: 'CPI_MONTHLY' } },
+      { tool: 'nbb_belgium', params: { indicator: 'HICP_TOTAL_YOY' } },
+      { tool: 'statistics_finland', params: { indicator: 'CPI_INDEX' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 8:**
+- 32 government/central bank/regulatory modules
+- 22 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇩🇪+ 🇯🇵+ 🇬🇧+ 🇨🇦+ 🇪🇸+ 🇳🇱+ 🇧🇪+
+- 620+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD), policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. full GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets
+
 ---
 
 ## MCP Server
@@ -688,7 +850,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,051 modules gets an auto-generated REST endpoint:
+Each of the 1,056 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -701,7 +863,7 @@ Each of the 1,051 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,051 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,056 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -727,7 +889,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,051 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,056 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -794,6 +956,11 @@ screen --min-cap 10B --sector Technology
 | EDINET Japan (FSA) | Yes (free) | Open | Japanese securities filings, annual/quarterly reports, shareholding, M&A |
 | FCA UK Register | Yes (free) | Open | UK authorized firms, individuals, permissions, disciplinary, regulated markets |
 | RBA Australia (CSV) | No | Open | RBA cash rate, money market, AU govt bond yields, lending rates, AUD FX/TWI, international official rates, credit growth, M3, GDP |
+| Bank of Canada (Valet) | No | Open | BoC overnight/bank rate, CORRA, GoC bond yields (2Y–30Y), T-bills, 26 FX pairs, prime/mortgage/GIC rates, yield volatility, term premiums, BCPI, BOS |
+| INE Spain (Tempus3) | No | Open | Spanish GDP, CPI, EPA unemployment (total+youth), IPI, housing prices, trade (exports/imports) |
+| DNB Netherlands (APIM) | Optional (fallback key) | Open | Dutch FSIs, banking structure, insurance/pension balance sheets, payments, monetary aggregates, household rates |
+| BNR Romania (XML) | No | Open | RON FX rates for 37 currencies + gold + SDR, daily & 10-day history |
+| Statbel Belgium (PostgREST) | No | Open (CC BY 4.0) | Belgian CPI/health index, HICP by COICOP, unemployment by demographics, retail turnover, Gini, birth/death rates |
 
 ---
 
@@ -835,7 +1002,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,051 Python data modules
+├── modules/                          # 1,056 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -870,7 +1037,12 @@ quantclaw-data/
 │   ├── edinet_japan.py              # EDINET Japan securities filings
 │   ├── fca_uk.py                    # FCA UK Financial Services Register
 │   ├── rba_enhanced.py              # Reserve Bank of Australia (7 statistical tables)
-│   ├── ... (1,051 modules total)
+│   ├── bank_of_canada_valet.py      # Bank of Canada Valet (yields, FX, rates)
+│   ├── ine_spain.py                 # INE Spain (GDP, CPI, labour, housing, trade)
+│   ├── dnb_netherlands.py           # DNB Netherlands (FSI, banking, payments, monetary)
+│   ├── bnr_romania.py               # BNR Romania (37-currency FX + gold + SDR)
+│   ├── statbel_belgium.py           # Statbel Belgium (CPI, HICP, unemployment, demographics)
+│   ├── ... (1,056 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -953,6 +1125,7 @@ DESTATIS_PASSWORD=                   # Destatis GENESIS-Online password
 EDINET_API_KEY=                      # EDINET Japan filings (free at https://disclosure.edinet-fsa.go.jp)
 FCA_API_KEY=                         # FCA UK Register (free at https://register.fca.org.uk/Developer/s/)
 FCA_API_EMAIL=                       # FCA UK Register signup email
+DNB_SUBSCRIPTION_KEY=                # DNB Netherlands Statistics (optional, public fallback available)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -1001,4 +1174,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,051 modules • 47 phases • 21 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE) • 27 government/central bank modules • 500+ macro indicators • The data layer powering the MoneyClawX ecosystem*
+*1,056 modules • 47 phases • 22 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania) • 32 government/central bank modules • 620+ macro indicators • The data layer powering the MoneyClawX ecosystem*

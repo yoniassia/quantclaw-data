@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,051 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,056 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -25,8 +25,8 @@
 | PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
-| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC) |
+| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `bank_of_canada_valet` (GoC 2Y–30Y + RRB + T-bills), `treasury_curve`, `yield_curve` |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -43,14 +43,14 @@
 | Earnings data | `earnings_calendar_enhanced`, `earnings_transcripts_nlp`, `ai_earnings_analyzer` |
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
-| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `fred_housing`, `zillow_zhvi` |
+| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `ine_spain` (HPI general/YoY/QoQ), `fred_housing`, `zillow_zhvi` |
 | Gold price (PLN) | `nbp_poland` |
 | Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade), `rba_enhanced` (RBA cash rate, govt bonds, lending rates, AUD FX, credit growth, M3, GDP) |
 | UAE macro / FX | `uae_data` (CBUAE 76-currency FX, GDP, CPI, M2, reserves, trade) |
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
 | Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
 | UK regulatory data | `fca_uk` (authorized firms, individuals, permissions, disciplinary, regulated markets) |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -60,6 +60,16 @@
 | AU lending rates | `rba_enhanced` (housing variable/discounted/3Y fixed, credit card, SME lending) |
 | AU credit growth | `rba_enhanced` (housing credit MoM/YoY, total credit MoM/YoY, M3 MoM/YoY, broad money) |
 | International rate comparison | `rba_enhanced` (F13: Fed, BOJ, ECB, BOE, BOC, RBA side-by-side) |
+| RON exchange rates | `bnr_romania` (37-currency daily BNR FX fixing + gold XAU + SDR, 10-day history) |
+| CAD exchange rates | `bank_of_canada_valet` (CAD vs 26 currencies — USD/EUR/GBP/JPY/CHF/AUD + 20 more) |
+| GoC bond yields | `bank_of_canada_valet` (2Y/3Y/5Y/7Y/10Y/30Y benchmarks + RRB + T-bills + avg yields) |
+| Canadian rates | `bank_of_canada_valet` (overnight, bank rate, CORRA, prime, mortgage 1Y/3Y/5Y, GIC 1Y/5Y) |
+| Spanish macro data | `ine_spain` (GDP, CPI, EPA unemployment, IPI, housing prices, trade) + `banco_de_espana` (Euribor, lending, BoP) |
+| Dutch banking / FSI | `dnb_netherlands` (FSIs, banking structure, insurance/pension, payments, monetary, household rates) |
+| Belgian statistics | `statbel_belgium` (CPI/HICP, unemployment by demographics, retail, Gini, demographics) + `nbb_belgium` (BoP, govt finance, surveys) |
+| Romanian FX data | `bnr_romania` (BNR daily reference rates for RON/EUR, RON/USD + 35 more currencies + gold) |
+| Income inequality | `statbel_belgium` (Gini coefficient, Belgium) |
+| Commodity price index | `bank_of_canada_valet` (BCPI total, energy, metals & minerals) |
 | Energy data | `eia_energy`, `crude_oil_fundamentals`, `natural_gas_supply_demand`, `opec` |
 | Agriculture | `usda_agriculture`, `crop_yield_forecaster`, `agricultural_commodities` |
 
@@ -1350,6 +1360,327 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### bank_of_canada_valet.py — Bank of Canada (Valet API Enhanced)
+
+- **Source:** Bank of Canada
+- **API:** `https://www.bankofcanada.ca/valet`
+- **Protocol:** REST (JSON)
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX, yields), Weekly (T-bills, bank rates), Monthly/Quarterly (BCPI, BOS)
+- **Coverage:** Canada
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `OVERNIGHT_RATE` | BoC Overnight Rate | Daily | % |
+| `BANK_RATE` | BoC Bank Rate | Monthly | % |
+| `CORRA` | CORRA — Overnight Repo Rate Average | Daily | % |
+| `GOC_2Y` | GoC Benchmark Bond Yield 2Y | Daily | % |
+| `GOC_3Y` | GoC Benchmark Bond Yield 3Y | Daily | % |
+| `GOC_5Y` | GoC Benchmark Bond Yield 5Y | Daily | % |
+| `GOC_7Y` | GoC Benchmark Bond Yield 7Y | Daily | % |
+| `GOC_10Y` | GoC Benchmark Bond Yield 10Y | Daily | % |
+| `GOC_LONG` | GoC Benchmark Bond Yield Long-Term (30Y) | Daily | % |
+| `GOC_RRB` | GoC Real Return Bond Yield | Daily | % |
+| `GOC_AVG_1TO3Y` | GoC Marketable Bond Avg Yield 1-3Y | Daily | % |
+| `GOC_AVG_3TO5Y` | GoC Marketable Bond Avg Yield 3-5Y | Daily | % |
+| `GOC_AVG_5TO10Y` | GoC Marketable Bond Avg Yield 5-10Y | Daily | % |
+| `GOC_AVG_OVER10Y` | GoC Marketable Bond Avg Yield >10Y | Daily | % |
+| `TBILL_1M` | T-Bill Yield 1 Month | Weekly | % |
+| `TBILL_3M` | T-Bill Yield 3 Month | Weekly | % |
+| `TBILL_6M` | T-Bill Yield 6 Month | Weekly | % |
+| `TBILL_1Y` | T-Bill Yield 1 Year | Weekly | % |
+| `TBILL_MID_90D` | 90-Day T-Bill Mid Rate | Daily | % |
+| `FX_USD_CAD` | USD/CAD Exchange Rate | Daily | CAD |
+| `FX_EUR_CAD` | EUR/CAD Exchange Rate | Daily | CAD |
+| `FX_GBP_CAD` | GBP/CAD Exchange Rate | Daily | CAD |
+| `FX_JPY_CAD` | JPY/CAD Exchange Rate | Daily | CAD |
+| `FX_CHF_CAD` | CHF/CAD Exchange Rate | Daily | CAD |
+| `FX_AUD_CAD` | AUD/CAD Exchange Rate | Daily | CAD |
+| `FX_CNY_CAD` | CNY/CAD Exchange Rate | Daily | CAD |
+| `FX_KRW_CAD` | KRW/CAD Exchange Rate | Daily | CAD |
+| `FX_SEK_CAD` | SEK/CAD Exchange Rate | Daily | CAD |
+| `FX_NOK_CAD` | NOK/CAD Exchange Rate | Daily | CAD |
+| `FX_MXN_CAD` | MXN/CAD Exchange Rate | Daily | CAD |
+| `FX_BRL_CAD` | BRL/CAD Exchange Rate | Daily | CAD |
+| `FX_INR_CAD` | INR/CAD Exchange Rate | Daily | CAD |
+| `FX_SGD_CAD` | SGD/CAD Exchange Rate | Daily | CAD |
+| `FX_TWD_CAD` | TWD/CAD Exchange Rate | Daily | CAD |
+| `FX_ZAR_CAD` | ZAR/CAD Exchange Rate | Daily | CAD |
+| `PRIME_RATE` | Chartered Bank Prime Rate | Weekly | % |
+| `MORTGAGE_1Y` | Posted Mortgage Rate 1Y | Weekly | % |
+| `MORTGAGE_3Y` | Posted Mortgage Rate 3Y | Weekly | % |
+| `MORTGAGE_5Y` | Posted Mortgage Rate 5Y | Weekly | % |
+| `GIC_1Y` | Posted GIC Rate 1Y | Weekly | % |
+| `GIC_5Y` | Posted GIC Rate 5Y Personal Fixed | Weekly | % |
+| `YIELD_VOLATILITY_GOC` | GoC Bond Yield Volatility | Daily | index |
+| `TERM_PREMIUM_2Y` | GoC 2Y Term Premium (ACM) | Daily | % |
+| `TERM_PREMIUM_5Y` | GoC 5Y Term Premium (ACM) | Daily | % |
+| `TERM_PREMIUM_10Y` | GoC 10Y Term Premium (ACM) | Daily | % |
+| `BOS_INDICATOR` | Business Outlook Survey Indicator | Quarterly | index |
+| `BCPI_TOTAL` | BCPI Total — Monthly | Monthly | index |
+| `BCPI_ENERGY` | BCPI Energy — Monthly | Monthly | index |
+| `BCPI_METALS` | BCPI Metals & Minerals — Monthly | Monthly | index |
+
+**CLI Examples:**
+```bash
+python3 modules/bank_of_canada_valet.py GOC_10Y
+python3 modules/bank_of_canada_valet.py OVERNIGHT_RATE
+python3 modules/bank_of_canada_valet.py FX_USD_CAD
+python3 modules/bank_of_canada_valet.py yield-curve        # Full GoC + T-bill yield curve
+python3 modules/bank_of_canada_valet.py fx-rates            # All 26 CAD FX pairs
+python3 modules/bank_of_canada_valet.py policy-rates        # BoC policy & overnight rates
+python3 modules/bank_of_canada_valet.py group bond_yields   # All bond yield indicators
+python3 modules/bank_of_canada_valet.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bank_of_canada_valet',
+    params: { indicator: 'GOC_10Y' }
+  })
+});
+```
+
+---
+
+### ine_spain.py — INE Spain (Instituto Nacional de Estadística)
+
+- **Source:** Instituto Nacional de Estadística
+- **API:** `https://servicios.ine.es/wstempus/js/EN/`
+- **Protocol:** REST JSON (Tempus3 API)
+- **Auth:** None (open access)
+- **Freshness:** Monthly (CPI, IPI), Quarterly (GDP, EPA labour force, housing, trade)
+- **Coverage:** Spain
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_CURRENT` | GDP at Market Prices — Current Prices (EUR mn) | Quarterly | EUR mn |
+| `GDP_QOQ` | GDP QoQ Growth Rate — SA Volume (%) | Quarterly | % |
+| `GDP_YOY` | GDP YoY Growth Rate — SA Volume (%) | Quarterly | % |
+| `CPI_INDEX` | CPI Overall Index (Base 2024=100) | Monthly | Index |
+| `CPI_MOM` | CPI Monthly Variation Rate (%) | Monthly | % |
+| `CPI_YOY` | CPI Annual Inflation Rate (%) | Monthly | % |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate — All Ages (%) | Quarterly | % |
+| `YOUTH_UNEMPLOYMENT` | Youth Unemployment Rate — Under 25 (%) | Quarterly | % |
+| `ACTIVE_POPULATION` | Active Population — 16+ (thousands) | Quarterly | thousands |
+| `EMPLOYED_PERSONS` | Employed Persons — 16+ (thousands) | Quarterly | thousands |
+| `IPI_TOTAL` | Industrial Production Index — SA Total (2021=100) | Monthly | Index |
+| `IPI_MOM` | IPI Monthly Variation Rate — SA (%) | Monthly | % |
+| `HPI_INDEX` | Housing Price Index — General (2015=100) | Quarterly | Index |
+| `HPI_YOY` | Housing Price Index — YoY Change (%) | Quarterly | % |
+| `HPI_QOQ` | Housing Price Index — QoQ Change (%) | Quarterly | % |
+| `EXPORTS_VOLUME` | Exports of Goods & Services — SA Volume Index | Quarterly | Index |
+| `EXPORTS_YOY` | Exports YoY Growth — SA Volume (%) | Quarterly | % |
+| `IMPORTS_VOLUME` | Imports of Goods & Services — SA Volume Index | Quarterly | Index |
+| `IMPORTS_YOY` | Imports YoY Growth — SA Volume (%) | Quarterly | % |
+
+**CLI Examples:**
+```bash
+python3 modules/ine_spain.py GDP_QOQ
+python3 modules/ine_spain.py CPI_YOY
+python3 modules/ine_spain.py UNEMPLOYMENT_RATE
+python3 modules/ine_spain.py HPI_INDEX
+python3 modules/ine_spain.py operations        # Discover all INE statistical operations
+python3 modules/ine_spain.py tables 237        # List tables for GDP operation
+python3 modules/ine_spain.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ine_spain',
+    params: { indicator: 'GDP_QOQ' }
+  })
+});
+```
+
+---
+
+### dnb_netherlands.py — De Nederlandsche Bank (DNB)
+
+- **Source:** De Nederlandsche Bank
+- **API:** `https://api.dnb.nl/statpub-intapi-prd/v1`
+- **Protocol:** REST JSON (Azure APIM)
+- **Auth:** Subscription key via `DNB_SUBSCRIPTION_KEY` env var (optional — public fallback key available)
+- **Freshness:** Monthly (monetary aggregates, household rates), Quarterly (FSI, banking, insurance, pension), Half-yearly (payments)
+- **Coverage:** Netherlands
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `FINANCIAL_STABILITY_Q` | Financial Stability Indicators (Quarterly) | Quarterly | % / ratio |
+| `FINANCIAL_STABILITY_Y` | Financial Stability Indicators (Yearly) | Yearly | % / ratio |
+| `BANK_STRUCTURE` | Structural Indicators — Dutch Banking System | Quarterly | EUR mn / count |
+| `INSURANCE_BALANCE_SHEET` | Insurance Corporations Balance Sheet | Quarterly | EUR mn |
+| `PENSION_BALANCE_SHEET` | Pension Funds Balance Sheet | Quarterly | EUR mn |
+| `INSURERS_CASHFLOW` | Insurers Cash Flow Statement | Quarterly | EUR mn |
+| `PAYMENT_TRANSACTIONS` | Payment Transactions (Number & Value) | Half-yearly | EUR mn / millions |
+| `PAYMENT_INFRA` | Domestic Payment Infrastructure (Units) | Half-yearly | units / millions |
+| `MONETARY_AGGREGATES` | Dutch Contribution to Monetary Aggregates | Monthly | EUR mn |
+| `HOUSEHOLD_RATES` | Household Deposits & Loans Interest Rates | Monthly | % |
+
+**CLI Examples:**
+```bash
+python3 modules/dnb_netherlands.py FINANCIAL_STABILITY_Q
+python3 modules/dnb_netherlands.py HOUSEHOLD_RATES
+python3 modules/dnb_netherlands.py MONETARY_AGGREGATES
+python3 modules/dnb_netherlands.py FINANCIAL_STABILITY_Q indicator=capital   # Dimension filter
+python3 modules/dnb_netherlands.py search "monetary"                         # Search DNB datasets
+python3 modules/dnb_netherlands.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'dnb_netherlands',
+    params: { indicator: 'FINANCIAL_STABILITY_Q' }
+  })
+});
+```
+
+---
+
+### bnr_romania.py — National Bank of Romania (BNR)
+
+- **Source:** National Bank of Romania (Banca Națională a României)
+- **API:** `https://www.bnr.ro/nbrfxrates.xml` (daily) + `https://www.bnr.ro/nbrfxrates10days.xml` (10-day)
+- **Protocol:** XML feeds (open access, stable)
+- **Auth:** None
+- **Freshness:** Daily (published ~13:00 EET on business days)
+- **Coverage:** Romania — RON base currency
+
+**Indicators (37 FX pairs):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `RON_EUR` | RON/EUR (Euro) | Daily | RON |
+| `RON_USD` | RON/USD (US Dollar) | Daily | RON |
+| `RON_GBP` | RON/GBP (British Pound) | Daily | RON |
+| `RON_CHF` | RON/CHF (Swiss Franc) | Daily | RON |
+| `RON_JPY` | RON/JPY (Japanese Yen, per 100) | Daily | RON |
+| `RON_AUD` | RON/AUD (Australian Dollar) | Daily | RON |
+| `RON_CAD` | RON/CAD (Canadian Dollar) | Daily | RON |
+| `RON_CNY` | RON/CNY (Chinese Yuan) | Daily | RON |
+| `RON_CZK` | RON/CZK (Czech Koruna) | Daily | RON |
+| `RON_DKK` | RON/DKK (Danish Krone) | Daily | RON |
+| `RON_HUF` | RON/HUF (Hungarian Forint, per 100) | Daily | RON |
+| `RON_PLN` | RON/PLN (Polish Zloty) | Daily | RON |
+| `RON_SEK` | RON/SEK (Swedish Krona) | Daily | RON |
+| `RON_NOK` | RON/NOK (Norwegian Krone) | Daily | RON |
+| `RON_TRY` | RON/TRY (Turkish Lira) | Daily | RON |
+| `RON_ZAR` | RON/ZAR (South African Rand) | Daily | RON |
+| `RON_KRW` | RON/KRW (South Korean Won, per 100) | Daily | RON |
+| `RON_INR` | RON/INR (Indian Rupee) | Daily | RON |
+| `RON_BRL` | RON/BRL (Brazilian Real) | Daily | RON |
+| `RON_MXN` | RON/MXN (Mexican Peso) | Daily | RON |
+| `RON_SGD` | RON/SGD (Singapore Dollar) | Daily | RON |
+| `RON_HKD` | RON/HKD (Hong Kong Dollar) | Daily | RON |
+| `RON_NZD` | RON/NZD (New Zealand Dollar) | Daily | RON |
+| `RON_THB` | RON/THB (Thai Baht) | Daily | RON |
+| `RON_PHP` | RON/PHP (Philippine Peso) | Daily | RON |
+| `RON_MYR` | RON/MYR (Malaysian Ringgit) | Daily | RON |
+| `RON_IDR` | RON/IDR (Indonesian Rupiah, per 100) | Daily | RON |
+| `RON_ILS` | RON/ILS (Israeli Shekel) | Daily | RON |
+| `RON_EGP` | RON/EGP (Egyptian Pound) | Daily | RON |
+| `RON_MDL` | RON/MDL (Moldovan Leu) | Daily | RON |
+| `RON_RSD` | RON/RSD (Serbian Dinar) | Daily | RON |
+| `RON_RUB` | RON/RUB (Russian Ruble) | Daily | RON |
+| `RON_UAH` | RON/UAH (Ukrainian Hryvnia) | Daily | RON |
+| `RON_ISK` | RON/ISK (Icelandic Króna, per 100) | Daily | RON |
+| `RON_AED` | RON/AED (UAE Dirham) | Daily | RON |
+| `RON_XAU` | RON/XAU (Gold, troy oz) | Daily | RON |
+| `RON_XDR` | RON/XDR (IMF SDR) | Daily | RON |
+
+**CLI Examples:**
+```bash
+python3 modules/bnr_romania.py RON_EUR             # Today's RON/EUR reference rate
+python3 modules/bnr_romania.py RON_USD             # Today's RON/USD reference rate
+python3 modules/bnr_romania.py rates               # All rates for today
+python3 modules/bnr_romania.py rates 2026-03-28    # All rates for specific date
+python3 modules/bnr_romania.py history             # 10-day history all currencies
+python3 modules/bnr_romania.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bnr_romania',
+    params: { indicator: 'RON_EUR' }
+  })
+});
+```
+
+---
+
+### statbel_belgium.py — Statbel (Statistics Belgium)
+
+- **Source:** Statbel — Belgian Statistical Office
+- **APIs:**
+  - CPI data: `https://statbel.fgov.be/sites/default/files/.../CPI%20All%20base%20years.zip` (pipe-delimited TXT in ZIP)
+  - HVD API: `https://opendata-api.statbel.fgov.be` (PostgREST JSON)
+- **Protocol:** Direct file download (CPI) + PostgREST REST API (all others)
+- **Auth:** None (open access, CC BY 4.0)
+- **Freshness:** Monthly (CPI, HICP, retail), Annual (unemployment, demographics, inequality)
+- **Coverage:** Belgium
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `CPI_INDEX` | Consumer Price Index (base 2013=100) | Monthly | index |
+| `CPI_INFLATION` | CPI Inflation Rate (YoY %) | Monthly | % |
+| `CPI_HEALTH_INDEX` | Health Index (base 2013=100) | Monthly | index |
+| `CPI_EXCL_ENERGY` | CPI Excluding Energy (base 2013=100) | Monthly | index |
+| `HICP_FOOD` | HICP — Food & Non-Alcoholic Beverages (2015=100) | Monthly | index |
+| `HICP_HOUSING` | HICP — Housing, Water, Electricity & Gas (2015=100) | Monthly | index |
+| `HICP_TRANSPORT` | HICP — Transport (2015=100) | Monthly | index |
+| `HICP_RESTAURANTS` | HICP — Restaurants & Hotels (2015=100) | Monthly | index |
+| `UNEMPLOYMENT_MALE_YOUTH` | Male Youth Unemployment Rate (15–24) | Annual | ratio |
+| `UNEMPLOYMENT_FEMALE_YOUTH` | Female Youth Unemployment Rate (15–24) | Annual | ratio |
+| `UNEMPLOYMENT_MALE_PRIME` | Male Prime-Age Unemployment Rate (25–54) | Annual | ratio |
+| `UNEMPLOYMENT_FEMALE_PRIME` | Female Prime-Age Unemployment Rate (25–54) | Annual | ratio |
+| `RETAIL_TURNOVER` | Retail Trade Turnover Index (2021=100) | Monthly | index |
+| `GINI_COEFFICIENT` | Gini Coefficient — Equivalised Disposable Income | Annual | coefficient |
+| `BIRTH_RATE` | Crude Birth Rate (per 1,000 population) | Annual | rate |
+| `DEATH_RATE` | Crude Death Rate (per 1,000 population) | Annual | rate |
+
+**CLI Examples:**
+```bash
+python3 modules/statbel_belgium.py CPI_INDEX
+python3 modules/statbel_belgium.py CPI_INFLATION
+python3 modules/statbel_belgium.py HICP_FOOD
+python3 modules/statbel_belgium.py GINI_COEFFICIENT
+python3 modules/statbel_belgium.py UNEMPLOYMENT_MALE_YOUTH
+python3 modules/statbel_belgium.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'statbel_belgium',
+    params: { indicator: 'CPI_INFLATION' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1485,10 +1816,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,051 modules in `modules/` directory, sorted alphabetically:
+All 1,056 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,051 modules)</summary>
+<summary>Click to expand full module list (1,056 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -1504,25 +1835,26 @@ alpaca_market_data_api       alpaca_markets_api            alpha_picker
 alpha_vantage                alpha_vantage_api             alpha_vantage_commodities_api
 alpha_vantage_earnings_api   alpha_vantage_forex           alpha_vantage_fund_flows
 banco_de_espana              banco_de_portugal             bank_of_canada
-bank_of_england              banque_de_france              bcb
+bank_of_canada_valet         bank_of_england               banque_de_france
+bcb                          bnr_romania
 bls                          bundesbank_sdmx               cbc_taiwan
 cbs_netherlands              census                        central_bank_ireland
-cnb_czech                    destatis_germany
+cnb_czech                    destatis_germany              dnb_netherlands
 coingecko_crypto             congress_trades               cso_ireland
 danmarks_nationalbank        ecb_fx_rates                  edinet_japan
 crypto_onchain
 eia_energy                   estat_japan                   eurostat_macro
-fca_uk                       fred_enhanced                 istat_italy
-insee_france
+fca_uk                       fred_enhanced                 ine_spain
+istat_italy                  insee_france
 nbb_belgium                  nbp_poland                    ons_uk
 options_chain                polygon_io                    prices
 rba_enhanced                 riksbank_sweden               scb_sweden
 screener
-sec_edgar_api                statcan_canada                statistics_denmark
-statistics_finland           technicals
+sec_edgar_api                statbel_belgium               statcan_canada
+statistics_denmark           statistics_finland            technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
-... (1,051 total — run `ls modules/*.py | wc -l` to verify)
+... (1,056 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1548,9 +1880,10 @@ yield_curve
 | Destatis GENESIS | `DESTATIS_USER` + `DESTATIS_PASSWORD` | Open | https://www-genesis.destatis.de |
 | EDINET Japan | `EDINET_API_KEY` | Open | https://disclosure.edinet-fsa.go.jp |
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
+| DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia) require **NO API key** for core data. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,051 modules — 21 countries — 27 government/central bank modules — 500+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,056 modules — 22 countries — 32 government/central bank modules — 620+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
