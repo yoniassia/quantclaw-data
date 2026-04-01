@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,034 Financial Data Modules
+# QuantClaw Data — 1,038 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,034 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,038 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,034 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,038 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,034** Python data modules
+- **1,038** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,034 modules)             │
+│  ├── Module browser (1,038 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,034 modules      │
+│  ├── Tool definitions for all 1,038 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,034 Python Modules                            │
+│  1,038 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### European Government Statistics & Central Banks (Autobuilder Batch 1)
+### Government Statistics & Central Banks (Autobuilder Batches 1–2)
 
-Nine new modules covering 7 European countries with 130+ macroeconomic indicators from official government statistical offices and central banks:
+Thirteen modules covering 10 countries across Europe, North America, and Asia-Pacific with 200+ macroeconomic indicators from official government statistical offices and central banks:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -162,23 +162,32 @@ Nine new modules covering 7 European countries with 130+ macroeconomic indicator
 | `scb_sweden` | SCB (Statistics Sweden) | Sweden | `https://api.scb.se/OV0104/v1/doris/en/ssd` | GDP (QoQ + monthly indicator), CPI/CPIF, unemployment/employment rate, housing prices, production index, trade balance, govt debt |
 | `riksbank_sweden` | Sveriges Riksbank | Sweden | `https://api.riksbank.se/swea/v1` | Policy/deposit/lending rates, SEK FX crosses (EUR/USD/GBP/JPY/CHF/NOK/DKK), KIX index, govt bond yields (2Y–10Y), T-bills, mortgage bonds |
 | `banco_de_espana` | Banco de España | Spain / Euro Area | `https://app.bde.es/bierest/resources/srdatosapp` | Euribor (1W–12M), mortgage/consumer/NFC lending rates, deposit rates, IRPH, BoP (current/capital/financial account), housing prices (new/used/avg EUR/m²) |
+| `banco_de_portugal` | Banco de Portugal (BPstat) | Portugal | `https://bpstat.bportugal.pt/data/v1` | MFI lending rates (NFC/housing/consumer), deposit rates (agreed maturity/overnight), new business rates, BoP (current/capital/goods/services/primary income), EUR FX crosses (USD/GBP/JPY/CHF/CNY), banking KPIs (ROA, CET1, NPL ratio, loan-to-deposit), FSI (Tier 1/RWA, liquidity) |
+| `ons_uk` | ONS (Office for National Statistics) | United Kingdom | `https://api.beta.ons.gov.uk/v1` | Monthly GDP (all industries/services/production/manufacturing), CPIH inflation (all items/food/housing/transport), retail sales (volume/value), trade in goods (total/EU exports, imports), construction output (all/new work), private housing rental (index/YoY), labour market (unemployment/employment/inactivity rates) |
+| `statcan_canada` | Statistics Canada (WDS) | Canada | `https://www150.statcan.gc.ca/t1/wds/rest` | GDP (quarterly current/real + monthly all industries), CPI (all items/food/shelter/energy), labour force survey (unemployment/employment/full-time/participation/employment rates), merchandise trade (exports/imports/balance), retail sales, housing starts (CMHC SAAR), new housing price index |
+| `estat_japan` | e-Stat (Government of Japan) | Japan | `https://api.e-stat.go.jp/rest/3.0/app` | CPI (all items, core ex-fresh food), GDP (nominal/real quarterly SNA), unemployment rate, labour force population, industrial production index, trade statistics (exports/imports), housing starts, machinery orders (private ex. volatile) |
 
-#### European Coverage Map
+#### Global Coverage Map
 
 ```
-🇩🇪 Germany    — Bundesbank (yields, ECB rates, monetary, trade)
-🇫🇷 France     — INSEE (macro) + Banque de France (FX, credit, BoP)
-🇮🇹 Italy      — ISTAT (GDP, inflation, labour, industry, confidence)
-🇳🇱 Netherlands — CBS StatLine (GDP, CPI, housing, trade, govt finance)
-🇩🇰 Denmark    — DST StatBank (GDP, CPI, labour, trade, housing)
-🇸🇪 Sweden     — SCB (macro) + Riksbank (rates, FX, bonds)
-🇪🇸 Spain      — Banco de España (Euribor, lending rates, BoP, housing)
+🇩🇪 Germany      — Bundesbank (yields, ECB rates, monetary, trade)
+🇫🇷 France       — INSEE (macro) + Banque de France (FX, credit, BoP)
+🇮🇹 Italy        — ISTAT (GDP, inflation, labour, industry, confidence)
+🇳🇱 Netherlands  — CBS StatLine (GDP, CPI, housing, trade, govt finance)
+🇩🇰 Denmark      — DST StatBank (GDP, CPI, labour, trade, housing)
+🇸🇪 Sweden       — SCB (macro) + Riksbank (rates, FX, bonds)
+🇪🇸 Spain        — Banco de España (Euribor, lending rates, BoP, housing)
+🇵🇹 Portugal     — BPstat (lending/deposit rates, BoP, FX, banking FSI)
+🇬🇧 United Kingdom — ONS (GDP, CPIH, retail, trade, construction, labour)
+🇨🇦 Canada       — StatCan (GDP, CPI, labour, trade, retail, housing)
+🇯🇵 Japan        — e-Stat (CPI, GDP, unemployment, trade, industry, housing)
 ```
 
-#### Usage Examples — European Modules
+#### Usage Examples — Government Statistics Modules
 
 **CLI:**
 ```bash
+# Europe
 python3 modules/bundesbank_sdmx.py BUND_10Y
 python3 modules/insee_france.py GDP_GROWTH
 python3 modules/banque_de_france.py EUR_USD
@@ -188,6 +197,11 @@ python3 modules/statistics_denmark.py CPI_YOY
 python3 modules/scb_sweden.py CPIF_ANNUAL_CHANGE
 python3 modules/riksbank_sweden.py POLICY_RATE
 python3 modules/banco_de_espana.py EURIBOR_12M
+python3 modules/banco_de_portugal.py IR_LOANS_HOUSING
+# UK, Canada, Japan
+python3 modules/ons_uk.py GDP_MONTHLY
+python3 modules/statcan_canada.py UNEMPLOYMENT_RATE
+python3 modules/estat_japan.py CPI_ALL_ITEMS
 ```
 
 **REST API:**
@@ -196,6 +210,10 @@ GET /api/v1/bundesbank-sdmx?indicator=BUND_10Y
 GET /api/v1/insee-france?indicator=GDP_GROWTH
 GET /api/v1/riksbank-sweden?indicator=POLICY_RATE
 GET /api/v1/banco-de-espana?indicator=EURIBOR_12M
+GET /api/v1/banco-de-portugal?indicator=BOP_CURRENT_ACCOUNT
+GET /api/v1/ons-uk?indicator=GDP_MONTHLY
+GET /api/v1/statcan-canada?indicator=GDP_REAL
+GET /api/v1/estat-japan?indicator=GDP_NOMINAL
 ```
 
 **MCP Tool Call:**
@@ -203,8 +221,24 @@ GET /api/v1/banco-de-espana?indicator=EURIBOR_12M
 const result = await fetch('http://localhost:3056/api/data', {
   method: 'POST',
   body: JSON.stringify({
-    tool: 'bundesbank_sdmx',
-    params: { indicator: 'BUND_10Y' }
+    tool: 'ons_uk',
+    params: { indicator: 'CPIH_ALL' }
+  })
+});
+```
+
+**Batch MCP — Cross-Country Comparison:**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'fred_enhanced', params: { series: 'UNRATE' } },
+      { tool: 'ons_uk', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'statcan_canada', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'estat_japan', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'insee_france', params: { indicator: 'UNEMPLOYMENT_RATE' } }
+    ]
   })
 });
 ```
@@ -267,7 +301,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,034 modules gets an auto-generated REST endpoint:
+Each of the 1,038 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -280,7 +314,7 @@ Each of the 1,034 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,034 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,038 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -306,7 +340,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,034 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,038 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -355,6 +389,10 @@ screen --min-cap 10B --sector Technology
 | SCB Sweden | No | Open | Swedish GDP, CPI/CPIF, labour, trade |
 | Sveriges Riksbank | No | Rate-limited | SEK FX, policy rates, govt bond yields |
 | Banco de España | No | Open | Euribor, lending rates, BoP, housing prices |
+| Banco de Portugal (BPstat) | No | Open | MFI interest rates, BoP, FX rates, banking FSIs |
+| ONS UK (CMD beta) | No | Open (beta) | UK GDP, CPIH, retail sales, trade, labour market |
+| Statistics Canada (WDS) | No | 25 req/s per IP | Canadian GDP, CPI, labour, trade, housing |
+| e-Stat Japan | Yes (free) | Open | Japanese GDP, CPI, unemployment, trade, industry |
 
 ---
 
@@ -396,7 +434,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,034 Python data modules
+├── modules/                          # 1,038 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -413,7 +451,11 @@ quantclaw-data/
 │   ├── scb_sweden.py                 # SCB Sweden (Statistics Sweden)
 │   ├── riksbank_sweden.py            # Sveriges Riksbank
 │   ├── banco_de_espana.py            # Banco de España
-│   ├── ... (1,034 modules total)
+│   ├── banco_de_portugal.py          # Banco de Portugal (BPstat)
+│   ├── ons_uk.py                     # UK Office for National Statistics
+│   ├── statcan_canada.py             # Statistics Canada (WDS)
+│   ├── estat_japan.py                # e-Stat Japan (Government Statistics)
+│   ├── ... (1,038 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -489,6 +531,7 @@ FMP_API_KEY=                         # Financial Modeling Prep
 BOK_API_KEY=                         # Bank of Korea
 COMTRADE_API_KEY=                    # UN trade data
 BANQUE_DE_FRANCE_API_KEY=            # Banque de France Webstat (free registration)
+ESTAT_JAPAN_APP_ID=                  # e-Stat Japan (free at https://www.e-stat.go.jp/api/)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -537,4 +580,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,034 modules • 47 phases • 7 European countries • The data layer powering the MoneyClawX ecosystem*
+*1,038 modules • 47 phases • 10 countries (7 EU + UK + Canada + Japan) • The data layer powering the MoneyClawX ecosystem*

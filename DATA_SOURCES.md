@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,034 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,038 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,22 +12,26 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
 | Crypto prices | `coingecko_crypto`, `crypto_onchain`, `bitcoin_onchain` |
-| EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `ecb_fx_rates`, `alphavantage_fx` |
+| EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
 | Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `treasury_curve`, `yield_curve` |
 | Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy` |
 | Euribor rates | `banco_de_espana` |
+| UK macro data | `ons_uk` (GDP, CPIH, retail, trade, labour, construction, rental) |
+| Canadian macro data | `statcan_canada` (GDP, CPI, labour, trade, retail, housing) |
+| Japanese macro data | `estat_japan` (CPI, GDP, unemployment, trade, industry, housing) |
+| Portuguese banking | `banco_de_portugal` (lending/deposit rates, BoP, FX, NPL, CET1, FSI) |
 | Earnings data | `earnings_calendar_enhanced`, `earnings_transcripts_nlp`, `ai_earnings_analyzer` |
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
-| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `fred_housing`, `zillow_zhvi` |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana` |
+| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `fred_housing`, `zillow_zhvi` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -442,6 +446,181 @@ python3 modules/banco_de_espana.py list
 
 ---
 
+### banco_de_portugal.py — Banco de Portugal (BPstat)
+
+- **Source:** Banco de Portugal
+- **API:** `https://bpstat.bportugal.pt/data/v1`
+- **Protocol:** REST (JSON-stat 2.0)
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX rates), Monthly (interest rates, BoP), Semi-annual (banking/FSI)
+- **Coverage:** Portugal
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `IR_LOANS_NFC` | Lending Rate — Non-Financial Corporations | Monthly | % |
+| `IR_LOANS_HOUSING` | Lending Rate — Housing Loans | Monthly | % |
+| `IR_LOANS_CONSUMER` | Lending Rate — Consumer Credit | Monthly | % |
+| `IR_DEPOSITS_AGREED` | Deposit Rate — Agreed Maturity, Non-Financial Sector | Monthly | % |
+| `IR_DEPOSITS_OVERNIGHT_HH` | Deposit Rate — Overnight, Individuals | Monthly | % |
+| `IR_NEWBIZ_HOUSING` | New Business Rate — Housing Loans | Monthly | % |
+| `IR_NEWBIZ_CONSUMER` | New Business Rate — Consumer Credit | Monthly | % |
+| `BOP_CURRENT_ACCOUNT` | Current Account Balance | Monthly | EUR mn |
+| `BOP_GOODS_SERVICES` | Goods & Services Balance | Monthly | EUR mn |
+| `BOP_GOODS` | Goods Balance | Monthly | EUR mn |
+| `BOP_SERVICES` | Services Balance | Monthly | EUR mn |
+| `BOP_PRIMARY_INCOME` | Primary Income Balance | Monthly | EUR mn |
+| `BOP_CAPITAL_ACCOUNT` | Capital Account Balance | Monthly | EUR mn |
+| `FX_EUR_USD` | EUR/USD Exchange Rate | Daily | USD per EUR |
+| `FX_EUR_GBP` | EUR/GBP Exchange Rate | Daily | GBP per EUR |
+| `FX_EUR_JPY` | EUR/JPY Exchange Rate | Daily | JPY per EUR |
+| `FX_EUR_CHF` | EUR/CHF Exchange Rate | Daily | CHF per EUR |
+| `FX_EUR_CNY` | EUR/CNY Exchange Rate | Daily | CNY per EUR |
+| `BANK_ROA` | Banking Sector — Return on Assets | Semi-annual | % |
+| `BANK_CET1` | Banking Sector — CET1 Ratio | Semi-annual | % |
+| `BANK_NPL_RATIO` | Banking Sector — NPL Ratio | Semi-annual | % |
+| `BANK_LOAN_TO_DEPOSIT` | Banking Sector — Loan-to-Deposit Ratio | Semi-annual | % |
+| `FSI_TIER1_RATIO` | FSI — Tier 1 Capital to RWA | Semi-annual | % |
+| `FSI_NPL_TO_LOANS` | FSI — NPL to Total Gross Loans | Semi-annual | % |
+| `FSI_ROA` | FSI — Return on Assets | Semi-annual | % |
+| `FSI_LIQUIDITY` | FSI — Liquid Assets to Short-Term Liabilities | Semi-annual | % |
+
+**CLI Examples:**
+```bash
+python3 modules/banco_de_portugal.py IR_LOANS_HOUSING
+python3 modules/banco_de_portugal.py BOP_CURRENT_ACCOUNT
+python3 modules/banco_de_portugal.py FX_EUR_USD
+python3 modules/banco_de_portugal.py list
+```
+
+---
+
+### ons_uk.py — UK Office for National Statistics (ONS)
+
+- **Source:** Office for National Statistics
+- **API:** `https://api.beta.ons.gov.uk/v1`
+- **Protocol:** REST / JSON (CMD beta API)
+- **Auth:** None (open beta)
+- **Freshness:** Monthly (varies by dataset)
+- **Coverage:** United Kingdom / Great Britain
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_MONTHLY` | UK Monthly GDP Index (SA, 2016=100) | Monthly | index |
+| `GDP_SERVICES` | UK Index of Services (SA, 2016=100) | Monthly | index |
+| `GDP_PRODUCTION` | UK Production Industries Index (SA, 2016=100) | Monthly | index |
+| `GDP_MANUFACTURING` | UK Manufacturing Index (SA, 2016=100) | Monthly | index |
+| `CPIH_ALL` | CPIH All Items (Index, 2015=100) | Monthly | index |
+| `CPIH_FOOD` | CPIH Food & Non-Alcoholic Beverages | Monthly | index |
+| `CPIH_HOUSING` | CPIH Housing, Water, Electricity & Gas | Monthly | index |
+| `CPIH_TRANSPORT` | CPIH Transport | Monthly | index |
+| `RETAIL_SALES_VOLUME` | UK Retail Sales Volume Index (SA, 2019=100) | Monthly | index |
+| `RETAIL_SALES_VALUE` | UK Retail Sales Value Index (SA, current prices) | Monthly | index |
+| `TRADE_EXPORTS_TOTAL` | UK Total Goods Exports | Monthly | GBP mn |
+| `TRADE_IMPORTS_TOTAL` | UK Total Goods Imports | Monthly | GBP mn |
+| `TRADE_EXPORTS_EU` | UK Goods Exports to EU | Monthly | GBP mn |
+| `CONSTRUCTION_OUTPUT` | UK Construction Output — All Work (SA) | Monthly | GBP mn |
+| `CONSTRUCTION_NEW_WORK` | UK Construction Output — New Work (SA) | Monthly | GBP mn |
+| `HOUSING_RENTAL_INDEX` | UK Private Housing Rental Price Index | Monthly | index |
+| `HOUSING_RENTAL_YOY` | UK Private Housing Rental Prices YoY Change | Monthly | % |
+| `UNEMPLOYMENT_RATE` | UK Unemployment Rate (16+, SA) | Quarterly-rolling | % |
+| `EMPLOYMENT_RATE` | UK Employment Rate (16-64, SA) | Quarterly-rolling | % |
+| `ECONOMIC_INACTIVITY_RATE` | UK Economic Inactivity Rate (16-64, SA) | Quarterly-rolling | % |
+
+**CLI Examples:**
+```bash
+python3 modules/ons_uk.py GDP_MONTHLY
+python3 modules/ons_uk.py CPIH_ALL
+python3 modules/ons_uk.py UNEMPLOYMENT_RATE
+python3 modules/ons_uk.py datasets
+python3 modules/ons_uk.py list
+```
+
+---
+
+### statcan_canada.py — Statistics Canada (WDS)
+
+- **Source:** Statistics Canada
+- **API:** `https://www150.statcan.gc.ca/t1/wds/rest`
+- **Protocol:** REST (WDS — Web Data Service)
+- **Auth:** None (open access)
+- **Freshness:** Business days at 8:30 AM EST
+- **Rate Limit:** 50 req/s global, 25 req/s per IP
+- **Coverage:** Canada
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_CURRENT` | GDP at Market Prices — Current Dollars (SAAR) | Quarterly | CAD mn |
+| `GDP_REAL` | GDP at Market Prices — Chained 2017$ (SAAR) | Quarterly | CAD mn |
+| `GDP_MONTHLY` | Monthly GDP — All Industries | Monthly | CAD mn |
+| `CPI_ALL_ITEMS` | CPI All-Items (2002=100) | Monthly | index |
+| `CPI_FOOD` | CPI Food | Monthly | index |
+| `CPI_SHELTER` | CPI Shelter | Monthly | index |
+| `CPI_ENERGY` | CPI Energy | Monthly | index |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate — SA | Monthly | % |
+| `EMPLOYMENT` | Employment — SA (thousands) | Monthly | thousands |
+| `FULL_TIME_EMPLOYMENT` | Full-Time Employment — SA (thousands) | Monthly | thousands |
+| `PARTICIPATION_RATE` | Participation Rate — SA | Monthly | % |
+| `EMPLOYMENT_RATE` | Employment Rate — SA | Monthly | % |
+| `MERCHANDISE_EXPORTS` | Merchandise Exports — BOP, SA | Monthly | CAD mn |
+| `MERCHANDISE_IMPORTS` | Merchandise Imports — BOP, SA | Monthly | CAD mn |
+| `TRADE_BALANCE` | Merchandise Trade Balance — BOP, SA | Monthly | CAD mn |
+| `RETAIL_SALES` | Retail Trade Sales — Total, SA | Monthly | CAD |
+| `HOUSING_STARTS` | Housing Starts — Total, SAAR (units) | Monthly | units |
+| `NEW_HOUSING_PRICE_INDEX` | New Housing Price Index — Total | Monthly | index |
+
+**CLI Examples:**
+```bash
+python3 modules/statcan_canada.py GDP_REAL
+python3 modules/statcan_canada.py UNEMPLOYMENT_RATE
+python3 modules/statcan_canada.py CPI_ALL_ITEMS
+python3 modules/statcan_canada.py discover GDP
+python3 modules/statcan_canada.py list
+```
+
+---
+
+### estat_japan.py — e-Stat Japan (Government Statistics)
+
+- **Source:** Government of Japan (Ministry of Internal Affairs, Cabinet Office, METI, MOF, MLIT)
+- **API:** `https://api.e-stat.go.jp/rest/3.0/app`
+- **Protocol:** REST (JSON)
+- **Auth:** Application ID required (free at https://www.e-stat.go.jp/api/) — `ESTAT_JAPAN_APP_ID`
+- **Freshness:** Monthly / Quarterly depending on series
+- **Coverage:** Japan (national + prefectural)
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `CPI_ALL_ITEMS` | CPI All Items — National (2020=100) | Monthly | index |
+| `CPI_CORE` | CPI Core — National, ex Fresh Food (2020=100) | Monthly | index |
+| `GDP_NOMINAL` | Nominal GDP — Quarterly (JPY bn) | Quarterly | JPY bn |
+| `GDP_REAL` | Real GDP — Quarterly (JPY bn, chained) | Quarterly | JPY bn |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate (%) | Monthly | % |
+| `LABOUR_FORCE` | Labour Force Population (10k persons) | Monthly | 10k persons |
+| `INDUSTRIAL_PRODUCTION` | Index of Industrial Production (2020=100) | Monthly | index |
+| `TRADE_EXPORTS` | Exports — Total Value | Monthly | JPY mn |
+| `TRADE_IMPORTS` | Imports — Total Value | Monthly | JPY mn |
+| `HOUSING_STARTS` | New Housing Starts — Total Units | Monthly | units |
+| `MACHINERY_ORDERS` | Machinery Orders — Private ex. Volatile | Monthly | JPY bn |
+
+**CLI Examples:**
+```bash
+python3 modules/estat_japan.py CPI_ALL_ITEMS
+python3 modules/estat_japan.py GDP_NOMINAL
+python3 modules/estat_japan.py UNEMPLOYMENT_RATE
+python3 modules/estat_japan.py search CPI 00200573
+python3 modules/estat_japan.py list
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -577,10 +756,10 @@ python3 modules/banco_de_espana.py list
 
 ## Complete Module List
 
-All 1,034 modules in `modules/` directory, sorted alphabetically:
+All 1,038 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,034 modules)</summary>
+<summary>Click to expand full module list (1,038 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -594,17 +773,19 @@ alert_backtest               alert_dashboard               alert_dsl
 alpaca_market_data_api       alpaca_markets_api            alpha_picker
 alpha_vantage                alpha_vantage_api             alpha_vantage_commodities_api
 alpha_vantage_earnings_api   alpha_vantage_forex           alpha_vantage_fund_flows
-banco_de_espana              bank_of_canada                bank_of_england
-banque_de_france             bcb                           bls
-bundesbank_sdmx              cbs_netherlands               census
+banco_de_espana              banco_de_portugal             bank_of_canada
+bank_of_england              banque_de_france              bcb
+bls                          bundesbank_sdmx               cbs_netherlands
+census
 coingecko_crypto             congress_trades               crypto_onchain
-ecb_fx_rates                 eia_energy                    eurostat_macro
-fred_enhanced                istat_italy                   insee_france
-options_chain                polygon_io                    prices
-riksbank_sweden              scb_sweden                    screener
-sec_edgar_api                statistics_denmark            technicals
+ecb_fx_rates                 eia_energy                    estat_japan
+eurostat_macro               fred_enhanced                 istat_italy
+insee_france                 ons_uk                        options_chain
+polygon_io                   prices                        riksbank_sweden
+scb_sweden                   screener                      sec_edgar_api
+statcan_canada               statistics_denmark            technicals
 tiingo                       treasury_curve                yield_curve
-... (1,034 total — run `ls modules/*.py | wc -l` to verify)
+... (1,038 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -625,9 +806,10 @@ tiingo                       treasury_curve                yield_curve
 | USDA NASS | `USDA_NASS_API_KEY` | Unlimited | https://quickstats.nass.usda.gov/api |
 | Banque de France | `BANQUE_DE_FRANCE_API_KEY` | Open | https://webstat.banque-france.fr/signup |
 | Bank of Korea | `BOK_API_KEY` | Open | https://ecos.bok.or.kr |
+| e-Stat Japan | `ESTAT_JAPAN_APP_ID` | Open | https://www.e-stat.go.jp/api/ |
 
-Most European government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE) require **NO API key**.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan) require **NO API key**. e-Stat Japan requires a free Application ID.
 
 ---
 
-*1,034 modules — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,038 modules — Updated 2026-04-01 — QuantClaw Data (DCC)*
