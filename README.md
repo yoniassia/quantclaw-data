@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,045 Financial Data Modules
+# QuantClaw Data — 1,050 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,045 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,050 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,045 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,050 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,045** Python data modules
+- **1,050** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,045 modules)             │
+│  ├── Module browser (1,050 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,045 modules      │
+│  ├── Tool definitions for all 1,050 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,045 Python Modules                            │
+│  1,050 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -149,7 +149,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 
 ### Government Statistics & Central Banks (Autobuilder Batches 1–5)
 
-Twenty-one modules covering 17 countries across Europe, Scandinavia, Central Europe, British Isles, North America, and Asia-Pacific with 370+ macroeconomic indicators from official government statistical offices and central banks:
+Twenty-six modules covering 21 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, and Oceania with 460+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -174,6 +174,11 @@ Twenty-one modules covering 17 countries across Europe, Scandinavia, Central Eur
 | `statistics_finland` | Statistics Finland (Tilastokeskus) | Finland | `https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/` | GDP (QoQ/YoY/current prices), CPI index (2015=100), unemployment rate (SA + youth 15-24), employment rate & employed persons, industrial output (total/manufacturing/YoY), foreign trade (exports/imports), housing prices (index/YoY/EUR per m²) |
 | `danmarks_nationalbank` | Danmarks Nationalbank | Denmark | `https://api.statbank.dk/v1` | DN policy rates (discount/current-account/lending/CD), DKK FX rates (EUR/USD/GBP/JPY/CHF/NOK/SEK), government bond yields (average/10Y), mortgage bond yields, balance of payments (current account/goods/services/primary income), MFI lending (total/NFC/households + avg lending rate), government debt securities |
 || `cnb_czech` | Czech National Bank (CNB) | Czech Republic | `https://www.cnb.cz` (TXT feeds) + `https://www.cnb.cz/aradb/api/v1` (ARAD) | CZK daily FX fixing (USD/EUR/GBP/CHF/JPY/CAD/AUD/PLN/HUF/SEK/NOK/CNY), PRIBOR interbank rates (O/N, 1W, 2W, 1M, 3M, 6M, 1Y), CNB monetary policy rates (2W repo, discount, Lombard) |
+|| `destatis_germany` | Destatis (Statistisches Bundesamt) | Germany | `https://www-genesis.destatis.de/genesisWS/rest/2020` | GDP (annual/quarterly), CPI/HICP (monthly/annual), employment, foreign trade (exports/imports), industrial production index, PPI (monthly/annual), construction activity |
+|| `uae_data` | CBUAE + World Bank | United Arab Emirates | `https://www.centralbank.ae` + `https://api.worldbank.org/v2` | AED FX rates (USD/EUR/GBP/JPY/CHF/SAR/CNY/INR/KWD/EGP — 76 currencies), GDP (current USD/growth), CPI inflation, broad money M2, FX reserves, exports/imports, current account, GDP per capita |
+|| `edinet_japan` | EDINET (FSA Japan) | Japan | `https://api.edinet-fsa.go.jp/api/v2` | Annual securities reports (Yuho), quarterly reports, semi-annual reports, large shareholding reports (5%+), tender offer filings, securities registration (IPOs), company search, XBRL/PDF/CSV document downloads |
+|| `fca_uk` | FCA Financial Services Register | United Kingdom | `https://register.fca.org.uk/services/V0.1` | Authorized firm search/details (by FRN), individual search (by IRN), fund/CIS search, firm permissions, disciplinary history, passports, requirements, addresses, regulated markets |
+|| `abs_australia_sdmx` | ABS (Australian Bureau of Statistics) | Australia | `https://data.api.abs.gov.au/rest` | GDP (chain volume/growth/per capita), terms of trade, household saving ratio, CPI (index/quarterly change/annual monthly indicator), unemployment/employment/participation rate, labour force, current account, goods balance, retail trade, building approvals, trade balance, exports |
 
 #### Global Coverage Map
 
@@ -195,6 +200,11 @@ Twenty-one modules covering 17 countries across Europe, Scandinavia, Central Eur
 🇮🇪 Ireland      — CBI (ECB rates, Euribor, retail rates, mortgages, debt, reserves) + CSO (GDP/GNP, CPI, labour, retail, housing, trade)
 🇫🇮 Finland        — Statistics Finland (GDP, CPI, unemployment, industrial output, trade, housing)
 🇨🇿 Czech Republic — CNB (CZK FX fixing 12 currencies, PRIBOR term structure, 2W repo/discount/Lombard rates)
+🇦🇺 Australia      — ABS SDMX (GDP, CPI, labour force, BoP, retail trade, building approvals, trade)
+🇦🇪 UAE            — CBUAE (76-currency FX rates) + World Bank (GDP, CPI, M2, reserves, trade)
+🇩🇪 Germany (ext)  — Destatis GENESIS (GDP, CPI/HICP, employment, trade, IPI, PPI, construction)
+🇯🇵 Japan (ext)    — EDINET (annual/quarterly securities filings, large shareholding, tender offers)
+🇬🇧 UK (ext)       — FCA Register (authorized firms, individuals, permissions, disciplinary, markets)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -231,6 +241,20 @@ python3 modules/cnb_czech.py PRIBOR_3M
 python3 modules/cnb_czech.py CNB_2W_REPO
 python3 modules/cnb_czech.py pribor-curve
 python3 modules/cnb_czech.py policy-rates
+# Australia, UAE, Germany (ext), Japan (ext), UK (ext) — Batch 6
+python3 modules/abs_australia_sdmx.py GDP_GROWTH
+python3 modules/abs_australia_sdmx.py UNEMPLOYMENT_RATE
+python3 modules/abs_australia_sdmx.py dashboard
+python3 modules/uae_data.py FX_USD
+python3 modules/uae_data.py GDP_GROWTH
+python3 modules/uae_data.py fx
+python3 modules/destatis_germany.py GDP_QUARTERLY
+python3 modules/destatis_germany.py CPI_MONTHLY
+python3 modules/destatis_germany.py INDUSTRIAL_PRODUCTION
+python3 modules/edinet_japan.py ANNUAL_REPORTS
+python3 modules/edinet_japan.py search "Toyota"
+python3 modules/fca_uk.py FIRM_SEARCH "barclays"
+python3 modules/fca_uk.py REGULATED_MARKETS
 ```
 
 **REST API:**
@@ -253,6 +277,15 @@ GET /api/v1/danmarks-nationalbank?indicator=FX_EUR_DKK
 GET /api/v1/cnb-czech?indicator=FX_EUR
 GET /api/v1/cnb-czech?indicator=PRIBOR_3M
 GET /api/v1/cnb-czech?indicator=CNB_2W_REPO
+GET /api/v1/abs-australia-sdmx?indicator=GDP_GROWTH
+GET /api/v1/abs-australia-sdmx?indicator=UNEMPLOYMENT_RATE
+GET /api/v1/uae-data?indicator=FX_USD
+GET /api/v1/uae-data?indicator=GDP_CURRENT_USD
+GET /api/v1/destatis-germany?indicator=CPI_MONTHLY
+GET /api/v1/destatis-germany?indicator=GDP_QUARTERLY
+GET /api/v1/edinet-japan?indicator=ANNUAL_REPORTS&start_date=2026-04-01
+GET /api/v1/fca-uk?indicator=FIRM_SEARCH&query=barclays
+GET /api/v1/fca-uk?indicator=REGULATED_MARKETS
 ```
 
 **MCP Tool Call:**
@@ -448,6 +481,72 @@ python3 modules/cnb_czech.py pribor-curve
 - 370+ macroeconomic indicators from official government sources
 - Asset classes covered: FX rates, policy rates, interbank rates (PRIBOR/Euribor), monetary aggregates, GDP, CPI/HICP, unemployment, trade, housing, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts
 
+#### Batch 6: Asia-Pacific, Middle East, Extended Europe & Regulatory
+
+Batch 6 adds **5 new modules** expanding to **Australia, UAE, and deeper German/Japanese/UK** data, bringing total coverage to **21 countries** and **26 government/central bank/regulatory modules** with **460+ indicators**.
+
+**ABS Australia Enhanced** (`abs_australia_sdmx`) — Australian Bureau of Statistics:
+- GDP chain volume measures, quarterly growth, and GDP per capita (seasonally adjusted)
+- Terms of trade index, household saving ratio (quarterly)
+- CPI all groups index (quarterly), annual % change (monthly indicator), quarterly % change
+- Labour force survey: unemployment rate, employed persons, participation rate, total labour force (monthly, SA)
+- Balance of payments: current account balance, goods balance (quarterly)
+- Retail trade total turnover (monthly, SA), building approvals — total residential dwellings (monthly)
+- International trade in goods: trade balance, total goods exports (monthly, SA)
+- **19 indicators** via SDMX 2.1 REST with SDMX-JSON 2.0 parsing
+- API: `https://data.api.abs.gov.au/rest` (SDMX 2.1, open access, no auth)
+
+**UAE Open Data** (`uae_data`) — Central Bank of UAE + World Bank:
+- CBUAE official FX rates for 76 currencies (daily, Arabic-to-ISO mapping, AED base)
+- Major FX pairs: AED/USD (pegged ~3.6725), AED/EUR, AED/GBP, AED/JPY, AED/CHF, AED/SAR, AED/CNY, AED/INR, AED/KWD, AED/EGP
+- Historical FX rates via date-based CBUAE API queries
+- World Bank macro indicators: GDP (current USD, growth %), CPI inflation, CPI index (2010=100), broad money M2, total reserves incl. gold, exports/imports of goods & services, current account balance, GDP per capita
+- **20 indicators** across daily FX and annual macroeconomic series
+- APIs: CBUAE FX via `https://www.centralbank.ae` (Surface API, open access); World Bank via `https://api.worldbank.org/v2` (REST JSON, open)
+
+**Destatis Germany** (`destatis_germany`) — Statistisches Bundesamt (GENESIS-Online):
+- GDP: annual and quarterly gross domestic product and gross value added (nominal and price-adjusted)
+- Consumer prices: CPI monthly and annual (2020=100), HICP monthly and annual (2015=100)
+- Labour market: employment, unemployment, economically active population (annual)
+- Foreign trade: exports and imports monthly and annual in EUR millions
+- Industrial production index (manufacturing, monthly, 2021=100)
+- Producer prices: PPI monthly and annual (2021=100)
+- Construction sector: establishments, persons employed, hours worked, turnover (monthly)
+- GENESIS table search: free-text search across 2,000+ Destatis statistical tables
+- **13 indicators** via GENESIS-Online REST API with flat-file CSV parsing
+- API: `https://www-genesis.destatis.de/genesisWS/rest/2020` (REST POST, free registration at https://www-genesis.destatis.de)
+
+**EDINET Japan** (`edinet_japan`) — FSA Electronic Disclosure Network:
+- Annual securities reports (有価証券報告書, Yuho) — comprehensive financial disclosures from all listed companies
+- Quarterly and semi-annual financial reports
+- Large shareholding reports (大量保有報告書) — 5%+ ownership disclosures
+- Tender offer notifications (公開買付届出書) — takeover bid filings
+- Securities registration statements — IPO and new offering filings
+- Company search across filings by name, EDINET code, or securities code
+- Document download: XBRL ZIP, PDF, attachments, English translations, CSV extracts
+- **7 indicators** (filing categories) + search + document download
+- API: `https://api.edinet-fsa.go.jp/api/v2` (REST JSON/ZIP, requires free Subscription-Key)
+
+**FCA UK** (`fca_uk`) — Financial Conduct Authority Register:
+- Firm search and detailed profiles: FCA-authorized firms by name or FRN (Firm Reference Number)
+- Individual search: approved and prohibited persons by name or IRN
+- Fund/CIS search: collective investment schemes by name or PRN
+- Firm regulatory details: status, business type, Companies House number, effective dates
+- Firm permissions: regulated activities and permissions granted
+- Firm individuals: approved persons and controlled functions
+- Firm passports: cross-border EEA passporting permissions
+- Firm disciplinary history: enforcement actions, fines, and sanctions
+- Firm requirements, addresses, PSD2 exclusions
+- UK regulated markets: FCA-recognized exchanges and trading venues
+- **13 indicators** across firm/individual/fund search and regulatory data
+- API: `https://register.fca.org.uk/services/V0.1` (REST JSON, free API key + email at https://register.fca.org.uk/Developer/s/)
+
+**Coverage totals after Batch 6:**
+- 26 government/central bank/regulatory modules
+- 21 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇩🇪+ 🇯🇵+ 🇬🇧+
+- 460+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates, policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment, trade, housing, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade
+
 ---
 
 ## MCP Server
@@ -506,7 +605,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,045 modules gets an auto-generated REST endpoint:
+Each of the 1,050 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -519,7 +618,7 @@ Each of the 1,045 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,045 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,050 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -545,7 +644,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,045 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,050 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -606,6 +705,11 @@ screen --min-cap 10B --sector Technology
 | Statistics Finland | No | Open | Finnish GDP, CPI, unemployment, industrial output, trade, housing prices |
 | Danmarks Nationalbank | No | Open | DN policy rates, DKK FX, govt bond yields, BoP, MFI lending, govt securities |
 | Czech National Bank (CNB) | No (ARAD: free key) | Open | CZK FX fixing (12 currencies), PRIBOR interbank rates (7 tenors), CNB policy rates (2W repo, discount, Lombard) |
+| ABS Australia (SDMX) | No | Open | GDP, CPI, labour force, BoP, retail trade, building approvals, trade |
+| CBUAE / World Bank (UAE) | No | Open | AED FX rates (76 currencies), UAE GDP, CPI, M2, reserves, trade |
+| Destatis GENESIS (Germany) | Yes (free) | Open | German GDP, CPI/HICP, employment, trade, IPI, PPI, construction |
+| EDINET Japan (FSA) | Yes (free) | Open | Japanese securities filings, annual/quarterly reports, shareholding, M&A |
+| FCA UK Register | Yes (free) | Open | UK authorized firms, individuals, permissions, disciplinary, regulated markets |
 
 ---
 
@@ -647,7 +751,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,045 Python data modules
+├── modules/                          # 1,050 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -676,7 +780,12 @@ quantclaw-data/
 │   ├── statistics_finland.py         # Statistics Finland (GDP, CPI, industry)
 │   ├── danmarks_nationalbank.py      # Danmarks Nationalbank (rates, FX, bonds)
 │   ├── cnb_czech.py                 # Czech National Bank (FX, PRIBOR, policy rates)
-│   ├── ... (1,045 modules total)
+│   ├── abs_australia_sdmx.py        # ABS Australia (GDP, CPI, labour, trade)
+│   ├── uae_data.py                  # UAE CBUAE FX + World Bank macro
+│   ├── destatis_germany.py          # Destatis GENESIS-Online (GDP, CPI, trade)
+│   ├── edinet_japan.py              # EDINET Japan securities filings
+│   ├── fca_uk.py                    # FCA UK Financial Services Register
+│   ├── ... (1,050 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -754,6 +863,11 @@ COMTRADE_API_KEY=                    # UN trade data
 BANQUE_DE_FRANCE_API_KEY=            # Banque de France Webstat (free registration)
 ESTAT_JAPAN_APP_ID=                  # e-Stat Japan (free at https://www.e-stat.go.jp/api/)
 ARAD_API_KEY=                        # CNB Czech ARAD API (free at https://www.cnb.cz/aradb/)
+DESTATIS_USER=                       # Destatis GENESIS-Online (free at https://www-genesis.destatis.de)
+DESTATIS_PASSWORD=                   # Destatis GENESIS-Online password
+EDINET_API_KEY=                      # EDINET Japan filings (free at https://disclosure.edinet-fsa.go.jp)
+FCA_API_KEY=                         # FCA UK Register (free at https://register.fca.org.uk/Developer/s/)
+FCA_API_EMAIL=                       # FCA UK Register signup email
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -802,4 +916,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,045 modules • 47 phases • 17 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic) • The data layer powering the MoneyClawX ecosystem*
+*1,050 modules • 47 phases • 21 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE) • The data layer powering the MoneyClawX ecosystem*

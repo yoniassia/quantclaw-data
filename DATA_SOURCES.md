@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,045 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,050 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -43,9 +43,14 @@
 | Earnings data | `earnings_calendar_enhanced`, `earnings_transcripts_nlp`, `ai_earnings_analyzer` |
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
-| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `fred_housing`, `zillow_zhvi` |
+| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `fred_housing`, `zillow_zhvi` |
 | Gold price (PLN) | `nbp_poland` |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank` |
+| Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade) |
+| UAE macro / FX | `uae_data` (CBUAE 76-currency FX, GDP, CPI, M2, reserves, trade) |
+| German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
+| Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
+| UK regulatory data | `fca_uk` (authorized firms, individuals, permissions, disciplinary, regulated markets) |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -1015,6 +1020,239 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### abs_australia_sdmx.py — ABS Australia Enhanced (SDMX 2.1)
+
+- **Source:** Australian Bureau of Statistics
+- **API:** `https://data.api.abs.gov.au/rest`
+- **Protocol:** SDMX 2.1 REST (SDMX-JSON 2.0)
+- **Auth:** None (open access)
+- **Freshness:** Quarterly (GDP, CPI, BoP), Monthly (labour force, retail trade, building approvals, trade)
+- **Coverage:** Australia
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP` | GDP — Chain Volume Measures (AUD mn) | Quarterly | AUD mn |
+| `GDP_GROWTH` | GDP Growth — Quarterly (% change) | Quarterly | % |
+| `GDP_PER_CAPITA` | GDP Per Capita — Chain Volume (AUD) | Quarterly | AUD |
+| `TERMS_OF_TRADE` | Terms of Trade — Index | Quarterly | Index |
+| `HOUSEHOLD_SAVING_RATIO` | Household Saving Ratio (%) | Quarterly | % |
+| `CPI_INDEX` | CPI — All Groups Index | Quarterly | Index |
+| `CPI_ANNUAL_CHANGE` | CPI — Annual % Change (Monthly Indicator) | Monthly | % |
+| `CPI_QUARTERLY_CHANGE` | CPI — Quarterly % Change | Quarterly | % |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate (%) | Monthly | % |
+| `EMPLOYMENT` | Employed Persons ('000) | Monthly | '000 |
+| `PARTICIPATION_RATE` | Labour Force Participation Rate (%) | Monthly | % |
+| `LABOUR_FORCE` | Labour Force ('000) | Monthly | '000 |
+| `CURRENT_ACCOUNT` | Current Account Balance (AUD mn) | Quarterly | AUD mn |
+| `BOP_GOODS_BALANCE` | Goods Balance (AUD mn) | Quarterly | AUD mn |
+| `RETAIL_TRADE` | Retail Turnover — Total (AUD mn) | Monthly | AUD mn |
+| `BUILDING_APPROVALS` | Building Approvals — Total Residential Dwellings | Monthly | Number |
+| `TRADE_BALANCE` | Goods Trade Balance (AUD mn) | Monthly | AUD mn |
+| `EXPORTS` | Total Goods Exports (AUD mn) | Monthly | AUD mn |
+
+**CLI Examples:**
+```bash
+python3 modules/abs_australia_sdmx.py GDP_GROWTH
+python3 modules/abs_australia_sdmx.py UNEMPLOYMENT_RATE
+python3 modules/abs_australia_sdmx.py dashboard            # Headline macro dashboard
+python3 modules/abs_australia_sdmx.py discover labour      # Discover ABS dataflows
+python3 modules/abs_australia_sdmx.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'abs_australia_sdmx',
+    params: { indicator: 'GDP_GROWTH' }
+  })
+});
+```
+
+---
+
+### uae_data.py — UAE Open Data & CBUAE
+
+- **Source:** Central Bank of the UAE (CBUAE) + World Bank
+- **APIs:** CBUAE FX: `https://www.centralbank.ae/umbraco/Surface/Exchange/GetExchangeRateAllCurrency` / World Bank: `https://api.worldbank.org/v2/country/ARE/indicator`
+- **Protocol:** CBUAE Surface API (HTML scraping, Arabic-to-ISO mapping) + World Bank REST JSON
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX rates), Annual (macro indicators from World Bank)
+- **Coverage:** United Arab Emirates
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `FX_USD` | AED per USD (CBUAE Official, pegged ~3.6725) | Daily | AED |
+| `FX_EUR` | AED per EUR (CBUAE Official) | Daily | AED |
+| `FX_GBP` | AED per GBP (CBUAE Official) | Daily | AED |
+| `FX_JPY` | AED per JPY (CBUAE Official) | Daily | AED |
+| `FX_CHF` | AED per CHF (CBUAE Official) | Daily | AED |
+| `FX_SAR` | AED per SAR (CBUAE Official) | Daily | AED |
+| `FX_CNY` | AED per CNY (CBUAE Official) | Daily | AED |
+| `FX_INR` | AED per INR (CBUAE Official) | Daily | AED |
+| `FX_KWD` | AED per KWD (CBUAE Official) | Daily | AED |
+| `FX_EGP` | AED per EGP (CBUAE Official) | Daily | AED |
+| `GDP_CURRENT_USD` | UAE GDP — Current USD | Annual | USD |
+| `GDP_GROWTH` | UAE GDP Growth Rate (%) | Annual | % |
+| `CPI_INFLATION` | UAE CPI Inflation (%) | Annual | % |
+| `CPI_INDEX` | UAE Consumer Price Index (2010=100) | Annual | index |
+| `BROAD_MONEY` | UAE Broad Money — M2 (AED) | Annual | AED |
+| `FX_RESERVES` | UAE Total Reserves incl. Gold (USD) | Annual | USD |
+| `EXPORTS` | UAE Exports of Goods & Services (USD) | Annual | USD |
+| `IMPORTS` | UAE Imports of Goods & Services (USD) | Annual | USD |
+| `CURRENT_ACCOUNT` | UAE Current Account Balance (USD) | Annual | USD |
+| `GDP_PER_CAPITA` | UAE GDP per Capita (USD) | Annual | USD |
+
+**CLI Examples:**
+```bash
+python3 modules/uae_data.py FX_USD                 # AED/USD peg rate
+python3 modules/uae_data.py GDP_GROWTH              # UAE GDP growth
+python3 modules/uae_data.py fx                      # All CBUAE FX rates (76 currencies)
+python3 modules/uae_data.py macro                   # UAE macroeconomic summary
+python3 modules/uae_data.py list
+```
+
+---
+
+### destatis_germany.py — Destatis GENESIS-Online (Statistisches Bundesamt)
+
+- **Source:** Statistisches Bundesamt (Federal Statistical Office of Germany)
+- **API:** `https://www-genesis.destatis.de/genesisWS/rest/2020`
+- **Protocol:** REST POST with header auth (flat-file CSV or JSON response)
+- **Auth:** Free registration required — `DESTATIS_USER` and `DESTATIS_PASSWORD` in .env
+- **Freshness:** Monthly (CPI, IPI, PPI, trade, construction), Quarterly (GDP), Annual (some series)
+- **Coverage:** Germany
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_ANNUAL` | GDP — Gross Domestic Product (Annual) | Annual | EUR bn |
+| `GDP_QUARTERLY` | GDP — Gross Domestic Product (Quarterly) | Quarterly | EUR bn |
+| `CPI_MONTHLY` | Consumer Price Index (Monthly, 2020=100) | Monthly | Index |
+| `CPI_ANNUAL` | Consumer Price Index (Annual, 2020=100) | Annual | Index |
+| `HICP_MONTHLY` | Harmonised Index of Consumer Prices (Monthly, 2015=100) | Monthly | Index |
+| `HICP_ANNUAL` | Harmonised Index of Consumer Prices (Annual, 2015=100) | Annual | Index |
+| `EMPLOYMENT` | Employment & Unemployment (Annual) | Annual | 1000 persons |
+| `TRADE_MONTHLY` | Foreign Trade — Exports & Imports (Monthly) | Monthly | EUR mn |
+| `TRADE_ANNUAL` | Foreign Trade — Exports & Imports (Annual) | Annual | EUR mn |
+| `INDUSTRIAL_PRODUCTION` | Industrial Production Index (Monthly, 2021=100) | Monthly | Index |
+| `PPI_MONTHLY` | Producer Price Index (Monthly, 2021=100) | Monthly | Index |
+| `PPI_ANNUAL` | Producer Price Index (Annual, 2021=100) | Annual | Index |
+| `CONSTRUCTION` | Construction Activity (Monthly) | Monthly | various |
+
+**CLI Examples:**
+```bash
+python3 modules/destatis_germany.py GDP_QUARTERLY
+python3 modules/destatis_germany.py CPI_MONTHLY
+python3 modules/destatis_germany.py INDUSTRIAL_PRODUCTION
+python3 modules/destatis_germany.py search "Bruttoinlandsprodukt"  # Search GENESIS tables
+python3 modules/destatis_germany.py check-auth                     # Verify credentials
+python3 modules/destatis_germany.py list
+```
+
+---
+
+### edinet_japan.py — EDINET Japan Securities Filings (FSA)
+
+- **Source:** EDINET — Financial Services Agency (FSA) of Japan
+- **API:** `https://api.edinet-fsa.go.jp/api/v2`
+- **Protocol:** REST (JSON metadata, ZIP document bundles)
+- **Auth:** Subscription-Key required (free at https://disclosure.edinet-fsa.go.jp) — `EDINET_API_KEY`
+- **Freshness:** Daily (filings published continuously)
+- **Coverage:** All Japanese listed companies
+
+**Indicators:**
+
+| Key | Name | Frequency |
+|-----|------|-----------|
+| `ANNUAL_REPORTS` | Annual Securities Reports (有価証券報告書) | Annual |
+| `QUARTERLY_REPORTS` | Quarterly Securities Reports (四半期報告書) | Quarterly |
+| `SEMIANNUAL_REPORTS` | Semi-Annual Reports (半期報告書) | Semi-annual |
+| `LARGE_SHAREHOLDING` | Large Shareholding Reports (5%+ ownership) | Event-driven |
+| `TENDER_OFFERS` | Tender Offer Notifications (公開買付届出書) | Event-driven |
+| `SECURITIES_REGISTRATION` | Securities Registration Statements (IPOs) | Event-driven |
+| `ALL_FILINGS` | All Filings (全書類) — all types for date | Daily |
+
+**CLI Examples:**
+```bash
+python3 modules/edinet_japan.py ANNUAL_REPORTS              # Today's annual reports
+python3 modules/edinet_japan.py ANNUAL_REPORTS 2026-03-31   # Specific date
+python3 modules/edinet_japan.py LARGE_SHAREHOLDING 2026-03-01 2026-03-31  # Date range
+python3 modules/edinet_japan.py search "Toyota"             # Search by company name
+python3 modules/edinet_japan.py download S100XXXX 5         # Download CSV extract
+python3 modules/edinet_japan.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'edinet_japan',
+    params: { indicator: 'ANNUAL_REPORTS', start_date: '2026-04-01' }
+  })
+});
+```
+
+---
+
+### fca_uk.py — FCA UK Financial Services Register
+
+- **Source:** UK Financial Conduct Authority
+- **API:** `https://register.fca.org.uk/services/V0.1`
+- **Protocol:** REST JSON (FCA Register API V0.1)
+- **Auth:** API key + email required (free at https://register.fca.org.uk/Developer/s/) — `FCA_API_KEY`, `FCA_API_EMAIL`
+- **Freshness:** Real-time (regulatory register is continuously updated)
+- **Coverage:** United Kingdom (all FCA-regulated entities)
+
+**Indicators:**
+
+| Key | Name | Query |
+|-----|------|-------|
+| `FIRM_SEARCH` | Search FCA-authorized firms | firm name or FRN |
+| `INDIVIDUAL_SEARCH` | Search approved/prohibited individuals | individual name |
+| `FUND_SEARCH` | Search collective investment schemes | fund name or PRN |
+| `FIRM_DETAILS` | Full regulatory details for a firm | FRN (e.g. 122702) |
+| `FIRM_PERMISSIONS` | Regulated activities and permissions | FRN |
+| `FIRM_INDIVIDUALS` | Approved individuals at a firm | FRN |
+| `FIRM_PASSPORTS` | Cross-border passporting permissions | FRN |
+| `FIRM_DISCIPLINARY` | Enforcement actions, fines, sanctions | FRN |
+| `FIRM_REQUIREMENTS` | Regulatory requirements and conditions | FRN |
+| `FIRM_ADDRESSES` | Registered addresses, phone, websites | FRN |
+| `FIRM_EXCLUSIONS` | PSD2 and payment service exclusions | FRN |
+| `INDIVIDUAL_DETAILS` | Controlled functions for an individual | IRN (e.g. MXC29012) |
+| `REGULATED_MARKETS` | FCA-recognized regulated exchanges | none |
+
+**CLI Examples:**
+```bash
+python3 modules/fca_uk.py FIRM_SEARCH "barclays bank"       # Search firms
+python3 modules/fca_uk.py FIRM_DETAILS 122702               # Firm details by FRN
+python3 modules/fca_uk.py FIRM_DISCIPLINARY 122702           # Disciplinary history
+python3 modules/fca_uk.py INDIVIDUAL_SEARCH "mark carney"    # Search individuals
+python3 modules/fca_uk.py REGULATED_MARKETS                  # UK regulated exchanges
+python3 modules/fca_uk.py status 122702                      # Quick firm status check
+python3 modules/fca_uk.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'fca_uk',
+    params: { indicator: 'FIRM_SEARCH', query: 'barclays' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1150,14 +1388,15 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,045 modules in `modules/` directory, sorted alphabetically:
+All 1,050 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,045 modules)</summary>
+<summary>Click to expand full module list (1,050 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
-abs                          abs_australia_stats           abs_mbs_prepayment
+abs                          abs_australia_sdmx            abs_australia_stats
+abs_mbs_prepayment
 academic_papers              activist_success_predictor    adr_gdr_arbitrage
 agricultural_balance         agricultural_commodities      agricultural_supply_demand
 ai_chip_demand               ai_chip_demand_forecaster     ai_earnings_analyzer
@@ -1171,18 +1410,21 @@ banco_de_espana              banco_de_portugal             bank_of_canada
 bank_of_england              banque_de_france              bcb
 bls                          bundesbank_sdmx               cbc_taiwan
 cbs_netherlands              census                        central_bank_ireland
-cnb_czech
+cnb_czech                    destatis_germany
 coingecko_crypto             congress_trades               cso_ireland
-danmarks_nationalbank        ecb_fx_rates                  crypto_onchain
+danmarks_nationalbank        ecb_fx_rates                  edinet_japan
+crypto_onchain
 eia_energy                   estat_japan                   eurostat_macro
-fred_enhanced                istat_italy                   insee_france
+fca_uk                       fred_enhanced                 istat_italy
+insee_france
 nbb_belgium                  nbp_poland                    ons_uk
 options_chain                polygon_io                    prices
 riksbank_sweden              scb_sweden                    screener
 sec_edgar_api                statcan_canada                statistics_denmark
 statistics_finland           technicals
-tiingo                       treasury_curve                yield_curve
-... (1,045 total — run `ls modules/*.py | wc -l` to verify)
+tiingo                       treasury_curve                uae_data
+yield_curve
+... (1,050 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1205,9 +1447,12 @@ tiingo                       treasury_curve                yield_curve
 | Bank of Korea | `BOK_API_KEY` | Open | https://ecos.bok.or.kr |
 | e-Stat Japan | `ESTAT_JAPAN_APP_ID` | Open | https://www.e-stat.go.jp/api/ |
 | CNB Czech (ARAD) | `ARAD_API_KEY` | Open | https://www.cnb.cz/aradb/ |
+| Destatis GENESIS | `DESTATIS_USER` + `DESTATIS_PASSWORD` | Open | https://www-genesis.destatis.de |
+| EDINET Japan | `EDINET_API_KEY` | Open | https://disclosure.edinet-fsa.go.jp |
+| FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech) require **NO API key** for core data. e-Stat Japan requires a free Application ID. CNB Czech ARAD deep-data API requires a free key for extended series.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank) require **NO API key** for core data. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,045 modules — 17 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,050 modules — 21 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
