@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,056 Financial Data Modules
+# QuantClaw Data — 1,057 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,056 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,057 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,056 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,057 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,056** Python data modules
+- **1,057** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,056 modules)             │
+│  ├── Module browser (1,057 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,056 modules      │
+│  ├── Tool definitions for all 1,057 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,056 Python Modules                            │
+│  1,057 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics & Central Banks (Autobuilder Batches 1–7)
+### Government Statistics & Central Banks (Autobuilder Batches 1–9)
 
-Thirty-two modules covering 22 countries across Europe, Scandinavia, Central Europe, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 620+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
+Thirty-three modules covering 23 countries across Europe, Scandinavia, Central Europe, Alpine, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 635+ macroeconomic indicators from official government statistical offices, central banks, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -185,6 +185,7 @@ Thirty-two modules covering 22 countries across Europe, Scandinavia, Central Eur
 || `dnb_netherlands` | De Nederlandsche Bank (DNB) | Netherlands | `https://api.dnb.nl/statpub-intapi-prd/v1` | Financial stability indicators (quarterly/yearly), banking structure (domestic/foreign/EU/non-EU), insurance & pension fund balance sheets, insurer cash flows, payment transactions & infrastructure, monetary aggregates (M1/M2/M3 Dutch contribution), household deposit & lending rates |
 || `bnr_romania` | National Bank of Romania (BNR) | Romania | `https://www.bnr.ro/nbrfxrates.xml` | RON daily reference FX rates for 37 currencies (EUR/USD/GBP/CHF/JPY/AUD/CAD/CNY/CZK/DKK/HUF/PLN/SEK/NOK/TRY/ZAR/KRW/INR/BRL/MXN/SGD/HKD/NZD/THB/PHP/MYR/IDR/ILS/EGP/MDL/RSD/RUB/UAH/ISK/AED + gold XAU + IMF SDR XDR), 10-day history |
 || `statbel_belgium` | Statbel (Statistics Belgium) | Belgium | `https://opendata-api.statbel.fgov.be` | CPI index (base 2013=100), CPI inflation (YoY), health index, CPI excl. energy, HICP by COICOP (food/housing/transport/restaurants), unemployment by age & sex (male/female × youth/prime), retail trade turnover index, Gini coefficient (income inequality), birth rate, death rate |
+|| `statistics_austria` | Statistik Austria (OGD) | Austria | `https://data.statistik.gv.at` | GDP (nominal quarterly/annual, real quarterly), CPI (2015=100), PPI (2021=100), wholesale price index, employed/unemployed persons, total imports/exports, tourism overnight stays & turnover index, new car registrations, industrial production index, construction production index, household consumption, gross fixed capital formation |
 
 #### Global Coverage Map
 
@@ -217,6 +218,7 @@ Thirty-two modules covering 22 countries across Europe, Scandinavia, Central Eur
 🇳🇱 Netherlands (ext) — DNB (FSIs, banking structure, insurance/pension, payments, monetary aggregates, household rates)
 🇷🇴 Romania         — BNR (37-currency daily FX reference rates + gold + SDR, 10-day history)
 🇧🇪 Belgium (ext)   — Statbel (CPI/health index, HICP by COICOP, unemployment by demographics, retail, Gini, demographics)
+🇦🇹 Austria          — Statistik Austria (GDP nom/real, CPI, PPI, wholesale prices, employment, trade, tourism, industry, construction, investment)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -298,6 +300,17 @@ python3 modules/statbel_belgium.py CPI_INDEX
 python3 modules/statbel_belgium.py CPI_INFLATION
 python3 modules/statbel_belgium.py HICP_FOOD
 python3 modules/statbel_belgium.py GINI_COEFFICIENT
+# Austria (Batch 9)
+python3 modules/statistics_austria.py GDP_NOMINAL_Q
+python3 modules/statistics_austria.py GDP_REAL_Q
+python3 modules/statistics_austria.py CPI
+python3 modules/statistics_austria.py PRODUCER_PRICE_INDEX
+python3 modules/statistics_austria.py EMPLOYED
+python3 modules/statistics_austria.py EXPORTS_TOTAL
+python3 modules/statistics_austria.py OVERNIGHT_STAYS
+python3 modules/statistics_austria.py INDUSTRIAL_PRODUCTION_INDEX
+python3 modules/statistics_austria.py list
+python3 modules/statistics_austria.py catalog
 ```
 
 **REST API:**
@@ -347,6 +360,12 @@ GET /api/v1/bnr-romania?indicator=RON_EUR
 GET /api/v1/bnr-romania?indicator=RON_USD
 GET /api/v1/statbel-belgium?indicator=CPI_INDEX
 GET /api/v1/statbel-belgium?indicator=GINI_COEFFICIENT
+GET /api/v1/statistics-austria?indicator=GDP_NOMINAL_Q
+GET /api/v1/statistics-austria?indicator=CPI
+GET /api/v1/statistics-austria?indicator=PRODUCER_PRICE_INDEX
+GET /api/v1/statistics-austria?indicator=EXPORTS_TOTAL
+GET /api/v1/statistics-austria?indicator=INDUSTRIAL_PRODUCTION_INDEX
+GET /api/v1/statistics-austria?indicator=OVERNIGHT_STAYS
 ```
 
 **MCP Tool Call:**
@@ -792,6 +811,96 @@ const cpiComparison = await fetch('http://localhost:3056/api/data/batch', {
 - 620+ macroeconomic indicators from official government sources
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD), policy rates, interbank rates, monetary aggregates, GDP, CPI/HICP/PPI, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. full GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets
 
+#### Batch 9: Central Europe — Austria
+
+Batch 9 adds the **Statistics Austria** module, extending coverage to **23 countries** and **33 government/central bank/regulatory modules** with **635+ indicators**. Austria is the first Alpine nation on the platform, providing comprehensive macroeconomic data from the Konjunkturmonitor (Economic Trend Monitor) — the Austrian government's flagship composite dataset aggregating national accounts, prices, labour, trade, tourism, and industrial output.
+
+**Statistics Austria** (`statistics_austria`) — Statistik Austria (OGD Portal):
+- GDP: nominal quarterly (EUR mn), nominal annual (EUR mn), real chain-linked quarterly (EUR mn) — seasonally unadjusted national accounts
+- Consumer prices: CPI Verbraucherpreisindex (base 2015=100, monthly), with automatic year-on-year change extraction
+- Producer prices: Erzeugerpreisindex industrial output price index (NACE B-E, 2021=100, monthly)
+- Wholesale prices: Großhandelspreisindex wholesale trade price index (2025=100, monthly)
+- Labour market: total employed persons in thousands (quarterly), total unemployed persons in thousands (quarterly)
+- Foreign trade: total goods imports and exports in EUR (monthly customs data)
+- Tourism: total tourist overnight stays (Nächtigungen, monthly), accommodation & food service turnover index (2021=100, quarterly)
+- Automotive: new passenger car registrations (Pkw-Neuzulassungen, monthly)
+- Industrial output: Produktionsindex Industrie working-day adjusted production index (2021=100, monthly)
+- Construction: Produktionsindex Bau working-day adjusted construction production index (2021=100, monthly)
+- Consumption & investment: private household consumption expenditure (EUR mn, quarterly), gross fixed capital formation / Bruttoanlageinvestitionen (EUR mn, quarterly)
+- **15 indicators** with value, month-on-month change, and year-on-year % change for each series
+- **Special commands:** `list` (all available indicators with metadata), `catalog` (OGD dataset metadata discovery)
+- Data source: Konjunkturmonitor (OGD_konjunkturmonitor_KonMon_1) — semicolon-delimited CSV with European decimal format
+- API: `https://data.statistik.gv.at` (OGD CSV download, open access, CC BY 4.0, no auth required)
+- Cache TTL: 24h (data updated monthly/quarterly depending on indicator)
+
+**Example response — `GDP_NOMINAL_Q`:**
+```json
+{
+  "success": true,
+  "indicator": "GDP_NOMINAL_Q",
+  "name": "GDP Nominal, Quarterly (EUR mn)",
+  "description": "Gross domestic product, nominal, quarterly, in million EUR",
+  "unit": "EUR mn",
+  "frequency": "quarterly",
+  "latest_value": 128450.5,
+  "latest_period": "2025-Q4",
+  "period_change": 1230.2,
+  "period_change_pct": 0.9672,
+  "yoy_change_pct": 3.45,
+  "data_points": [{"period": "2025-Q4", "value": 128450.5, "yoy_pct": 3.45}, "..."],
+  "total_observations": 80,
+  "source": "https://data.statistik.gv.at/data/OGD_konjunkturmonitor_KonMon_1.csv"
+}
+```
+
+**Example — Full Austrian macro dashboard:**
+```bash
+python3 modules/statistics_austria.py
+# Returns latest values for all 15 indicators: GDP, CPI, PPI, employment, trade, tourism, industry, construction, investment
+```
+
+**Batch MCP — European GDP Comparison (New in Batch 9):**
+```typescript
+const gdpComparison = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'statistics_austria', params: { indicator: 'GDP_NOMINAL_Q' } },
+      { tool: 'destatis_germany', params: { indicator: 'GDP_QUARTERLY' } },
+      { tool: 'insee_france', params: { indicator: 'GDP_GROWTH' } },
+      { tool: 'istat_italy', params: { indicator: 'GDP_QUARTERLY' } },
+      { tool: 'cbs_netherlands', params: { indicator: 'GDP_GROWTH_YOY' } },
+      { tool: 'ine_spain', params: { indicator: 'GDP_QOQ' } },
+      { tool: 'statbel_belgium', params: { indicator: 'CPI_INDEX' } },
+      { tool: 'statistics_finland', params: { indicator: 'GDP_QOQ' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — European Industrial Production (New in Batch 9):**
+```typescript
+const industrialOutput = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'statistics_austria', params: { indicator: 'INDUSTRIAL_PRODUCTION_INDEX' } },
+      { tool: 'destatis_germany', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'insee_france', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'istat_italy', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'ine_spain', params: { indicator: 'IPI_SA' } },
+      { tool: 'statistics_finland', params: { indicator: 'IPI_TOTAL' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 9:**
+- 33 government/central bank/regulatory modules
+- 23 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇩🇪+ 🇯🇵+ 🇬🇧+ 🇨🇦+ 🇪🇸+ 🇳🇱+ 🇧🇪+
+- 635+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD), policy rates, interbank rates, monetary aggregates, GDP (incl. Austrian national accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism (overnight stays, turnover), automotive registrations, investment (GFCF)
+
 ---
 
 ## MCP Server
@@ -850,7 +959,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,056 modules gets an auto-generated REST endpoint:
+Each of the 1,057 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -863,7 +972,7 @@ Each of the 1,056 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,056 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,057 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -889,7 +998,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,056 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,057 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -961,6 +1070,7 @@ screen --min-cap 10B --sector Technology
 | DNB Netherlands (APIM) | Optional (fallback key) | Open | Dutch FSIs, banking structure, insurance/pension balance sheets, payments, monetary aggregates, household rates |
 | BNR Romania (XML) | No | Open | RON FX rates for 37 currencies + gold + SDR, daily & 10-day history |
 | Statbel Belgium (PostgREST) | No | Open (CC BY 4.0) | Belgian CPI/health index, HICP by COICOP, unemployment by demographics, retail turnover, Gini, birth/death rates |
+| Statistics Austria (OGD) | No | Open (CC BY 4.0) | Austrian GDP (nominal/real/annual), CPI (2015=100), PPI (2021=100), wholesale prices, employment, foreign trade, tourism overnight stays, car registrations, industrial/construction production, household consumption, GFCF |
 
 ---
 
@@ -1002,7 +1112,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,056 Python data modules
+├── modules/                          # 1,057 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -1042,7 +1152,8 @@ quantclaw-data/
 │   ├── dnb_netherlands.py           # DNB Netherlands (FSI, banking, payments, monetary)
 │   ├── bnr_romania.py               # BNR Romania (37-currency FX + gold + SDR)
 │   ├── statbel_belgium.py           # Statbel Belgium (CPI, HICP, unemployment, demographics)
-│   ├── ... (1,056 modules total)
+│   ├── statistics_austria.py        # Statistics Austria (GDP, CPI, PPI, trade, tourism, industry)
+│   ├── ... (1,057 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -1174,4 +1285,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,056 modules • 47 phases • 22 countries (11 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania) • 32 government/central bank modules • 620+ macro indicators • The data layer powering the MoneyClawX ecosystem*
+*1,057 modules • 47 phases • 23 countries (12 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria) • 33 government/central bank modules • 635+ macro indicators • The data layer powering the MoneyClawX ecosystem*

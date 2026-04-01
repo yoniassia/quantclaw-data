@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,056 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,057 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -50,7 +50,7 @@
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
 | Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
 | UK regulatory data | `fca_uk` (authorized firms, individuals, permissions, disciplinary, regulated markets) |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statistics_austria` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -68,6 +68,10 @@
 | Dutch banking / FSI | `dnb_netherlands` (FSIs, banking structure, insurance/pension, payments, monetary, household rates) |
 | Belgian statistics | `statbel_belgium` (CPI/HICP, unemployment by demographics, retail, Gini, demographics) + `nbb_belgium` (BoP, govt finance, surveys) |
 | Romanian FX data | `bnr_romania` (BNR daily reference rates for RON/EUR, RON/USD + 35 more currencies + gold) |
+| Austrian macro data | `statistics_austria` (GDP nominal/real, CPI, PPI, wholesale prices, employment, trade, tourism, industry, construction, investment) |
+| Tourism data | `statistics_austria` (overnight stays, accommodation turnover index), `world_bank_global_indices` |
+| Industrial production | `statistics_austria`, `destatis_germany`, `insee_france`, `istat_italy`, `ine_spain`, `statistics_finland`, `estat_japan` |
+| Producer prices / PPI | `statistics_austria` (Erzeugerpreisindex 2021=100), `destatis_germany` (PPI monthly/annual), `fred_enhanced` |
 | Income inequality | `statbel_belgium` (Gini coefficient, Belgium) |
 | Commodity price index | `bank_of_canada_valet` (BCPI total, energy, metals & minerals) |
 | Energy data | `eia_energy`, `crude_oil_fundamentals`, `natural_gas_supply_demand`, `opec` |
@@ -1681,6 +1685,68 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### statistics_austria.py — Statistics Austria (Konjunkturmonitor)
+
+- **Source:** Statistik Austria — Austrian Federal Statistical Office
+- **API:** `https://data.statistik.gv.at` (OGD CSV download, open access, CC BY 4.0)
+- **Dataset:** OGD_konjunkturmonitor_KonMon_1 (Konjunkturmonitor / Economic Trend Monitor)
+- **Auth:** None (open access)
+- **Coverage:** Austria
+- **Data freshness:** Monthly/quarterly (updated as releases occur)
+- **Cache TTL:** 24 hours
+
+**Available indicators (15):**
+
+| Indicator Key | Name | Frequency | Unit |
+|---------------|------|-----------|------|
+| `GDP_NOMINAL_Q` | GDP Nominal, Quarterly | Quarterly | EUR mn |
+| `GDP_REAL_Q` | GDP Real, Chain-linked Quarterly | Quarterly | EUR mn |
+| `GDP_NOMINAL_Y` | GDP Nominal, Annual | Annual | EUR mn |
+| `CPI` | Consumer Price Index (Verbraucherpreisindex) | Monthly | index (2015=100) |
+| `PRODUCER_PRICE_INDEX` | Industrial Output Price Index (Erzeugerpreisindex) | Monthly | index (2021=100) |
+| `WHOLESALE_PRICE_INDEX` | Wholesale Trade Price Index (Großhandelspreisindex) | Monthly | index (2025=100) |
+| `EMPLOYED` | Employed Persons | Quarterly | thousands |
+| `UNEMPLOYED` | Unemployed Persons | Quarterly | thousands |
+| `IMPORTS_TOTAL` | Total Goods Imports | Monthly | EUR |
+| `EXPORTS_TOTAL` | Total Goods Exports | Monthly | EUR |
+| `OVERNIGHT_STAYS` | Tourism Overnight Stays (Nächtigungen) | Monthly | count |
+| `TOURISM_TURNOVER_INDEX` | Accommodation & Food Service Turnover | Quarterly | index (2021=100) |
+| `NEW_CAR_REGISTRATIONS` | New Passenger Car Registrations (Pkw-Neuzulassungen) | Monthly | count |
+| `INDUSTRIAL_PRODUCTION_INDEX` | Industrial Production Index (Produktionsindex) | Monthly | index (2021=100) |
+| `CONSTRUCTION_PRODUCTION_INDEX` | Construction Production Index | Monthly | index (2021=100) |
+| `HOUSEHOLD_CONSUMPTION` | Private Household Consumption Expenditure | Quarterly | EUR mn |
+| `GROSS_FIXED_CAPITAL_FORMATION` | Gross Fixed Capital Formation (Bruttoanlageinvestitionen) | Quarterly | EUR mn |
+
+**CLI Examples:**
+```bash
+python3 modules/statistics_austria.py GDP_NOMINAL_Q
+python3 modules/statistics_austria.py CPI
+python3 modules/statistics_austria.py PRODUCER_PRICE_INDEX
+python3 modules/statistics_austria.py EMPLOYED
+python3 modules/statistics_austria.py EXPORTS_TOTAL
+python3 modules/statistics_austria.py OVERNIGHT_STAYS
+python3 modules/statistics_austria.py INDUSTRIAL_PRODUCTION_INDEX
+python3 modules/statistics_austria.py CONSTRUCTION_PRODUCTION_INDEX
+python3 modules/statistics_austria.py HOUSEHOLD_CONSUMPTION
+python3 modules/statistics_austria.py GROSS_FIXED_CAPITAL_FORMATION
+python3 modules/statistics_austria.py list
+python3 modules/statistics_austria.py catalog
+python3 modules/statistics_austria.py              # All indicators at once
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'statistics_austria',
+    params: { indicator: 'GDP_NOMINAL_Q' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1816,10 +1882,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,056 modules in `modules/` directory, sorted alphabetically:
+All 1,057 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,056 modules)</summary>
+<summary>Click to expand full module list (1,057 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -1851,10 +1917,11 @@ options_chain                polygon_io                    prices
 rba_enhanced                 riksbank_sweden               scb_sweden
 screener
 sec_edgar_api                statbel_belgium               statcan_canada
-statistics_denmark           statistics_finland            technicals
+statistics_austria           statistics_denmark            statistics_finland
+technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
-... (1,056 total — run `ls modules/*.py | wc -l` to verify)
+... (1,057 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1882,8 +1949,8 @@ yield_curve
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,056 modules — 22 countries — 32 government/central bank modules — 620+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,057 modules — 23 countries — 33 government/central bank modules — 635+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
