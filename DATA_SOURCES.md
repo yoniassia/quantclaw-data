@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,044 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,045 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -19,11 +19,14 @@
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
 | Crypto prices | `coingecko_crypto`, `crypto_onchain`, `bitcoin_onchain` |
+| CZK exchange rates | `cnb_czech` (CZK/EUR, CZK/USD, CZK/GBP + 9 more FX pairs, daily fixing) |
+| PRIBOR rates | `cnb_czech` (O/N, 1W, 2W, 1M, 3M, 6M, 1Y interbank rates) |
+| Czech central bank | `cnb_czech` (2W repo, discount, Lombard policy rates) |
 | PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
 | Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN) |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -949,6 +952,69 @@ python3 modules/danmarks_nationalbank.py list
 
 ---
 
+### cnb_czech.py — Czech National Bank (CNB)
+
+- **Source:** Czech National Bank (Česká národní banka)
+- **APIs:**
+  - FX fixing: `https://www.cnb.cz/en/financial-markets/foreign-exchange-market/central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/daily.txt`
+  - PRIBOR: `https://www.cnb.cz/en/financial-markets/money-market/pribor/fixing-of-interest-rates-on-interbank-deposits-pribor/daily.txt`
+  - Policy rates: `https://www.cnb.cz/en/faq/.galleries/development_of_the_cnb_2w_repo_rate.txt`
+  - ARAD (deep data): `https://www.cnb.cz/aradb/api/v1` (requires free API key)
+- **Protocol:** REST TXT/CSV (open feeds), REST JSON (ARAD)
+- **Auth:** None for FX/PRIBOR/policy feeds; ARAD requires `ARAD_API_KEY` env var (free)
+- **Freshness:** Daily (FX fixing ~14:15 CET, PRIBOR 48h delay), Event-driven (policy rates)
+- **Coverage:** Czech Republic
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `FX_USD` | CZK/USD Daily Fixing | Daily | CZK |
+| `FX_EUR` | CZK/EUR Daily Fixing | Daily | CZK |
+| `FX_GBP` | CZK/GBP Daily Fixing | Daily | CZK |
+| `FX_CHF` | CZK/CHF Daily Fixing | Daily | CZK |
+| `FX_JPY` | CZK/JPY Daily Fixing (per 100 JPY) | Daily | CZK/100 |
+| `FX_CAD` | CZK/CAD Daily Fixing | Daily | CZK |
+| `FX_AUD` | CZK/AUD Daily Fixing | Daily | CZK |
+| `FX_PLN` | CZK/PLN Daily Fixing | Daily | CZK |
+| `FX_HUF` | CZK/HUF Daily Fixing (per 100 HUF) | Daily | CZK/100 |
+| `FX_SEK` | CZK/SEK Daily Fixing | Daily | CZK |
+| `FX_NOK` | CZK/NOK Daily Fixing | Daily | CZK |
+| `FX_CNY` | CZK/CNY Daily Fixing | Daily | CZK |
+| `PRIBOR_1D` | PRIBOR Overnight (% p.a.) | Daily | % p.a. |
+| `PRIBOR_1W` | PRIBOR 1 Week (% p.a.) | Daily | % p.a. |
+| `PRIBOR_2W` | PRIBOR 2 Weeks (% p.a.) | Daily | % p.a. |
+| `PRIBOR_1M` | PRIBOR 1 Month (% p.a.) | Daily | % p.a. |
+| `PRIBOR_3M` | PRIBOR 3 Months (% p.a.) | Daily | % p.a. |
+| `PRIBOR_6M` | PRIBOR 6 Months (% p.a.) | Daily | % p.a. |
+| `PRIBOR_1Y` | PRIBOR 1 Year (% p.a.) | Daily | % p.a. |
+| `CNB_2W_REPO` | CNB 2-Week Repo Rate (%) | Event | % |
+| `CNB_DISCOUNT` | CNB Discount Rate (%) | Event | % |
+| `CNB_LOMBARD` | CNB Lombard Rate (%) | Event | % |
+
+**CLI Examples:**
+```bash
+python3 modules/cnb_czech.py FX_EUR              # CZK/EUR daily fixing
+python3 modules/cnb_czech.py PRIBOR_3M            # 3-month PRIBOR rate
+python3 modules/cnb_czech.py CNB_2W_REPO          # Main CNB policy rate
+python3 modules/cnb_czech.py pribor-curve          # Full PRIBOR term structure
+python3 modules/cnb_czech.py policy-rates          # All CNB official policy rates
+python3 modules/cnb_czech.py list                  # List all available indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'cnb_czech',
+    params: { indicator: 'FX_EUR' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1084,10 +1150,10 @@ python3 modules/danmarks_nationalbank.py list
 
 ## Complete Module List
 
-All 1,044 modules in `modules/` directory, sorted alphabetically:
+All 1,045 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,044 modules)</summary>
+<summary>Click to expand full module list (1,045 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -1105,6 +1171,7 @@ banco_de_espana              banco_de_portugal             bank_of_canada
 bank_of_england              banque_de_france              bcb
 bls                          bundesbank_sdmx               cbc_taiwan
 cbs_netherlands              census                        central_bank_ireland
+cnb_czech
 coingecko_crypto             congress_trades               cso_ireland
 danmarks_nationalbank        ecb_fx_rates                  crypto_onchain
 eia_energy                   estat_japan                   eurostat_macro
@@ -1115,7 +1182,7 @@ riksbank_sweden              scb_sweden                    screener
 sec_edgar_api                statcan_canada                statistics_denmark
 statistics_finland           technicals
 tiingo                       treasury_curve                yield_curve
-... (1,044 total — run `ls modules/*.py | wc -l` to verify)
+... (1,045 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1137,9 +1204,10 @@ tiingo                       treasury_curve                yield_curve
 | Banque de France | `BANQUE_DE_FRANCE_API_KEY` | Open | https://webstat.banque-france.fr/signup |
 | Bank of Korea | `BOK_API_KEY` | Open | https://ecos.bok.or.kr |
 | e-Stat Japan | `ESTAT_JAPAN_APP_ID` | Open | https://www.e-stat.go.jp/api/ |
+| CNB Czech (ARAD) | `ARAD_API_KEY` | Open | https://www.cnb.cz/aradb/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank) require **NO API key**. e-Stat Japan requires a free Application ID.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech) require **NO API key** for core data. e-Stat Japan requires a free Application ID. CNB Czech ARAD deep-data API requires a free key for extended series.
 
 ---
 
-*1,044 modules — 16 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,045 modules — 17 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
