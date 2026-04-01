@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,038 Financial Data Modules
+# QuantClaw Data — 1,039 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,038 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,039 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,038 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,039 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,038** Python data modules
+- **1,039** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,038 modules)             │
+│  ├── Module browser (1,039 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,038 modules      │
+│  ├── Tool definitions for all 1,039 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,038 Python Modules                            │
+│  1,039 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics & Central Banks (Autobuilder Batches 1–2)
+### Government Statistics & Central Banks (Autobuilder Batches 1–3)
 
-Thirteen modules covering 10 countries across Europe, North America, and Asia-Pacific with 200+ macroeconomic indicators from official government statistical offices and central banks:
+Fifteen modules covering 12 countries across Europe, Eastern Europe, North America, and Asia-Pacific with 250+ macroeconomic indicators from official government statistical offices and central banks:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -166,6 +166,8 @@ Thirteen modules covering 10 countries across Europe, North America, and Asia-Pa
 | `ons_uk` | ONS (Office for National Statistics) | United Kingdom | `https://api.beta.ons.gov.uk/v1` | Monthly GDP (all industries/services/production/manufacturing), CPIH inflation (all items/food/housing/transport), retail sales (volume/value), trade in goods (total/EU exports, imports), construction output (all/new work), private housing rental (index/YoY), labour market (unemployment/employment/inactivity rates) |
 | `statcan_canada` | Statistics Canada (WDS) | Canada | `https://www150.statcan.gc.ca/t1/wds/rest` | GDP (quarterly current/real + monthly all industries), CPI (all items/food/shelter/energy), labour force survey (unemployment/employment/full-time/participation/employment rates), merchandise trade (exports/imports/balance), retail sales, housing starts (CMHC SAAR), new housing price index |
 | `estat_japan` | e-Stat (Government of Japan) | Japan | `https://api.e-stat.go.jp/rest/3.0/app` | CPI (all items, core ex-fresh food), GDP (nominal/real quarterly SNA), unemployment rate, labour force population, industrial production index, trade statistics (exports/imports), housing starts, machinery orders (private ex. volatile) |
+| `nbp_poland` | National Bank of Poland (NBP) | Poland | `https://api.nbp.pl/api` | PLN FX mid rates for 32+ major currencies (Table A), minor/exotic rates for 116 currencies (Table B, weekly), bid/ask dealer spreads for 13 currencies (Table C), gold price (PLN/gram), full table snapshots |
+| `cbc_taiwan` | Central Bank of R.O.C. (Taiwan) | Taiwan | `https://cpx.cbc.gov.tw/API/DataAPI/Get` | TWD/USD spot FX (buy/sell/close), CBC policy rates (discount/secured/unsecured), five major bank deposit & lending rates, monetary aggregates (reserve money, M1A, M1B, M2 — daily avg + end-of-month), weighted-average interest rates (quarterly) |
 
 #### Global Coverage Map
 
@@ -181,6 +183,8 @@ Thirteen modules covering 10 countries across Europe, North America, and Asia-Pa
 🇬🇧 United Kingdom — ONS (GDP, CPIH, retail, trade, construction, labour)
 🇨🇦 Canada       — StatCan (GDP, CPI, labour, trade, retail, housing)
 🇯🇵 Japan        — e-Stat (CPI, GDP, unemployment, trade, industry, housing)
+🇵🇱 Poland       — NBP (PLN FX rates Table A/B/C, bid/ask spreads, gold)
+🇹🇼 Taiwan       — CBC (TWD/USD FX, policy rates, monetary aggregates, bank rates)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -202,6 +206,9 @@ python3 modules/banco_de_portugal.py IR_LOANS_HOUSING
 python3 modules/ons_uk.py GDP_MONTHLY
 python3 modules/statcan_canada.py UNEMPLOYMENT_RATE
 python3 modules/estat_japan.py CPI_ALL_ITEMS
+# Poland, Taiwan
+python3 modules/nbp_poland.py FX_EUR_PLN
+python3 modules/cbc_taiwan.py TWD_USD_CLOSE
 ```
 
 **REST API:**
@@ -214,6 +221,8 @@ GET /api/v1/banco-de-portugal?indicator=BOP_CURRENT_ACCOUNT
 GET /api/v1/ons-uk?indicator=GDP_MONTHLY
 GET /api/v1/statcan-canada?indicator=GDP_REAL
 GET /api/v1/estat-japan?indicator=GDP_NOMINAL
+GET /api/v1/nbp-poland?indicator=FX_EUR_PLN
+GET /api/v1/cbc-taiwan?indicator=CBC_DISCOUNT_RATE
 ```
 
 **MCP Tool Call:**
@@ -237,11 +246,57 @@ const results = await fetch('http://localhost:3056/api/data/batch', {
       { tool: 'ons_uk', params: { indicator: 'UNEMPLOYMENT_RATE' } },
       { tool: 'statcan_canada', params: { indicator: 'UNEMPLOYMENT_RATE' } },
       { tool: 'estat_japan', params: { indicator: 'UNEMPLOYMENT_RATE' } },
-      { tool: 'insee_france', params: { indicator: 'UNEMPLOYMENT_RATE' } }
+      { tool: 'insee_france', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'nbp_poland', params: { indicator: 'FX_USD_PLN' } }
     ]
   })
 });
 ```
+
+**Batch MCP — FX Rate Comparison (New in Batch 3):**
+```typescript
+const fxRates = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'cbc_taiwan', params: { indicator: 'TWD_USD_CLOSE' } },
+      { tool: 'nbp_poland', params: { indicator: 'FX_USD_PLN' } },
+      { tool: 'riksbank_sweden', params: { indicator: 'SEK_USD' } },
+      { tool: 'banque_de_france', params: { indicator: 'EUR_USD' } },
+      { tool: 'banco_de_portugal', params: { indicator: 'FX_EUR_USD' } }
+    ]
+  })
+});
+```
+
+#### Batch 3: Asia & Eastern Europe Expansion
+
+Batch 3 extends government data coverage to **12 countries** with two new modules:
+
+**CBC Taiwan** (`cbc_taiwan`) — Central Bank of the Republic of China (Taiwan):
+- TWD/USD spot exchange rates (daily close, bank buy/sell rates)
+- CBC monetary policy rates: discount rate, secured & unsecured accommodation rates
+- Five major domestic banks: 1-year fixed deposit, savings deposit, base lending rates
+- Monetary aggregates: Reserve Money, M1A, M1B, M2 (daily averages + end-of-month)
+- Weighted-average deposit and lending rates (all banks, quarterly)
+- **18 indicators** covering FX, rates, and monetary policy
+- API: `https://cpx.cbc.gov.tw/API/DataAPI/Get` (REST/JSON, open access, no auth)
+
+**NBP Poland** (`nbp_poland`) — National Bank of Poland:
+- PLN exchange rates against 32+ major currencies (Table A, daily mid rates)
+- Minor/exotic currency rates for 116 currencies (Table B, published weekly on Wednesdays)
+- Bid/ask dealer spreads for 13 key currencies (Table C, daily)
+- Gold price in PLN per gram (daily, 1000 fineness)
+- Full table snapshots: fetch all rates for any NBP table in a single API call
+- Date-range queries with automatic chunking (handles NBP's 93-day API limit)
+- **21 indicators** covering FX mid rates, bid/ask spreads, and gold
+- API: `https://api.nbp.pl/api` (REST/JSON, open access, no auth, no rate limit)
+
+**Coverage totals after Batch 3:**
+- 15 government/central bank modules
+- 12 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼
+- 250+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates, policy rates, monetary aggregates, GDP, CPI, unemployment, trade, housing, banking FSIs, gold
 
 ---
 
@@ -301,7 +356,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,038 modules gets an auto-generated REST endpoint:
+Each of the 1,039 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -314,7 +369,7 @@ Each of the 1,038 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,038 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,039 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -340,7 +395,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,038 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,039 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -393,6 +448,8 @@ screen --min-cap 10B --sector Technology
 | ONS UK (CMD beta) | No | Open (beta) | UK GDP, CPIH, retail sales, trade, labour market |
 | Statistics Canada (WDS) | No | 25 req/s per IP | Canadian GDP, CPI, labour, trade, housing |
 | e-Stat Japan | Yes (free) | Open | Japanese GDP, CPI, unemployment, trade, industry |
+| NBP Poland | No | Open (no limit) | PLN FX rates (32+ currencies), bid/ask spreads, gold price |
+| CBC Taiwan | No | Open | TWD/USD FX rates, CBC policy rates, monetary aggregates, bank rates |
 
 ---
 
@@ -434,7 +491,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,038 Python data modules
+├── modules/                          # 1,039 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -455,7 +512,9 @@ quantclaw-data/
 │   ├── ons_uk.py                     # UK Office for National Statistics
 │   ├── statcan_canada.py             # Statistics Canada (WDS)
 │   ├── estat_japan.py                # e-Stat Japan (Government Statistics)
-│   ├── ... (1,038 modules total)
+│   ├── nbp_poland.py                 # National Bank of Poland (FX, gold)
+│   ├── cbc_taiwan.py                 # CBC Taiwan (FX, rates, monetary)
+│   ├── ... (1,039 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -580,4 +639,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,038 modules • 47 phases • 10 countries (7 EU + UK + Canada + Japan) • The data layer powering the MoneyClawX ecosystem*
+*1,039 modules • 47 phases • 12 countries (7 EU + UK + Canada + Japan + Poland + Taiwan) • The data layer powering the MoneyClawX ecosystem*

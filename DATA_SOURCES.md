@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,038 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,039 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -19,10 +19,14 @@
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
 | Crypto prices | `coingecko_crypto`, `crypto_onchain`, `bitcoin_onchain` |
+| PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
+| TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
 | Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy` |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC discount rate) |
 | Euribor rates | `banco_de_espana` |
+| Polish macro / FX | `nbp_poland` (FX rates 32+ currencies, bid/ask, gold PLN/g) |
+| Taiwan monetary | `cbc_taiwan` (policy rates, M1A/M1B/M2, deposit/lending rates, TWD/USD) |
 | UK macro data | `ons_uk` (GDP, CPIH, retail, trade, labour, construction, rental) |
 | Canadian macro data | `statcan_canada` (GDP, CPI, labour, trade, retail, housing) |
 | Japanese macro data | `estat_japan` (CPI, GDP, unemployment, trade, industry, housing) |
@@ -31,6 +35,7 @@
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
 | Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `fred_housing`, `zillow_zhvi` |
+| Gold price (PLN) | `nbp_poland` |
 | Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
@@ -621,6 +626,96 @@ python3 modules/estat_japan.py list
 
 ---
 
+### nbp_poland.py — National Bank of Poland (NBP)
+
+- **Source:** Narodowy Bank Polski
+- **API:** `https://api.nbp.pl/api`
+- **Protocol:** REST (JSON)
+- **Auth:** None (open access, no rate limit)
+- **Freshness:** Daily (Table A/C FX, gold), Weekly on Wednesdays (Table B exotic FX)
+- **Coverage:** Poland / PLN
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `FX_USD_PLN` | USD/PLN Mid Rate | Daily | PLN |
+| `FX_EUR_PLN` | EUR/PLN Mid Rate | Daily | PLN |
+| `FX_GBP_PLN` | GBP/PLN Mid Rate | Daily | PLN |
+| `FX_CHF_PLN` | CHF/PLN Mid Rate | Daily | PLN |
+| `FX_JPY_PLN` | JPY/PLN Mid Rate (per 100 JPY) | Daily | PLN |
+| `FX_CAD_PLN` | CAD/PLN Mid Rate | Daily | PLN |
+| `FX_AUD_PLN` | AUD/PLN Mid Rate | Daily | PLN |
+| `FX_CNY_PLN` | CNY/PLN Mid Rate | Daily | PLN |
+| `FX_SEK_PLN` | SEK/PLN Mid Rate | Daily | PLN |
+| `FX_NOK_PLN` | NOK/PLN Mid Rate | Daily | PLN |
+| `FX_CZK_PLN` | CZK/PLN Mid Rate | Daily | PLN |
+| `FX_HUF_PLN` | HUF/PLN Mid Rate (per 100 HUF) | Daily | PLN |
+| `FX_TWD_PLN` | TWD/PLN Mid Rate (Table B) | Weekly | PLN |
+| `FX_AED_PLN` | AED/PLN Mid Rate (Table B) | Weekly | PLN |
+| `FX_SAR_PLN` | SAR/PLN Mid Rate (Table B) | Weekly | PLN |
+| `FX_KWD_PLN` | KWD/PLN Mid Rate (Table B) | Weekly | PLN |
+| `FX_USD_PLN_BID_ASK` | USD/PLN Bid/Ask Spread (Table C) | Daily | PLN |
+| `FX_EUR_PLN_BID_ASK` | EUR/PLN Bid/Ask Spread (Table C) | Daily | PLN |
+| `FX_GBP_PLN_BID_ASK` | GBP/PLN Bid/Ask Spread (Table C) | Daily | PLN |
+| `FX_CHF_PLN_BID_ASK` | CHF/PLN Bid/Ask Spread (Table C) | Daily | PLN |
+| `GOLD_PLN` | Gold Price (PLN/gram, 1000 fineness) | Daily | PLN/g |
+
+**CLI Examples:**
+```bash
+python3 modules/nbp_poland.py FX_EUR_PLN
+python3 modules/nbp_poland.py GOLD_PLN
+python3 modules/nbp_poland.py FX_USD_PLN_BID_ASK
+python3 modules/nbp_poland.py table A            # Full Table A snapshot
+python3 modules/nbp_poland.py FX_EUR_PLN 2025-01-01 2025-06-30  # Date range
+python3 modules/nbp_poland.py list
+```
+
+---
+
+### cbc_taiwan.py — Central Bank of R.O.C. (Taiwan)
+
+- **Source:** Central Bank of the Republic of China (Taiwan)
+- **API:** `https://cpx.cbc.gov.tw/API/DataAPI/Get`
+- **Protocol:** REST (JSON)
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX spot), Monthly (rates, monetary), Quarterly (weighted-average rates)
+- **Coverage:** Taiwan
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `TWD_USD_CLOSE` | TWD/USD Closing Rate | Daily | NTD per USD |
+| `TWD_USD_BUY` | TWD/USD Buying Rate | Daily | NTD per USD |
+| `TWD_USD_SELL` | TWD/USD Selling Rate | Daily | NTD per USD |
+| `CBC_DISCOUNT_RATE` | CBC Discount Rate | Monthly | % p.a. |
+| `CBC_SECURED_RATE` | CBC Secured Accommodation Rate | Monthly | % p.a. |
+| `CBC_UNSECURED_RATE` | CBC Unsecured Accommodation Rate | Monthly | % p.a. |
+| `DEPOSIT_RATE_1Y_FIXED` | 1-Year Fixed Deposit Rate (5 major banks) | Monthly | % p.a. |
+| `SAVINGS_RATE_1Y` | 1-Year Savings Deposit Rate (5 major banks) | Monthly | % p.a. |
+| `BASE_LENDING_RATE` | Base Lending Rate (5 major banks) | Monthly | % p.a. |
+| `RESERVE_MONEY` | Reserve Money — Daily Average | Monthly | Millions NTD |
+| `M1A` | M1A Monetary Aggregate — Daily Average | Monthly | Millions NTD |
+| `M1B` | M1B Monetary Aggregate — Daily Average | Monthly | Millions NTD |
+| `M2` | M2 Monetary Aggregate — Daily Average | Monthly | Millions NTD |
+| `RESERVE_MONEY_EOM` | Reserve Money — End of Month | Monthly | Millions NTD |
+| `M1B_EOM` | M1B — End of Month Outstanding | Monthly | Millions NTD |
+| `M2_EOM` | M2 — End of Month Outstanding | Monthly | Millions NTD |
+| `WEIGHTED_DEPOSIT_RATE` | Weighted Avg Deposit Rate — All Banks | Quarterly | % p.a. |
+| `WEIGHTED_LENDING_RATE` | Weighted Avg Lending Rate — All Banks | Quarterly | % p.a. |
+
+**CLI Examples:**
+```bash
+python3 modules/cbc_taiwan.py TWD_USD_CLOSE
+python3 modules/cbc_taiwan.py CBC_DISCOUNT_RATE
+python3 modules/cbc_taiwan.py policy-rates        # All CBC + bank rates
+python3 modules/cbc_taiwan.py monetary             # M1A/M1B/M2 aggregates
+python3 modules/cbc_taiwan.py list
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -756,10 +851,10 @@ python3 modules/estat_japan.py list
 
 ## Complete Module List
 
-All 1,038 modules in `modules/` directory, sorted alphabetically:
+All 1,039 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,038 modules)</summary>
+<summary>Click to expand full module list (1,039 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -775,17 +870,17 @@ alpha_vantage                alpha_vantage_api             alpha_vantage_commodi
 alpha_vantage_earnings_api   alpha_vantage_forex           alpha_vantage_fund_flows
 banco_de_espana              banco_de_portugal             bank_of_canada
 bank_of_england              banque_de_france              bcb
-bls                          bundesbank_sdmx               cbs_netherlands
-census
-coingecko_crypto             congress_trades               crypto_onchain
-ecb_fx_rates                 eia_energy                    estat_japan
-eurostat_macro               fred_enhanced                 istat_italy
-insee_france                 ons_uk                        options_chain
+bls                          bundesbank_sdmx               cbc_taiwan
+cbs_netherlands              census                        coingecko_crypto
+congress_trades              crypto_onchain                ecb_fx_rates
+eia_energy                   estat_japan                   eurostat_macro
+fred_enhanced                istat_italy                   insee_france
+nbp_poland                   ons_uk                        options_chain
 polygon_io                   prices                        riksbank_sweden
 scb_sweden                   screener                      sec_edgar_api
 statcan_canada               statistics_denmark            technicals
 tiingo                       treasury_curve                yield_curve
-... (1,038 total — run `ls modules/*.py | wc -l` to verify)
+... (1,039 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -808,8 +903,8 @@ tiingo                       treasury_curve                yield_curve
 | Bank of Korea | `BOK_API_KEY` | Open | https://ecos.bok.or.kr |
 | e-Stat Japan | `ESTAT_JAPAN_APP_ID` | Open | https://www.e-stat.go.jp/api/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan) require **NO API key**. e-Stat Japan requires a free Application ID.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan) require **NO API key**. e-Stat Japan requires a free Application ID.
 
 ---
 
-*1,038 modules — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,039 modules — 12 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
