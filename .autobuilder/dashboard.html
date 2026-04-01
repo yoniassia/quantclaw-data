@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantClaw AutoBuilder — Initiative Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00C853;
+            --green-dark: #00A844;
+            --green-glow: rgba(0, 200, 83, 0.3);
+            --yellow: #FFC107;
+            --red: #FF5252;
+            --blue: #448AFF;
+            --purple: #B388FF;
+            --bg: #0a0a0a;
+            --bg-card: #111111;
+            --bg-card-hover: #1a1a1a;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --accent: #00E676;
+            --border: #222;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .grid-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(0,200,83,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,83,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1; animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+        @keyframes pulse { 0%,100% { opacity:0.3; transform:translate(-50%,-50%) scale(1); } 50% { opacity:0.6; transform:translate(-50%,-50%) scale(1.1); } }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .hero {
+            padding: 3rem 2rem 2rem; text-align: center; position: relative;
+        }
+        .hero::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 500px; height: 500px; background: radial-gradient(circle, var(--green-glow), transparent 70%);
+            z-index: -1; animation: pulse 4s ease-in-out infinite;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(0,200,83,0.1); border: 1px solid rgba(0,200,83,0.3);
+            padding: 6px 16px; border-radius: 100px; font-size: 0.85rem; color: var(--green); margin-bottom: 1.5rem;
+        }
+        .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 2s ease-in-out infinite; }
+        h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+        .green { color: var(--green); }
+        .hero-sub { font-size: 1.1rem; color: var(--text-dim); max-width: 600px; margin: 0 auto 2rem; }
+
+        .stats-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
+        .stat { text-align: center; min-width: 100px; }
+        .stat-value { font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .stat-value.green { color: var(--green); }
+        .stat-value.yellow { color: var(--yellow); }
+        .stat-value.blue { color: var(--blue); }
+        .stat-value.red { color: var(--red); }
+        .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        .main-progress { max-width: 800px; margin: 2rem auto; padding: 0 2rem; }
+        .progress-bar-outer { height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+        .progress-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s; background: linear-gradient(90deg, var(--green), var(--accent)); position: relative; }
+        .progress-bar-fill::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 30px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2)); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem; }
+
+        section { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
+        h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .section-sub { color: var(--text-dim); font-size: 1rem; margin-bottom: 2rem; }
+
+        .tier-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .tier-tab {
+            padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-dim); transition: all 0.2s;
+        }
+        .tier-tab.active { background: rgba(0,200,83,0.15); border-color: var(--green); color: var(--green); }
+        .tier-tab:hover { border-color: var(--green); color: var(--text); }
+        .tier-content { display: none; }
+        .tier-content.active { display: block; }
+
+        .initiative-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+        .initiative-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.2rem; transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .initiative-card:hover { border-color: var(--green); background: var(--bg-card-hover); transform: translateY(-1px); }
+        .initiative-card.done { border-left: 3px solid var(--green); }
+        .initiative-card.building { border-left: 3px solid var(--yellow); }
+        .initiative-card.queued { border-left: 3px solid var(--border); }
+        .initiative-card.failed { border-left: 3px solid var(--red); }
+
+        .init-header { display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
+        .init-number { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; }
+        .init-status { margin-left: auto; font-size: 1.1rem; }
+        .init-status.spinning { animation: spin 2s linear infinite; }
+        .init-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; }
+        .init-desc { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .init-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .init-tag {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 2px 8px;
+            border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-dim);
+        }
+        .init-tag.tier-a { background: rgba(0,200,83,0.1); color: var(--green); }
+        .init-tag.tier-b { background: rgba(68,138,255,0.1); color: var(--blue); }
+        .init-tag.tier-c { background: rgba(255,193,7,0.1); color: var(--yellow); }
+        .init-tag.enhance { background: rgba(179,136,255,0.1); color: var(--purple); }
+
+        .log-section {
+            background: #0d0d0d; border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            max-height: 400px; overflow-y: auto; margin: 2rem 0;
+        }
+        .log-line { padding: 3px 0; white-space: pre-wrap; word-break: break-all; }
+        .log-line.ok { color: var(--green); }
+        .log-line.building { color: var(--yellow); }
+        .log-line.fail { color: var(--red); }
+        .log-line.info { color: var(--text-dim); }
+        .log-line.header { color: var(--blue); font-weight: 600; }
+
+        .nav-link {
+            display: inline-flex; align-items: center; gap: 6px; color: var(--green);
+            text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 8px 16px;
+            border: 1px solid rgba(0,200,83,0.3); border-radius: 8px; transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(0,200,83,0.1); }
+
+        .eta-bar {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.2rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .eta-item { display: flex; flex-direction: column; }
+        .eta-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+        .eta-value { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 600; }
+
+        footer { text-align: center; padding: 3rem 2rem; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--green); text-decoration: none; }
+
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .stats-bar { gap: 1rem; }
+            .stat-value { font-size: 1.5rem; }
+            .initiative-grid { grid-template-columns: 1fr; }
+            section { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="hero">
+        <div class="hero-badge"><span class="dot"></span> AutoBuilder Running — QuantClaw Data</div>
+        <h1>📊 <span class="green">Initiative</span> Dashboard</h1>
+        <p class="hero-sub">45 government data source initiatives across 36 countries. Built by Cursor CLI agents, one module at a time.</p>
+
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value green" id="done-count">0</div><div class="stat-label">Completed</div></div>
+            <div class="stat"><div class="stat-value yellow" id="building-count">0</div><div class="stat-label">Building</div></div>
+            <div class="stat"><div class="stat-value blue" id="queued-count">0</div><div class="stat-label">Queued</div></div>
+            <div class="stat"><div class="stat-value red" id="failed-count">0</div><div class="stat-label">Failed</div></div>
+            <div class="stat"><div class="stat-value green" id="total-modules">1025</div><div class="stat-label">Total Modules</div></div>
+        </div>
+    </div>
+
+    <div class="main-progress">
+        <div class="progress-bar-outer"><div class="progress-bar-fill" id="main-progress" style="width:0%"></div></div>
+        <div class="progress-label"><span id="progress-text">Loading...</span><span id="progress-pct">0%</span></div>
+    </div>
+
+    <section>
+        <div class="eta-bar">
+            <div class="eta-item"><span class="eta-label">Started</span><span class="eta-value" id="eta-started">—</span></div>
+            <div class="eta-item"><span class="eta-label">Avg Per Initiative</span><span class="eta-value" id="eta-avg">~90s</span></div>
+            <div class="eta-item"><span class="eta-label">Est. Remaining</span><span class="eta-value" id="eta-remaining">—</span></div>
+            <div class="eta-item"><span class="eta-label">Last Updated</span><span class="eta-value" id="eta-updated">—</span></div>
+            <div style="margin-left:auto; display:flex; gap:1rem;">
+                <a href="roadmap.html" class="nav-link">🗺️ Data Roadmap</a>
+                <button onclick="refreshStatus()" class="nav-link" style="background:none; cursor:pointer;">🔄 Refresh</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="fade-in">
+        <h2>All <span class="green">Initiatives</span></h2>
+        <p class="section-sub">Each initiative adds a new government data module. Click tiers to filter.</p>
+
+        <div class="tier-tabs">
+            <button class="tier-tab active" onclick="filterTier('all')">All (45)</button>
+            <button class="tier-tab" onclick="filterTier('a')">Tier A — APIs (20)</button>
+            <button class="tier-tab" onclick="filterTier('b')">Tier B — REST/CSV (15)</button>
+            <button class="tier-tab" onclick="filterTier('enhance')">Enhance (5)</button>
+            <button class="tier-tab" onclick="filterTier('batch')">Batch (5)</button>
+        </div>
+
+        <div class="initiative-grid" id="initiative-grid"></div>
+    </section>
+
+    <section class="fade-in">
+        <h2>Build <span class="green">Log</span></h2>
+        <p class="section-sub">Live output from the autobuilder runner.</p>
+        <div class="log-section" id="build-log">
+            <div class="log-line info">Waiting for log data...</div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Built by <a href="https://github.com/yoniassia/quantclaw-data">QuantClaw Data</a> AutoBuilder — Cursor CLI + Claude Opus</p>
+        <p style="margin-top:0.5rem;">36 countries · 45 initiatives · Fully autonomous 🤖</p>
+    </footer>
+
+    <script>
+    const INITIATIVES = [
+        { id: "0001", name: "Deutsche Bundesbank SDMX", country: "Germany", flag: "🇩🇪", tier: "a", type: "Central Bank", desc: "SDMX REST API — yields, ECB rates, money supply, lending, trade balance", module: "bundesbank_sdmx.py" },
+        { id: "0002", name: "INSEE France SDMX", country: "France", flag: "🇫🇷", tier: "a", type: "Statistics", desc: "National statistics — GDP, CPI, unemployment, industrial production", module: "insee_france.py" },
+        { id: "0003", name: "Banque de France Webstat", country: "France", flag: "🇫🇷", tier: "a", type: "Central Bank", desc: "French central bank — monetary stats, balance of payments, banking data", module: "banque_de_france.py" },
+        { id: "0004", name: "ISTAT Italy SDMX", country: "Italy", flag: "🇮🇹", tier: "a", type: "Statistics", desc: "Italian national statistics — GDP, prices, demographics, labour", module: "istat_italy.py" },
+        { id: "0005", name: "CBS Netherlands StatLine", country: "Netherlands", flag: "🇳🇱", tier: "a", type: "Statistics", desc: "Dutch statistics — GDP, trade, prices, demographics, energy", module: "cbs_netherlands.py" },
+        { id: "0006", name: "Statistics Denmark DST", country: "Denmark", flag: "🇩🇰", tier: "a", type: "Statistics", desc: "Danish statistics — national accounts, prices, population, labour", module: "statistics_denmark.py" },
+        { id: "0007", name: "SCB Sweden PxWeb", country: "Sweden", flag: "🇸🇪", tier: "a", type: "Statistics", desc: "Swedish statistics — GDP, CPI, housing, population, trade", module: "scb_sweden.py" },
+        { id: "0008", name: "Sveriges Riksbank", country: "Sweden", flag: "🇸🇪", tier: "a", type: "Central Bank", desc: "Swedish central bank — policy rate, FX, government bonds", module: "riksbank_sweden.py" },
+        { id: "0009", name: "NBP Poland", country: "Poland", flag: "🇵🇱", tier: "a", type: "Central Bank", desc: "Polish central bank — FX rates, gold prices, interest rates", module: "nbp_poland.py" },
+        { id: "0010", name: "Banco de España", country: "Spain", flag: "🇪🇸", tier: "a", type: "Central Bank", desc: "Spanish central bank — interest rates, credit, balance of payments", module: "banco_de_espana.py" },
+        { id: "0011", name: "BPstat Portugal", country: "Portugal", flag: "🇵🇹", tier: "a", type: "Central Bank", desc: "Portuguese central bank — monetary stats, banking, external sector", module: "bpstat_portugal.py" },
+        { id: "0012", name: "ONS UK", country: "UK", flag: "🇬🇧", tier: "a", type: "Statistics", desc: "UK national statistics — GDP, CPI, employment, trade, population", module: "ons_uk.py" },
+        { id: "0013", name: "Statistics Canada WDS", country: "Canada", flag: "🇨🇦", tier: "a", type: "Statistics", desc: "Canadian statistics — GDP, CPI, labour, trade, demographics", module: "statcan_canada.py" },
+        { id: "0014", name: "e-Stat Japan", country: "Japan", flag: "🇯🇵", tier: "a", type: "Statistics", desc: "Japanese government statistics — GDP, CPI, trade, demographics", module: "estat_japan.py" },
+        { id: "0015", name: "CBC Taiwan", country: "Taiwan", flag: "🇹🇼", tier: "a", type: "Central Bank", desc: "Central Bank of China — interest rates, FX reserves, monetary data", module: "cbc_taiwan.py" },
+        { id: "0016", name: "NBB Belgium SDMX", country: "Belgium", flag: "🇧🇪", tier: "a", type: "Central Bank", desc: "Belgian central bank — banking stats, balance of payments, credit", module: "nbb_belgium.py" },
+        { id: "0017", name: "Central Bank of Ireland", country: "Ireland", flag: "🇮🇪", tier: "a", type: "Central Bank", desc: "Irish central bank — banking, credit, insurance, financial accounts", module: "central_bank_ireland.py" },
+        { id: "0018", name: "CSO Ireland PxWeb", country: "Ireland", flag: "🇮🇪", tier: "a", type: "Statistics", desc: "Irish national statistics — GDP, prices, employment, demographics", module: "cso_ireland.py" },
+        { id: "0019", name: "Statistics Finland PxWeb", country: "Finland", flag: "🇫🇮", tier: "a", type: "Statistics", desc: "Finnish statistics — GDP, prices, population, trade, environment", module: "statistics_finland.py" },
+        { id: "0020", name: "Danmarks Nationalbank", country: "Denmark", flag: "🇩🇰", tier: "a", type: "Central Bank", desc: "Danish central bank — interest rates, FX, government securities", module: "danmarks_nationalbank.py" },
+        { id: "0021", name: "CNB Czech Republic", country: "Czech Republic", flag: "🇨🇿", tier: "b", type: "Central Bank", desc: "Czech National Bank ARAD — exchange rates, interest rates, monetary", module: "cnb_czech.py" },
+        { id: "0022", name: "UAE Open Data", country: "UAE", flag: "🇦🇪", tier: "b", type: "Statistics", desc: "CBUAE + UAE open data portal — GDP, trade, banking, demographics", module: "uae_opendata.py" },
+        { id: "0023", name: "EDINET Japan", country: "Japan", flag: "🇯🇵", tier: "b", type: "Regulator", desc: "Japanese electronic disclosure — company filings, XBRL data", module: "edinet_japan.py" },
+        { id: "0024", name: "FCA UK Register", country: "UK", flag: "🇬🇧", tier: "b", type: "Regulator", desc: "UK Financial Conduct Authority — firm register, permissions, warnings", module: "fca_uk.py" },
+        { id: "0025", name: "Destatis Germany", country: "Germany", flag: "🇩🇪", tier: "b", type: "Statistics", desc: "GENESIS-Online — GDP, prices, trade, population, energy, industry", module: "destatis_germany.py" },
+        { id: "0026", name: "ABS Australia Enhanced", country: "Australia", flag: "🇦🇺", tier: "b", type: "Statistics", desc: "Enhanced SDMX 2.1 — more datasets, better granularity", module: "abs_australia_enhanced.py" },
+        { id: "0027", name: "RBA Enhanced", country: "Australia", flag: "🇦🇺", tier: "b", type: "Central Bank", desc: "Reserve Bank of Australia — expanded CSV feeds, financial aggregates", module: "rba_enhanced.py" },
+        { id: "0028", name: "Bank of Canada Enhanced", country: "Canada", flag: "🇨🇦", tier: "b", type: "Central Bank", desc: "Valet API expansion — more series, financial conditions", module: "bank_of_canada_enhanced.py" },
+        { id: "0029", name: "DNB Netherlands", country: "Netherlands", flag: "🇳🇱", tier: "b", type: "Central Bank", desc: "Dutch central bank — banking, payments, pensions, insurance", module: "dnb_netherlands.py" },
+        { id: "0030", name: "INE Spain", country: "Spain", flag: "🇪🇸", tier: "b", type: "Statistics", desc: "Spanish national statistics — GDP, CPI, employment, housing", module: "ine_spain.py" },
+        { id: "0031", name: "BNR Romania FX", country: "Romania", flag: "🇷🇴", tier: "b", type: "Central Bank", desc: "National Bank of Romania — FX rates, interest rates, monetary data", module: "bnr_romania_fx.py" },
+        { id: "0032", name: "Statbel Belgium", country: "Belgium", flag: "🇧🇪", tier: "b", type: "Statistics", desc: "Belgian statistics — GDP, CPI, demographics, trade", module: "statbel_belgium.py" },
+        { id: "0033", name: "Statistics Austria", country: "Austria", flag: "🇦🇹", tier: "b", type: "Statistics", desc: "Austrian statistics — GDP, prices, population, energy", module: "statistics_austria.py" },
+        { id: "0034", name: "CZSO Czech Republic", country: "Czech Republic", flag: "🇨🇿", tier: "b", type: "Statistics", desc: "Czech statistical office — GDP, CPI, industrial production, trade", module: "czso_czech.py" },
+        { id: "0035", name: "Statistics Estonia", country: "Estonia", flag: "🇪🇪", tier: "b", type: "Statistics", desc: "Estonian statistics — GDP, prices, population, digital economy", module: "statistics_estonia.py" },
+        { id: "0036", name: "ECB Enhanced", country: "EU", flag: "🇪🇺", tier: "enhance", type: "Central Bank", desc: "Add M1/M2/M3, bank lending survey, SAFE survey to existing ECB module", module: "ecb_enhanced.py" },
+        { id: "0037", name: "Eurostat Enhanced", country: "EU", flag: "🇪🇺", tier: "enhance", type: "Statistics", desc: "Add government finance, energy, environment datasets", module: "eurostat_enhanced.py" },
+        { id: "0038", name: "BIS Enhanced", country: "International", flag: "🌐", tier: "enhance", type: "Central Bank", desc: "Add derivatives, FX turnover, payment statistics", module: "bis_enhanced.py" },
+        { id: "0039", name: "IMF Enhanced", country: "International", flag: "🌐", tier: "enhance", type: "Statistics", desc: "Add Financial Access Survey, CPIS, CDIS to existing IMF module", module: "imf_enhanced.py" },
+        { id: "0040", name: "OECD Enhanced", country: "International", flag: "🌐", tier: "enhance", type: "Statistics", desc: "Add composite leading indicators, MEI, tax database", module: "oecd_enhanced.py" },
+        { id: "0041", name: "EU Small CB Batch", country: "EU", flag: "🇪🇺", tier: "batch", type: "Central Bank", desc: "9 smaller EU central banks — OeNB, HNB, BNB, Cyprus, Greece, Latvia, Lithuania, Malta, Slovakia", module: "eu_small_cb_batch.py" },
+        { id: "0042", name: "EU Small Stats Batch", country: "EU", flag: "🇪🇺", tier: "batch", type: "Statistics", desc: "12 smaller EU stats offices — Bulgaria, Croatia, Cyprus, Latvia, Lithuania, Luxembourg, Malta, Slovakia, Slovenia, Greece", module: "eu_small_stats_batch.py" },
+        { id: "0043", name: "MNB Hungary", country: "Hungary", flag: "🇭🇺", tier: "batch", type: "Central Bank", desc: "Magyar Nemzeti Bank — interest rates, FX, monetary data, financial accounts", module: "mnb_hungary.py" },
+        { id: "0044", name: "Bank of England Enhanced", country: "UK", flag: "🇬🇧", tier: "batch", type: "Central Bank", desc: "BoE expanded — stress tests, financial stability, monetary policy reports", module: "boe_enhanced.py" },
+        { id: "0045", name: "INE Portugal", country: "Portugal", flag: "🇵🇹", tier: "batch", type: "Statistics", desc: "Portuguese statistics — GDP, prices, employment, demographics, tourism", module: "ine_portugal.py" },
+    ];
+
+    // ── STATUS DATA (updated by generate-status.sh or manually) ──
+    // This object will be filled by the status generator script
+    // For now we detect status from the page load
+    let STATUS = {};
+
+    // Detect completed initiatives from embedded data or fetch
+    async function loadStatus() {
+        try {
+            const res = await fetch('status.json?t=' + Date.now());
+            if (res.ok) {
+                STATUS = await res.json();
+                return;
+            }
+        } catch(e) {}
+
+        // Fallback: hardcoded known state
+        STATUS = {
+            completed: ["0001"],
+            building: ["0002"],
+            failed: [],
+            started: "2026-04-01T17:08:31Z",
+            total_modules: 1025,
+            log: [
+                { time: "17:08:31", level: "header", text: "=== QuantClaw AutoBuilder Started ===" },
+                { time: "17:08:31", level: "building", text: "[1] Building: 0001-bundesbank-sdmx" },
+                { time: "17:09:37", level: "ok", text: "[OK] 0001-bundesbank-sdmx — committed successfully" },
+                { time: "17:09:37", level: "building", text: "[2] Building: 0002-insee-france" },
+            ]
+        };
+    }
+
+    function getStatus(id) {
+        if (STATUS.completed?.includes(id)) return "done";
+        if (STATUS.building?.includes(id)) return "building";
+        if (STATUS.failed?.includes(id)) return "failed";
+        return "queued";
+    }
+
+    function renderInitiatives(filter) {
+        const grid = document.getElementById('initiative-grid');
+        const filtered = filter === 'all' ? INITIATIVES : INITIATIVES.filter(i => i.tier === filter);
+
+        grid.innerHTML = filtered.map(init => {
+            const status = getStatus(init.id);
+            const statusIcon = { done: '✅', building: '⏳', queued: '⬜', failed: '❌' }[status];
+            const spinning = status === 'building' ? 'spinning' : '';
+            const tierClass = init.tier === 'a' ? 'tier-a' : init.tier === 'b' ? 'tier-b' : init.tier === 'enhance' ? 'enhance' : 'tier-c';
+
+            return `
+                <div class="initiative-card ${status}">
+                    <div class="init-header">
+                        <span class="init-number">#${init.id}</span>
+                        <span>${init.flag}</span>
+                        <span class="init-status ${spinning}">${statusIcon}</span>
+                    </div>
+                    <div class="init-name">${init.name}</div>
+                    <div class="init-desc">${init.desc}</div>
+                    <div class="init-tags">
+                        <span class="init-tag ${tierClass}">Tier ${init.tier.toUpperCase()}</span>
+                        <span class="init-tag">${init.type}</span>
+                        <span class="init-tag">${init.country}</span>
+                        <span class="init-tag">${init.module}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function updateStats() {
+        const done = STATUS.completed?.length || 0;
+        const building = STATUS.building?.length || 0;
+        const failed = STATUS.failed?.length || 0;
+        const queued = INITIATIVES.length - done - building - failed;
+
+        document.getElementById('done-count').textContent = done;
+        document.getElementById('building-count').textContent = building;
+        document.getElementById('queued-count').textContent = queued;
+        document.getElementById('failed-count').textContent = failed;
+        document.getElementById('total-modules').textContent = (STATUS.total_modules || 1025) + done;
+
+        const pct = Math.round((done / INITIATIVES.length) * 100);
+        document.getElementById('main-progress').style.width = pct + '%';
+        document.getElementById('progress-text').textContent = `${done} of ${INITIATIVES.length} initiatives completed`;
+        document.getElementById('progress-pct').textContent = pct + '%';
+
+        if (STATUS.started) {
+            const start = new Date(STATUS.started);
+            document.getElementById('eta-started').textContent = start.toISOString().slice(11, 16) + ' UTC';
+            if (done > 0) {
+                const elapsed = (Date.now() - start.getTime()) / 1000;
+                const avgSec = Math.round(elapsed / done);
+                const remaining = (INITIATIVES.length - done - building) * avgSec;
+                document.getElementById('eta-avg').textContent = avgSec + 's';
+                const remMin = Math.round(remaining / 60);
+                document.getElementById('eta-remaining').textContent = remMin > 60 ? Math.round(remMin/60) + 'h ' + (remMin%60) + 'm' : remMin + 'm';
+            }
+        }
+        document.getElementById('eta-updated').textContent = new Date().toISOString().slice(11, 16) + ' UTC';
+    }
+
+    function renderLog() {
+        const logEl = document.getElementById('build-log');
+        if (!STATUS.log?.length) return;
+        logEl.innerHTML = STATUS.log.map(l =>
+            `<div class="log-line ${l.level}">[${l.time}] ${l.text}</div>`
+        ).join('');
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function filterTier(tier) {
+        document.querySelectorAll('.tier-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        renderInitiatives(tier);
+    }
+
+    async function refreshStatus() {
+        await loadStatus();
+        renderInitiatives('all');
+        updateStats();
+        renderLog();
+    }
+
+    // Init
+    (async () => {
+        await loadStatus();
+        renderInitiatives('all');
+        updateStats();
+        renderLog();
+
+        // Scroll animations
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Auto-refresh every 30s
+        setInterval(refreshStatus, 30000);
+    })();
+    </script>
+</body>
+</html>

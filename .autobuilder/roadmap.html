@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantClaw Data — Global Data Sources Roadmap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00C853; --green-dark: #00A844; --green-glow: rgba(0,200,83,0.3);
+            --yellow: #FFC107; --red: #FF5252; --blue: #448AFF; --purple: #B388FF; --cyan: #18FFFF;
+            --bg: #0a0a0a; --bg-card: #111111; --bg-card-hover: #1a1a1a;
+            --text: #e0e0e0; --text-dim: #888; --accent: #00E676; --border: #222;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .grid-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(0,200,83,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,83,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1;
+        }
+        @keyframes pulse { 0%,100% { opacity:0.3; } 50% { opacity:0.6; } }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+        .hero { padding: 3rem 2rem 1.5rem; text-align: center; position: relative; }
+        .hero::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 500px; height: 500px; background: radial-gradient(circle, rgba(68,138,255,0.15), transparent 70%);
+            z-index: -1; animation: pulse 4s ease-in-out infinite;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(68,138,255,0.1); border: 1px solid rgba(68,138,255,0.3);
+            padding: 6px 16px; border-radius: 100px; font-size: 0.85rem; color: var(--blue); margin-bottom: 1.5rem;
+        }
+        .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 2s ease-in-out infinite; }
+        h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+        .green { color: var(--green); }
+        .blue { color: var(--blue); }
+        .hero-sub { font-size: 1.1rem; color: var(--text-dim); max-width: 700px; margin: 0 auto 1.5rem; }
+
+        .stats-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
+        .stat { text-align: center; min-width: 90px; }
+        .stat-value { font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        section { max-width: 1300px; margin: 0 auto; padding: 3rem 2rem; }
+        h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-sub { color: var(--text-dim); font-size: 1rem; margin-bottom: 2rem; }
+
+        .nav-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; align-items: center; }
+        .nav-link {
+            display: inline-flex; align-items: center; gap: 6px; color: var(--green);
+            text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 8px 16px;
+            border: 1px solid rgba(0,200,83,0.3); border-radius: 8px; transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(0,200,83,0.1); }
+
+        /* Legend */
+        .legend { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+        .legend-dot.confirmed { background: var(--green); }
+        .legend-dot.building { background: var(--yellow); }
+        .legend-dot.planned { background: var(--blue); }
+        .legend-dot.nokey { background: var(--red); opacity: 0.6; }
+        .legend-dot.existing { background: var(--purple); }
+
+        /* Region sections */
+        .region-section { margin-bottom: 3rem; }
+        .region-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+        }
+        .region-name { font-size: 1.4rem; font-weight: 700; }
+        .region-count { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-dim); }
+        .region-progress { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+        .region-bar { width: 120px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .region-bar-fill { height: 100%; background: var(--green); border-radius: 3px; }
+        .region-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--green); }
+
+        /* Country grid */
+        .country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .country-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1rem 1.2rem; transition: all 0.2s;
+        }
+        .country-card:hover { border-color: var(--green); background: var(--bg-card-hover); }
+        .country-header { display: flex; align-items: center; gap: 8px; margin-bottom: 0.8rem; }
+        .country-flag { font-size: 1.5rem; }
+        .country-name { font-weight: 600; font-size: 1rem; }
+        .country-coverage { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+        .coverage-full { color: var(--green); }
+        .coverage-partial { color: var(--yellow); }
+        .coverage-planned { color: var(--blue); }
+
+        .source-list { display: flex; flex-direction: column; gap: 6px; }
+        .source-item {
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
+            padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.02);
+        }
+        .source-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .source-dot.live { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+        .source-dot.building { background: var(--yellow); }
+        .source-dot.planned { background: var(--blue); }
+        .source-dot.existing { background: var(--purple); }
+        .source-dot.nokey { background: var(--red); opacity: 0.5; }
+        .source-name { flex: 1; }
+        .source-type { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
+
+        /* Summary table */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .summary-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.2rem; text-align: center;
+        }
+        .summary-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .summary-value { font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .summary-label { font-size: 0.8rem; color: var(--text-dim); }
+
+        /* Data categories */
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; }
+        .cat-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 1rem; display: flex; align-items: flex-start; gap: 10px; transition: border-color 0.2s;
+        }
+        .cat-card:hover { border-color: var(--green); }
+        .cat-icon { font-size: 1.4rem; }
+        .cat-info { flex: 1; }
+        .cat-name { font-weight: 600; font-size: 0.9rem; }
+        .cat-count { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--green); }
+        .cat-desc { font-size: 0.75rem; color: var(--text-dim); }
+
+        footer { text-align: center; padding: 3rem 2rem; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--green); text-decoration: none; }
+
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .stats-bar { gap: 0.8rem; }
+            .stat-value { font-size: 1.5rem; }
+            .country-grid { grid-template-columns: 1fr; }
+            section { padding: 2rem 1rem; }
+            .region-progress { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="hero">
+        <div class="hero-badge"><span class="dot"></span> data.quantclaw.org</div>
+        <h1>🗺️ Global Data <span class="green">Roadmap</span></h1>
+        <p class="hero-sub">Comprehensive coverage of central banks, statistics offices, and financial regulators across 36 countries. Existing + new sources from the AutoBuilder.</p>
+
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value" style="color:var(--green)">36</div><div class="stat-label">Countries</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--purple)">40+</div><div class="stat-label">Existing Sources</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--blue)">45</div><div class="stat-label">New Initiatives</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--green)">19</div><div class="stat-label">Keys Confirmed</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--cyan)">1,025+</div><div class="stat-label">Python Modules</div></div>
+        </div>
+    </div>
+
+    <section>
+        <div class="nav-bar">
+            <a href="dashboard.html" class="nav-link">📊 Initiative Dashboard</a>
+            <a href="https://data.quantclaw.org" class="nav-link" target="_blank">🌐 Live API</a>
+            <a href="https://github.com/yoniassia/quantclaw-data" class="nav-link" target="_blank">GitHub</a>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot existing"></div> Existing (live)</div>
+            <div class="legend-item"><div class="legend-dot confirmed"></div> New — built & tested</div>
+            <div class="legend-item"><div class="legend-dot building"></div> Building now</div>
+            <div class="legend-item"><div class="legend-dot planned"></div> Planned (initiative created)</div>
+            <div class="legend-item"><div class="legend-dot nokey"></div> Module exists, no API key</div>
+        </div>
+    </section>
+
+    <section class="fade-in" id="regions"></section>
+
+    <section class="fade-in">
+        <h2>Data <span class="green">Categories</span></h2>
+        <p class="section-sub">What types of data are covered across all sources.</p>
+        <div class="cat-grid" id="cat-grid"></div>
+    </section>
+
+    <section class="fade-in">
+        <h2>Confirmed <span class="green">API Keys</span> & Free Sources</h2>
+        <p class="section-sub">Data sources with verified, working access — ready for production.</p>
+        <div class="summary-grid" id="keys-grid"></div>
+    </section>
+
+    <section class="fade-in">
+        <h2>Missing <span style="color:var(--red)">API Keys</span></h2>
+        <p class="section-sub">Modules written but need API key configuration to go live.</p>
+        <div class="summary-grid" id="missing-grid"></div>
+    </section>
+
+    <footer>
+        <p>QuantClaw Data — <a href="https://data.quantclaw.org">data.quantclaw.org</a> · <a href="https://github.com/yoniassia/quantclaw-data">GitHub</a></p>
+        <p style="margin-top:0.5rem;">The world's most comprehensive open financial data platform 📊🌍</p>
+    </footer>
+
+    <script>
+    const REGIONS = [
+        {
+            name: "European Union", emoji: "🇪🇺", count: 27,
+            countries: [
+                { name: "Germany", flag: "🇩🇪", sources: [
+                    { name: "Deutsche Bundesbank SDMX", type: "CB", status: "new", initiative: "0001" },
+                    { name: "Destatis GENESIS", type: "Stats", status: "planned", initiative: "0025" },
+                    { name: "BaFin", type: "Reg", status: "none" },
+                ]},
+                { name: "France", flag: "🇫🇷", sources: [
+                    { name: "Banque de France Webstat", type: "CB", status: "planned", initiative: "0003" },
+                    { name: "INSEE SDMX", type: "Stats", status: "building", initiative: "0002" },
+                    { name: "AMF", type: "Reg", status: "none" },
+                ]},
+                { name: "Italy", flag: "🇮🇹", sources: [
+                    { name: "Banca d'Italia", type: "CB", status: "none" },
+                    { name: "ISTAT SDMX", type: "Stats", status: "planned", initiative: "0004" },
+                    { name: "CONSOB", type: "Reg", status: "none" },
+                ]},
+                { name: "Spain", flag: "🇪🇸", sources: [
+                    { name: "Banco de España", type: "CB", status: "planned", initiative: "0010" },
+                    { name: "INE Spain", type: "Stats", status: "planned", initiative: "0030" },
+                    { name: "CNMV", type: "Reg", status: "none" },
+                ]},
+                { name: "Netherlands", flag: "🇳🇱", sources: [
+                    { name: "DNB Netherlands", type: "CB", status: "planned", initiative: "0029" },
+                    { name: "CBS StatLine", type: "Stats", status: "planned", initiative: "0005" },
+                    { name: "AFM", type: "Reg", status: "none" },
+                ]},
+                { name: "Belgium", flag: "🇧🇪", sources: [
+                    { name: "NBB SDMX", type: "CB", status: "planned", initiative: "0016" },
+                    { name: "Statbel", type: "Stats", status: "planned", initiative: "0032" },
+                    { name: "FSMA", type: "Reg", status: "none" },
+                ]},
+                { name: "Austria", flag: "🇦🇹", sources: [
+                    { name: "OeNB", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "Statistics Austria", type: "Stats", status: "planned", initiative: "0033" },
+                    { name: "FMA", type: "Reg", status: "none" },
+                ]},
+                { name: "Ireland", flag: "🇮🇪", sources: [
+                    { name: "Central Bank of Ireland", type: "CB", status: "planned", initiative: "0017" },
+                    { name: "CSO PxWeb", type: "Stats", status: "planned", initiative: "0018" },
+                ]},
+                { name: "Finland", flag: "🇫🇮", sources: [
+                    { name: "Bank of Finland", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "Statistics Finland PxWeb", type: "Stats", status: "planned", initiative: "0019" },
+                ]},
+                { name: "Portugal", flag: "🇵🇹", sources: [
+                    { name: "BPstat", type: "CB", status: "planned", initiative: "0011" },
+                    { name: "INE Portugal", type: "Stats", status: "planned", initiative: "0045" },
+                    { name: "CMVM", type: "Reg", status: "none" },
+                ]},
+                { name: "Poland", flag: "🇵🇱", sources: [
+                    { name: "NBP Poland", type: "CB", status: "planned", initiative: "0009" },
+                    { name: "GUS Poland", type: "Stats", status: "none" },
+                    { name: "KNF", type: "Reg", status: "none" },
+                ]},
+                { name: "Sweden", flag: "🇸🇪", sources: [
+                    { name: "Sveriges Riksbank", type: "CB", status: "planned", initiative: "0008" },
+                    { name: "SCB PxWeb", type: "Stats", status: "planned", initiative: "0007" },
+                    { name: "FI Sweden", type: "Reg", status: "none" },
+                ]},
+                { name: "Denmark", flag: "🇩🇰", sources: [
+                    { name: "Danmarks Nationalbank", type: "CB", status: "planned", initiative: "0020" },
+                    { name: "Statistics Denmark DST", type: "Stats", status: "planned", initiative: "0006" },
+                    { name: "DFSA", type: "Reg", status: "none" },
+                ]},
+                { name: "Czech Republic", flag: "🇨🇿", sources: [
+                    { name: "CNB ARAD", type: "CB", status: "planned", initiative: "0021" },
+                    { name: "CZSO", type: "Stats", status: "planned", initiative: "0034" },
+                ]},
+                { name: "Romania", flag: "🇷🇴", sources: [
+                    { name: "BNR Romania", type: "CB", status: "planned", initiative: "0031" },
+                    { name: "INS Romania", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Hungary", flag: "🇭🇺", sources: [
+                    { name: "MNB Hungary", type: "CB", status: "planned", initiative: "0043" },
+                    { name: "KSH Hungary", type: "Stats", status: "none" },
+                ]},
+                { name: "Estonia", flag: "🇪🇪", sources: [
+                    { name: "Eesti Pank", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "Statistics Estonia", type: "Stats", status: "planned", initiative: "0035" },
+                ]},
+                { name: "Greece", flag: "🇬🇷", sources: [
+                    { name: "Bank of Greece", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "ELSTAT", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Croatia", flag: "🇭🇷", sources: [
+                    { name: "HNB Croatia", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "DZS Croatia", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Bulgaria", flag: "🇧🇬", sources: [
+                    { name: "BNB Bulgaria", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "NSI Bulgaria", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Slovakia", flag: "🇸🇰", sources: [
+                    { name: "NBS Slovakia", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "SO SR Slovakia", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Slovenia", flag: "🇸🇮", sources: [
+                    { name: "Bank of Slovenia", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "SURS Slovenia", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Lithuania", flag: "🇱🇹", sources: [
+                    { name: "Lietuvos bankas", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "Statistics Lithuania", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Latvia", flag: "🇱🇻", sources: [
+                    { name: "Latvijas Banka", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "CSB Latvia", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Luxembourg", flag: "🇱🇺", sources: [
+                    { name: "BCL Luxembourg", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "STATEC", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Malta", flag: "🇲🇹", sources: [
+                    { name: "Central Bank of Malta", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "NSO Malta", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+                { name: "Cyprus", flag: "🇨🇾", sources: [
+                    { name: "Central Bank of Cyprus", type: "CB", status: "planned", initiative: "0041" },
+                    { name: "CYSTAT", type: "Stats", status: "planned", initiative: "0042" },
+                ]},
+            ]
+        },
+        {
+            name: "Major Economies", emoji: "🌍", count: 9,
+            countries: [
+                { name: "United States", flag: "🇺🇸", sources: [
+                    { name: "Federal Reserve (FRED)", type: "CB", status: "existing" },
+                    { name: "BLS", type: "Stats", status: "existing" },
+                    { name: "Census Bureau", type: "Stats", status: "existing" },
+                    { name: "SEC EDGAR", type: "Reg", status: "existing" },
+                    { name: "EIA Energy", type: "Stats", status: "existing" },
+                    { name: "USDA NASS", type: "Stats", status: "existing" },
+                ]},
+                { name: "United Kingdom", flag: "🇬🇧", sources: [
+                    { name: "Bank of England", type: "CB", status: "existing" },
+                    { name: "BoE Enhanced", type: "CB", status: "planned", initiative: "0044" },
+                    { name: "ONS UK", type: "Stats", status: "planned", initiative: "0012" },
+                    { name: "FCA Register", type: "Reg", status: "planned", initiative: "0024" },
+                ]},
+                { name: "Japan", flag: "🇯🇵", sources: [
+                    { name: "Bank of Japan", type: "CB", status: "existing" },
+                    { name: "e-Stat Japan", type: "Stats", status: "planned", initiative: "0014" },
+                    { name: "EDINET", type: "Reg", status: "planned", initiative: "0023" },
+                ]},
+                { name: "Canada", flag: "🇨🇦", sources: [
+                    { name: "Bank of Canada (Valet)", type: "CB", status: "existing" },
+                    { name: "BoC Enhanced", type: "CB", status: "planned", initiative: "0028" },
+                    { name: "Statistics Canada WDS", type: "Stats", status: "planned", initiative: "0013" },
+                ]},
+                { name: "Australia", flag: "🇦🇺", sources: [
+                    { name: "RBA", type: "CB", status: "existing" },
+                    { name: "RBA Enhanced", type: "CB", status: "planned", initiative: "0027" },
+                    { name: "ABS", type: "Stats", status: "existing" },
+                    { name: "ABS Enhanced SDMX 2.1", type: "Stats", status: "planned", initiative: "0026" },
+                ]},
+                { name: "Taiwan", flag: "🇹🇼", sources: [
+                    { name: "CBC Taiwan", type: "CB", status: "planned", initiative: "0015" },
+                    { name: "DGBAS", type: "Stats", status: "none" },
+                ]},
+                { name: "Singapore", flag: "🇸🇬", sources: [
+                    { name: "MAS Singapore", type: "CB", status: "existing" },
+                    { name: "DOS Singapore", type: "Stats", status: "existing" },
+                ]},
+                { name: "UAE", flag: "🇦🇪", sources: [
+                    { name: "CBUAE", type: "CB", status: "planned", initiative: "0022" },
+                    { name: "UAE Open Data", type: "Stats", status: "planned", initiative: "0022" },
+                    { name: "SCA UAE", type: "Reg", status: "none" },
+                ]},
+                { name: "China", flag: "🇨🇳", sources: [
+                    { name: "PBOC", type: "CB", status: "existing" },
+                    { name: "NBS China (stats.gov.cn)", type: "Stats", status: "none", note: "No standard API — Tier D" },
+                    { name: "CSRC / SSE / SZSE", type: "Reg", status: "none", note: "Fragmented — Tier D" },
+                ]},
+            ]
+        },
+        {
+            name: "Supranational / International", emoji: "🌐", count: 6,
+            countries: [
+                { name: "ECB", flag: "🇪🇺", sources: [
+                    { name: "ECB SDMX (existing)", type: "CB", status: "existing" },
+                    { name: "ECB Enhanced (M1-M3, surveys)", type: "CB", status: "planned", initiative: "0036" },
+                ]},
+                { name: "Eurostat", flag: "🇪🇺", sources: [
+                    { name: "Eurostat SDMX (existing)", type: "Stats", status: "existing" },
+                    { name: "Eurostat Enhanced (gov finance, energy)", type: "Stats", status: "planned", initiative: "0037" },
+                ]},
+                { name: "BIS", flag: "🌐", sources: [
+                    { name: "BIS (existing)", type: "CB", status: "existing" },
+                    { name: "BIS Enhanced (derivatives, FX, payments)", type: "CB", status: "planned", initiative: "0038" },
+                ]},
+                { name: "IMF", flag: "🌐", sources: [
+                    { name: "IMF SDMX (existing)", type: "Stats", status: "existing" },
+                    { name: "IMF Enhanced (FAS, CPIS, CDIS)", type: "Stats", status: "planned", initiative: "0039" },
+                ]},
+                { name: "OECD", flag: "🌐", sources: [
+                    { name: "OECD (existing)", type: "Stats", status: "existing" },
+                    { name: "OECD Enhanced (CLI, MEI, tax)", type: "Stats", status: "planned", initiative: "0040" },
+                ]},
+                { name: "World Bank", flag: "🌐", sources: [
+                    { name: "World Bank (existing)", type: "Stats", status: "existing" },
+                ]},
+            ]
+        }
+    ];
+
+    const CATEGORIES = [
+        { icon: "📈", name: "Interest Rates", count: "200+", desc: "Policy rates, yields, interbank, lending" },
+        { icon: "💱", name: "Foreign Exchange", count: "180+", desc: "Cross rates, central bank FX, reserves" },
+        { icon: "📊", name: "GDP & National Accounts", count: "150+", desc: "Real/nominal GDP, components, deflators" },
+        { icon: "🏷️", name: "Prices & Inflation", count: "140+", desc: "CPI, PPI, HICP, deflators, expectations" },
+        { icon: "👷", name: "Labour & Employment", count: "120+", desc: "Unemployment, wages, hours, participation" },
+        { icon: "🏦", name: "Banking & Credit", count: "100+", desc: "Lending, deposits, M1-M3, bank balance sheets" },
+        { icon: "📦", name: "Trade & BoP", count: "90+", desc: "Imports, exports, current account, FDI" },
+        { icon: "🏭", name: "Industrial Production", count: "80+", desc: "Output, capacity, PMI, business surveys" },
+        { icon: "🏠", name: "Housing & Real Estate", count: "60+", desc: "Prices, permits, construction, mortgages" },
+        { icon: "⚡", name: "Energy & Commodities", count: "70+", desc: "Oil, gas, metals, agriculture, EIA data" },
+        { icon: "📋", name: "Government Finance", count: "50+", desc: "Debt, deficit, revenue, expenditure" },
+        { icon: "👥", name: "Demographics", count: "40+", desc: "Population, migration, life expectancy" },
+        { icon: "📄", name: "Regulatory Filings", count: "100+", desc: "SEC EDGAR, EDINET, FCA register, 13F" },
+        { icon: "🌍", name: "ESG & Environment", count: "30+", desc: "Emissions, ESG scores, sustainability" },
+        { icon: "₿", name: "Crypto & Digital Assets", count: "50+", desc: "Prices, on-chain, DeFi, social" },
+        { icon: "🤖", name: "Sentiment & Social", count: "40+", desc: "News, social, analyst, consumer confidence" },
+    ];
+
+    const CONFIRMED_KEYS = [
+        { icon: "🏛️", name: "Yahoo Finance", type: "Free", note: "Prices, profiles, history" },
+        { icon: "🏛️", name: "FRED (Fed Reserve)", type: "API Key", note: "800K+ macro series" },
+        { icon: "📊", name: "Financial Datasets", type: "API Key", note: "Fundamentals, filings" },
+        { icon: "💰", name: "GuruFocus", type: "API Key", note: "Valuations, gurus" },
+        { icon: "📈", name: "Finnhub", type: "API Key", note: "Real-time quotes" },
+        { icon: "🔷", name: "Polygon", type: "API Key", note: "Market data" },
+        { icon: "💹", name: "eToro SAPI", type: "API Key", note: "10,409 instruments" },
+        { icon: "⚡", name: "EIA", type: "API Key", note: "Energy data" },
+        { icon: "🏗️", name: "Census Bureau", type: "API Key", note: "Economic data" },
+        { icon: "🌾", name: "USDA NASS", type: "API Key", note: "Agriculture" },
+        { icon: "⛓️", name: "Etherscan", type: "API Key", note: "Ethereum on-chain" },
+        { icon: "🪙", name: "CoinGecko", type: "Free", note: "Crypto prices" },
+        { icon: "📋", name: "SEC EDGAR", type: "Free", note: "Filings, ownership" },
+        { icon: "🌍", name: "World Bank", type: "Free", note: "Global macro" },
+        { icon: "🇪🇺", name: "Eurostat", type: "Free", note: "EU economics" },
+        { icon: "🌐", name: "IMF", type: "Free", note: "International macro" },
+        { icon: "🇪🇺", name: "ECB", type: "Free", note: "European Central Bank" },
+        { icon: "👷", name: "BLS", type: "Free", note: "US labor" },
+        { icon: "🛢️", name: "OPEC", type: "Free", note: "Oil data" },
+    ];
+
+    const MISSING_KEYS = [
+        { icon: "📉", name: "Alpha Vantage", note: "Commented out in .env" },
+        { icon: "📊", name: "Tiingo", note: "No key configured" },
+        { icon: "📈", name: "Twelve Data", note: "No key configured" },
+        { icon: "🔢", name: "Nasdaq Data Link", note: "No key configured" },
+        { icon: "💱", name: "Finage", note: "No key configured" },
+        { icon: "📅", name: "EOD Historical", note: "No key configured" },
+        { icon: "🏦", name: "SimFin", note: "No key configured" },
+        { icon: "📊", name: "Tradier", note: "No key configured" },
+        { icon: "🎯", name: "CBOE LiveVol", note: "No key configured" },
+        { icon: "📋", name: "Intrinio", note: "No key configured" },
+        { icon: "🌍", name: "Trading Economics", note: "No key configured" },
+        { icon: "⛓️", name: "Glassnode", note: "No key configured" },
+        { icon: "🔗", name: "Bitquery", note: "No key configured" },
+        { icon: "📊", name: "Dune Analytics", note: "No key configured" },
+        { icon: "📱", name: "42Matters", note: "No key configured" },
+        { icon: "🌙", name: "LunarCrush", note: "No key configured" },
+    ];
+
+    function renderRegions() {
+        const container = document.getElementById('regions');
+        container.innerHTML = REGIONS.map(region => {
+            const totalSources = region.countries.reduce((sum, c) => sum + c.sources.length, 0);
+            const liveSources = region.countries.reduce((sum, c) =>
+                sum + c.sources.filter(s => s.status === 'existing' || s.status === 'new').length, 0);
+            const pct = totalSources > 0 ? Math.round((liveSources / totalSources) * 100) : 0;
+
+            const countriesHtml = region.countries.map(country => {
+                const coverageCount = country.sources.filter(s => s.status !== 'none').length;
+                const total = country.sources.length;
+                const coverageClass = coverageCount === total ? 'coverage-full' : coverageCount > 0 ? 'coverage-partial' : 'coverage-planned';
+                const coverageText = `${coverageCount}/${total}`;
+
+                return `
+                    <div class="country-card">
+                        <div class="country-header">
+                            <span class="country-flag">${country.flag}</span>
+                            <span class="country-name">${country.name}</span>
+                            <span class="country-coverage ${coverageClass}">${coverageText}</span>
+                        </div>
+                        <div class="source-list">
+                            ${country.sources.map(s => {
+                                const dotClass = s.status === 'existing' ? 'existing' :
+                                    s.status === 'new' ? 'live' :
+                                    s.status === 'building' ? 'building' :
+                                    s.status === 'planned' ? 'planned' : 'nokey';
+                                const label = s.status === 'existing' ? '✅ Live' :
+                                    s.status === 'new' ? '🆕 Built' :
+                                    s.status === 'building' ? '⏳ Building' :
+                                    s.status === 'planned' ? '📋 #' + (s.initiative||'') : '—';
+                                return `
+                                    <div class="source-item">
+                                        <div class="source-dot ${dotClass}"></div>
+                                        <span class="source-name">${s.name}</span>
+                                        <span class="source-type">${s.type}</span>
+                                        <span style="font-size:0.7rem;color:var(--text-dim)">${label}</span>
+                                    </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+            }).join('');
+
+            return `
+                <div class="region-section">
+                    <div class="region-header">
+                        <span style="font-size:1.5rem">${region.emoji}</span>
+                        <span class="region-name">${region.name}</span>
+                        <span class="region-count">${region.count} countries · ${totalSources} sources</span>
+                        <div class="region-progress">
+                            <div class="region-bar"><div class="region-bar-fill" style="width:${pct}%"></div></div>
+                            <span class="region-pct">${pct}%</span>
+                        </div>
+                    </div>
+                    <div class="country-grid">${countriesHtml}</div>
+                </div>`;
+        }).join('');
+    }
+
+    function renderCategories() {
+        document.getElementById('cat-grid').innerHTML = CATEGORIES.map(c => `
+            <div class="cat-card">
+                <span class="cat-icon">${c.icon}</span>
+                <div class="cat-info">
+                    <div class="cat-name">${c.name}</div>
+                    <div class="cat-count">${c.count} indicators</div>
+                    <div class="cat-desc">${c.desc}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderKeys() {
+        document.getElementById('keys-grid').innerHTML = CONFIRMED_KEYS.map(k => `
+            <div class="summary-card" style="text-align:left; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:1.5rem">${k.icon}</span>
+                <div>
+                    <div style="font-weight:600; font-size:0.95rem">${k.name}</div>
+                    <div style="font-size:0.75rem; color:var(--text-dim)">${k.note}</div>
+                </div>
+                <span style="margin-left:auto; font-size:0.7rem; padding:3px 8px; border-radius:4px; background:${k.type==='Free'?'rgba(0,200,83,0.1)':'rgba(68,138,255,0.1)'}; color:${k.type==='Free'?'var(--green)':'var(--blue)'}">${k.type}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('missing-grid').innerHTML = MISSING_KEYS.map(k => `
+            <div class="summary-card" style="text-align:left; display:flex; align-items:center; gap:12px; opacity:0.7;">
+                <span style="font-size:1.5rem">${k.icon}</span>
+                <div>
+                    <div style="font-weight:600; font-size:0.95rem">${k.name}</div>
+                    <div style="font-size:0.75rem; color:var(--red)">${k.note}</div>
+                </div>
+                <span style="margin-left:auto; font-size:0.7rem; padding:3px 8px; border-radius:4px; background:rgba(255,82,82,0.1); color:var(--red)">No Key</span>
+            </div>
+        `).join('');
+    }
+
+    // Try loading latest status to update initiative statuses
+    async function updateFromStatus() {
+        try {
+            const res = await fetch('status.json?t=' + Date.now());
+            if (!res.ok) return;
+            const status = await res.json();
+            if (!status.completed) return;
+
+            // Map initiative IDs to statuses
+            REGIONS.forEach(region => {
+                region.countries.forEach(country => {
+                    country.sources.forEach(source => {
+                        if (source.initiative && status.completed.includes(source.initiative)) {
+                            source.status = 'new';
+                        } else if (source.initiative && status.building?.includes(source.initiative)) {
+                            source.status = 'building';
+                        }
+                    });
+                });
+            });
+        } catch(e) {}
+    }
+
+    // Init
+    (async () => {
+        await updateFromStatus();
+        renderRegions();
+        renderCategories();
+        renderKeys();
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    })();
+    </script>
+</body>
+</html>
