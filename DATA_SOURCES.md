@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,057 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,062 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -50,7 +50,7 @@
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
 | Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
 | UK regulatory data | `fca_uk` (authorized firms, individuals, permissions, disciplinary, regulated markets) |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statistics_austria` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -70,10 +70,23 @@
 | Romanian FX data | `bnr_romania` (BNR daily reference rates for RON/EUR, RON/USD + 35 more currencies + gold) |
 | Austrian macro data | `statistics_austria` (GDP nominal/real, CPI, PPI, wholesale prices, employment, trade, tourism, industry, construction, investment) |
 | Tourism data | `statistics_austria` (overnight stays, accommodation turnover index), `world_bank_global_indices` |
-| Industrial production | `statistics_austria`, `destatis_germany`, `insee_france`, `istat_italy`, `ine_spain`, `statistics_finland`, `estat_japan` |
+| Industrial production | `statistics_austria`, `destatis_germany`, `insee_france`, `istat_italy`, `ine_spain`, `statistics_finland`, `estat_japan`, `czso_czech` (total + automotive), `statistics_estonia` |
 | Producer prices / PPI | `statistics_austria` (Erzeugerpreisindex 2021=100), `destatis_germany` (PPI monthly/annual), `fred_enhanced` |
 | Income inequality | `statbel_belgium` (Gini coefficient, Belgium) |
 | Commodity price index | `bank_of_canada_valet` (BCPI total, energy, metals & minerals) |
+| Monetary aggregates (EA) | `ecb_enhanced` (M1/M2/M3 outstanding, MFI credit HH/NFC/housing), `nbb_belgium` (M1/M3) |
+| EA cost of borrowing | `ecb_enhanced` (composite cost of borrowing NFC & HH housing, MFI new loan/deposit rates) |
+| EU government debt/deficit | `eurostat_enhanced` (Maastricht debt/deficit % GDP, expenditure, revenue — all 27 Member States) |
+| EU energy balance | `eurostat_enhanced` (production, consumption, import dependency, renewable share by sector) |
+| Greenhouse gas emissions | `eurostat_enhanced` (total, energy, industry, transport, agriculture — Mt CO₂eq per country) |
+| Environmental taxes | `eurostat_enhanced` (total, energy, transport — % GDP per country) |
+| OTC derivatives market | `bis_enhanced` (total notional, swaps, gross market value, NFC counterparties — semiannual) |
+| Exchange-traded derivatives | `bis_enhanced` (FX/IR/equity/commodity open interest & turnover — quarterly) |
+| FX market turnover | `bis_enhanced` (total daily avg, spot, OTC IR derivatives — triennial BIS survey) |
+| International debt securities | `bis_enhanced` (outstanding by country: US, UK, Japan, China, Germany — quarterly) |
+| Cashless payments | `bis_enhanced` (CPMI cashless payment values — US, UK, China — annual) |
+| Czech macro statistics | `czso_czech` (GDP, CPI, labour, IPI, construction, trade) + `cnb_czech` (FX, PRIBOR, policy rates) |
+| Estonian macro data | `statistics_estonia` (GDP, CPI/HICP, employment, trade, industrial production) |
 | Energy data | `eia_energy`, `crude_oil_fundamentals`, `natural_gas_supply_demand`, `opec` |
 | Agriculture | `usda_agriculture`, `crop_yield_forecaster`, `agricultural_commodities` |
 
@@ -1747,6 +1760,289 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### czso_czech.py — CZSO Czech Republic Statistics
+
+- **Source:** Český statistický úřad (Czech Statistical Office)
+- **API:** `https://vdb.czso.cz/pll/eweb/lkod_ld.datova_sada`
+- **Protocol:** REST / Open Data CSV
+- **Auth:** None (open access, CC BY 4.0)
+- **Freshness:** Monthly (CPI, IPI, construction, trade), Quarterly (labour), Annual (GDP)
+- **Coverage:** Czech Republic
+
+**Indicators (20):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_NOMINAL` | GDP at Current Prices | Annual | CZK mn |
+| `GDP_REAL` | GDP at Constant 2020 Prices | Annual | CZK mn |
+| `GDP_GROWTH` | GDP Growth YoY | Annual | % |
+| `GVA_NOMINAL` | Gross Value Added, Current Prices | Annual | CZK mn |
+| `GFCF_NOMINAL` | Gross Fixed Capital Formation | Annual | CZK mn |
+| `CPI_YOY` | CPI Year-on-Year (all items) | Monthly | % |
+| `CPI_MOM` | CPI Month-on-Month | Monthly | % |
+| `CPI_INDEX` | CPI Index (2015=100) | Monthly | index |
+| `CPI_FOOD_YOY` | CPI Food & Non-Alcoholic Beverages YoY | Monthly | % |
+| `CPI_HOUSING_YOY` | CPI Housing, Water, Energy YoY | Monthly | % |
+| `CPI_TRANSPORT_YOY` | CPI Transport YoY | Monthly | % |
+| `UNEMPLOYMENT_RATE` | General Unemployment Rate | Quarterly | % |
+| `EMPLOYMENT_RATE` | Employment Rate | Quarterly | % |
+| `EMPLOYED` | Employed Persons | Quarterly | thousands |
+| `UNEMPLOYED` | Unemployed Persons | Quarterly | thousands |
+| `IPI_TOTAL` | Industrial Production Index — Total YoY | Monthly | % YoY |
+| `IPI_AUTO` | Motor Vehicles Production Index YoY | Monthly | % YoY |
+| `CONSTRUCTION_INDEX` | Construction Output Index YoY | Monthly | % YoY |
+| `TRADE_EXPORTS` | Total Goods Exports | Monthly | CZK mn |
+| `TRADE_IMPORTS` | Total Goods Imports | Monthly | CZK mn |
+| `TRADE_BALANCE` | Trade Balance — Goods | Monthly | CZK mn |
+
+**CLI Examples:**
+```bash
+python3 modules/czso_czech.py GDP_NOMINAL
+python3 modules/czso_czech.py CPI_YOY
+python3 modules/czso_czech.py UNEMPLOYMENT_RATE
+python3 modules/czso_czech.py IPI_TOTAL
+python3 modules/czso_czech.py TRADE_BALANCE
+python3 modules/czso_czech.py list
+python3 modules/czso_czech.py catalog
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'czso_czech',
+    params: { indicator: 'CPI_YOY' }
+  })
+});
+```
+
+---
+
+### statistics_estonia.py — Statistics Estonia (PxWeb)
+
+- **Source:** Statistics Estonia (Statistikaamet)
+- **API:** `https://andmed.stat.ee/api/v1/en/stat`
+- **Protocol:** PxWeb REST API (POST with JSON query)
+- **Auth:** None (open access)
+- **Freshness:** Monthly (CPI, industrial production), Quarterly (GDP, labour, trade), Annual (CPI/HICP)
+- **Coverage:** Estonia
+
+**Indicators (13):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_NOMINAL` | GDP at Current Prices (EUR mn, quarterly) | Quarterly | EUR mn |
+| `GDP_REAL_GROWTH` | Real GDP Growth YoY (%) | Quarterly | % |
+| `CPI_ANNUAL` | CPI Inflation YoY (%, annual) | Annual | % |
+| `CPI_MONTHLY` | CPI Inflation YoY (%, monthly) | Monthly | % |
+| `HICP_ANNUAL` | HICP Inflation YoY (%, annual) | Annual | % |
+| `EMPLOYMENT_RATE` | Employment Rate (%, ages 15-74) | Quarterly | % |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate (%, ages 15-74) | Quarterly | % |
+| `LABOUR_FORCE` | Labour Force (thousands, ages 15-74) | Quarterly | thousands |
+| `EXPORTS` | Exports of Goods & Services (EUR mn) | Quarterly | EUR mn |
+| `IMPORTS` | Imports of Goods & Services (EUR mn) | Quarterly | EUR mn |
+| `INDUSTRIAL_PRODUCTION_INDEX` | Industrial Production Index (2021=100, SA) | Monthly | index |
+| `INDUSTRIAL_PRODUCTION_YOY` | Industrial Production YoY Change (%) | Monthly | % |
+
+**CLI Examples:**
+```bash
+python3 modules/statistics_estonia.py GDP_REAL_GROWTH
+python3 modules/statistics_estonia.py CPI_MONTHLY
+python3 modules/statistics_estonia.py UNEMPLOYMENT_RATE
+python3 modules/statistics_estonia.py EXPORTS
+python3 modules/statistics_estonia.py INDUSTRIAL_PRODUCTION_INDEX
+python3 modules/statistics_estonia.py trade-balance
+python3 modules/statistics_estonia.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'statistics_estonia',
+    params: { indicator: 'GDP_REAL_GROWTH' }
+  })
+});
+```
+
+---
+
+### ecb_enhanced.py — ECB Enhanced (Monetary, Credit, Inflation)
+
+- **Source:** European Central Bank
+- **API:** `https://data-api.ecb.europa.eu/service`
+- **Protocol:** SDMX 2.1 REST (SDMX-JSON 1.0)
+- **Auth:** None (public access)
+- **Freshness:** Monthly (all indicators)
+- **Coverage:** Euro Area (EA20)
+- **Dataflows:** BSI (monetary/credit), MIR (interest rates), ICP (inflation)
+
+**Indicators (14):**
+
+| Key | Name | Frequency | Unit | Dataflow |
+|-----|------|-----------|------|----------|
+| `M1_OUTSTANDING` | M1 Monetary Aggregate — Euro Area | Monthly | EUR mn | BSI |
+| `M2_OUTSTANDING` | M2 Monetary Aggregate — Euro Area | Monthly | EUR mn | BSI |
+| `M3_OUTSTANDING` | M3 Monetary Aggregate — Euro Area | Monthly | EUR mn | BSI |
+| `LOANS_HH` | MFI Loans to Households — Euro Area | Monthly | EUR mn | BSI |
+| `LOANS_NFC` | MFI Loans to Non-Financial Corporations | Monthly | EUR mn | BSI |
+| `LOANS_HH_HOUSING` | MFI Housing Loans to Households | Monthly | EUR mn | BSI |
+| `CCOB_NFC` | Composite Cost of Borrowing — NFCs | Monthly | % p.a. | MIR |
+| `CCOB_HH_HOUSING` | Composite Cost of Borrowing — HH Housing | Monthly | % p.a. | MIR |
+| `NFC_LOAN_RATE_SHORT` | NFC New Loan Rate — Up to 1yr | Monthly | % p.a. | MIR |
+| `NFC_LOAN_RATE_LONG` | NFC New Loan Rate — Over 5yr | Monthly | % p.a. | MIR |
+| `HH_DEPOSIT_RATE` | Household Deposit Rate — New Business | Monthly | % p.a. | MIR |
+| `HICP_HEADLINE` | HICP — All Items Annual Rate | Monthly | % | ICP |
+| `HICP_CORE` | HICP Core — Excl. Energy & Food | Monthly | % | ICP |
+| `HICP_FOOD` | HICP Food & Non-Alcoholic Beverages | Monthly | % | ICP |
+
+**CLI Examples:**
+```bash
+python3 modules/ecb_enhanced.py M3_OUTSTANDING
+python3 modules/ecb_enhanced.py LOANS_HH
+python3 modules/ecb_enhanced.py HICP_HEADLINE
+python3 modules/ecb_enhanced.py CCOB_NFC
+python3 modules/ecb_enhanced.py monetary              # M1/M2/M3 aggregates
+python3 modules/ecb_enhanced.py borrowing             # Composite cost of borrowing
+python3 modules/ecb_enhanced.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ecb_enhanced',
+    params: { indicator: 'HICP_HEADLINE' }
+  })
+});
+```
+
+---
+
+### eurostat_enhanced.py — Eurostat (EU Gov Finance, Energy & Environment)
+
+- **Source:** Eurostat (European Commission)
+- **API:** `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data`
+- **Protocol:** REST (JSON-stat 2.0)
+- **Auth:** None (open access, ~100 req/hour)
+- **Freshness:** Annual (most datasets updated Q1-Q2 for prior year)
+- **Coverage:** EU27 + all Member States (per-country and cross-country comparison)
+
+**Indicators (21):**
+
+| Key | Name | Frequency | Unit | Category |
+|-----|------|-----------|------|----------|
+| `GOV_DEFICIT_SURPLUS` | Government Deficit/Surplus (% GDP) | Annual | % GDP | Gov Finance |
+| `GOV_DEBT` | Government Debt (% GDP) | Annual | % GDP | Gov Finance |
+| `GOV_EXPENDITURE` | Government Expenditure (% GDP) | Annual | % GDP | Gov Finance |
+| `GOV_REVENUE` | Government Revenue (% GDP) | Annual | % GDP | Gov Finance |
+| `ENERGY_PRODUCTION` | Total Energy Production | Annual | KTOE | Energy |
+| `ENERGY_CONSUMPTION` | Available Final Energy Consumption | Annual | KTOE | Energy |
+| `ENERGY_DEPENDENCY` | Energy Import Dependency | Annual | % | Energy |
+| `RENEWABLE_SHARE_TOTAL` | Renewable Energy Share — Overall | Annual | % | Renewables |
+| `RENEWABLE_SHARE_ELECTRICITY` | Renewable Energy Share — Electricity | Annual | % | Renewables |
+| `RENEWABLE_SHARE_TRANSPORT` | Renewable Energy Share — Transport | Annual | % | Renewables |
+| `RENEWABLE_SHARE_HEATING` | Renewable Energy Share — Heating/Cooling | Annual | % | Renewables |
+| `GHG_TOTAL` | Total GHG Emissions (Mt CO₂eq) | Annual | Mt CO₂eq | Emissions |
+| `GHG_ENERGY` | GHG Emissions — Energy Sector | Annual | Mt CO₂eq | Emissions |
+| `GHG_INDUSTRY` | GHG Emissions — Manufacturing/Construction | Annual | Mt CO₂eq | Emissions |
+| `GHG_TRANSPORT` | GHG Emissions — Transport | Annual | Mt CO₂eq | Emissions |
+| `GHG_AGRICULTURE` | GHG Emissions — Agriculture | Annual | Mt CO₂eq | Emissions |
+| `ENV_TAX_TOTAL` | Total Environmental Taxes (% GDP) | Annual | % GDP | Env Taxes |
+| `ENV_TAX_ENERGY` | Energy Taxes (% GDP) | Annual | % GDP | Env Taxes |
+| `ENV_TAX_TRANSPORT` | Transport Taxes (% GDP) | Annual | % GDP | Env Taxes |
+| `DIGITAL_INTERNET_ACCESS` | Household Internet Access | Annual | % HH | Digital |
+| `DIGITAL_INTERNET_USE` | Internet Use by Individuals | Annual | % ind. | Digital |
+| `DIGITAL_ECOMMERCE` | E-Commerce by Individuals | Annual | % ind. | Digital |
+
+**CLI Examples:**
+```bash
+python3 modules/eurostat_enhanced.py GOV_DEBT DE        # Germany govt debt % GDP
+python3 modules/eurostat_enhanced.py GOV_DEBT FR        # France govt debt
+python3 modules/eurostat_enhanced.py RENEWABLE_SHARE_TOTAL SE   # Sweden renewables
+python3 modules/eurostat_enhanced.py GHG_TOTAL DE       # Germany total GHG
+python3 modules/eurostat_enhanced.py compare GOV_DEBT   # Compare across all EU27
+python3 modules/eurostat_enhanced.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'eurostat_enhanced',
+    params: { indicator: 'GOV_DEBT', geo: 'DE' }
+  })
+});
+```
+
+---
+
+### bis_enhanced.py — BIS (Derivatives, FX Turnover, Debt, Payments)
+
+- **Source:** Bank for International Settlements
+- **API:** `https://stats.bis.org/api/v2`
+- **Protocol:** BIS SDMX REST API v2 (CSV output)
+- **Auth:** None (open access)
+- **Freshness:** Semiannual (OTC derivatives), Quarterly (exchange-traded, debt), Triennial (FX turnover), Annual (CPMI)
+- **Coverage:** Global / 60+ countries
+- **Dataflows:** WS_OTC_DERIV2, WS_XTD_DERIV, WS_DER_OTC_TOV, WS_NA_SEC_DSS, WS_CPMI_CASHLESS, WS_CPMI_MACRO
+
+**Indicators (22):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `OTC_NOTIONAL_TOTAL` | OTC Derivatives — Total Notional Outstanding | Semiannual | USD bn |
+| `OTC_NOTIONAL_SWAPS` | OTC Derivatives — Swaps Notional | Semiannual | USD bn |
+| `OTC_GMV_TOTAL` | OTC Derivatives — Gross Market Value | Semiannual | USD bn |
+| `OTC_NOTIONAL_NFC` | OTC Derivatives — Non-Financial Counterparties | Semiannual | USD bn |
+| `XTD_OI_FX` | Exchange-Traded — FX Open Interest | Quarterly | USD mn |
+| `XTD_OI_IR` | Exchange-Traded — Interest Rate Open Interest | Quarterly | USD mn |
+| `XTD_OI_EQUITY` | Exchange-Traded — Equity Open Interest | Quarterly | USD mn |
+| `XTD_OI_COMMODITY` | Exchange-Traded — Commodity Open Interest | Quarterly | USD mn |
+| `XTD_TURNOVER_FX` | Exchange-Traded — FX Turnover | Quarterly | USD mn |
+| `FX_TURNOVER_TOTAL` | FX Turnover — Daily Average Total | Triennial | USD mn |
+| `IR_DERIV_TURNOVER` | OTC IR Derivatives — Daily Average Turnover | Triennial | USD mn |
+| `FX_TURNOVER_SPOT` | FX Spot Turnover — Daily Average | Triennial | USD mn |
+| `DEBT_SEC_US` | Debt Securities Outstanding — United States | Quarterly | USD bn |
+| `DEBT_SEC_GB` | Debt Securities Outstanding — United Kingdom | Quarterly | USD bn |
+| `DEBT_SEC_JP` | Debt Securities Outstanding — Japan | Quarterly | USD bn |
+| `DEBT_SEC_CN` | Debt Securities Outstanding — China | Quarterly | USD bn |
+| `DEBT_SEC_DE` | Debt Securities Outstanding — Germany | Quarterly | USD bn |
+| `CPMI_CASHLESS_US_VALUE` | CPMI Cashless Payments — US Total Value | Annual | USD mn |
+| `CPMI_CASHLESS_GB_VALUE` | CPMI Cashless Payments — UK Total Value | Annual | GBP mn |
+| `CPMI_CASHLESS_CN_VALUE` | CPMI Cashless Payments — China Total Value | Annual | CNY mn |
+| `CPMI_MACRO_US_POP` | CPMI Macro — US Population | Annual | thousands |
+| `CPMI_MACRO_US_BANKNOTES` | CPMI Macro — US Banknotes & Coins | Annual | USD |
+
+**CLI Examples:**
+```bash
+python3 modules/bis_enhanced.py OTC_NOTIONAL_TOTAL     # Total OTC notional outstanding
+python3 modules/bis_enhanced.py XTD_OI_IR              # Interest rate open interest
+python3 modules/bis_enhanced.py DEBT_SEC_US             # US debt securities
+python3 modules/bis_enhanced.py FX_TURNOVER_TOTAL       # BIS triennial FX turnover
+python3 modules/bis_enhanced.py derivatives             # Derivatives market dashboard
+python3 modules/bis_enhanced.py debt-securities         # Debt securities comparison
+python3 modules/bis_enhanced.py datasets                # Show covered BIS datasets
+python3 modules/bis_enhanced.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bis_enhanced',
+    params: { indicator: 'OTC_NOTIONAL_TOTAL' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -1882,10 +2178,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,057 modules in `modules/` directory, sorted alphabetically:
+All 1,062 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,057 modules)</summary>
+<summary>Click to expand full module list (1,062 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -1902,14 +2198,16 @@ alpha_vantage                alpha_vantage_api             alpha_vantage_commodi
 alpha_vantage_earnings_api   alpha_vantage_forex           alpha_vantage_fund_flows
 banco_de_espana              banco_de_portugal             bank_of_canada
 bank_of_canada_valet         bank_of_england               banque_de_france
-bcb                          bnr_romania
+bcb                          bis_enhanced                  bnr_romania
 bls                          bundesbank_sdmx               cbc_taiwan
 cbs_netherlands              census                        central_bank_ireland
-cnb_czech                    destatis_germany              dnb_netherlands
+cnb_czech                    czso_czech                    destatis_germany
+dnb_netherlands              ecb_enhanced
 coingecko_crypto             congress_trades               cso_ireland
 danmarks_nationalbank        ecb_fx_rates                  edinet_japan
 crypto_onchain
-eia_energy                   estat_japan                   eurostat_macro
+eia_energy                   estat_japan                   eurostat_enhanced
+eurostat_macro
 fca_uk                       fred_enhanced                 ine_spain
 istat_italy                  insee_france
 nbb_belgium                  nbp_poland                    ons_uk
@@ -1917,11 +2215,12 @@ options_chain                polygon_io                    prices
 rba_enhanced                 riksbank_sweden               scb_sweden
 screener
 sec_edgar_api                statbel_belgium               statcan_canada
-statistics_austria           statistics_denmark            statistics_finland
+statistics_austria           statistics_denmark            statistics_estonia
+statistics_finland
 technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
-... (1,057 total — run `ls modules/*.py | wc -l` to verify)
+... (1,062 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -1949,8 +2248,8 @@ yield_curve
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,057 modules — 23 countries — 33 government/central bank modules — 635+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,062 modules — 24 countries + EU-wide + global — 38 government/central bank/institutional modules — 725+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
