@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,039 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,044 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `eurostat_macro` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `bls` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `eurostat_macro` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `bls` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -22,9 +22,15 @@
 | PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
-| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC discount rate) |
-| Euribor rates | `banco_de_espana` |
+| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `treasury_curve`, `yield_curve` |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN) |
+| Euribor rates | `banco_de_espana`, `central_bank_ireland` |
+| DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
+| Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
+| Irish macro data | `cso_ireland` (GDP/GNP, CPI, unemployment, retail, housing, trade) |
+| Irish banking / rates | `central_bank_ireland` (ECB rates, Euribor, retail rates, mortgages, debt, reserves) |
+| Finnish macro data | `statistics_finland` (GDP, CPI, unemployment, industrial output, trade, housing) |
+| Danish central bank | `danmarks_nationalbank` (DN policy rates, DKK FX, bond yields, BoP, MFI, govt securities) |
 | Polish macro / FX | `nbp_poland` (FX rates 32+ currencies, bid/ask, gold PLN/g) |
 | Taiwan monetary | `cbc_taiwan` (policy rates, M1A/M1B/M2, deposit/lending rates, TWD/USD) |
 | UK macro data | `ons_uk` (GDP, CPIH, retail, trade, labour, construction, rental) |
@@ -34,9 +40,9 @@
 | Earnings data | `earnings_calendar_enhanced`, `earnings_transcripts_nlp`, `ai_earnings_analyzer` |
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
-| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `fred_housing`, `zillow_zhvi` |
+| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `fred_housing`, `zillow_zhvi` |
 | Gold price (PLN) | `nbp_poland` |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank` |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -716,6 +722,233 @@ python3 modules/cbc_taiwan.py list
 
 ---
 
+### nbb_belgium.py — National Bank of Belgium (NBB.Stat)
+
+- **Source:** National Bank of Belgium
+- **API:** `https://nsidisseminate-stat.nbb.be/rest`
+- **Protocol:** SDMX 2.1 REST (SDMX-JSON via .Stat Suite NSI)
+- **Auth:** None (open access, requires `Origin: https://dataexplorer.nbb.be` header)
+- **Freshness:** Monthly (BoP, HICP, monetary, surveys), Quarterly (IIP, financial accounts, govt finance)
+- **Coverage:** Belgium / Euro Area
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `BOP_CURRENT_ACCOUNT` | Current Account Balance | Monthly | EUR mn |
+| `BOP_GOODS_TRADE` | Goods Trade Balance | Monthly | EUR mn |
+| `BOP_SERVICES` | Services Balance | Monthly | EUR mn |
+| `BOP_PRIMARY_INCOME` | Primary Income Balance | Monthly | EUR mn |
+| `BOP_CAPITAL_ACCOUNT` | Capital Account Balance | Monthly | EUR mn |
+| `BOP_FINANCIAL_ACCOUNT` | Financial Account Balance | Monthly | EUR mn |
+| `HICP_TOTAL_YOY` | HICP Total YoY (%) | Monthly | % |
+| `HICP_CORE_YOY` | HICP Core (ex food & energy) YoY (%) | Monthly | % |
+| `HICP_ENERGY_YOY` | HICP Energy YoY (%) | Monthly | % |
+| `HICP_SERVICES_YOY` | HICP Services YoY (%) | Monthly | % |
+| `HICP_INDEX` | HICP Index (2015=100) | Monthly | Index |
+| `HH_FINANCIAL_WEALTH` | Household Financial Wealth Net (EUR mn) | Quarterly | EUR mn |
+| `ECONOMY_NET_FINANCIAL` | Total Economy Net Financial Position (EUR mn) | Quarterly | EUR mn |
+| `IIP_NET_POSITION` | Net International Investment Position (EUR mn) | Quarterly | EUR mn |
+| `IIP_PORTFOLIO_NET` | Portfolio Investment Net IIP (EUR mn) | Quarterly | EUR mn |
+| `GOV_NET_LENDING` | General Govt Net Lending/Borrowing (EUR mn) | Quarterly | EUR mn |
+| `GOV_TOTAL_LIABILITIES` | General Govt Total Financial Liabilities (EUR mn) | Quarterly | EUR mn |
+| `GOV_DEBT_SECURITIES` | Govt Debt Securities Outstanding (EUR mn) | Quarterly | EUR mn |
+| `M1_EUROAREA` | M1 Money Supply — Euro Area (EUR bn) | Monthly | EUR bn |
+| `M3_EUROAREA` | M3 Money Supply — Euro Area (EUR bn) | Monthly | EUR bn |
+| `BUSSURVEY_SYNTHETIC` | Business Survey Synthetic Curve | Monthly | Index |
+| `BUSSURVEY_MANUFACTURING` | Business Survey — Manufacturing | Monthly | Index |
+| `BUSSURVEY_TRADE` | Business Survey — Trade | Monthly | Index |
+| `BUSSURVEY_SERVICES` | Business Survey — Business Services | Monthly | Index |
+
+**CLI Examples:**
+```bash
+python3 modules/nbb_belgium.py HICP_TOTAL_YOY
+python3 modules/nbb_belgium.py BOP_CURRENT_ACCOUNT
+python3 modules/nbb_belgium.py GOV_NET_LENDING
+python3 modules/nbb_belgium.py dataflows             # Discover all NBB.Stat dataflows
+python3 modules/nbb_belgium.py list
+```
+
+---
+
+### central_bank_ireland.py — Central Bank of Ireland
+
+- **Source:** Central Bank of Ireland Open Data
+- **API:** `https://opendata.centralbank.ie/api/3/action`
+- **Protocol:** CKAN Datastore REST API
+- **Auth:** None (open access, CC-BY-4.0 license)
+- **Freshness:** Monthly (rates, reserves), Quarterly (mortgages, debt)
+- **Coverage:** Ireland / Euro Area
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `ECB_DEPOSIT_RATE` | ECB Deposit Facility Rate | Monthly | % p.a. |
+| `ECB_REFI_RATE` | ECB Main Refinancing Rate | Monthly | % p.a. |
+| `ECB_MARGINAL_RATE` | ECB Marginal Lending Facility Rate | Monthly | % p.a. |
+| `STR_RATE` | Euro Short-Term Rate — €STR | Monthly | % p.a. |
+| `EURIBOR_3M` | 3-Month Euribor | Monthly | % p.a. |
+| `EURIBOR_12M` | 12-Month Euribor | Monthly | % p.a. |
+| `MORTGAGE_RATE_NEW` | New Mortgage Rate — Ireland | Monthly | % |
+| `CONSUMER_RATE_NEW` | New Consumer Credit Rate — Ireland | Monthly | % |
+| `NFC_LENDING_RATE_NEW` | New NFC Lending Rate — Ireland | Monthly | % |
+| `HH_DEPOSIT_RATE_NEW` | New Household Deposit Rate — Ireland | Monthly | % |
+| `NFC_DEPOSIT_RATE_NEW` | New NFC Deposit Rate — Ireland | Monthly | % |
+| `HH_OVERNIGHT_DEPOSIT_RATE` | Household Overnight Deposit Rate — Stock | Monthly | % |
+| `HH_TERM_DEPOSIT_RATE` | Household Term Deposit Rate ≤2Y — Stock | Monthly | % |
+| `HH_OVERDRAFT_RATE` | Household Overdraft Rate — Stock | Monthly | % |
+| `MORTGAGE_RATE_STOCK` | Mortgage Rate — Outstanding Stock, >5Y | Monthly | % |
+| `PDH_FIXED_OVER3Y_RATE` | PDH Fixed Rate >3Y — Outstanding | Quarterly | % |
+| `PDH_TRACKER_RATE` | PDH Tracker Mortgage Rate — Outstanding | Quarterly | % |
+| `GROSS_NATIONAL_DEBT` | Gross National Debt — Ireland (EUR mn) | Quarterly | EUR mn |
+| `RESERVE_ASSETS_TOTAL` | Official Reserve Assets — Ireland (EUR mn) | Monthly | EUR mn |
+| `FX_RESERVES` | Foreign Exchange Reserves — Ireland (EUR mn) | Monthly | EUR mn |
+| `GOLD_RESERVES` | Monetary Gold Reserves — Ireland (EUR mn) | Monthly | EUR mn |
+
+**CLI Examples:**
+```bash
+python3 modules/central_bank_ireland.py ECB_DEPOSIT_RATE
+python3 modules/central_bank_ireland.py MORTGAGE_RATE_NEW
+python3 modules/central_bank_ireland.py GROSS_NATIONAL_DEBT
+python3 modules/central_bank_ireland.py datasets          # Discover all CBI datasets
+python3 modules/central_bank_ireland.py list
+```
+
+---
+
+### cso_ireland.py — CSO Ireland (Central Statistics Office)
+
+- **Source:** Central Statistics Office (CSO)
+- **API:** `https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset`
+- **Protocol:** PxStat / JSON-stat 2.0
+- **Auth:** None (open access)
+- **Freshness:** Monthly (CPI, retail, housing, trade), Quarterly (GDP, labour)
+- **Coverage:** Ireland
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_QUARTERLY` | GDP at Constant Market Prices (EUR mn, SA) | Quarterly | EUR million |
+| `GDP_CURRENT` | GDP at Current Market Prices (EUR mn, SA) | Quarterly | EUR million |
+| `GNP_QUARTERLY` | GNP at Constant Market Prices (EUR mn, SA) | Quarterly | EUR million |
+| `CPI_INDEX` | CPI All Items (Base Dec 2023=100) | Monthly | Index |
+| `CPI_YOY` | CPI Annual % Change | Monthly | % |
+| `CPI_MOM` | CPI Monthly % Change | Monthly | % |
+| `UNEMPLOYMENT_RATE` | ILO Unemployment Rate (15-74 years, %) | Quarterly | % |
+| `EMPLOYMENT_RATE` | ILO Employment Rate (15-64 years, %) | Quarterly | % |
+| `PARTICIPATION_RATE` | ILO Participation Rate (15+ years, %) | Quarterly | % |
+| `RETAIL_SALES_VOLUME` | Retail Sales Index — Volume (SA, 2015=100) | Monthly | Index |
+| `RETAIL_SALES_VALUE` | Retail Sales Index — Value (SA, 2015=100) | Monthly | Index |
+| `HOUSE_PRICE_INDEX` | Residential Property Price Index (National) | Monthly | Index |
+| `HOUSE_PRICE_YOY` | House Price Annual % Change (National) | Monthly | % |
+| `TRADE_EXPORTS` | Total Exports (EUR mn, SA) | Monthly | EUR million |
+| `TRADE_IMPORTS` | Total Imports (EUR mn, SA) | Monthly | EUR million |
+| `TRADE_BALANCE` | Trade Balance (EUR mn, SA) | Monthly | EUR million |
+
+**CLI Examples:**
+```bash
+python3 modules/cso_ireland.py GDP_QUARTERLY
+python3 modules/cso_ireland.py CPI_YOY
+python3 modules/cso_ireland.py UNEMPLOYMENT_RATE
+python3 modules/cso_ireland.py discover HPM09         # Discover table dimensions
+python3 modules/cso_ireland.py list
+```
+
+---
+
+### statistics_finland.py — Statistics Finland (Tilastokeskus)
+
+- **Source:** Statistics Finland (Tilastokeskus)
+- **API:** `https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/`
+- **Protocol:** PxWeb REST API (POST with JSON query)
+- **Auth:** None (open access)
+- **Freshness:** Monthly (CPI, labour, industrial output), Quarterly (GDP, trade, housing)
+- **Coverage:** Finland
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_QOQ` | GDP Volume Change QoQ (%, SA) | Quarterly | % |
+| `GDP_YOY` | GDP Volume Change YoY (%, SA) | Quarterly | % |
+| `GDP_CURRENT_PRICES` | GDP at Current Prices (EUR mn, SA) | Quarterly | EUR million |
+| `CPI_INDEX` | CPI Index (2015=100) | Monthly | Index |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate (%, SA) | Monthly | % |
+| `UNEMPLOYMENT_RATE_YOUTH` | Youth Unemployment Rate 15-24 (%, SA) | Monthly | % |
+| `EMPLOYMENT_RATE` | Employment Rate 15-64 (%, SA) | Monthly | % |
+| `EMPLOYED_PERSONS` | Employed Persons (1000, SA) | Monthly | 1000 persons |
+| `INDUSTRIAL_OUTPUT_TOTAL` | Industrial Output Index, Total (2021=100, SA) | Monthly | Index |
+| `INDUSTRIAL_OUTPUT_MFG` | Industrial Output Index, Manufacturing (2021=100, SA) | Monthly | Index |
+| `INDUSTRIAL_OUTPUT_YOY` | Industrial Output YoY (%, working-day adj.) | Monthly | % |
+| `EXPORTS` | Exports of Goods & Services (EUR mn) | Quarterly | EUR million |
+| `IMPORTS` | Imports of Goods & Services (EUR mn) | Quarterly | EUR million |
+| `HOUSING_PRICE_INDEX` | Housing Price Index, Old Dwellings (2020=100) | Quarterly | Index |
+| `HOUSING_PRICE_YOY` | Housing Price Annual Change (%) | Quarterly | % |
+| `HOUSING_PRICE_SQM` | Housing Price per m² (EUR) | Quarterly | EUR/m² |
+
+**CLI Examples:**
+```bash
+python3 modules/statistics_finland.py GDP_QOQ
+python3 modules/statistics_finland.py CPI_INDEX
+python3 modules/statistics_finland.py UNEMPLOYMENT_RATE
+python3 modules/statistics_finland.py navigate ntp       # Browse PxWeb table hierarchy
+python3 modules/statistics_finland.py list
+```
+
+---
+
+### danmarks_nationalbank.py — Danmarks Nationalbank
+
+- **Source:** Danmarks Nationalbank (via Statistics Denmark StatBank)
+- **API:** `https://api.statbank.dk/v1`
+- **Protocol:** REST (POST with JSON-Stat responses)
+- **Auth:** None (open access)
+- **Freshness:** Daily (FX/rates), Monthly (BoP, MFI, securities)
+- **Coverage:** Denmark
+
+**Indicators:**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `DN_DISCOUNT_RATE` | DN Discount Rate | Monthly | % p.a. |
+| `DN_CURRENT_ACCOUNT_RATE` | DN Current-Account Deposits Rate | Monthly | % p.a. |
+| `DN_LENDING_RATE` | DN Lending Rate | Monthly | % p.a. |
+| `DN_CD_RATE` | DN Certificates of Deposit Rate | Monthly | % p.a. |
+| `FX_EUR_DKK` | EUR/DKK Exchange Rate (ERM II peg ~746) | Monthly | DKK per 100 EUR |
+| `FX_USD_DKK` | USD/DKK Exchange Rate | Monthly | DKK per 100 USD |
+| `FX_GBP_DKK` | GBP/DKK Exchange Rate | Monthly | DKK per 100 GBP |
+| `FX_JPY_DKK` | JPY/DKK Exchange Rate | Monthly | DKK per 100 JPY |
+| `FX_CHF_DKK` | CHF/DKK Exchange Rate | Monthly | DKK per 100 CHF |
+| `FX_NOK_DKK` | NOK/DKK Exchange Rate | Monthly | DKK per 100 NOK |
+| `FX_SEK_DKK` | SEK/DKK Exchange Rate | Monthly | DKK per 100 SEK |
+| `GOVT_BOND_YIELD` | Government Bonds Redemption Yield | Monthly | % |
+| `GOVT_BOND_10Y` | 10-Year Government Bond Yield | Monthly | % |
+| `MORTGAGE_BOND_YIELD` | Unit Mortgage Bonds Redemption Yield | Monthly | % |
+| `BOP_CURRENT_ACCOUNT` | Current Account Balance (DKK mn, SA) | Monthly | DKK mn |
+| `BOP_GOODS` | Goods Trade Balance (DKK mn, SA) | Monthly | DKK mn |
+| `BOP_SERVICES` | Services Trade Balance (DKK mn, SA) | Monthly | DKK mn |
+| `BOP_PRIMARY_INCOME` | Primary Income Balance (DKK mn, SA) | Monthly | DKK mn |
+| `MFI_LOANS_TOTAL` | MFI Total Domestic Loans (DKK mn) | Monthly | DKK mn |
+| `MFI_LOANS_NFC` | MFI Loans to Non-Financial Corporates (DKK mn) | Monthly | DKK mn |
+| `MFI_LOANS_HOUSEHOLDS` | MFI Loans to Households (DKK mn) | Monthly | DKK mn |
+| `MFI_LENDING_RATE` | MFI Average Lending Rate (%) | Monthly | % |
+| `GOVT_SECURITIES_TOTAL` | Government Debt Securities Outstanding (DKK mn) | Monthly | DKK mn |
+| `GOVT_BONDS_STOCK` | Government Bonds Outstanding (DKK mn) | Monthly | DKK mn |
+
+**CLI Examples:**
+```bash
+python3 modules/danmarks_nationalbank.py DN_DISCOUNT_RATE
+python3 modules/danmarks_nationalbank.py FX_EUR_DKK
+python3 modules/danmarks_nationalbank.py policy-rates     # All DN policy rates
+python3 modules/danmarks_nationalbank.py fx-rates          # DKK exchange rates
+python3 modules/danmarks_nationalbank.py bond-yields       # Govt & mortgage bond yields
+python3 modules/danmarks_nationalbank.py list
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -851,10 +1084,10 @@ python3 modules/cbc_taiwan.py list
 
 ## Complete Module List
 
-All 1,039 modules in `modules/` directory, sorted alphabetically:
+All 1,044 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,039 modules)</summary>
+<summary>Click to expand full module list (1,044 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -871,16 +1104,18 @@ alpha_vantage_earnings_api   alpha_vantage_forex           alpha_vantage_fund_fl
 banco_de_espana              banco_de_portugal             bank_of_canada
 bank_of_england              banque_de_france              bcb
 bls                          bundesbank_sdmx               cbc_taiwan
-cbs_netherlands              census                        coingecko_crypto
-congress_trades              crypto_onchain                ecb_fx_rates
+cbs_netherlands              census                        central_bank_ireland
+coingecko_crypto             congress_trades               cso_ireland
+danmarks_nationalbank        ecb_fx_rates                  crypto_onchain
 eia_energy                   estat_japan                   eurostat_macro
 fred_enhanced                istat_italy                   insee_france
-nbp_poland                   ons_uk                        options_chain
-polygon_io                   prices                        riksbank_sweden
-scb_sweden                   screener                      sec_edgar_api
-statcan_canada               statistics_denmark            technicals
+nbb_belgium                  nbp_poland                    ons_uk
+options_chain                polygon_io                    prices
+riksbank_sweden              scb_sweden                    screener
+sec_edgar_api                statcan_canada                statistics_denmark
+statistics_finland           technicals
 tiingo                       treasury_curve                yield_curve
-... (1,039 total — run `ls modules/*.py | wc -l` to verify)
+... (1,044 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -903,8 +1138,8 @@ tiingo                       treasury_curve                yield_curve
 | Bank of Korea | `BOK_API_KEY` | Open | https://ecos.bok.or.kr |
 | e-Stat Japan | `ESTAT_JAPAN_APP_ID` | Open | https://www.e-stat.go.jp/api/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan) require **NO API key**. e-Stat Japan requires a free Application ID.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank) require **NO API key**. e-Stat Japan requires a free Application ID.
 
 ---
 
-*1,039 modules — 12 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,044 modules — 16 countries — Updated 2026-04-01 — QuantClaw Data (DCC)*

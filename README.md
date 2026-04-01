@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,039 Financial Data Modules
+# QuantClaw Data — 1,044 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,039 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,044 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,039 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,044 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,039** Python data modules
+- **1,044** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,039 modules)             │
+│  ├── Module browser (1,044 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,039 modules      │
+│  ├── Tool definitions for all 1,044 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,039 Python Modules                            │
+│  1,044 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics & Central Banks (Autobuilder Batches 1–3)
+### Government Statistics & Central Banks (Autobuilder Batches 1–4)
 
-Fifteen modules covering 12 countries across Europe, Eastern Europe, North America, and Asia-Pacific with 250+ macroeconomic indicators from official government statistical offices and central banks:
+Twenty modules covering 16 countries across Europe, Scandinavia, British Isles, North America, and Asia-Pacific with 350+ macroeconomic indicators from official government statistical offices and central banks:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -168,6 +168,11 @@ Fifteen modules covering 12 countries across Europe, Eastern Europe, North Ameri
 | `estat_japan` | e-Stat (Government of Japan) | Japan | `https://api.e-stat.go.jp/rest/3.0/app` | CPI (all items, core ex-fresh food), GDP (nominal/real quarterly SNA), unemployment rate, labour force population, industrial production index, trade statistics (exports/imports), housing starts, machinery orders (private ex. volatile) |
 | `nbp_poland` | National Bank of Poland (NBP) | Poland | `https://api.nbp.pl/api` | PLN FX mid rates for 32+ major currencies (Table A), minor/exotic rates for 116 currencies (Table B, weekly), bid/ask dealer spreads for 13 currencies (Table C), gold price (PLN/gram), full table snapshots |
 | `cbc_taiwan` | Central Bank of R.O.C. (Taiwan) | Taiwan | `https://cpx.cbc.gov.tw/API/DataAPI/Get` | TWD/USD spot FX (buy/sell/close), CBC policy rates (discount/secured/unsecured), five major bank deposit & lending rates, monetary aggregates (reserve money, M1A, M1B, M2 — daily avg + end-of-month), weighted-average interest rates (quarterly) |
+| `nbb_belgium` | National Bank of Belgium (NBB.Stat) | Belgium / Euro Area | `https://nsidisseminate-stat.nbb.be/rest` | Balance of payments (current/goods/services/primary income/capital/financial accounts), HICP inflation (total/core/energy/services + index), financial accounts (household wealth, total economy), IIP (net position, portfolio investment), government finance (net lending, liabilities, debt securities), monetary aggregates (M1, M3 Euro Area), business surveys (synthetic, manufacturing, trade, services) |
+| `central_bank_ireland` | Central Bank of Ireland | Ireland / Euro Area | `https://opendata.centralbank.ie/api/3/action` | ECB policy rates (deposit/refi/marginal), €STR & Euribor (3M/12M), retail new-business rates (mortgage/consumer/NFC lending, deposits), outstanding stock rates (household/NFC deposits & loans, mortgages), PDH mortgage rates (fixed >3Y, tracker), gross national debt (EUR mn), official external reserves (total/FX/gold) |
+| `cso_ireland` | CSO Ireland (PxStat) | Ireland | `https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset` | GDP/GNP (quarterly constant & current prices), CPI (index/YoY/MoM), ILO unemployment/employment/participation rates, retail sales (volume/value index), residential property prices (index/YoY), merchandise trade (exports/imports/balance) |
+| `statistics_finland` | Statistics Finland (Tilastokeskus) | Finland | `https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/` | GDP (QoQ/YoY/current prices), CPI index (2015=100), unemployment rate (SA + youth 15-24), employment rate & employed persons, industrial output (total/manufacturing/YoY), foreign trade (exports/imports), housing prices (index/YoY/EUR per m²) |
+| `danmarks_nationalbank` | Danmarks Nationalbank | Denmark | `https://api.statbank.dk/v1` | DN policy rates (discount/current-account/lending/CD), DKK FX rates (EUR/USD/GBP/JPY/CHF/NOK/SEK), government bond yields (average/10Y), mortgage bond yields, balance of payments (current account/goods/services/primary income), MFI lending (total/NFC/households + avg lending rate), government debt securities |
 
 #### Global Coverage Map
 
@@ -185,6 +190,9 @@ Fifteen modules covering 12 countries across Europe, Eastern Europe, North Ameri
 🇯🇵 Japan        — e-Stat (CPI, GDP, unemployment, trade, industry, housing)
 🇵🇱 Poland       — NBP (PLN FX rates Table A/B/C, bid/ask spreads, gold)
 🇹🇼 Taiwan       — CBC (TWD/USD FX, policy rates, monetary aggregates, bank rates)
+🇧🇪 Belgium      — NBB.Stat (BoP, HICP, financial accounts, IIP, govt finance, M1/M3, business surveys)
+🇮🇪 Ireland      — CBI (ECB rates, Euribor, retail rates, mortgages, debt, reserves) + CSO (GDP/GNP, CPI, labour, retail, housing, trade)
+🇫🇮 Finland      — Statistics Finland (GDP, CPI, unemployment, industrial output, trade, housing)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -209,6 +217,12 @@ python3 modules/estat_japan.py CPI_ALL_ITEMS
 # Poland, Taiwan
 python3 modules/nbp_poland.py FX_EUR_PLN
 python3 modules/cbc_taiwan.py TWD_USD_CLOSE
+# Belgium, Ireland, Finland, Denmark (Batch 4)
+python3 modules/nbb_belgium.py HICP_TOTAL_YOY
+python3 modules/central_bank_ireland.py ECB_DEPOSIT_RATE
+python3 modules/cso_ireland.py GDP_QUARTERLY
+python3 modules/statistics_finland.py GDP_QOQ
+python3 modules/danmarks_nationalbank.py DN_DISCOUNT_RATE
 ```
 
 **REST API:**
@@ -223,6 +237,11 @@ GET /api/v1/statcan-canada?indicator=GDP_REAL
 GET /api/v1/estat-japan?indicator=GDP_NOMINAL
 GET /api/v1/nbp-poland?indicator=FX_EUR_PLN
 GET /api/v1/cbc-taiwan?indicator=CBC_DISCOUNT_RATE
+GET /api/v1/nbb-belgium?indicator=HICP_TOTAL_YOY
+GET /api/v1/central-bank-ireland?indicator=ECB_DEPOSIT_RATE
+GET /api/v1/cso-ireland?indicator=CPI_YOY
+GET /api/v1/statistics-finland?indicator=UNEMPLOYMENT_RATE
+GET /api/v1/danmarks-nationalbank?indicator=FX_EUR_DKK
 ```
 
 **MCP Tool Call:**
@@ -294,9 +313,71 @@ Batch 3 extends government data coverage to **12 countries** with two new module
 
 **Coverage totals after Batch 3:**
 - 15 government/central bank modules
-- 12 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼
+- 13 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼
 - 250+ macroeconomic indicators from official government sources
 - Asset classes covered: FX rates, policy rates, monetary aggregates, GDP, CPI, unemployment, trade, housing, banking FSIs, gold
+
+#### Batch 4: Western Europe & Nordics Expansion
+
+Batch 4 adds **5 new modules** covering Belgium, Ireland, Finland, and Danish central bank data, bringing total coverage to **16 countries** and **20 government/central bank modules** with **350+ indicators**.
+
+**NBB Belgium** (`nbb_belgium`) — National Bank of Belgium:
+- Balance of payments: current account, goods, services, primary income, capital & financial accounts (monthly)
+- HICP inflation: total, core (ex food & energy), energy, services, plus index level (monthly)
+- Financial accounts: household net financial wealth, total economy net financial position (quarterly)
+- International investment position: net IIP, portfolio investment net position (quarterly)
+- Government finance: net lending/borrowing, total financial liabilities, debt securities outstanding (quarterly)
+- Monetary aggregates: M1 and M3 for the Euro Area (monthly)
+- Business surveys: NBB synthetic confidence curve, manufacturing, trade, business services (monthly, SA)
+- **24 indicators** across BoP, inflation, financial stability, government, monetary, and surveys
+- API: `https://nsidisseminate-stat.nbb.be/rest` (SDMX 2.1 REST/JSON, open access, requires Origin header)
+
+**Central Bank of Ireland** (`central_bank_ireland`) — CBI Open Data:
+- Eurosystem official rates: ECB deposit facility, main refinancing, marginal lending rates (monthly)
+- Interbank rates: €STR, 3-month & 12-month Euribor (monthly)
+- Retail new-business rates: mortgage, consumer credit, NFC lending, household & NFC deposits (monthly)
+- Outstanding stock rates: household overnight & term deposits, overdrafts, mortgages >5Y (monthly)
+- Mortgage rates by type: PDH fixed >3Y, tracker mortgages (quarterly)
+- Gross national debt outstanding in EUR millions (quarterly)
+- Official external reserves: total reserve assets, foreign exchange, monetary gold (monthly)
+- **22 indicators** covering ECB/interbank rates, retail banking, sovereign debt, and reserves
+- API: `https://opendata.centralbank.ie/api/3/action` (CKAN Datastore REST, open access CC-BY-4.0)
+
+**CSO Ireland** (`cso_ireland`) — Central Statistics Office:
+- GDP & GNP at constant and current market prices, seasonally adjusted (quarterly)
+- Consumer prices: CPI index (Dec 2023=100), year-on-year and month-on-month changes (monthly)
+- Labour force: ILO unemployment, employment, and participation rates (quarterly)
+- Retail sales: volume and value indices, seasonally adjusted (monthly, 2015=100)
+- Residential property prices: national index and annual percentage change (monthly)
+- Merchandise trade: total exports, imports, and trade balance in EUR millions (monthly)
+- **16 indicators** covering the Irish economy's key macro dimensions
+- API: `https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset` (PxStat JSON-stat 2.0, open access)
+
+**Statistics Finland** (`statistics_finland`) — Tilastokeskus PxWeb:
+- GDP: quarter-on-quarter and year-on-year volume changes, current prices in EUR millions (quarterly)
+- CPI index with 2015 base year (monthly)
+- Labour market: unemployment rate (SA), youth unemployment 15-24, employment rate 15-64, employed persons (monthly)
+- Industrial output: total (BCD) and manufacturing (NACE C) volume indices, YoY working-day adjusted (monthly)
+- Foreign trade: exports and imports of goods & services in EUR millions (quarterly)
+- Housing: old dwelling price index (2020=100), annual change, and average EUR per m² (quarterly)
+- **17 indicators** with PxWeb POST-based queries
+- API: `https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/` (PxWeb REST, open access)
+
+**Danmarks Nationalbank** (`danmarks_nationalbank`) — Danish Central Bank:
+- Policy rates: discount rate, current-account deposits, lending rate, certificates of deposit (monthly)
+- FX rates: DKK against EUR (ERM II peg ~746), USD, GBP, JPY, CHF, NOK, SEK (monthly average)
+- Government bond yields: average redemption yield, 10-year benchmark, mortgage bond yields (monthly)
+- Balance of payments: current account, goods, services, primary income — DKK mn, SA (monthly)
+- MFI lending: total, NFC, household outstanding loans, average lending rate (monthly)
+- Government securities: total debt securities and government bonds outstanding in DKK mn (monthly)
+- **22 indicators** via StatBank Denmark's JSON-Stat API
+- API: `https://api.statbank.dk/v1` (REST/JSON-Stat, open access)
+
+**Coverage totals after Batch 4:**
+- 20 government/central bank modules
+- 16 countries: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮
+- 350+ macroeconomic indicators from official government sources
+- Asset classes covered: FX rates, policy rates, monetary aggregates, GDP, CPI/HICP, unemployment, trade, housing, banking FSIs, gold, government debt, BoP, business surveys, IIP, financial accounts
 
 ---
 
@@ -356,7 +437,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,039 modules gets an auto-generated REST endpoint:
+Each of the 1,044 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -369,7 +450,7 @@ Each of the 1,039 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,039 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,044 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -395,7 +476,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,039 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,044 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -450,6 +531,11 @@ screen --min-cap 10B --sector Technology
 | e-Stat Japan | Yes (free) | Open | Japanese GDP, CPI, unemployment, trade, industry |
 | NBP Poland | No | Open (no limit) | PLN FX rates (32+ currencies), bid/ask spreads, gold price |
 | CBC Taiwan | No | Open | TWD/USD FX rates, CBC policy rates, monetary aggregates, bank rates |
+| NBB Belgium (NBB.Stat) | No | Open (Origin hdr) | Belgian BoP, HICP, financial accounts, IIP, govt finance, M1/M3, business surveys |
+| Central Bank of Ireland | No | Open (CC-BY-4.0) | ECB/Euribor rates, Irish retail lending/deposit rates, mortgages, national debt, reserves |
+| CSO Ireland (PxStat) | No | Open | Irish GDP/GNP, CPI, unemployment, retail sales, housing prices, trade |
+| Statistics Finland | No | Open | Finnish GDP, CPI, unemployment, industrial output, trade, housing prices |
+| Danmarks Nationalbank | No | Open | DN policy rates, DKK FX, govt bond yields, BoP, MFI lending, govt securities |
 
 ---
 
@@ -491,7 +577,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,039 Python data modules
+├── modules/                          # 1,044 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -514,7 +600,12 @@ quantclaw-data/
 │   ├── estat_japan.py                # e-Stat Japan (Government Statistics)
 │   ├── nbp_poland.py                 # National Bank of Poland (FX, gold)
 │   ├── cbc_taiwan.py                 # CBC Taiwan (FX, rates, monetary)
-│   ├── ... (1,039 modules total)
+│   ├── nbb_belgium.py                # NBB Belgium (BoP, HICP, govt, surveys)
+│   ├── central_bank_ireland.py       # CBI Ireland (ECB rates, mortgages, debt)
+│   ├── cso_ireland.py                # CSO Ireland (GDP, CPI, labour, trade)
+│   ├── statistics_finland.py         # Statistics Finland (GDP, CPI, industry)
+│   ├── danmarks_nationalbank.py      # Danmarks Nationalbank (rates, FX, bonds)
+│   ├── ... (1,044 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -639,4 +730,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,039 modules • 47 phases • 12 countries (7 EU + UK + Canada + Japan + Poland + Taiwan) • The data layer powering the MoneyClawX ecosystem*
+*1,044 modules • 47 phases • 16 countries (10 EU + UK + Canada + Japan + Poland + Taiwan + Ireland) • The data layer powering the MoneyClawX ecosystem*
