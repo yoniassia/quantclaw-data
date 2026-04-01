@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,000+ Financial Data Modules
+# QuantClaw Data — 1,034 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,023 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,034 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,023 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,034 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,023** Python data modules
+- **1,034** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,023 modules)             │
+│  ├── Module browser (1,034 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,023 modules      │
+│  ├── Tool definitions for all 1,034 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,023 Python Modules                            │
+│  1,034 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -146,6 +146,68 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
+
+### European Government Statistics & Central Banks (Autobuilder Batch 1)
+
+Nine new modules covering 7 European countries with 130+ macroeconomic indicators from official government statistical offices and central banks:
+
+| Module | Source | Country | API | Key Indicators |
+|--------|--------|---------|-----|----------------|
+| `bundesbank_sdmx` | Deutsche Bundesbank | Germany / Euro Area | `https://api.statistiken.bundesbank.de/rest` | Bund yields (1Y–30Y), ECB policy rates, MFI lending rates, M2/M3 monetary aggregates, current account, trade balance |
+| `insee_france` | INSEE (National Statistics) | France | `https://bdm.insee.fr/series/sdmx` | GDP growth, CPI/HICP inflation, unemployment rate, industrial production, consumer confidence, household consumption, exports/imports |
+| `banque_de_france` | Banque de France Webstat | France | `https://webstat.banque-france.fr/api/explore/v2.1` | EUR/USD/GBP/JPY/CHF/CNY FX rates, credit to NFCs & households, MFI interest rates, BoP, SME credit, business climate |
+| `istat_italy` | ISTAT (National Statistics) | Italy | `http://sdmx.istat.it/SDMXWS/rest` | GDP quarterly accounts, CPI NIC & HICP, unemployment rate, industrial production, consumer & business confidence (IESI) |
+| `cbs_netherlands` | CBS StatLine | Netherlands | `https://opendata.cbs.nl/ODataApi/odata` | GDP growth (YoY/QoQ), CPI, unemployment, house prices, trade balance, gov balance/debt (% GDP), consumer/producer confidence |
+| `statistics_denmark` | Statistics Denmark (DST) | Denmark | `https://api.statbank.dk/v1` | GDP (nominal/real), CPI/HICP, unemployment, foreign trade, housing prices, consumer confidence, industrial production |
+| `scb_sweden` | SCB (Statistics Sweden) | Sweden | `https://api.scb.se/OV0104/v1/doris/en/ssd` | GDP (QoQ + monthly indicator), CPI/CPIF, unemployment/employment rate, housing prices, production index, trade balance, govt debt |
+| `riksbank_sweden` | Sveriges Riksbank | Sweden | `https://api.riksbank.se/swea/v1` | Policy/deposit/lending rates, SEK FX crosses (EUR/USD/GBP/JPY/CHF/NOK/DKK), KIX index, govt bond yields (2Y–10Y), T-bills, mortgage bonds |
+| `banco_de_espana` | Banco de España | Spain / Euro Area | `https://app.bde.es/bierest/resources/srdatosapp` | Euribor (1W–12M), mortgage/consumer/NFC lending rates, deposit rates, IRPH, BoP (current/capital/financial account), housing prices (new/used/avg EUR/m²) |
+
+#### European Coverage Map
+
+```
+🇩🇪 Germany    — Bundesbank (yields, ECB rates, monetary, trade)
+🇫🇷 France     — INSEE (macro) + Banque de France (FX, credit, BoP)
+🇮🇹 Italy      — ISTAT (GDP, inflation, labour, industry, confidence)
+🇳🇱 Netherlands — CBS StatLine (GDP, CPI, housing, trade, govt finance)
+🇩🇰 Denmark    — DST StatBank (GDP, CPI, labour, trade, housing)
+🇸🇪 Sweden     — SCB (macro) + Riksbank (rates, FX, bonds)
+🇪🇸 Spain      — Banco de España (Euribor, lending rates, BoP, housing)
+```
+
+#### Usage Examples — European Modules
+
+**CLI:**
+```bash
+python3 modules/bundesbank_sdmx.py BUND_10Y
+python3 modules/insee_france.py GDP_GROWTH
+python3 modules/banque_de_france.py EUR_USD
+python3 modules/istat_italy.py CPI_NIC
+python3 modules/cbs_netherlands.py GDP_GROWTH_YOY
+python3 modules/statistics_denmark.py CPI_YOY
+python3 modules/scb_sweden.py CPIF_ANNUAL_CHANGE
+python3 modules/riksbank_sweden.py POLICY_RATE
+python3 modules/banco_de_espana.py EURIBOR_12M
+```
+
+**REST API:**
+```
+GET /api/v1/bundesbank-sdmx?indicator=BUND_10Y
+GET /api/v1/insee-france?indicator=GDP_GROWTH
+GET /api/v1/riksbank-sweden?indicator=POLICY_RATE
+GET /api/v1/banco-de-espana?indicator=EURIBOR_12M
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bundesbank_sdmx',
+    params: { indicator: 'BUND_10Y' }
+  })
+});
+```
 
 ---
 
@@ -205,7 +267,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,023 modules gets an auto-generated REST endpoint:
+Each of the 1,034 modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -218,7 +280,7 @@ Each of the 1,023 modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,023 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,034 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -244,7 +306,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,023 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,034 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -284,6 +346,15 @@ screen --min-cap 10B --sector Technology
 | Polygon | Yes | 5/min | Market data, options |
 | USDA NASS | Yes | Unlimited | Agriculture data |
 | Alpha Vantage | Optional | 25/day | Intl stocks, forex |
+| Deutsche Bundesbank | No | Open | German yields, ECB rates, monetary aggregates |
+| INSEE France | No | 30/min | French GDP, CPI, unemployment, trade |
+| Banque de France | Yes (free) | Open | EUR FX rates, credit, BoP, business climate |
+| ISTAT Italy | No | 5/min | Italian GDP, CPI, unemployment, industry |
+| CBS Netherlands | No | Open | Dutch GDP, CPI, housing, trade, govt finance |
+| Statistics Denmark | No | Open | Danish GDP, CPI, labour, trade, housing |
+| SCB Sweden | No | Open | Swedish GDP, CPI/CPIF, labour, trade |
+| Sveriges Riksbank | No | Rate-limited | SEK FX, policy rates, govt bond yields |
+| Banco de España | No | Open | Euribor, lending rates, BoP, housing prices |
 
 ---
 
@@ -325,7 +396,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,023 Python data modules
+├── modules/                          # 1,034 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -333,7 +404,16 @@ quantclaw-data/
 │   ├── fred_enhanced.py              # FRED macro data
 │   ├── congress_trades.py            # Congressional trading
 │   ├── insider_trades.py             # Insider buying/selling
-│   ├── ... (1,023 modules total)
+│   ├── bundesbank_sdmx.py            # Deutsche Bundesbank (SDMX)
+│   ├── insee_france.py               # INSEE France macro statistics
+│   ├── banque_de_france.py           # Banque de France Webstat
+│   ├── istat_italy.py                # ISTAT Italy statistics
+│   ├── cbs_netherlands.py            # CBS Netherlands StatLine
+│   ├── statistics_denmark.py         # Statistics Denmark (DST)
+│   ├── scb_sweden.py                 # SCB Sweden (Statistics Sweden)
+│   ├── riksbank_sweden.py            # Sveriges Riksbank
+│   ├── banco_de_espana.py            # Banco de España
+│   ├── ... (1,034 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -408,6 +488,7 @@ ALPHA_VANTAGE_API_KEY=               # International stocks
 FMP_API_KEY=                         # Financial Modeling Prep
 BOK_API_KEY=                         # Bank of Korea
 COMTRADE_API_KEY=                    # UN trade data
+BANQUE_DE_FRANCE_API_KEY=            # Banque de France Webstat (free registration)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -456,4 +537,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,023 modules • 47 phases • The data layer powering the MoneyClawX ecosystem*
+*1,034 modules • 47 phases • 7 European countries • The data layer powering the MoneyClawX ecosystem*
