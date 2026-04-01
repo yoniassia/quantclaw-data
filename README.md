@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,062 Financial Data Modules
+# QuantClaw Data — 1,063 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,062 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,063 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,057 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,063 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,062** Python data modules
+- **1,063** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **47** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,062 modules)             │
+│  ├── Module browser (1,063 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,062 modules      │
+│  ├── Tool definitions for all 1,063 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,057 Python Modules                            │
+│  1,063 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks & International Institutions (Autobuilder Batches 1–10)
+### Government Statistics, Central Banks & International Institutions (Autobuilder Batches 1–11)
 
-Thirty-eight modules covering 24 countries plus EU-wide and global data across Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 725+ macroeconomic indicators from official government statistical offices, central banks, international institutions, and financial regulators:
+Thirty-nine modules covering 24 countries plus EU-wide and global data (190+ IMF member nations) across Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, North America, Asia-Pacific, Middle East, Oceania, and Southeast Europe with 755+ macroeconomic indicators from official government statistical offices, central banks, international institutions, and financial regulators:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -191,6 +191,7 @@ Thirty-eight modules covering 24 countries plus EU-wide and global data across E
 || `ecb_enhanced` | European Central Bank (SDMX) | Euro Area (EA20) | `https://data-api.ecb.europa.eu/service` | M1/M2/M3 monetary aggregates (EUR mn), MFI loans to households/NFCs/housing, composite cost of borrowing (NFC & HH housing), NFC new loan rates (short/long), HH deposit rate, HICP headline/core/food annual rates |
 || `eurostat_enhanced` | Eurostat (JSON-stat 2.0) | EU27 + Members | `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data` | Gov deficit/surplus & debt (% GDP), gov expenditure & revenue, energy production/consumption/dependency, renewable energy share (total/electricity/transport/heating), GHG emissions (total/energy/industry/transport/agriculture), environmental taxes (total/energy/transport), digital economy (internet access/use/e-commerce) |
 || `bis_enhanced` | BIS (Bank for International Settlements) | Global / 60+ countries | `https://stats.bis.org/api/v2` | OTC derivatives outstanding (total notional/swaps/GMV/NFC counterparties), exchange-traded derivatives OI (FX/IR/equity/commodity) & turnover, FX spot & OTC IR derivatives turnover (triennial), international debt securities (US/GB/JP/CN/DE), CPMI cashless payments, CPMI macro indicators |
+|| `imf_enhanced` | IMF (5 Databases: FAS, FSI, CPIS, CDIS, GFS) | Global / 190+ countries | `https://api.db.nomics.world/v22` | Financial Access Survey (ATMs, branches, deposit accounts, mobile money per capita), Financial Soundness Indicators (NPL ratio, regulatory capital, CET1, ROA, ROE), Coordinated Portfolio Investment Survey (total/equity/debt assets), Coordinated Direct Investment Survey (inward/outward FDI equity & debt), Government Finance Statistics (revenue, expense, tax, expenditure, social benefits, interest, investment, liabilities) |
 
 #### Global Coverage Map
 
@@ -229,6 +230,7 @@ Thirty-eight modules covering 24 countries plus EU-wide and global data across E
 🇪🇺 Euro Area        — ECB Enhanced (M1/M2/M3 monetary aggregates, MFI credit, cost of borrowing, HICP headline/core/food)
 🇪🇺 EU27             — Eurostat Enhanced (govt deficit/debt, energy balances, renewables, GHG emissions, env taxes, digital economy)
 🌍 Global            — BIS Enhanced (OTC/exchange-traded derivatives, FX turnover, international debt securities, cashless payments)
+🌐 190+ Countries    — IMF Enhanced (financial access, banking soundness, portfolio/FDI investment, government finance)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -346,6 +348,22 @@ python3 modules/bis_enhanced.py XTD_OI_IR
 python3 modules/bis_enhanced.py DEBT_SEC_US
 python3 modules/bis_enhanced.py derivatives
 python3 modules/bis_enhanced.py debt-securities
+# IMF Enhanced — 5 databases, 190+ countries (Batch 11)
+python3 modules/imf_enhanced.py FSI_NPL_RATIO US
+python3 modules/imf_enhanced.py FSI_CET1_RATIO DE
+python3 modules/imf_enhanced.py FSI_ROE JP
+python3 modules/imf_enhanced.py FAS_ATMS_PER_100K IN
+python3 modules/imf_enhanced.py FAS_MOBILE_MONEY_ACTIVE KE
+python3 modules/imf_enhanced.py CPIS_TOTAL_ASSETS US
+python3 modules/imf_enhanced.py CDIS_INWARD_EQUITY GB
+python3 modules/imf_enhanced.py GFS_REVENUE US
+python3 modules/imf_enhanced.py GFS_EXPENSE DE
+python3 modules/imf_enhanced.py fsi US
+python3 modules/imf_enhanced.py fas BR
+python3 modules/imf_enhanced.py gfs JP
+python3 modules/imf_enhanced.py banking-health CN
+python3 modules/imf_enhanced.py access NG
+python3 modules/imf_enhanced.py list
 ```
 
 **REST API:**
@@ -420,6 +438,15 @@ GET /api/v1/bis-enhanced?indicator=OTC_NOTIONAL_TOTAL
 GET /api/v1/bis-enhanced?indicator=XTD_OI_IR
 GET /api/v1/bis-enhanced?indicator=DEBT_SEC_US
 GET /api/v1/bis-enhanced?indicator=FX_TURNOVER_TOTAL
+GET /api/v1/imf-enhanced?indicator=FSI_NPL_RATIO&country=US
+GET /api/v1/imf-enhanced?indicator=FSI_CET1_RATIO&country=DE
+GET /api/v1/imf-enhanced?indicator=FSI_ROE&country=JP
+GET /api/v1/imf-enhanced?indicator=FAS_ATMS_PER_100K&country=IN
+GET /api/v1/imf-enhanced?indicator=FAS_MOBILE_MONEY_ACTIVE&country=KE
+GET /api/v1/imf-enhanced?indicator=CPIS_TOTAL_ASSETS&country=US
+GET /api/v1/imf-enhanced?indicator=CDIS_INWARD_EQUITY&country=GB
+GET /api/v1/imf-enhanced?indicator=GFS_REVENUE&country=US
+GET /api/v1/imf-enhanced?indicator=GFS_TAX_REVENUE&country=FR
 ```
 
 **MCP Tool Call:**
@@ -1091,6 +1118,132 @@ const derivsOverview = await fetch('http://localhost:3056/api/data/batch', {
 - 725+ indicators from official government, central bank, and international institution sources
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED), policy rates, interbank rates, monetary aggregates (incl. EA M1/M2/M3), GDP (incl. Czech/Estonian national accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts, BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations, investment (GFCF), OTC/exchange-traded derivatives (notional/GMV/open interest), FX turnover surveys, international debt securities, energy production/consumption/dependency, renewable energy share, greenhouse gas emissions by sector, environmental taxes, digital economy indicators, cashless payments
 
+#### Batch 11: International Monetary Fund — IMF Enhanced (5 Databases)
+
+Batch 11 adds the **IMF Enhanced** module, integrating five specialized International Monetary Fund statistical databases (FAS, FSI, CPIS, CDIS, GFS) via the DBnomics API mirror. This is the first truly global module on the platform, providing country-level data for **190+ nations** across financial inclusion, banking soundness, cross-border investment flows, and government fiscal accounts. This brings total coverage to **24 countries + EU-wide + global + 190 IMF member nations**, with **39 government/institutional/regulatory modules** and **755+ indicators**.
+
+**IMF Enhanced** (`imf_enhanced`) — International Monetary Fund (5 Databases via DBnomics):
+- **Financial Access Survey (FAS):** ATMs per 100,000 adults, commercial bank branches per 100,000 adults, ATMs per 1,000 km², bank branches per 1,000 km², household deposit accounts per 1,000 adults, active mobile money accounts per 1,000 adults, registered mobile money accounts per 1,000 adults (annual, 190+ countries)
+- **Financial Soundness Indicators (FSI):** Non-performing loans to total gross loans (NPL ratio), regulatory capital to risk-weighted assets, Common Equity Tier 1 (CET1) to RWA, return on assets (ROA), return on equity (ROE) — all for deposit-taking institutions (annual/quarterly, 190+ countries)
+- **Coordinated Portfolio Investment Survey (CPIS):** Total cross-border portfolio investment assets vs world, portfolio equity assets, long-term debt securities assets (annual, USD)
+- **Coordinated Direct Investment Survey (CDIS):** Inward FDI equity positions, inward FDI debt assets (gross), inward FDI debt liabilities (gross), outward FDI equity positions, outward FDI debt assets, outward FDI debt liabilities — all net/gross bilateral positions vs world (annual, USD mn)
+- **Government Finance Statistics (GFS):** General government revenue, general government expense, tax revenue, total expenditure, social benefits expense, interest expense, net investment in nonfinancial assets, net incurrence of liabilities — all in domestic currency billions (annual)
+- **29 indicators** across 5 IMF databases (FAS ×7, FSI ×5, CPIS ×3, CDIS ×6, GFS ×8)
+- **Special commands:** `fas [COUNTRY]` (financial inclusion), `fsi [COUNTRY]` (banking health), `cpis [COUNTRY]` (portfolio investment), `cdis [COUNTRY]` (direct investment), `gfs [COUNTRY]` (government finance), `banking-health [COUNTRY]`, `access [COUNTRY]`, `list`
+- Default country: US — pass any ISO2 country code (DE, JP, GB, CN, IN, BR, KE, NG, etc.) for any of 190+ nations
+- API: `https://api.db.nomics.world/v22` (DBnomics mirror of IMF data, open access, no auth, rate-limited)
+- Cache TTL: 24h (data updated annually for FAS/CPIS/CDIS/GFS, quarterly for FSI)
+
+**Example response — `FSI_NPL_RATIO`:**
+```json
+{
+  "success": true,
+  "indicator": "FSI_NPL_RATIO",
+  "country": "US",
+  "name": "Non-performing Loans to Total Gross Loans",
+  "description": "Core FSI: ratio of non-performing loans to total gross loans for deposit takers",
+  "unit": "%",
+  "frequency": "annual",
+  "database": "FSI",
+  "category": "fsi",
+  "latest_value": 1.12,
+  "latest_period": "2024",
+  "period_change": -0.05,
+  "period_change_pct": -4.27,
+  "data_points": [{"period": "2024", "value": 1.12}, "..."],
+  "total_observations": 15,
+  "source": "IMF FSI via DBnomics",
+  "series_key": "A.US.FSANL_PT"
+}
+```
+
+**Example — Government Finance Statistics for Japan:**
+```bash
+python3 modules/imf_enhanced.py gfs JP
+# Returns: {"success": true, "category": "gfs", "country": "JP", "indicators": {"GFS_REVENUE": {"value": 228.5, "period": "2023"}, "GFS_EXPENSE": {"value": 234.1, ...}, ...}}
+```
+
+**Batch MCP — Global Banking Health Comparison (New in Batch 11):**
+```typescript
+const bankingHealth = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_NPL_RATIO', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_NPL_RATIO', country: 'DE' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_NPL_RATIO', country: 'JP' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_NPL_RATIO', country: 'GB' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_NPL_RATIO', country: 'CN' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_CET1_RATIO', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_CET1_RATIO', country: 'DE' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FSI_REGULATORY_CAPITAL', country: 'IN' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Financial Inclusion Across Developing Economies (New in Batch 11):**
+```typescript
+const financialAccess = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_ATMS_PER_100K', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_ATMS_PER_100K', country: 'IN' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_ATMS_PER_100K', country: 'BR' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_ATMS_PER_100K', country: 'NG' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_MOBILE_MONEY_ACTIVE', country: 'KE' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_MOBILE_MONEY_ACTIVE', country: 'NG' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_MOBILE_MONEY_ACTIVE', country: 'GH' } },
+      { tool: 'imf_enhanced', params: { indicator: 'FAS_BRANCHES_PER_100K', country: 'JP' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Government Fiscal Comparison: G7 (New in Batch 11):**
+```typescript
+const g7Fiscal = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_REVENUE', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_REVENUE', country: 'JP' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_REVENUE', country: 'DE' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_REVENUE', country: 'GB' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_EXPENSE', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_EXPENSE', country: 'JP' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_SOCIAL_BENEFITS', country: 'FR' } },
+      { tool: 'imf_enhanced', params: { indicator: 'GFS_INTEREST_EXPENSE', country: 'IT' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Cross-Border Investment Flows (New in Batch 11):**
+```typescript
+const investmentFlows = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'imf_enhanced', params: { indicator: 'CPIS_TOTAL_ASSETS', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CPIS_TOTAL_ASSETS', country: 'GB' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CPIS_EQUITY_ASSETS', country: 'JP' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CDIS_INWARD_EQUITY', country: 'US' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CDIS_INWARD_EQUITY', country: 'CN' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CDIS_OUTWARD_EQUITY', country: 'DE' } },
+      { tool: 'imf_enhanced', params: { indicator: 'CDIS_OUTWARD_EQUITY', country: 'JP' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 11:**
+- 39 government/central bank/regulatory/institutional modules
+- 24 countries + EU-wide + global + 190 IMF member nations: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇪🇺 🌍 🌐
+- 755+ indicators from official government, central bank, and international institution sources
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED), policy rates, interbank rates, monetary aggregates (incl. EA M1/M2/M3), GDP (incl. Czech/Estonian national accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics), trade, housing prices, lending rates, mortgage rates, credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts (IMF GFS revenue/expenditure/tax/social benefits/interest/investment/borrowing), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. full GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations, investment (GFCF), OTC/exchange-traded derivatives (notional/GMV/open interest), FX turnover surveys, international debt securities, energy production/consumption/dependency, renewable energy share, greenhouse gas emissions by sector, environmental taxes, digital economy indicators, cashless payments, financial inclusion metrics (ATM/branch/account density, mobile money penetration), banking soundness indicators (NPL ratios, capital adequacy CET1/RWA, ROA/ROE), cross-border portfolio investment (CPIS equity/debt), foreign direct investment positions (CDIS inward/outward)
+
 ---
 
 ## MCP Server
@@ -1149,7 +1302,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,062 data modules gets an auto-generated REST endpoint:
+Each of the 1,063 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -1162,7 +1315,7 @@ Each of the 1,062 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,062 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,063 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -1188,7 +1341,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,062 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,063 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -1266,6 +1419,7 @@ screen --min-cap 10B --sector Technology
 | ECB Enhanced (SDMX) | No | Open | Euro Area M1/M2/M3 monetary aggregates, MFI loans to HH/NFC/housing, composite cost of borrowing, NFC/HH lending rates, HH deposit rate, HICP headline/core/food |
 | Eurostat Enhanced (JSON-stat) | No | Open (~100/hr) | EU27 government deficit/debt, fiscal revenue/spending, energy production/consumption/dependency, renewables share, GHG emissions by sector, environmental taxes, digital economy |
 | BIS Enhanced (SDMX v2) | No | Open | Global OTC derivatives outstanding, exchange-traded derivatives OI & turnover, FX/IR turnover surveys, international debt securities (5 countries), CPMI cashless payments & macro |
+| IMF Enhanced (DBnomics) | No | Open (rate-limited) | FAS financial access (ATMs, branches, mobile money for 190+ countries), FSI banking soundness (NPL, capital, ROA/ROE), CPIS portfolio investment, CDIS FDI positions, GFS government fiscal accounts (revenue, expenditure, tax, social benefits, interest, debt) |
 
 ---
 
@@ -1307,7 +1461,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,057 Python data modules
+├── modules/                          # 1,063 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -1353,7 +1507,8 @@ quantclaw-data/
 │   ├── ecb_enhanced.py             # ECB Enhanced (M1/M2/M3, MFI credit, HICP, rates)
 │   ├── eurostat_enhanced.py        # Eurostat Enhanced (govt finance, energy, emissions, digital)
 │   ├── bis_enhanced.py             # BIS Enhanced (derivatives, FX turnover, debt, payments)
-│   ├── ... (1,062 modules total)
+│   ├── imf_enhanced.py             # IMF Enhanced (FAS, FSI, CPIS, CDIS, GFS — 190+ countries)
+│   ├── ... (1,063 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -1485,4 +1640,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,062 modules • 47 phases • 24 countries + EU-wide + global (12 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Euro Area + EU27 + BIS global) • 38 government/central bank/institutional modules • 725+ macro indicators • The data layer powering the MoneyClawX ecosystem*
+*1,063 modules • 47 phases • 24 countries + EU-wide + global + 190 IMF member nations (12 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Euro Area + EU27 + BIS global + IMF global) • 39 government/central bank/institutional modules • 755+ macro indicators • The data layer powering the MoneyClawX ecosystem*

@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,062 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,063 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -89,6 +89,11 @@
 | Estonian macro data | `statistics_estonia` (GDP, CPI/HICP, employment, trade, industrial production) |
 | Energy data | `eia_energy`, `crude_oil_fundamentals`, `natural_gas_supply_demand`, `opec` |
 | Agriculture | `usda_agriculture`, `crop_yield_forecaster`, `agricultural_commodities` |
+| Banking soundness / NPL | `imf_enhanced` (FSI: NPL ratio, regulatory capital, CET1, ROA, ROE — 190+ countries) |
+| Financial inclusion | `imf_enhanced` (FAS: ATMs, bank branches, deposit accounts, mobile money per capita — 190+ countries) |
+| Cross-border investment | `imf_enhanced` (CPIS: portfolio equity/debt assets; CDIS: inward/outward FDI equity & debt — 190+ countries) |
+| Government fiscal accounts | `imf_enhanced` (GFS: revenue, expense, tax, expenditure, social benefits, interest, investment, liabilities — 190+ countries), `eurostat_enhanced` (EU27 deficit/debt) |
+| IMF data | `imf_enhanced` (FAS + FSI + CPIS + CDIS + GFS via DBnomics — 29 indicators, 190+ countries) |
 
 ---
 
@@ -2043,6 +2048,81 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### imf_enhanced.py — IMF Enhanced (FAS + FSI + CPIS + CDIS + GFS)
+
+- **Source:** International Monetary Fund (5 databases via DBnomics mirror)
+- **API:** `https://api.db.nomics.world/v22`
+- **Protocol:** DBnomics REST JSON (mirrors IMF FAS, FSI, CPIS, CDIS, GFSMAB)
+- **Auth:** None (open access, rate-limited)
+- **Freshness:** Annual (FAS, CPIS, CDIS, GFS), Quarterly (FSI)
+- **Coverage:** Global / 190+ countries (ISO2 country codes)
+- **Default Country:** US
+
+**Indicators (29):**
+
+| Key | Name | Database | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `FAS_ATMS_PER_100K` | ATMs per 100,000 Adults | FAS | Annual | per 100k adults |
+| `FAS_BRANCHES_PER_100K` | Commercial Bank Branches per 100,000 Adults | FAS | Annual | per 100k adults |
+| `FAS_ATMS_PER_1000KM2` | ATMs per 1,000 km² | FAS | Annual | per 1000 km² |
+| `FAS_BRANCHES_PER_1000KM2` | Bank Branches per 1,000 km² | FAS | Annual | per 1000 km² |
+| `FAS_DEPOSIT_ACCTS_PER_1000` | Deposit Accounts per 1,000 Adults | FAS | Annual | per 1000 adults |
+| `FAS_MOBILE_MONEY_ACTIVE` | Active Mobile Money Accounts per 1,000 Adults | FAS | Annual | per 1000 adults |
+| `FAS_MOBILE_MONEY_REGISTERED` | Registered Mobile Money Accounts per 1,000 Adults | FAS | Annual | per 1000 adults |
+| `FSI_NPL_RATIO` | Non-performing Loans to Total Gross Loans | FSI | Annual | % |
+| `FSI_REGULATORY_CAPITAL` | Regulatory Capital to Risk-Weighted Assets | FSI | Annual | % |
+| `FSI_CET1_RATIO` | Common Equity Tier 1 to Risk-Weighted Assets | FSI | Annual | % |
+| `FSI_ROA` | Return on Assets (Deposit Takers) | FSI | Annual | % |
+| `FSI_ROE` | Return on Equity (Deposit Takers) | FSI | Annual | % |
+| `CPIS_TOTAL_ASSETS` | Total Portfolio Investment Assets (World) | CPIS | Annual | USD |
+| `CPIS_EQUITY_ASSETS` | Portfolio Equity Assets (World) | CPIS | Annual | USD |
+| `CPIS_DEBT_LT_ASSETS` | Portfolio Long-term Debt Assets (World) | CPIS | Annual | USD |
+| `CDIS_INWARD_EQUITY` | Inward FDI Equity Positions (World) | CDIS | Annual | USD mn |
+| `CDIS_INWARD_DEBT_ASSETS` | Inward FDI Debt Assets (World) | CDIS | Annual | USD mn |
+| `CDIS_INWARD_DEBT_LIAB` | Inward FDI Debt Liabilities (World) | CDIS | Annual | USD mn |
+| `CDIS_OUTWARD_EQUITY` | Outward FDI Equity Positions (World) | CDIS | Annual | USD mn |
+| `CDIS_OUTWARD_DEBT_ASSETS` | Outward FDI Debt Assets (World) | CDIS | Annual | USD mn |
+| `CDIS_OUTWARD_DEBT_LIAB` | Outward FDI Debt Liabilities (World) | CDIS | Annual | USD mn |
+| `GFS_REVENUE` | General Government Revenue | GFSMAB | Annual | domestic currency bn |
+| `GFS_EXPENSE` | General Government Expense | GFSMAB | Annual | domestic currency bn |
+| `GFS_TAX_REVENUE` | Tax Revenue | GFSMAB | Annual | domestic currency bn |
+| `GFS_EXPENDITURE` | Total Government Expenditure | GFSMAB | Annual | domestic currency bn |
+| `GFS_SOCIAL_BENEFITS` | Social Benefits Expense | GFSMAB | Annual | domestic currency bn |
+| `GFS_INTEREST_EXPENSE` | Interest Expense | GFSMAB | Annual | domestic currency bn |
+| `GFS_NET_INVESTMENT` | Net Investment in Nonfinancial Assets | GFSMAB | Annual | domestic currency bn |
+| `GFS_NET_LIABILITIES` | Net Incurrence of Liabilities | GFSMAB | Annual | domestic currency bn |
+
+**CLI Examples:**
+```bash
+python3 modules/imf_enhanced.py FSI_NPL_RATIO US        # US bank NPL ratio
+python3 modules/imf_enhanced.py FSI_CET1_RATIO DE       # German bank CET1
+python3 modules/imf_enhanced.py FAS_ATMS_PER_100K IN    # India ATM density
+python3 modules/imf_enhanced.py FAS_MOBILE_MONEY_ACTIVE KE  # Kenya mobile money
+python3 modules/imf_enhanced.py CPIS_TOTAL_ASSETS US    # US portfolio investment
+python3 modules/imf_enhanced.py CDIS_INWARD_EQUITY CN   # China inward FDI
+python3 modules/imf_enhanced.py GFS_REVENUE JP          # Japan govt revenue
+python3 modules/imf_enhanced.py GFS_SOCIAL_BENEFITS FR  # France social spending
+python3 modules/imf_enhanced.py fsi US                  # Full FSI dashboard
+python3 modules/imf_enhanced.py fas BR                  # Brazil financial access
+python3 modules/imf_enhanced.py gfs DE                  # Germany govt finance
+python3 modules/imf_enhanced.py banking-health CN       # China banking health
+python3 modules/imf_enhanced.py access NG               # Nigeria financial inclusion
+python3 modules/imf_enhanced.py list                    # All available indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'imf_enhanced',
+    params: { indicator: 'FSI_NPL_RATIO', country: 'US' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -2220,7 +2300,8 @@ statistics_finland
 technicals
 tiingo                       treasury_curve                uae_data
 yield_curve
-... (1,062 total — run `ls modules/*.py | wc -l` to verify)
+imf_enhanced
+... (1,063 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -2248,8 +2329,8 @@ yield_curve
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
 
 ---
 
-*1,062 modules — 24 countries + EU-wide + global — 38 government/central bank/institutional modules — 725+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,063 modules — 24 countries + EU-wide + global + 190 IMF member nations — 39 government/central bank/institutional modules — 755+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
