@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,091 Financial Data Modules
+# QuantClaw Data — 1,092 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,091 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,092 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,091 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,092 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,091** Python data modules
+- **1,092** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,091 modules)             │
+│  ├── Module browser (1,092 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,085 modules      │
+│  ├── Tool definitions for all 1,092 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,085 Python Modules                            │
+│  1,092 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -3220,6 +3220,196 @@ const results = await fetch('http://localhost:3056/api/data/batch', {
 - 1,160+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, commodity production, energy market, sanctions/compliance, corporate registry, and remittance sources
 - New in Batch 19: ENTSO-E (day-ahead prices/generation/load/cross-border/capacity for 30+ EU bidding zones), OpenSanctions (entity/PEP/vessel sanctions search, fuzzy KYC matching, 80+ datasets, 240+ jurisdictions), PSA Philippines (GDP/CPI/unemployment/remittances/trade/agriculture/PPI), TCMB Turkey (TRY FX 5 pairs, policy rate, CPI, money supply, current account, reserves), UK Companies House (company search/profile/officers/filings/charges/insolvency/PSC/disqualified for 5M+ companies)
 
+#### Batch 20: UN FAOSTAT — Global Food & Agriculture Statistics (245 Countries)
+
+Batch 20 adds the **UN FAO FAOSTAT** module (`faostat_api`), the world's most comprehensive food and agriculture statistical database maintained by the United Nations Food and Agriculture Organization. FAOSTAT provides time series data spanning 1961 to present for 245 countries and territories, covering crop production, livestock inventory, commodity trade, producer prices, fertilizer use, land use, food security, and agricultural greenhouse gas emissions. This is a critical addition for commodity market analysis, agricultural supply chain intelligence, climate-adjusted food security modeling, and ESG/sustainability monitoring. With 29 pre-defined indicators across 7 FAOSTAT domains plus dynamic domain query capabilities, this module brings total indicators to **1,195+** and total government/institutional modules to **68**.
+
+**UN FAOSTAT** (`faostat_api`) — United Nations Food and Agriculture Organization:
+- **Crop production** (QCL domain): annual production volumes in tonnes for wheat, rice, maize, soybeans, sugarcane, and oil palm — the six most traded agricultural commodities globally. Enables country-level production tracking and global supply/demand modeling for soft commodity futures (CBOT wheat, corn, soybeans; ICE sugar, palm oil)
+- **Crop yields** (QCL domain): yield per hectare (hg/ha) for wheat, rice, maize — critical for assessing agricultural productivity trends, climate impact on agriculture, and identifying food supply bottlenecks
+- **Area harvested** (QCL domain): hectares under cultivation for major crops — tracks agricultural land expansion/contraction and deforestation-driven agricultural conversion
+- **Livestock inventory** (QCL domain): cattle, chicken, and pig stocks by country (head count) — essential for meat/dairy commodity analysis and protein supply forecasting
+- **Commodity trade** (TP domain): export/import quantities (tonnes) and values (1000 USD) for wheat, rice, maize, soybeans — reveals trade flow patterns, food dependency, and sanctions impact on agricultural supply chains
+- **Producer prices** (PP domain): farm-gate prices in USD/tonne for wheat, maize, rice, soybeans — upstream price signals that lead futures markets by 1–3 months
+- **Fertilizer use** (RFN domain): nitrogen (N), phosphate (P2O5), and potash (K2O) consumption by country — fertilizer demand is a leading indicator for crop production and is linked to natural gas prices (ammonia/urea production)
+- **Land use** (RL domain): arable land, total agricultural land, and forest land (1000 ha) — tracks land use change, deforestation, and agricultural frontier expansion with direct ESG/sustainability implications
+- **Food security** (FS domain): prevalence of undernourishment (%) and dietary energy supply adequacy (%) — SDG 2 (Zero Hunger) indicators used by the World Bank, IMF, and development finance institutions for aid allocation and sovereign risk assessment
+- **Agricultural emissions** (GT domain): total agricultural greenhouse gas emissions (kt CO2 equivalent) — Scope 3 supply chain emissions data for agri-food ESG analysis and carbon credit market modeling
+- **Top producers ranking**: get top-N producing countries for any commodity — enables competitive intelligence for agricultural commodity traders
+- **Dynamic domain queries**: query any FAOSTAT domain with custom item/element/country/year filters — access to 20,000+ indicators beyond the pre-defined set
+- API base: `https://faostatservices.fao.org/api/v1`
+- Auth: `FAOSTAT_USERNAME` + `FAOSTAT_PASSWORD` (free registration at https://www.fao.org/faostat/en/#developer-portal); also supports direct `FAOSTAT_TOKEN` for pre-authenticated access
+- Rate limits: polite request spacing (1s delay); 24h cache TTL for annual data
+- Coverage: **245 countries and territories**, 1961–present (annual data)
+- Domains: QCL (crops/livestock), TP (trade), PP (prices), RFN (fertilizer), RL (land use), FS (food security), GT (emissions), FBS (food balance), SCL (supply utilization), plus 10+ additional domains via dynamic query
+
+**Why Batch 20 matters for financial analysis:**
+
+1. **Soft commodity futures intelligence** — FAOSTAT production and trade data is the fundamental supply-side input for pricing wheat (CBOT ZW), corn (ZC), soybeans (ZS), sugar (ICE SB), and palm oil (FCPO). Country-level production shifts — such as drought in Brazil's soybean belt or Indian wheat export bans — can move futures 10–20% in weeks. Combining FAOSTAT with NOAA weather data and NASA FIRMS fire detection creates a comprehensive agricultural commodity monitoring stack.
+
+2. **Fertilizer-energy nexus** — Nitrogen fertilizer production is one of the largest consumers of natural gas globally (~2% of world gas demand). FAOSTAT fertilizer use data combined with EIA/ENTSO-E energy pricing enables modeling the fertilizer cost spiral that drives food inflation — a pattern clearly visible in the 2022 food crisis when European gas prices spiked 10x.
+
+3. **ESG & sustainability analytics** — Agricultural land use change and GHG emissions data are required for Scope 3 supply chain emissions reporting (GHG Protocol). FAOSTAT provides the authoritative dataset for CDP, TCFD, and EU CSRD disclosures. Food companies, agricultural REITs, and commodity traders increasingly need this data for ESG compliance.
+
+4. **Sovereign food security risk** — The undernourishment and dietary supply adequacy indicators are used by rating agencies (Moody's, S&P, Fitch) in sovereign risk models for import-dependent nations. Countries with >25% undernourishment prevalence face elevated social unrest risk, which historically correlates with sovereign spread widening and currency depreciation.
+
+**Pre-defined FAOSTAT indicators (29):**
+
+| Indicator | Domain | Description | Unit |
+|-----------|--------|-------------|------|
+| `WHEAT_PRODUCTION` | QCL | Annual wheat production by country | tonnes |
+| `RICE_PRODUCTION` | QCL | Annual rice paddy production | tonnes |
+| `MAIZE_PRODUCTION` | QCL | Annual maize (corn) production | tonnes |
+| `SOYBEANS_PRODUCTION` | QCL | Annual soybeans production | tonnes |
+| `SUGARCANE_PRODUCTION` | QCL | Annual sugar cane production | tonnes |
+| `PALM_OIL_PRODUCTION` | QCL | Annual oil palm fruit production | tonnes |
+| `WHEAT_YIELD` | QCL | Wheat yield per hectare | hg/ha |
+| `RICE_YIELD` | QCL | Rice paddy yield per hectare | hg/ha |
+| `MAIZE_YIELD` | QCL | Maize yield per hectare | hg/ha |
+| `WHEAT_AREA` | QCL | Wheat area harvested | ha |
+| `CATTLE_STOCKS` | QCL | Live cattle inventory | head |
+| `CHICKEN_STOCKS` | QCL | Live chicken inventory | 1000 head |
+| `PIG_STOCKS` | QCL | Live pig inventory | head |
+| `WHEAT_EXPORT_QTY` | TP | Wheat export quantity | tonnes |
+| `WHEAT_IMPORT_QTY` | TP | Wheat import quantity | tonnes |
+| `SOYBEANS_EXPORT_QTY` | TP | Soybeans export quantity | tonnes |
+| `RICE_EXPORT_QTY` | TP | Rice export quantity | tonnes |
+| `MAIZE_EXPORT_QTY` | TP | Maize export quantity | tonnes |
+| `WHEAT_EXPORT_VAL` | TP | Wheat export value | 1000 USD |
+| `WHEAT_IMPORT_VAL` | TP | Wheat import value | 1000 USD |
+| `WHEAT_PRICE_USD` | PP | Farm-gate wheat price | USD/tonne |
+| `MAIZE_PRICE_USD` | PP | Farm-gate maize price | USD/tonne |
+| `RICE_PRICE_USD` | PP | Farm-gate rice price | USD/tonne |
+| `SOYBEANS_PRICE_USD` | PP | Farm-gate soybeans price | USD/tonne |
+| `NITROGEN_FERTILIZER` | RFN | Nitrogen (N) fertilizer consumption | tonnes |
+| `PHOSPHATE_FERTILIZER` | RFN | Phosphate (P2O5) fertilizer consumption | tonnes |
+| `POTASH_FERTILIZER` | RFN | Potash (K2O) fertilizer consumption | tonnes |
+| `ARABLE_LAND` | RL | Arable land area | 1000 ha |
+| `AGRICULTURAL_LAND` | RL | Total agricultural land area | 1000 ha |
+| `FOREST_LAND` | RL | Forest land area | 1000 ha |
+| `UNDERNOURISHMENT` | FS | Prevalence of undernourishment | % |
+| `DIETARY_SUPPLY_ADEQUACY` | FS | Average dietary energy supply adequacy | % |
+| `AG_EMISSIONS_TOTAL` | GT | Agriculture total GHG emissions | kt CO2eq |
+
+**Example response — `faostat_api` `WHEAT_PRODUCTION`:**
+```json
+{
+  "indicator": "WHEAT_PRODUCTION",
+  "name": "Wheat Production (tonnes)",
+  "description": "Annual wheat production quantity by country",
+  "unit": "tonnes",
+  "frequency": "annual",
+  "domain": "QCL",
+  "latest_value": 136640000.0,
+  "latest_year": "2023",
+  "latest_area": "China, mainland",
+  "yoy_change": 1480000.0,
+  "yoy_change_pct": 1.10,
+  "data_points": [
+    {"year": "2023", "area": "China, mainland", "iso3": "CHN", "value": 136640000.0, "unit": "tonnes"},
+    {"year": "2023", "area": "India", "iso3": "IND", "value": 110550000.0, "unit": "tonnes"},
+    {"year": "2023", "area": "Russian Federation", "iso3": "RUS", "value": 91500000.0, "unit": "tonnes"}
+  ],
+  "source": "https://faostatservices.fao.org/api/v1/en/data/QCL"
+}
+```
+
+**CLI quick-start — FAOSTAT:**
+```bash
+python3 modules/faostat_api.py WHEAT_PRODUCTION US
+# Returns: US wheat production (tonnes) + YoY change + 50 data points
+
+python3 modules/faostat_api.py top wheat 10
+# Returns: Top 10 wheat-producing countries ranked by output
+
+python3 modules/faostat_api.py production soybeans BRA
+# Returns: Brazilian soybean production volume
+
+python3 modules/faostat_api.py trade wheat US
+# Returns: US wheat export quantity (tonnes)
+
+python3 modules/faostat_api.py prices maize
+# Returns: Global maize farm-gate prices (USD/tonne)
+
+python3 modules/faostat_api.py fertilizer nitrogen
+# Returns: Global nitrogen fertilizer consumption
+
+python3 modules/faostat_api.py food_security IN
+# Returns: India undernourishment prevalence (%)
+
+python3 modules/faostat_api.py emissions CN
+# Returns: China agricultural GHG emissions (kt CO2eq)
+
+python3 modules/faostat_api.py land_use BR
+# Returns: Brazil arable/agricultural/forest land (1000 ha)
+
+python3 modules/faostat_api.py domains
+# Returns: All 20+ FAOSTAT domain codes with descriptions
+```
+
+**Batch MCP — Global Agricultural Commodity Monitor (New in Batch 20):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_PRODUCTION', country: 'US' } },
+      { tool: 'faostat_api', params: { indicator: 'SOYBEANS_PRODUCTION', country: 'BR' } },
+      { tool: 'faostat_api', params: { indicator: 'RICE_PRODUCTION', country: 'IN' } },
+      { tool: 'faostat_api', params: { indicator: 'PALM_OIL_PRODUCTION', country: 'ID' } },
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_PRICE_USD' } },
+      { tool: 'faostat_api', params: { indicator: 'NITROGEN_FERTILIZER' } },
+      { tool: 'eia_energy', params: { indicator: 'NATURAL_GAS_PRICE' } },
+      { tool: 'noaa_weather_data', params: { indicator: 'DROUGHT_INDEX' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Food Security & ESG Sustainability Dashboard (New in Batch 20):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'faostat_api', params: { indicator: 'UNDERNOURISHMENT', country: 'IN' } },
+      { tool: 'faostat_api', params: { indicator: 'DIETARY_SUPPLY_ADEQUACY', country: 'NG' } },
+      { tool: 'faostat_api', params: { indicator: 'AG_EMISSIONS_TOTAL', country: 'BR' } },
+      { tool: 'faostat_api', params: { indicator: 'FOREST_LAND', country: 'BR' } },
+      { tool: 'faostat_api', params: { indicator: 'AGRICULTURAL_LAND', country: 'ID' } },
+      { tool: 'faostat_api', params: { indicator: 'ARABLE_LAND', country: 'US' } },
+      { tool: 'nasa_firms_fire', params: { indicator: 'FIRE_COUNTRY', country: 'BR' } },
+      { tool: 'world_bank_indicators', params: { indicator: 'EN.ATM.CO2E.KT' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Wheat Supply Chain Risk Monitor (New in Batch 20):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_PRODUCTION', country: 'UA' } },
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_EXPORT_QTY', country: 'RU' } },
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_IMPORT_QTY', country: 'EG' } },
+      { tool: 'faostat_api', params: { indicator: 'WHEAT_PRICE_USD' } },
+      { tool: 'opensanctions_api', params: { indicator: 'COUNTRY_EXPOSURE', country: 'RU' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'PROTEST', country: 'EG' } },
+      { tool: 'usgs_earthquake', params: { indicator: 'HOTSPOT_TURKEY' } },
+      { tool: 'global_fishing_watch', params: { indicator: 'PORT_VISITS' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 20:**
+- 68 government/central bank/regulatory/institutional/alt-data/compliance/agriculture modules
+- 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇵🇪 🇹🇷 🇵🇭 🇪🇺 🌍 🌐 🌊 🔥 📚 ⚡ 🛡️ 🏢 🌾
+- 1,195+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture sources
+- New in Batch 20: UN FAOSTAT (29 pre-defined indicators + dynamic domain queries covering crop production/yields/area for 6 major commodities, livestock inventory for 3 species, trade quantities/values for 5 crops, producer prices for 4 crops, fertilizer use N/P/K, land use 3 categories, food security 2 indicators, agricultural emissions — 245 countries, 1961–present, 20,000+ total indicators available via domain query)
+
 ---
 
 ## MCP Server
@@ -3278,7 +3468,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,086 data modules gets an auto-generated REST endpoint:
+Each of the 1,092 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -3291,7 +3481,7 @@ Each of the 1,086 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,086 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,092 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -3317,7 +3507,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,086 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,092 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -3419,6 +3609,7 @@ screen --min-cap 10B --sector Technology
 | OpenAlex (REST/JSON) | No (polite email) | Open | Corporate R&D output (8 companies), research topic trends, trending keywords (30 topics with YoY growth), institution comparison, country innovation rankings, citation analysis |
 | BNM Malaysia (REST/JSON) | No | Open | MYR FX rates (20+ currencies), OPR policy rate, KLIBOR interbank rates (6 tenors), Islamic interbank rates, Kijang Emas gold prices, bank base & lending rates, consumer fraud alerts |
 | BCRP Peru (REST/JSON) | No | Open | BCRP reference rate, CPI Lima index & 12-month inflation, GDP quarterly (USD mn), PEN/USD FX (daily + monthly), copper/gold/silver/zinc mining production, exports/imports FOB, trade balance, international reserves, interbank rate |
+| UN FAOSTAT (REST/JWT) | Yes (free) | Open | Global crop production (wheat/rice/maize/soybeans/sugarcane/palm oil), crop yields & area harvested, livestock inventory (cattle/chicken/pigs), commodity trade (export/import qty & value), producer prices (USD/tonne), fertilizer use (N/P/K), land use (arable/agricultural/forest), food security (undernourishment, dietary supply adequacy), agricultural GHG emissions — 245 countries, 1961–present |
 
 ---
 
@@ -3460,7 +3651,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,091 Python data modules
+├── modules/                          # 1,092 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -3535,7 +3726,8 @@ quantclaw-data/
 │   ├── psa_philippines.py          # PSA Philippines (GDP, CPI, unemployment, remittances, trade, agriculture, PPI)
 │   ├── tcmb_evds.py                # TCMB Turkey (TRY FX rates, policy rate, CPI, money supply, current account, reserves)
 │   ├── uk_companies_house.py       # UK Companies House (company search/profile, officers, filings, charges, insolvency, PSC)
-│   ├── ... (1,091 modules total)
+│   ├── faostat_api.py              # UN FAOSTAT (crop production, trade, prices, fertilizers, land use, food security, emissions — 245 countries)
+│   ├── ... (1,092 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -3631,6 +3823,8 @@ OPENSANCTIONS_API_KEY=               # OpenSanctions (free tier at https://www.o
 # PSA Philippines — no API key required (fully open at https://openstat.psa.gov.ph)
 TCMB_EVDS_API_KEY=                   # TCMB Turkey EVDS (free at https://evds2.tcmb.gov.tr/)
 UK_COMPANIES_HOUSE_API_KEY=          # UK Companies House (free at https://developer.company-information.service.gov.uk/)
+FAOSTAT_USERNAME=                    # FAOSTAT API (free at https://www.fao.org/faostat/en/#developer-portal)
+FAOSTAT_PASSWORD=                    # FAOSTAT API password
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -3679,4 +3873,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,091 modules • 49 phases • 43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Turkey + Philippines + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research + ENTSO-E energy + OpenSanctions compliance + UK Companies House) • 67 government/central bank/institutional/alt-data/compliance modules • 1,160+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly, commodity-production, energy-market, sanctions-compliance, corporate-registry & remittance indicators • The data layer powering the MoneyClawX ecosystem*
+*1,092 modules • 49 phases • 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Turkey + Philippines + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research + ENTSO-E energy + OpenSanctions compliance + UK Companies House + UN FAOSTAT agriculture) • 68 government/central bank/institutional/alt-data/compliance/agriculture modules • 1,195+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture indicators • The data layer powering the MoneyClawX ecosystem*

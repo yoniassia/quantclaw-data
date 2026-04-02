@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,091 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,092 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -30,6 +30,14 @@
 | Copper/mining data | `bcrp_peru` (copper, gold, silver, zinc production — Peru is #2 global copper producer) |
 | PEN exchange rates | `bcrp_peru` (PEN/USD daily interbank + monthly average) |
 | Peru macro | `bcrp_peru` (reference rate, CPI, GDP, FX, mining production, trade, reserves, interbank rate) |
+| Crop production | `faostat_api` (wheat, rice, maize, soybeans, sugarcane, palm oil — 245 countries, 1961–present) |
+| Agricultural trade | `faostat_api` (export/import quantities & values for wheat, rice, maize, soybeans — global trade flows) |
+| Farm-gate prices | `faostat_api` (producer prices USD/tonne — wheat, maize, rice, soybeans) |
+| Fertilizer use | `faostat_api` (nitrogen N, phosphate P2O5, potash K2O consumption by country) |
+| Land use | `faostat_api` (arable, agricultural, forest land — 1000 ha — deforestation & ESG tracking) |
+| Food security | `faostat_api` (undernourishment prevalence %, dietary supply adequacy % — SDG 2 indicators) |
+| Agricultural emissions | `faostat_api` (GHG emissions kt CO2eq — Scope 3 supply chain ESG data) |
+| Livestock inventory | `faostat_api` (cattle, chicken, pig stocks by country — meat/dairy commodity analysis) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -3624,6 +3632,87 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ---
 
+### faostat_api.py — UN FAO FAOSTAT (Food & Agriculture Organization)
+
+- **Source:** United Nations Food and Agriculture Organization — the world's most comprehensive food and agriculture statistical database covering 245 countries and territories from 1961 to present
+- **API Base:** `https://faostatservices.fao.org/api/v1`
+- **Auth:** `FAOSTAT_USERNAME` + `FAOSTAT_PASSWORD` (free registration at https://www.fao.org/faostat/en/#developer-portal); supports direct `FAOSTAT_TOKEN`
+- **Rate Limits:** Polite spacing (1s delay); 24h file-based cache
+- **Coverage:** 245 countries and territories, annual data 1961–present
+- **Geographic Focus:** Global — every country recognized by FAO
+- **Data Freshness:** Quarterly updates (annual data), typically 1–2 year lag for latest year
+- **Indicators (29 pre-defined + unlimited via dynamic domain query):**
+
+| Indicator | Name | Domain | Unit | Frequency |
+|-----------|------|--------|------|-----------|
+| `WHEAT_PRODUCTION` | Wheat Production | QCL | tonnes | annual |
+| `RICE_PRODUCTION` | Rice Paddy Production | QCL | tonnes | annual |
+| `MAIZE_PRODUCTION` | Maize (Corn) Production | QCL | tonnes | annual |
+| `SOYBEANS_PRODUCTION` | Soybeans Production | QCL | tonnes | annual |
+| `SUGARCANE_PRODUCTION` | Sugar Cane Production | QCL | tonnes | annual |
+| `PALM_OIL_PRODUCTION` | Oil Palm Fruit Production | QCL | tonnes | annual |
+| `WHEAT_YIELD` | Wheat Yield | QCL | hg/ha | annual |
+| `RICE_YIELD` | Rice Yield | QCL | hg/ha | annual |
+| `MAIZE_YIELD` | Maize Yield | QCL | hg/ha | annual |
+| `WHEAT_AREA` | Wheat Area Harvested | QCL | ha | annual |
+| `CATTLE_STOCKS` | Cattle Stocks | QCL | head | annual |
+| `CHICKEN_STOCKS` | Chicken Stocks | QCL | 1000 head | annual |
+| `PIG_STOCKS` | Pig Stocks | QCL | head | annual |
+| `WHEAT_EXPORT_QTY` | Wheat Export Quantity | TP | tonnes | annual |
+| `WHEAT_IMPORT_QTY` | Wheat Import Quantity | TP | tonnes | annual |
+| `SOYBEANS_EXPORT_QTY` | Soybeans Export Quantity | TP | tonnes | annual |
+| `RICE_EXPORT_QTY` | Rice Export Quantity | TP | tonnes | annual |
+| `MAIZE_EXPORT_QTY` | Maize Export Quantity | TP | tonnes | annual |
+| `WHEAT_EXPORT_VAL` | Wheat Export Value | TP | 1000 USD | annual |
+| `WHEAT_IMPORT_VAL` | Wheat Import Value | TP | 1000 USD | annual |
+| `WHEAT_PRICE_USD` | Wheat Producer Price | PP | USD/tonne | annual |
+| `MAIZE_PRICE_USD` | Maize Producer Price | PP | USD/tonne | annual |
+| `RICE_PRICE_USD` | Rice Producer Price | PP | USD/tonne | annual |
+| `SOYBEANS_PRICE_USD` | Soybeans Producer Price | PP | USD/tonne | annual |
+| `NITROGEN_FERTILIZER` | Nitrogen Fertilizer Use | RFN | tonnes | annual |
+| `PHOSPHATE_FERTILIZER` | Phosphate Fertilizer Use | RFN | tonnes | annual |
+| `POTASH_FERTILIZER` | Potash Fertilizer Use | RFN | tonnes | annual |
+| `ARABLE_LAND` | Arable Land | RL | 1000 ha | annual |
+| `AGRICULTURAL_LAND` | Agricultural Land | RL | 1000 ha | annual |
+| `FOREST_LAND` | Forest Land | RL | 1000 ha | annual |
+| `UNDERNOURISHMENT` | Prevalence of Undernourishment | FS | % | annual |
+| `DIETARY_SUPPLY_ADEQUACY` | Dietary Energy Supply Adequacy | FS | % | annual |
+| `AG_EMISSIONS_TOTAL` | Agriculture Total GHG Emissions | GT | kt CO2eq | annual |
+
+- **FAOSTAT Domains:** QCL (crops & livestock products), TP (trade), PP (producer prices), RFN (fertilizers by nutrient), RL (land use), FS (food security), GT (emissions totals), FBS (food balances), SCL (supply utilization), QI (production indices), QV (value of production), CP (consumer prices), PI (deflators), IC (credit to agriculture), OA (population), EI (exchange rates)
+- **Dynamic domain queries:** Use `query_domain(domain, item, element, country, year)` for access to any of the 20,000+ indicators across all FAOSTAT domains
+- **Top producers:** Use `get_top_producers(commodity, top_n)` to rank countries by production volume for any crop/livestock item
+- **Supported commodities (mappable by name):** wheat, rice, maize/corn, soybeans/soya, sugarcane, oil palm/palm oil, barley, sorghum, potatoes, cassava, cotton, coffee, cocoa, tea, tobacco, cattle, chickens/poultry, pigs/swine, sheep, goats, milk
+- **Country resolution:** ISO2, ISO3, country names, and FAO area codes all supported (35 pre-mapped major economies + any numeric FAO code)
+
+**CLI Examples:**
+```bash
+python3 modules/faostat_api.py WHEAT_PRODUCTION US
+python3 modules/faostat_api.py top wheat 10
+python3 modules/faostat_api.py production soybeans BRA
+python3 modules/faostat_api.py trade wheat US
+python3 modules/faostat_api.py prices maize
+python3 modules/faostat_api.py fertilizer nitrogen
+python3 modules/faostat_api.py food_security IN
+python3 modules/faostat_api.py emissions CN
+python3 modules/faostat_api.py land_use BR
+python3 modules/faostat_api.py domains
+python3 modules/faostat_api.py list
+```
+
+**MCP Example:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'faostat_api',
+    params: { indicator: 'WHEAT_PRODUCTION', country: 'US' }
+  })
+});
+```
+
+---
+
 ## Category 2: US Government & Federal Data
 
 | Module | Source | Key Data |
@@ -3759,10 +3848,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,091 modules in `modules/` directory, sorted alphabetically:
+All 1,092 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,091 modules)</summary>
+<summary>Click to expand full module list (1,092 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -3814,7 +3903,8 @@ nasa_firms_fire             openalex_research             bnm_malaysia
 bcrp_peru
 entsoe_energy               opensanctions_api             psa_philippines
 tcmb_evds                   uk_companies_house
-... (1,091 total — run `ls modules/*.py | wc -l` to verify)
+faostat_api
+... (1,092 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3852,9 +3942,10 @@ tcmb_evds                   uk_companies_house
 | OpenSanctions | `OPENSANCTIONS_API_KEY` | 50/day (500 registered) | https://www.opensanctions.org/api/ |
 | TCMB Turkey (EVDS) | `TCMB_EVDS_API_KEY` | ~100/min | https://evds2.tcmb.gov.tr/ |
 | UK Companies House | `UK_COMPANIES_HOUSE_API_KEY` | 600/5min | https://developer.company-information.service.gov.uk/ |
+| UN FAOSTAT | `FAOSTAT_USERNAME` + `FAOSTAT_PASSWORD` | Open (1s polite delay) | https://www.fao.org/faostat/en/#developer-portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru, PSA Philippines) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, NASA FIRMS, ENTSO-E, OpenSanctions, TCMB Turkey, and UK Companies House require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru, PSA Philippines) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, NASA FIRMS, ENTSO-E, OpenSanctions, TCMB Turkey, UK Companies House, and FAOSTAT require free registration.
 
 ---
 
-*1,091 modules — 43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 67 government/central bank/institutional/alt-data/compliance modules — 1,160+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry & remittance indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,092 modules — 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members — 68 government/central bank/institutional/alt-data/compliance/agriculture modules — 1,195+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
