@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,079 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,080 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal`, `ssb_norway` (LFS SA) |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -43,14 +43,17 @@
 | Earnings data | `earnings_calendar_enhanced`, `earnings_transcripts_nlp`, `ai_earnings_analyzer` |
 | Insider trades | `insider_trades`, `openinsider`, `fmp_insider_trading` |
 | Congress trades | `congress_trades`, `quiver_quant_wallstreetbets` |
-| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `ine_spain` (HPI general/YoY/QoQ), `fred_housing`, `zillow_zhvi` |
+| Housing data | `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `ine_spain` (HPI general/YoY/QoQ), `fred_housing`, `zillow_zhvi`, `ssb_norway` (dwelling price index, raw + SA) |
+| Norwegian macro data | `ssb_norway` (GDP, CPI, unemployment, trade, house prices, petroleum, industrial output, GVA) |
+| Petroleum / oil data | `ssb_norway` (petroleum product deliveries, Norway), `eia_energy_data`, `baker_hughes_rig_count` |
+| Nordic macro comparison | `ssb_norway` (Norway), `scb_sweden` (Sweden), `statistics_denmark` (Denmark), `statistics_finland` (Finland) |
 | Gold price (PLN) | `nbp_poland` |
 | Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade), `rba_enhanced` (RBA cash rate, govt bonds, lending rates, AUD FX, credit growth, M3, GDP) |
 | UAE macro / FX | `uae_data` (CBUAE 76-currency FX, GDP, CPI, M2, reserves, trade) |
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
 | Japanese filings | `edinet_japan` (annual/quarterly securities reports, large shareholding, tender offers) |
 | UK regulatory data | `fca_uk` (authorized firms, individuals, permissions, disciplinary, regulated markets) |
-| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia` |
+| Trade balance | `bundesbank_sdmx`, `insee_france`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `banco_de_espana`, `banco_de_portugal`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `danmarks_nationalbank`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ssb_norway` (goods exports/imports NOK) |
 | ESG / Climate | `carbon_footprint`, `climate_risk`, `eu_taxonomy_alignment`, `esg_decomposition` |
 | Sentiment | `reddit_sentiment`, `news_sentiment`, `cnn_fear_greed`, `social_sentiment_spikes` |
 | Company profile | `company_profile`, `screener`, `alpha_picker` |
@@ -70,7 +73,7 @@
 | Romanian FX data | `bnr_romania` (BNR daily reference rates for RON/EUR, RON/USD + 35 more currencies + gold) |
 | Austrian macro data | `statistics_austria` (GDP nominal/real, CPI, PPI, wholesale prices, employment, trade, tourism, industry, construction, investment) |
 | Tourism data | `statistics_austria` (overnight stays, accommodation turnover index), `world_bank_global_indices` |
-| Industrial production | `statistics_austria`, `destatis_germany`, `insee_france`, `istat_italy`, `ine_spain`, `statistics_finland`, `estat_japan`, `czso_czech` (total + automotive), `statistics_estonia` |
+| Industrial production | `statistics_austria`, `destatis_germany`, `insee_france`, `istat_italy`, `ine_spain`, `statistics_finland`, `estat_japan`, `czso_czech` (total + automotive), `statistics_estonia`, `ssb_norway` (output + GVA) |
 | Producer prices / PPI | `statistics_austria` (Erzeugerpreisindex 2021=100), `destatis_germany` (PPI monthly/annual), `fred_enhanced` |
 | Income inequality | `statbel_belgium` (Gini coefficient, Belgium) |
 | Commodity price index | `bank_of_canada_valet` (BCPI total, energy, metals & minerals) |
@@ -3002,6 +3005,61 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### ssb_norway.py — Statistics Norway (SSB / Statistisk sentralbyrå)
+
+- **Source:** Statistics Norway — Norway's national statistics office, one of the oldest in the world (est. 1876)
+- **API:** `https://data.ssb.no/api/v0/en/table`
+- **Protocol:** PxWeb REST (POST JSON query → JSON-stat2 response)
+- **Auth:** None (fully open, no API key required, no rate limit)
+- **Freshness:** Monthly (CPI, unemployment, trade, petroleum), Quarterly (house prices), Annual (GDP, industrial output)
+- **Coverage:** Norway (national)
+
+**Indicators (12):**
+
+| Key | Name | Frequency | Unit | SSB Table |
+|-----|------|-----------|------|-----------|
+| `GDP` | Gross Domestic Product — Norway (NOK mn) | Annual | NOK million | 09189 |
+| `GDP_GROWTH` | GDP Volume Growth — Norway (%) | Annual | % | 09189 |
+| `CPI_INDEX` | Consumer Price Index (2015=100) | Monthly | index | 03013 |
+| `CPI_ANNUAL_RATE` | CPI 12-Month Rate (%) | Monthly | % | 03013 |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate (SA, 15-74) | Monthly | % | 13760 |
+| `TRADE_EXPORTS` | Goods Exports (NOK) | Monthly | NOK | 08799 |
+| `TRADE_IMPORTS` | Goods Imports (NOK) | Monthly | NOK | 08799 |
+| `HOUSE_PRICE_INDEX` | House Price Index — All Norway | Quarterly | index | 07221 |
+| `HOUSE_PRICE_INDEX_SA` | House Price Index (Seasonally Adjusted) | Quarterly | index | 07221 |
+| `PETROLEUM_DELIVERIES` | Petroleum Product Deliveries (mill. litres) | Monthly | million litres | 11174 |
+| `INDUSTRIAL_OUTPUT` | Industrial Output (NOK mn) | Annual | NOK million | 09170 |
+| `VALUE_ADDED` | Gross Value Added (NOK mn) | Annual | NOK million | 09170 |
+
+**Indicator Groups (batch retrieval):** `gdp`, `cpi`, `unemployment`, `oil_production`, `trade`, `house_prices`, `industrial`
+
+**CLI Examples:**
+```bash
+python3 modules/ssb_norway.py GDP
+python3 modules/ssb_norway.py GDP_GROWTH
+python3 modules/ssb_norway.py CPI_INDEX
+python3 modules/ssb_norway.py CPI_ANNUAL_RATE
+python3 modules/ssb_norway.py UNEMPLOYMENT_RATE
+python3 modules/ssb_norway.py TRADE_EXPORTS
+python3 modules/ssb_norway.py PETROLEUM_DELIVERIES
+python3 modules/ssb_norway.py HOUSE_PRICE_INDEX
+python3 modules/ssb_norway.py INDUSTRIAL_OUTPUT
+python3 modules/ssb_norway.py trade           # Fetch group: exports + imports
+python3 modules/ssb_norway.py oil_production  # Fetch group: petroleum deliveries
+python3 modules/ssb_norway.py list            # List all indicators
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ssb_norway',
+    params: { indicator: 'GDP_GROWTH' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -3189,7 +3247,7 @@ gdelt_global_events          patentsview_uspto
 inegi_mexico
 gleif_lei                   bank_of_thailand              dane_colombia
 epo_ops                     usgs_earthquake               kosis_korea
-... (1,079 total — run `ls modules/*.py | wc -l` to verify)
+... (1,080 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3226,4 +3284,4 @@ Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Rik
 
 ---
 
-*1,079 modules — 38 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 55 government/central bank/institutional/alt-data modules — 1,010+ macro, geopolitical, patent, seismic & entity indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,080 modules — 39 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 56 government/central bank/institutional/alt-data modules — 1,020+ macro, geopolitical, patent, seismic & entity indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

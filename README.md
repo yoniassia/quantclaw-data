@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,079 Financial Data Modules
+# QuantClaw Data — 1,080 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,079 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,080 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,079 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,080 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,079** Python data modules
+- **1,080** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,079 modules)             │
+│  ├── Module browser (1,080 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,079 modules      │
+│  ├── Tool definitions for all 1,080 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,079 Python Modules                            │
+│  1,080 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–15)
+### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–16)
 
-Fifty-five modules covering 38 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Central America, South America, Asia-Pacific, Southeast Asia, Middle East, Oceania, and international institutions with 1,010+ macroeconomic, geopolitical, patent, seismic, and entity-registry indicators from official government statistical offices, central banks, international institutions, financial regulators, global event databases, patent offices, and scientific agencies:
+Fifty-six modules covering 39 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Central America, South America, Asia-Pacific, Southeast Asia, Middle East, Oceania, and international institutions with 1,020+ macroeconomic, geopolitical, patent, seismic, and entity-registry indicators from official government statistical offices, central banks, international institutions, financial regulators, global event databases, patent offices, and scientific agencies:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -208,6 +208,7 @@ Fifty-five modules covering 38 countries plus EU-wide and global data (190+ IMF 
 || `epo_ops` | European Patent Office (OPS) | Global (100+ patent authorities) | `https://ops.epo.org/3.2/rest-services` | Patent full-text search, applicant/company filings, patent family members, EP register status, IPC technology filing trends, recent EP grants |
 || `usgs_earthquake` | USGS Earthquake Hazards Program | Global + regional hotspots | `https://earthquake.usgs.gov/fdsnws/event/1` | Significant global events (M5+), recent M4+ worldwide, PAGER alerts, regional hotspots (Taiwan/Japan/Chile/Turkey/California), annual M5+ count, DYFI felt reports |
 || `kosis_korea` | KOSIS — Statistics Korea (KOSTAT) | South Korea | `https://kosis.kr/openapi/Param/statisticsParameterData.do` | GDP by expenditure (quarterly), CPI all items (2020=100), unemployment rate, industrial production index, merchandise exports, housing price index, semiconductor production index |
+|| `ssb_norway` | Statistics Norway (SSB) | Norway | `https://data.ssb.no/api/v0/en/table` | GDP (nominal/volume growth), CPI (index 2015=100/12-month rate), unemployment rate (SA), goods exports/imports, house price index (raw/SA), petroleum deliveries, industrial output, gross value added |
 
 #### Global Coverage Map
 
@@ -271,6 +272,7 @@ Fifty-five modules covering 38 countries plus EU-wide and global data (190+ IMF 
 🌐 Global (patents)   — EPO Open Patent Services (patent search, family members, EP register, IPC trends, recent grants — 100+ authorities)
 🌐 Global (seismic)   — USGS Earthquake Hazards (significant events M5+, PAGER alerts, regional hotspots, felt reports — real-time 5min cache)
 🇰🇷 South Korea       — KOSIS Statistics Korea (GDP, CPI, unemployment, industrial production, exports, housing prices, semiconductor index)
+🇳🇴 Norway            — SSB Statistics Norway (GDP nom/growth, CPI index/12mo rate, unemployment SA, trade exports/imports, house prices, petroleum deliveries, industrial output, GVA)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -548,6 +550,19 @@ python3 modules/kosis_korea.py EXPORTS
 python3 modules/kosis_korea.py HOUSING
 python3 modules/kosis_korea.py SEMICONDUCTORS
 python3 modules/kosis_korea.py list
+# SSB Norway — Statistics Norway (Batch 16)
+python3 modules/ssb_norway.py GDP
+python3 modules/ssb_norway.py GDP_GROWTH
+python3 modules/ssb_norway.py CPI_INDEX
+python3 modules/ssb_norway.py CPI_ANNUAL_RATE
+python3 modules/ssb_norway.py UNEMPLOYMENT_RATE
+python3 modules/ssb_norway.py TRADE_EXPORTS
+python3 modules/ssb_norway.py TRADE_IMPORTS
+python3 modules/ssb_norway.py HOUSE_PRICE_INDEX
+python3 modules/ssb_norway.py PETROLEUM_DELIVERIES
+python3 modules/ssb_norway.py INDUSTRIAL_OUTPUT
+python3 modules/ssb_norway.py VALUE_ADDED
+python3 modules/ssb_norway.py list
 ```
 
 **REST API:**
@@ -711,6 +726,14 @@ GET /api/v1/kosis-korea?indicator=UNEMPLOYMENT
 GET /api/v1/kosis-korea?indicator=SEMICONDUCTORS
 GET /api/v1/kosis-korea?indicator=EXPORTS
 GET /api/v1/kosis-korea?indicator=HOUSING
+GET /api/v1/ssb-norway?indicator=GDP
+GET /api/v1/ssb-norway?indicator=GDP_GROWTH
+GET /api/v1/ssb-norway?indicator=CPI_ANNUAL_RATE
+GET /api/v1/ssb-norway?indicator=UNEMPLOYMENT_RATE
+GET /api/v1/ssb-norway?indicator=PETROLEUM_DELIVERIES
+GET /api/v1/ssb-norway?indicator=HOUSE_PRICE_INDEX
+GET /api/v1/ssb-norway?indicator=TRADE_EXPORTS
+GET /api/v1/ssb-norway?indicator=INDUSTRIAL_OUTPUT
 ```
 
 **MCP Tool Call:**
@@ -2254,6 +2277,138 @@ const patentIntel = await fetch('http://localhost:3056/api/data/batch', {
 - New in Batch 15: South Korean macro (GDP, CPI, unemployment, industrial production, exports, housing, semiconductors), Thai central bank & macro (policy rate, BIBOR, govt bonds, GDP, CPI, BoP, reserves, FX, monetary, banking), Colombian national statistics (GDP, CPI, unemployment, IPI, trade, PPI, manufacturing), European patent intelligence (EPO search, families, register, IPC trends, recent grants), real-time global earthquake monitoring (M5+ significant events, regional supply-chain hotspots, PAGER damage alerts, DYFI felt reports), global legal entity identification (GLEIF active/lapsed LEI counts, entity search, lookup, corporate hierarchy)
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX, THB daily rates), policy rates (incl. MNB base rate, BoE Bank Rate, BOT repo rate), interbank rates (incl. BIBOR), monetary aggregates (incl. EA M1/M2/M3, UK M4, Thai M1/broad), GDP (incl. EU-12 small state, Portuguese/Brazilian/Mexican/Colombian/Thai/Korean quarterly), CPI/HICP/IPCA/INPC/PPI/wholesale prices, unemployment (incl. by demographics, GEIH Colombia, ENOE Mexico, Korean EAP survey), trade, housing prices (incl. Korean apartment index), construction costs, lending rates, mortgage rates, credit growth, MFI credit, cost of borrowing, banking FSIs (incl. Thai commercial bank balance sheet), gold, government debt/deficit/surplus, fiscal accounts, BoP (incl. Thai current account, Colombian trade balance), business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. Thai 1Y–20Y), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations & production, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators, pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment, patent innovation metrics (USPTO + EPO), consumer confidence, earthquake/seismic hazard monitoring, legal entity identification (GLEIF), semiconductor production indices
 
+#### Batch 16: Scandinavia Expansion — Norway (SSB Statistics Norway)
+
+Batch 16 adds the **Statistics Norway (SSB)** module, expanding the platform into the Nordic oil-exporting economies and bringing Scandinavian coverage to three countries (Sweden, Denmark, Norway). Norway is Europe's largest petroleum exporter, the world's largest sovereign wealth fund manager (Government Pension Fund Global, ~$1.7 trillion), and a critical bellwether for global energy markets and Nordic monetary policy. This brings total coverage to **39 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **56 government/institutional/regulatory/alt-data modules** and **1,020+ indicators**.
+
+**Statistics Norway (SSB)** (`ssb_norway`) — Statistisk sentralbyrå:
+- GDP nominal: Gross domestic product at market values, current prices, in NOK million (annual, table 09189)
+- GDP volume growth: Annual change in GDP volume — real growth rate (annual, table 09189)
+- CPI index: Consumer Price Index, all items, base year 2015=100 (monthly, table 03013)
+- CPI 12-month rate: Consumer price index year-on-year rate of change (monthly, table 03013)
+- Unemployment rate: LFS unemployment rate, ages 15-74, both sexes, seasonally adjusted (monthly, table 13760)
+- Goods exports: External trade in goods, total exports value in NOK (monthly, table 08799)
+- Goods imports: External trade in goods, total imports value in NOK (monthly, table 08799)
+- House price index: Price index for existing dwellings, all Norway (quarterly, table 07221)
+- House price index (SA): Seasonally adjusted house price index for existing dwellings (quarterly, table 07221)
+- Petroleum product deliveries: Total petroleum product deliveries nationwide in million litres (monthly, table 11174) — unique to Norway's oil economy, tracks domestic energy consumption patterns
+- Industrial output: Total output at basic values, current prices, in NOK million (annual, table 09170)
+- Gross value added: Value added at basic prices, current prices, in NOK million (annual, table 09170)
+- **12 indicators** across national accounts, prices, labour, trade, housing, petroleum/energy, and industrial production
+- **7 indicator groups** for batch retrieval: `gdp`, `cpi`, `unemployment`, `oil_production`, `trade`, `house_prices`, `industrial`
+- Protocol: PxWeb REST API — POST JSON queries, JSON-stat2 responses (same protocol as SCB Sweden, Statistics Finland, Statistics Estonia)
+- API: `https://data.ssb.no/api/v0/en/table` (fully open, no API key required, no rate limit)
+- Cache TTL: 24h (data refreshed monthly/quarterly by SSB)
+
+**Why Norway matters for financial analysis:**
+- **Sovereign wealth:** Norway's Government Pension Fund Global (GPFG) holds ~$1.7T in global equities and bonds — its allocation changes ripple across world markets
+- **Oil & gas:** Europe's largest hydrocarbon producer — Norwegian petroleum data is a leading indicator for Brent crude pricing, European energy security, and NOK currency movements
+- **Housing market:** Norwegian house prices are among the most closely watched in Scandinavia — high household debt-to-income ratios make housing data critical for Nordic financial stability assessments
+- **Nordic monetary policy:** Norges Bank's rate decisions (tracked via GDP/CPI data) influence the broader Scandinavian rate environment (SEK, DKK peg dynamics)
+- **Trade exposure:** Norway's trade balance is heavily energy-weighted — tracking exports vs imports reveals terms-of-trade shifts relevant to commodity-linked currencies and European energy importers
+
+**Example response — `ssb_norway` `GDP_GROWTH`:**
+```json
+{
+  "success": true,
+  "indicator": "GDP_GROWTH",
+  "name": "GDP Volume Growth — Norway (%)",
+  "description": "Annual change in GDP volume (real growth rate)",
+  "unit": "%",
+  "frequency": "annual",
+  "table_id": "09189",
+  "latest_value": 1.1,
+  "latest_period": "2024",
+  "period_change": -2.2,
+  "period_change_pct": -66.67,
+  "data_points": [{"period": "2024", "value": 1.1}, {"period": "2023", "value": 3.3}, "..."],
+  "total_observations": 10,
+  "source": "https://data.ssb.no/api/v0/en/table/09189"
+}
+```
+
+**Example response — `ssb_norway` `PETROLEUM_DELIVERIES`:**
+```json
+{
+  "success": true,
+  "indicator": "PETROLEUM_DELIVERIES",
+  "name": "Petroleum Product Deliveries — Norway (mill. litres)",
+  "description": "Total deliveries of petroleum products, nationwide",
+  "unit": "million litres",
+  "frequency": "monthly",
+  "table_id": "11174",
+  "latest_value": 702.3,
+  "latest_period": "2026M02",
+  "period_change": -18.5,
+  "period_change_pct": -2.57,
+  "data_points": [{"period": "2026M02", "value": 702.3}, {"period": "2026M01", "value": 720.8}, "..."],
+  "total_observations": 24,
+  "source": "https://data.ssb.no/api/v0/en/table/11174"
+}
+```
+
+**Batch MCP — Nordic Economy Comparison (New in Batch 16):**
+```typescript
+const nordicMacro = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ssb_norway', params: { indicator: 'GDP_GROWTH' } },
+      { tool: 'ssb_norway', params: { indicator: 'CPI_ANNUAL_RATE' } },
+      { tool: 'ssb_norway', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'scb_sweden', params: { indicator: 'GDP_QOQ' } },
+      { tool: 'scb_sweden', params: { indicator: 'CPIF_ANNUAL_CHANGE' } },
+      { tool: 'statistics_denmark', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'statistics_finland', params: { indicator: 'GDP_QOQ' } },
+      { tool: 'statistics_finland', params: { indicator: 'CPI_INDEX' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — European Energy & Petroleum Monitor (New in Batch 16):**
+```typescript
+const energyMonitor = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ssb_norway', params: { indicator: 'PETROLEUM_DELIVERIES' } },
+      { tool: 'ssb_norway', params: { indicator: 'TRADE_EXPORTS' } },
+      { tool: 'ssb_norway', params: { indicator: 'TRADE_IMPORTS' } },
+      { tool: 'eurostat_enhanced', params: { indicator: 'ENERGY_DEPENDENCY', geo: 'EU27_2020' } },
+      { tool: 'eurostat_enhanced', params: { indicator: 'RENEWABLE_SHARE_TOTAL', geo: 'NO' } },
+      { tool: 'bis_enhanced', params: { indicator: 'FX_TURNOVER_TOTAL' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_OECD' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Scandinavian Housing Market (New in Batch 16):**
+```typescript
+const nordicHousing = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ssb_norway', params: { indicator: 'HOUSE_PRICE_INDEX' } },
+      { tool: 'ssb_norway', params: { indicator: 'HOUSE_PRICE_INDEX_SA' } },
+      { tool: 'scb_sweden', params: { indicator: 'HOUSING_PRICES' } },
+      { tool: 'statistics_denmark', params: { indicator: 'HOUSING_PRICES' } },
+      { tool: 'statistics_finland', params: { indicator: 'HOUSING_PRICES_INDEX' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F5_HOUSING_VARIABLE' } },
+      { tool: 'ons_uk', params: { indicator: 'PRIVATE_RENTAL_INDEX' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 16:**
+- 56 government/central bank/regulatory/institutional/alt-data modules
+- 39 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇪🇺 🌍 🌐
+- 1,020+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, and national statistics sources
+- New in Batch 16: Norwegian national accounts (GDP nominal + real growth), consumer prices (CPI index 2015=100 + 12-month rate of change), labour market (LFS unemployment rate SA, ages 15-74), external trade (goods exports + imports in NOK), housing market (house price index raw + seasonally adjusted), petroleum product deliveries (unique energy sector indicator for Europe's largest oil exporter), industrial production (total output + gross value added) — the first Nordic oil-economy module, completing Scandinavian trilateral coverage (Sweden, Denmark, Norway)
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX, THB daily rates), policy rates (incl. MNB base rate, BoE Bank Rate, BOT repo rate), interbank rates (incl. BIBOR), monetary aggregates (incl. EA M1/M2/M3, UK M4, Thai M1/broad), GDP (incl. EU-12 small state, Portuguese/Brazilian/Mexican/Colombian/Thai/Korean/Norwegian quarterly/annual), CPI/HICP/IPCA/INPC/PPI/wholesale prices, unemployment (incl. by demographics, GEIH Colombia, ENOE Mexico, Korean EAP survey, Norwegian LFS SA), trade, housing prices (incl. Korean apartment index, Norwegian dwelling price index), construction costs, lending rates, mortgage rates, credit growth, MFI credit, cost of borrowing, banking FSIs (incl. Thai commercial bank balance sheet), gold, government debt/deficit/surplus, fiscal accounts, BoP (incl. Thai current account, Colombian trade balance), business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. Thai 1Y–20Y), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations & production, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators, pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment, patent innovation metrics (USPTO + EPO), consumer confidence, earthquake/seismic hazard monitoring, legal entity identification (GLEIF), semiconductor production indices, petroleum product deliveries
+
 ---
 
 ## MCP Server
@@ -2312,7 +2467,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,079 data modules gets an auto-generated REST endpoint:
+Each of the 1,080 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -2325,7 +2480,7 @@ Each of the 1,079 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,079 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,080 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -2351,7 +2506,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,079 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,080 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -2446,6 +2601,7 @@ screen --min-cap 10B --sector Technology
 | EPO Open Patent Services | Yes (free OAuth2) | ~10/s | European/global patent search, applicant filings, patent family members, EP register status, IPC technology trends, recent EP grants |
 | USGS Earthquake Hazards (FDSN) | No | Open (real-time) | Global M5+ events, M4+ seismicity, PAGER damage alerts, regional hotspots (Taiwan/Japan/Chile/Turkey/California), annual counts, DYFI felt reports |
 | KOSIS South Korea (KOSTAT) | Yes (free key) | ~1,000/day | Korean GDP, CPI, unemployment, industrial production, exports, housing prices, semiconductor production index |
+| SSB Norway (PxWeb) | No | Open (no limit) | Norwegian GDP (nominal/growth), CPI (index 2015=100/12mo rate), unemployment (SA), goods exports/imports, house price index (raw/SA), petroleum deliveries, industrial output, gross value added |
 
 ---
 
@@ -2487,7 +2643,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,079 Python data modules
+├── modules/                          # 1,080 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -2550,7 +2706,8 @@ quantclaw-data/
 │   ├── epo_ops.py                  # EPO Open Patent Services (search, families, trends)
 │   ├── usgs_earthquake.py          # USGS Earthquake Hazards (real-time seismic events)
 │   ├── kosis_korea.py              # KOSIS South Korea (GDP, CPI, industry, semiconductors)
-│   ├── ... (1,079 modules total)
+│   ├── ssb_norway.py               # SSB Norway (GDP, CPI, unemployment, trade, house prices, petroleum, industry)
+│   ├── ... (1,080 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -2688,4 +2845,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,079 modules • 49 phases • 38 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global) • 55 government/central bank/institutional/alt-data modules • 1,010+ macro, geopolitical, patent, seismic & entity indicators • The data layer powering the MoneyClawX ecosystem*
+*1,080 modules • 49 phases • 38 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global) • 55 government/central bank/institutional/alt-data modules • 1,010+ macro, geopolitical, patent, seismic & entity indicators • The data layer powering the MoneyClawX ecosystem*
