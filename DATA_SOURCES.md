@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,086 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,091 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway`, `bank_of_thailand`, `bcrp_peru` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway`, `bcrp_peru` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal`, `ssb_norway` (LFS SA) |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway`, `bank_of_thailand`, `bcrp_peru`, `psa_philippines`, `dane_colombia`, `kosis_korea` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway`, `bcrp_peru`, `psa_philippines`, `tcmb_evds` (Turkey CPI 50%+ YoY), `kosis_korea` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal`, `ssb_norway` (LFS SA), `psa_philippines` (LFS), `dane_colombia`, `kosis_korea` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -26,7 +26,7 @@
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
 | Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `bank_of_canada_valet` (GoC 2Y–30Y + RRB + T-bills), `norges_bank` (NO govt 3Y–10Y + T-bills 3M–12M), `bank_of_thailand` (TH 1Y–20Y), `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA), `norges_bank` (key policy rate, overnight lending, reserve rate), `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo), `bcrp_peru` (reference rate) |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA), `norges_bank` (key policy rate, overnight lending, reserve rate), `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo), `bcrp_peru` (reference rate), `tcmb_evds` (TCMB one-week repo, overnight corridor) |
 | Copper/mining data | `bcrp_peru` (copper, gold, silver, zinc production — Peru is #2 global copper producer) |
 | PEN exchange rates | `bcrp_peru` (PEN/USD daily interbank + monthly average) |
 | Peru macro | `bcrp_peru` (reference rate, CPI, GDP, FX, mining production, trade, reserves, interbank rate) |
@@ -55,6 +55,20 @@
 | NOK exchange rates | `norges_bank` (36 currency pairs vs NOK, I44/TWI trade-weighted indices) |
 | MYR exchange rates | `bnm_malaysia` (20+ currencies, buying/selling/middle rates) |
 | Norway central bank | `norges_bank` (policy rate, NOWA interbank, govt bond yields, T-bills, 36 FX pairs) |
+| Electricity prices | `entsoe_energy` (day-ahead EUR/MWh for 30+ EU bidding zones, hourly resolution) |
+| Power generation mix | `entsoe_energy` (real-time generation by type: nuclear, wind, solar, gas, hydro, coal) |
+| EU energy demand | `entsoe_energy` (total system load MW, cross-border flows, installed capacity) |
+| Sanctions screening | `opensanctions_api` (entity search/match across OFAC, EU, UN, HMT + 80 datasets) |
+| KYC / AML checks | `opensanctions_api` (fuzzy match API, PEP search, vessel sanctions, new designations) |
+| PEP search | `opensanctions_api` (politically exposed persons across 240+ jurisdictions) |
+| Philippine macro | `psa_philippines` (GDP, CPI, unemployment, remittances, trade, agriculture, PPI) |
+| OFW remittances | `psa_philippines` (overseas Filipino worker remittances, ~$35B/year, ~9% of GDP) |
+| TRY exchange rates | `tcmb_evds` (USD/TRY, EUR/TRY, GBP/TRY, JPY/TRY, CHF/TRY daily rates) |
+| Turkey central bank | `tcmb_evds` (TCMB policy rate, overnight rate, CPI, M1/M2, current account, FX reserves) |
+| Turkey inflation | `tcmb_evds` (CPI headline index, food sub-index, annual % change) |
+| UK company search | `uk_companies_house` (5M+ companies, officers, filings, charges, insolvency, PSC) |
+| Beneficial ownership | `uk_companies_house` (PSC register — persons with significant control >25%) |
+| Corporate due diligence | `uk_companies_house` (company profile, officer history, filing history, charges, insolvency) |
 | Norway macro data | `ssb_norway` (GDP, CPI, unemployment, trade, housing, petroleum, industry) |
 | Malaysia central bank | `bnm_malaysia` (OPR, KLIBOR, Islamic interbank, MYR FX, Kijang Emas gold, bank rates) |
 | KLIBOR / Islamic rates | `bnm_malaysia` (KLIBOR O/N–12M, Islamic interbank O/N–12M) |
@@ -3392,6 +3406,222 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### entsoe_energy.py — ENTSO-E European Energy Transparency Platform
+
+- **Source:** European Network of Transmission System Operators for Electricity — wholesale electricity market data for 30+ European bidding zones
+- **API:** `https://web-api.tp.entsoe.eu/api`
+- **Auth:** `ENTSOE_API_TOKEN` (free registration at https://transparency.entsoe.eu)
+- **Rate limits:** ~400 requests/minute
+- **Format:** XML (parsed to JSON)
+- **Coverage:** EU27 + UK + Norway + Switzerland + Western Balkans
+- **Data freshness:** Hourly (prices, generation, load), structural (capacity)
+
+| Indicator | Description | Frequency | Unit |
+|-----------|-------------|-----------|------|
+| `PRICES_DAY_AHEAD` | Day-ahead market clearing price per bidding zone | Hourly | EUR/MWh |
+| `GENERATION_PER_TYPE` | Generation breakdown by fuel type (nuclear, wind, solar, gas, hydro, coal, biomass) | 15min/hourly | MW |
+| `TOTAL_LOAD` | Total system load (electricity demand) per control area | 15min/hourly | MW |
+| `CROSS_BORDER_FLOWS` | Actual physical flows between bidding zones | Hourly | MW |
+| `INSTALLED_CAPACITY` | Installed generation capacity per production type | Annual | MW |
+| `GENERATION_FORECAST` | Day-ahead wind+solar generation forecast | Hourly | MW |
+
+**CLI:**
+```bash
+python3 modules/entsoe_energy.py PRICES_DAY_AHEAD --domain DE
+python3 modules/entsoe_energy.py GENERATION_PER_TYPE --domain FR
+python3 modules/entsoe_energy.py TOTAL_LOAD --domain DE
+python3 modules/entsoe_energy.py CROSS_BORDER_FLOWS --domain DE
+python3 modules/entsoe_energy.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'entsoe_energy',
+    params: { indicator: 'PRICES_DAY_AHEAD', domain: 'DE' }
+  })
+});
+```
+
+### opensanctions_api.py — OpenSanctions Global Sanctions & PEP Intelligence
+
+- **Source:** OpenSanctions — aggregated sanctions lists, PEP databases, and enforcement datasets from 80+ official sources (OFAC SDN, EU consolidated, UN, HMT, Interpol, etc.)
+- **API:** `https://api.opensanctions.org`
+- **Auth:** `OPENSANCTIONS_API_KEY` (optional; 50/day free, 500/day registered)
+- **Coverage:** Global — 240+ jurisdictions, 80+ source datasets
+- **Data freshness:** Daily (datasets updated by OpenSanctions from official sources)
+
+| Indicator | Description | Frequency | Unit |
+|-----------|-------------|-----------|------|
+| `ENTITY_SEARCH` | Full-text entity search across all sanctions/PEP datasets | On-demand | Entities |
+| `ENTITY_MATCH` | Fuzzy matching for KYC/AML screening (name + birth date + nationality) | On-demand | Match scores |
+| `ENTITY_DETAIL` | Full entity record with relationships and source provenance | On-demand | Entity record |
+| `DATASET_CATALOG` | All integrated datasets with freshness metadata | On-demand | Datasets |
+| `COUNTRY_EXPOSURE` | Entity counts by country/sanctions regime | On-demand | Counts |
+| `PEP_SEARCH` | Politically exposed persons search with role/jurisdiction | On-demand | PEP entities |
+| `VESSEL_SANCTIONS` | Sanctioned vessels and maritime entities | On-demand | Vessels |
+| `NEW_DESIGNATIONS` | Recently added entities across all datasets | Daily | Entities |
+
+**CLI:**
+```bash
+python3 modules/opensanctions_api.py ENTITY_SEARCH --query "Gazprom"
+python3 modules/opensanctions_api.py ENTITY_MATCH --query '{"name": "John Smith"}'
+python3 modules/opensanctions_api.py PEP_SEARCH --query "minister finance"
+python3 modules/opensanctions_api.py VESSEL_SANCTIONS --query "tanker"
+python3 modules/opensanctions_api.py NEW_DESIGNATIONS
+python3 modules/opensanctions_api.py DATASET_CATALOG
+python3 modules/opensanctions_api.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'opensanctions_api',
+    params: { indicator: 'ENTITY_SEARCH', query: 'Rosneft' }
+  })
+});
+```
+
+### psa_philippines.py — Philippine Statistics Authority (OpenSTAT)
+
+- **Source:** PSA OpenSTAT — official statistical agency of the Philippines, covering GDP, prices, labour, trade, and agriculture
+- **API:** `https://openstat.psa.gov.ph/PXWeb/api/v1/en`
+- **Auth:** None (fully open, no API key required)
+- **Format:** PxWeb JSON-stat with automatic parsing
+- **Coverage:** Philippines
+- **Data freshness:** Quarterly (GDP, unemployment, remittances), Monthly (CPI, trade, PPI)
+
+| Indicator | Description | Frequency | Unit |
+|-----------|-------------|-----------|------|
+| `gdp` | Real GDP growth rate year-on-year | Quarterly | % YoY |
+| `cpi` | Consumer price index inflation | Monthly | % YoY |
+| `unemployment` | LFS unemployment rate (40,000+ household sample) | Quarterly | % |
+| `remittances` | OFW cash remittances and net personal income | Quarterly | Million PHP |
+| `trade` | Merchandise exports and imports by commodity group | Monthly | Million USD |
+| `agriculture` | Crop production volumes (rice, corn, coconut, sugarcane) | Quarterly | Metric tons |
+| `ppi` | Producer price index for manufacturing | Monthly | % YoY |
+
+**CLI:**
+```bash
+python3 modules/psa_philippines.py gdp
+python3 modules/psa_philippines.py cpi
+python3 modules/psa_philippines.py unemployment
+python3 modules/psa_philippines.py remittances
+python3 modules/psa_philippines.py trade
+python3 modules/psa_philippines.py agriculture
+python3 modules/psa_philippines.py ppi
+python3 modules/psa_philippines.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'psa_philippines',
+    params: { indicator: 'remittances' }
+  })
+});
+```
+
+### tcmb_evds.py — Central Bank of the Republic of Turkey (EVDS)
+
+- **Source:** TCMB EVDS (Electronic Data Delivery System) — Turkey's central bank statistical database covering FX, monetary policy, prices, money supply, and external balance
+- **API:** `https://evds2.tcmb.gov.tr/service/evds`
+- **Auth:** `TCMB_EVDS_API_KEY` (free registration at https://evds2.tcmb.gov.tr/)
+- **Rate limits:** ~100 requests/minute; 0.6s polite delay
+- **Coverage:** Turkey
+- **Data freshness:** Daily (FX, rates), Monthly (CPI, money supply, current account), Weekly (reserves)
+
+| Indicator | Description | Frequency | Unit |
+|-----------|-------------|-----------|------|
+| `FX_USD_TRY` | USD/TRY selling rate | Daily | TRY per USD |
+| `FX_EUR_TRY` | EUR/TRY selling rate | Daily | TRY per EUR |
+| `FX_GBP_TRY` | GBP/TRY selling rate | Daily | TRY per GBP |
+| `FX_JPY_TRY` | JPY/TRY selling rate (per 100 JPY) | Daily | TRY per 100 JPY |
+| `FX_CHF_TRY` | CHF/TRY selling rate | Daily | TRY per CHF |
+| `POLICY_RATE` | One-week repo rate (primary policy tool) | Per decision | % p.a. |
+| `OVERNIGHT_RATE` | Overnight lending/borrowing corridor | Per decision | % p.a. |
+| `CPI_INDEX` | CPI headline index | Monthly | Index |
+| `CPI_FOOD` | CPI food and non-alcoholic beverages sub-index | Monthly | Index |
+| `CPI_ANNUAL` | CPI annual percentage change | Monthly | % |
+| `M1_MONEY_SUPPLY` | M1 narrow money supply | Monthly | TRY mn |
+| `M2_MONEY_SUPPLY` | M2 broad money supply | Monthly | TRY mn |
+| `CURRENT_ACCOUNT` | Current account balance | Monthly | USD mn |
+| `FX_RESERVES` | Gross foreign exchange reserves | Weekly | USD mn |
+
+**CLI:**
+```bash
+python3 modules/tcmb_evds.py FX_USD_TRY
+python3 modules/tcmb_evds.py FX_EUR_TRY
+python3 modules/tcmb_evds.py POLICY_RATE
+python3 modules/tcmb_evds.py CPI_ANNUAL
+python3 modules/tcmb_evds.py M1_MONEY_SUPPLY
+python3 modules/tcmb_evds.py CURRENT_ACCOUNT
+python3 modules/tcmb_evds.py FX_RESERVES
+python3 modules/tcmb_evds.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'tcmb_evds',
+    params: { indicator: 'FX_USD_TRY' }
+  })
+});
+```
+
+### uk_companies_house.py — UK Companies House Corporate Registry
+
+- **Source:** UK Companies House — official register of 5M+ UK-incorporated companies, maintained by the Department for Business and Trade
+- **API:** `https://api.company-information.service.gov.uk`
+- **Auth:** `UK_COMPANIES_HOUSE_API_KEY` (free registration, HTTP Basic auth)
+- **Rate limits:** 600 requests / 5 minutes
+- **Coverage:** UK-registered companies (England, Wales, Scotland, Northern Ireland)
+- **Data freshness:** On-demand (real-time registry data)
+
+| Indicator | Description | Frequency | Unit |
+|-----------|-------------|-----------|------|
+| `COMPANY_SEARCH` | Full-text search across 5M+ companies | On-demand | Companies |
+| `COMPANY_PROFILE` | Detailed profile (status, type, SIC codes, accounts, dates) | On-demand | Company record |
+| `OFFICERS` | Current and resigned directors, secretaries | On-demand | Officers |
+| `FILING_HISTORY` | Annual accounts, confirmation statements, resolutions | On-demand | Filings |
+| `CHARGES` | Registered charges (mortgages, debentures, floating charges) | On-demand | Charges |
+| `INSOLVENCY` | Liquidation, administration, CVA, receivership proceedings | On-demand | Cases |
+| `PSC` | Persons with significant control (>25% shares/votes) | On-demand | PSC records |
+| `OFFICER_SEARCH` | Cross-company officer search for network analysis | On-demand | Officers |
+| `DISQUALIFIED_OFFICERS` | Court-disqualified directors | On-demand | Officers |
+| `SECTOR_SEARCH` | Advanced search by SIC code, date, status | On-demand | Companies |
+
+**CLI:**
+```bash
+python3 modules/uk_companies_house.py COMPANY_SEARCH --query "Barclays"
+python3 modules/uk_companies_house.py COMPANY_PROFILE --company_number 00048839
+python3 modules/uk_companies_house.py OFFICERS --company_number 00048839
+python3 modules/uk_companies_house.py FILING_HISTORY --company_number 00048839
+python3 modules/uk_companies_house.py PSC --company_number 00048839
+python3 modules/uk_companies_house.py INSOLVENCY --company_number 00048839
+python3 modules/uk_companies_house.py SECTOR_SEARCH --sic_code 64191
+python3 modules/uk_companies_house.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'uk_companies_house',
+    params: { indicator: 'COMPANY_SEARCH', query: 'Rolls-Royce' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -3529,10 +3759,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,062 modules in `modules/` directory, sorted alphabetically:
+All 1,091 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,062 modules)</summary>
+<summary>Click to expand full module list (1,091 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -3582,7 +3812,9 @@ epo_ops                     usgs_earthquake               kosis_korea
 ssb_norway                  norges_bank                   global_fishing_watch
 nasa_firms_fire             openalex_research             bnm_malaysia
 bcrp_peru
-... (1,086 total — run `ls modules/*.py | wc -l` to verify)
+entsoe_energy               opensanctions_api             psa_philippines
+tcmb_evds                   uk_companies_house
+... (1,091 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3616,9 +3848,13 @@ bcrp_peru
 | KOSIS South Korea | `KOSIS_API_KEY` | ~1,000/day | https://kosis.kr/openapi/ |
 | Global Fishing Watch | `GFW_API_TOKEN` | 100/min | https://globalfishingwatch.org/our-apis/ |
 | NASA FIRMS | `NASA_FIRMS_MAP_KEY` | 2,000/day | https://firms.modaps.eosdis.nasa.gov/api/map_key/ |
+| ENTSO-E | `ENTSOE_API_TOKEN` | ~400/min | https://transparency.entsoe.eu/usrm/user/createPublicUser |
+| OpenSanctions | `OPENSANCTIONS_API_KEY` | 50/day (500 registered) | https://www.opensanctions.org/api/ |
+| TCMB Turkey (EVDS) | `TCMB_EVDS_API_KEY` | ~100/min | https://evds2.tcmb.gov.tr/ |
+| UK Companies House | `UK_COMPANIES_HOUSE_API_KEY` | 600/5min | https://developer.company-information.service.gov.uk/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, and NASA FIRMS require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru, PSA Philippines) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, NASA FIRMS, ENTSO-E, OpenSanctions, TCMB Turkey, and UK Companies House require free registration.
 
 ---
 
-*1,086 modules — 41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 62 government/central bank/institutional/alt-data modules — 1,115+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research & commodity-production indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,091 modules — 43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 67 government/central bank/institutional/alt-data/compliance modules — 1,160+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry & remittance indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

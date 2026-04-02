@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,086 Financial Data Modules
+# QuantClaw Data — 1,091 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,086 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,091 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,086 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,091 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,086** Python data modules
+- **1,091** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,086 modules)             │
+│  ├── Module browser (1,091 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -2940,6 +2940,286 @@ const results = await fetch('http://localhost:3056/api/data/batch', {
 - 1,115+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, and commodity production sources
 - New in Batch 18: BCRP Peru (reference rate/interbank rate, CPI index/12-month inflation, GDP quarterly USD, PEN/USD FX daily+monthly, copper/gold/silver/zinc mining production in fine content units, exports/imports FOB, trade balance, international reserves — open access, no API key, REST/JSON, 15,000+ series available)
 
+#### Batch 19: European Energy Markets, Sanctions Intelligence, Philippines Statistics, Turkey Central Bank & UK Corporate Registry
+
+Batch 19 adds **5 new modules** expanding into European wholesale electricity market transparency (ENTSO-E), global sanctions and politically exposed persons intelligence (OpenSanctions), Southeast Asian national statistics (Philippines PSA), Turkish central bank monetary and macroeconomic data (TCMB EVDS), and UK corporate registry intelligence (Companies House). This batch adds two new country coverages (Turkey and Philippines), introduces energy market pricing and generation data for 30+ European bidding zones, and provides critical compliance/sanctions screening and corporate due diligence capabilities for financial institutions. This brings total coverage to **43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **67 government/institutional/regulatory/alt-data/compliance modules** and **1,160+ indicators**.
+
+**ENTSO-E Energy** (`entsoe_energy`) — European Network of Transmission System Operators for Electricity:
+- Day-ahead electricity prices: hourly day-ahead market clearing prices (EUR/MWh) for 30+ European bidding zones — the benchmark for wholesale power costs across the EU
+- Generation per type: real-time breakdown of electricity generation by fuel source (nuclear, wind, solar, gas, hydro, biomass, coal, oil) — critical for energy transition monitoring
+- Total system load: aggregated electricity demand (MW) per control area — real-time demand proxy for industrial activity
+- Cross-border physical flows: actual power flows between bidding zones (MW) — reveals interconnection utilization and grid stress
+- Installed generation capacity: structural capacity per production type — baseline for utilization rate calculations
+- Generation forecast: day-ahead and intraday generation forecasts (wind + solar) — essential for renewable energy intermittency analysis
+- API base: `https://web-api.tp.entsoe.eu/api`
+- Auth: `ENTSOE_API_TOKEN` (free registration at https://transparency.entsoe.eu)
+- Rate limits: ~400 requests/minute; XML response format parsed to JSON
+- Coverage: EU27 + UK + Norway + Switzerland + Western Balkans (EIC bidding zone domains)
+
+**OpenSanctions** (`opensanctions_api`) — Global Sanctions, PEP & Watchlist Intelligence:
+- Entity search: full-text search across 80+ sanctions lists, PEP databases, and enforcement datasets — returns matched entities with schema types, datasets, and properties
+- Entity match: fuzzy matching API for KYC/AML screening — submit name + optional birth date/nationality for deduplication scoring against all datasets
+- Entity detail: full entity record with relationships, temporal properties, and source provenance — includes corporate ownership chains and beneficial ownership
+- Dataset catalog: comprehensive list of all integrated datasets (OFAC SDN, EU sanctions, UN consolidated, Interpol notices, UK HMT, etc.) with freshness metadata
+- Country exposure: per-country entity counts filtered by sanctions regime — enables geographic risk heat-mapping
+- PEP search: targeted search for politically exposed persons with role descriptions, jurisdiction, and position dates
+- Vessel sanctions: dedicated vessel/maritime entity search — covers OFAC blocked vessels, EU maritime restrictions, and flag-state risk indicators
+- New designations: recent additions across all datasets — real-time monitoring of newly sanctioned entities for compliance alerting
+- API base: `https://api.opensanctions.org`
+- Auth: `OPENSANCTIONS_API_KEY` (optional; 50/day free tier, 500/day with registered key)
+- Coverage: Global — 80+ source datasets covering 240+ jurisdictions
+
+**PSA Philippines** (`psa_philippines`) — Philippine Statistics Authority OpenSTAT:
+- GDP: quarterly real GDP growth rate (% YoY) — measures Philippine economic expansion, the fastest-growing major ASEAN economy
+- CPI: consumer price index inflation (% YoY) — BSP inflation targeting benchmark, critical for PHP monetary policy outlook
+- Unemployment: labour force survey unemployment rate (%) — quarterly household survey covering 40,000+ sample households
+- Remittances: overseas Filipino workers (OFW) cash remittances and net personal income (million PHP) — Philippines receives ~$35B/year, making remittances ~9% of GDP and a key PHP support factor
+- Trade: merchandise exports and imports (million USD) — decomposed by major commodity groups (electronics, agro-based, mineral, manufactures)
+- Agriculture: crop production volumes (metric tons) — rice, corn, coconut, sugarcane — critical for food security and agricultural commodity monitoring
+- PPI: producer price index for manufacturing (% YoY) — upstream inflation pressure indicator
+- API base: `https://openstat.psa.gov.ph/PXWeb/api/v1/en`
+- Auth: none (fully open, no API key required)
+- PxWeb JSON-stat format with automatic parsing
+
+**TCMB Turkey** (`tcmb_evds`) — Central Bank of the Republic of Turkey (EVDS Electronic Data Delivery System):
+- Foreign exchange: USD/TRY, EUR/TRY, GBP/TRY, JPY/TRY, CHF/TRY daily interbank rates — the Turkish lira is among the most volatile major EM currencies, essential for carry trade and EM FX monitoring
+- Monetary policy: TCMB policy (one-week repo) rate and overnight lending/borrowing corridor — Turkey's unconventional monetary policy makes rate tracking critical for EM macro
+- Consumer prices: CPI headline index, CPI food sub-index, CPI annual change (%) — Turkey experienced 60–85% inflation in 2022–2024, making CPI among the most market-moving macro releases globally
+- Monetary aggregates: M1 and M2 money supply (TRY mn, monthly) — monetary expansion tracking for inflation forecasting
+- External balance: current account balance (USD mn, monthly) — Turkey's persistent current account deficits and FX reserve adequacy are key sovereign risk indicators
+- Foreign exchange reserves: gross FX reserves (USD mn, weekly) — one of the most closely watched EM reserve metrics globally, critical for lira stability assessment
+- API base: `https://evds2.tcmb.gov.tr/service/evds`
+- Auth: `TCMB_EVDS_API_KEY` (free registration at https://evds2.tcmb.gov.tr/)
+- Rate limits: ~100 requests/minute; 0.6s polite delay between requests
+
+**UK Companies House** (`uk_companies_house`) — UK Government Corporate Registry:
+- Company search: full-text search across 5M+ UK-registered companies — returns company number, status, incorporation date, SIC codes, registered office
+- Company profile: detailed corporate information including accounts filing dates, confirmation statement dates, company type, and jurisdiction
+- Officers: current and resigned directors, secretaries, and other officers — with appointment dates, nationality, occupation, and correspondence address
+- Filing history: complete filing history (annual accounts, confirmation statements, resolutions, charges) — essential for corporate governance monitoring
+- Charges: registered charges (mortgages, debentures, floating charges) against company assets — critical for credit analysis and secured lending assessment
+- Insolvency: insolvency proceedings including liquidation, administration, CVA, and receivership — real-time distress monitoring
+- Persons with significant control (PSC): beneficial ownership register — individuals/entities with >25% shares or voting rights, critical for KYC/AML
+- Officer search: cross-company officer search for director network analysis — identifies individuals serving on multiple boards
+- Disqualified officers: directors disqualified by court order or undertaking — regulatory risk screening
+- Sector search: advanced search by SIC code, incorporation date, company status — enables sector-level analysis of UK corporate activity
+- API base: `https://api.company-information.service.gov.uk`
+- Auth: `UK_COMPANIES_HOUSE_API_KEY` (free at https://developer.company-information.service.gov.uk, HTTP Basic auth)
+- Rate limits: 600 requests / 5 minutes
+
+**Why Batch 19 matters for financial analysis:**
+
+1. **European energy market intelligence** — ENTSO-E day-ahead prices are the settlement benchmark for power purchase agreements (PPAs), renewable energy certificates, and utility hedging across Europe. Generation-by-type data enables real-time monitoring of the EU's energy transition — tracking coal phase-out, renewable penetration, and nuclear capacity factors. Cross-border flow data reveals grid interconnection stress, which historically precedes price spikes (2022 energy crisis pattern).
+
+2. **Sanctions compliance & ESG screening** — OpenSanctions provides the data layer that underpins KYC/AML compliance at every major financial institution. The fuzzy matching API enables automated screening of counterparties, beneficial owners, and transaction participants against OFAC SDN, EU consolidated list, and 80+ other sanctions regimes. New designation monitoring provides real-time alerting for compliance teams — a designation can freeze assets within hours.
+
+3. **Philippine remittance economy** — The Philippines receives ~$35B annually in OFW remittances (~9% of GDP), making PSA remittance data one of the strongest leading indicators for PHP/USD and Philippine equity flows. GDP growth data tracks the fastest-growing major ASEAN economy, while agriculture production data feeds into global rice and coconut market supply models.
+
+4. **Turkish monetary policy & lira volatility** — Turkey's TCMB is among the most closely watched EM central banks globally. The lira lost >80% of its value against USD between 2018–2024 under unconventional monetary policy, making TCMB rate decisions and FX reserve data among the most market-moving EM macro releases. CPI prints regularly exceed 50% YoY, creating unique hedging and carry trade dynamics.
+
+5. **UK corporate intelligence** — Companies House data underpins corporate due diligence for the world's second-largest financial center. PSC (beneficial ownership) data is critical for anti-money-laundering screening, while filing history and insolvency data enables real-time monitoring of UK corporate health. Officer network analysis reveals interlocking directorates and potential conflicts of interest.
+
+**Example response — `entsoe_energy` `PRICES_DAY_AHEAD`:**
+```json
+{
+  "indicator": "PRICES_DAY_AHEAD",
+  "name": "Day-Ahead Electricity Price",
+  "domain": "10YDE-AT-LU---T",
+  "domain_name": "DE-AT-LU (Germany/Austria/Luxembourg)",
+  "latest_value": 87.45,
+  "latest_date": "2026-04-01T23:00Z",
+  "unit": "EUR/MWh",
+  "frequency": "hourly",
+  "resolution": "PT60M",
+  "history": [
+    {"date": "2026-04-01T20:00Z", "value": 92.10},
+    {"date": "2026-04-01T21:00Z", "value": 89.32},
+    {"date": "2026-04-01T22:00Z", "value": 85.67}
+  ],
+  "source": "ENTSO-E Transparency Platform (document A44)"
+}
+```
+
+**Example response — `opensanctions_api` `ENTITY_SEARCH`:**
+```json
+{
+  "indicator": "ENTITY_SEARCH",
+  "query": "Rosneft",
+  "total_results": 23,
+  "results": [
+    {
+      "id": "Q55835",
+      "caption": "Rosneft",
+      "schema": "Company",
+      "datasets": ["eu_fsf", "ofac_sdn", "gb_hmt_sanctions"],
+      "properties": {
+        "name": ["Rosneft", "PAO NK Rosneft"],
+        "jurisdiction": ["ru"],
+        "sector": ["Oil and gas"]
+      },
+      "first_seen": "2022-02-28",
+      "last_change": "2026-03-15"
+    }
+  ],
+  "source": "OpenSanctions API (80+ datasets)"
+}
+```
+
+**Example response — `tcmb_evds` `FX_USD_TRY`:**
+```json
+{
+  "indicator": "FX_USD_TRY",
+  "name": "USD/TRY Selling Rate",
+  "latest_value": 38.4521,
+  "latest_date": "2026-04-01",
+  "unit": "TRY per USD",
+  "frequency": "daily",
+  "history": [
+    {"date": "2026-03-28", "value": 38.3102},
+    {"date": "2026-03-31", "value": 38.3987},
+    {"date": "2026-04-01", "value": 38.4521}
+  ],
+  "source": "TCMB EVDS (series TP.DK.USD.S.YTL)"
+}
+```
+
+**Example response — `psa_philippines` `remittances`:**
+```json
+{
+  "indicator": "remittances",
+  "name": "OFW Cash Remittances",
+  "latest_value": 2987654.0,
+  "latest_date": "2025-Q4",
+  "unit": "Million PHP",
+  "frequency": "quarterly",
+  "history": [
+    {"date": "2025-Q2", "value": 2876543.0},
+    {"date": "2025-Q3", "value": 2923456.0},
+    {"date": "2025-Q4", "value": 2987654.0}
+  ],
+  "source": "PSA OpenSTAT (PxWeb)"
+}
+```
+
+**Example response — `uk_companies_house` `COMPANY_PROFILE`:**
+```json
+{
+  "indicator": "COMPANY_PROFILE",
+  "company_number": "00445790",
+  "company_name": "ROLLS-ROYCE HOLDINGS PLC",
+  "company_status": "active",
+  "type": "plc",
+  "incorporated": "1946-12-05",
+  "sic_codes": ["30300"],
+  "registered_office": {
+    "address_line_1": "Kings Place",
+    "locality": "London",
+    "postal_code": "N1 9FN"
+  },
+  "accounts": {
+    "next_due": "2026-09-30",
+    "last_made_up_to": "2025-12-31"
+  },
+  "source": "UK Companies House API"
+}
+```
+
+**CLI quick-start:**
+```bash
+python3 modules/entsoe_energy.py prices DE
+# Returns: Day-ahead electricity prices for Germany bidding zone (24h hourly)
+python3 modules/entsoe_energy.py generation FR
+# Returns: Real-time generation by fuel type for France
+
+python3 modules/opensanctions_api.py search "Gazprom"
+# Returns: Sanctions matches across OFAC, EU, HMT, UN for Gazprom entities
+python3 modules/opensanctions_api.py match '{"name": "John Smith", "birth_date": "1965-03-15"}'
+# Returns: Fuzzy match results with deduplication scores
+
+python3 modules/psa_philippines.py gdp
+# Returns: Philippine quarterly GDP growth (% YoY) + 8-quarter history
+python3 modules/psa_philippines.py remittances
+# Returns: OFW remittances (Million PHP) + quarterly history
+python3 modules/psa_philippines.py cpi
+# Returns: CPI inflation (% YoY) + 12-month history
+
+python3 modules/tcmb_evds.py fx_usd_try
+# Returns: USD/TRY daily rate + 30-day history
+python3 modules/tcmb_evds.py policy_rate
+# Returns: TCMB one-week repo rate + decision history
+python3 modules/tcmb_evds.py cpi_annual
+# Returns: Turkey CPI annual % change + 12-month history
+
+python3 modules/uk_companies_house.py search "Barclays"
+# Returns: Company search results (number, status, SIC codes)
+python3 modules/uk_companies_house.py profile 00048839
+# Returns: Full profile for Barclays PLC
+python3 modules/uk_companies_house.py officers 00048839
+# Returns: Current and former officers with appointment dates
+```
+
+**Batch MCP — European Energy Market Monitor (New in Batch 19):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'entsoe_energy', params: { indicator: 'PRICES_DAY_AHEAD', domain: 'DE' } },
+      { tool: 'entsoe_energy', params: { indicator: 'PRICES_DAY_AHEAD', domain: 'FR' } },
+      { tool: 'entsoe_energy', params: { indicator: 'GENERATION_PER_TYPE', domain: 'DE' } },
+      { tool: 'entsoe_energy', params: { indicator: 'TOTAL_LOAD', domain: 'DE' } },
+      { tool: 'entsoe_energy', params: { indicator: 'CROSS_BORDER_FLOWS', domain: 'DE' } },
+      { tool: 'ssb_norway', params: { indicator: 'PETROLEUM_DELIVERIES' } },
+      { tool: 'norges_bank', params: { indicator: 'FX_EUR_NOK' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Global Sanctions & Compliance Screening (New in Batch 19):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'opensanctions_api', params: { indicator: 'ENTITY_MATCH', query: { name: 'Target Corp', jurisdiction: 'RU' } } },
+      { tool: 'opensanctions_api', params: { indicator: 'NEW_DESIGNATIONS' } },
+      { tool: 'opensanctions_api', params: { indicator: 'VESSEL_SANCTIONS', query: 'tanker' } },
+      { tool: 'gleif_lei', params: { indicator: 'ENTITY_SEARCH', query: 'Target Corp' } },
+      { tool: 'uk_companies_house', params: { indicator: 'COMPANY_SEARCH', query: 'Target Corp' } },
+      { tool: 'uk_companies_house', params: { indicator: 'PSC', company_number: '12345678' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Emerging Markets Macro Dashboard (New in Batch 19):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'tcmb_evds', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'tcmb_evds', params: { indicator: 'FX_USD_TRY' } },
+      { tool: 'tcmb_evds', params: { indicator: 'CPI_ANNUAL' } },
+      { tool: 'tcmb_evds', params: { indicator: 'FX_RESERVES' } },
+      { tool: 'psa_philippines', params: { indicator: 'gdp' } },
+      { tool: 'psa_philippines', params: { indicator: 'remittances' } },
+      { tool: 'bnm_malaysia', params: { indicator: 'OPR' } },
+      { tool: 'bank_of_thailand', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'bcrp_peru', params: { indicator: 'REFERENCE_RATE' } },
+      { tool: 'mnb_hungary', params: { indicator: 'BASE_RATE' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 19:**
+- 67 government/central bank/regulatory/institutional/alt-data/compliance modules
+- 43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇵🇪 🇹🇷 🇵🇭 🇪🇺 🌍 🌐 🌊 🔥 📚 ⚡ 🛡️ 🏢
+- 1,160+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, commodity production, energy market, sanctions/compliance, corporate registry, and remittance sources
+- New in Batch 19: ENTSO-E (day-ahead prices/generation/load/cross-border/capacity for 30+ EU bidding zones), OpenSanctions (entity/PEP/vessel sanctions search, fuzzy KYC matching, 80+ datasets, 240+ jurisdictions), PSA Philippines (GDP/CPI/unemployment/remittances/trade/agriculture/PPI), TCMB Turkey (TRY FX 5 pairs, policy rate, CPI, money supply, current account, reserves), UK Companies House (company search/profile/officers/filings/charges/insolvency/PSC/disqualified for 5M+ companies)
+
 ---
 
 ## MCP Server
@@ -3180,7 +3460,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,080 Python data modules
+├── modules/                          # 1,091 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -3250,7 +3530,12 @@ quantclaw-data/
 │   ├── openalex_research.py        # OpenAlex (corporate R&D output, topic trends, innovation rankings, citations)
 │   ├── bnm_malaysia.py             # BNM Malaysia (MYR FX, OPR, KLIBOR, Islamic rates, Kijang Emas gold, base rates)
 │   ├── bcrp_peru.py                # BCRP Peru (reference rate, CPI, GDP, PEN/USD FX, copper/gold/silver/zinc, trade, reserves)
-│   ├── ... (1,086 modules total)
+│   ├── entsoe_energy.py            # ENTSO-E Energy (day-ahead prices, generation, load, cross-border flows, capacity)
+│   ├── opensanctions_api.py        # OpenSanctions (entity/PEP search, sanctions match, vessel sanctions, datasets)
+│   ├── psa_philippines.py          # PSA Philippines (GDP, CPI, unemployment, remittances, trade, agriculture, PPI)
+│   ├── tcmb_evds.py                # TCMB Turkey (TRY FX rates, policy rate, CPI, money supply, current account, reserves)
+│   ├── uk_companies_house.py       # UK Companies House (company search/profile, officers, filings, charges, insolvency, PSC)
+│   ├── ... (1,091 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -3341,6 +3626,11 @@ EPO_CONSUMER_KEY=                    # EPO Open Patent Services (free at https:/
 EPO_CONSUMER_SECRET=                 # EPO OPS OAuth2 client secret
 KOSIS_API_KEY=                       # KOSIS South Korea (free at https://kosis.kr/openapi/)
 # BCRP Peru — no API key required (fully open at https://estadisticas.bcrp.gob.pe/estadisticas/series/api)
+ENTSOE_API_TOKEN=                    # ENTSO-E Transparency Platform (free at https://transparency.entsoe.eu/usrm/user/createPublicUser)
+OPENSANCTIONS_API_KEY=               # OpenSanctions (free tier at https://www.opensanctions.org/api/)
+# PSA Philippines — no API key required (fully open at https://openstat.psa.gov.ph)
+TCMB_EVDS_API_KEY=                   # TCMB Turkey EVDS (free at https://evds2.tcmb.gov.tr/)
+UK_COMPANIES_HOUSE_API_KEY=          # UK Companies House (free at https://developer.company-information.service.gov.uk/)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -3389,4 +3679,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,086 modules • 49 phases • 41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research) • 62 government/central bank/institutional/alt-data modules • 1,115+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly & commodity-production indicators • The data layer powering the MoneyClawX ecosystem*
+*1,091 modules • 49 phases • 43 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Turkey + Philippines + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research + ENTSO-E energy + OpenSanctions compliance + UK Companies House) • 67 government/central bank/institutional/alt-data/compliance modules • 1,160+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly, commodity-production, energy-market, sanctions-compliance, corporate-registry & remittance indicators • The data layer powering the MoneyClawX ecosystem*
