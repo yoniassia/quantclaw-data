@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,068 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,072 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -112,6 +112,19 @@
 | Greek macro | `eu_small_statistics` (GDP, CPI, unemployment, govt debt — Eurostat data) |
 | Slovenian macro | `eu_small_central_banks` (SI_HICP, SI_INFLATION_DOMESTIC, ECB rates, FX) + `eu_small_statistics` (GDP) |
 | Hungarian macro | `mnb_hungary` (base rate, FX) + `eu_small_statistics` (GDP, CPI, unemployment, govt debt — HU) |
+| Portuguese national stats | `ine_portugal` (GDP real/nominal/per capita, CPI/HICP, unemployment, tourism, exports/imports, trade coverage, construction costs) |
+| Portuguese banking | `banco_de_portugal` (lending/deposit rates, BoP, FX, NPL, CET1, FSI) + `ine_portugal` (macro stats) |
+| Brazilian macro data | `ibge_brazil` (GDP YoY/QoQ, IPCA inflation monthly/12M/YTD/index, PNAD unemployment, PIM-PF industrial production, PMC retail sales) |
+| IPCA inflation (Brazil) | `ibge_brazil` (IPCA_MONTHLY, IPCA_12M, IPCA_YTD, IPCA_INDEX — Dec 1993=100) |
+| Geopolitical risk | `gdelt_global_events` (protest/military/terror/conflict volume & sentiment, country risk scores 0–100, bilateral tension) |
+| Media sentiment (economic) | `gdelt_global_events` (inflation/interest rate/trade/stock market/bankruptcy/sanctions media coverage volume & tone) |
+| Country risk scoring | `gdelt_global_events` (country_risk command — 35+ countries, 0–100 scale with MINIMAL to ELEVATED ratings) |
+| Bilateral tension | `gdelt_global_events` (tension command — any two countries, 0–100 scale, based on cross-media tone analysis) |
+| Patent data / USPTO | `patentsview_uspto` (patent search, grants by assignee, top assignees, tech trends by CPC class, patent detail) |
+| Corporate innovation / IP | `patentsview_uspto` (patent_grants_by_assignee — supports 35+ tickers: AAPL, MSFT, NVDA, PFE, etc.) |
+| Technology trends (CPC) | `patentsview_uspto` (tech_trends — G06N=AI/ML, H01L=semiconductors, A61K=pharma, G06Q=fintech, H01M=batteries, etc.) |
+| Industrial production (Brazil) | `ibge_brazil` (PIM-PF seasonally adjusted index, CNAE 2.0, Base 2022=100) |
+| Tourism (Portugal) | `ine_portugal` (TOURISM_OVERNIGHT_STAYS — monthly total in tourist accommodation) |
 
 ---
 
@@ -2427,6 +2440,207 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### ine_portugal.py — INE Portugal (Instituto Nacional de Estatística)
+
+- **Source:** INE — Portugal's national statistics institute
+- **API:** `https://www.ine.pt/ine/json_indicador/pindica.jsp`
+- **Protocol:** REST JSON (indicator variable codes, dimension filtering)
+- **Auth:** None (open access)
+- **Freshness:** Monthly (CPI, tourism, construction), Quarterly (GDP, labour), Annual (trade)
+- **Coverage:** Portugal
+
+**Indicators (15):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `GDP_GROWTH_YOY` | GDP Real Growth YoY | National Accounts | Quarterly | % |
+| `GDP_NOMINAL` | GDP Nominal (EUR) | National Accounts | Quarterly | EUR |
+| `GDP_PERCAPITA_GROWTH` | GDP Real Per Capita Growth | National Accounts | Annual | % |
+| `CPI_YOY` | CPI Year-on-Year | Prices | Monthly | % |
+| `CPI_INDEX` | CPI Index (Base 2025=100) | Prices | Monthly | index |
+| `HICP_YOY` | HICP Year-on-Year | Prices | Monthly | % |
+| `UNEMPLOYMENT_RATE` | Unemployment Rate | Labour Market | Quarterly | % |
+| `EMPLOYED_POPULATION` | Employed Population | Labour Market | Quarterly | thousands |
+| `ACTIVITY_RATE` | Activity Rate (working-age) | Labour Market | Quarterly | % |
+| `TOURISM_OVERNIGHT_STAYS` | Tourism Overnight Stays | Tourism | Monthly | number |
+| `EXPORTS` | Exports of Goods | Foreign Trade | Annual | EUR |
+| `IMPORTS` | Imports of Goods | Foreign Trade | Annual | EUR |
+| `TRADE_COVERAGE` | Trade Coverage Rate | Foreign Trade | Annual | % |
+| `CONSTRUCTION_COST_INDEX` | Construction Cost Index (2021) | Construction | Monthly | index |
+| `CONSTRUCTION_COST_YOY` | Construction Cost Annual Change | Construction | Monthly | % |
+
+**CLI Examples:**
+```bash
+python3 modules/ine_portugal.py GDP_GROWTH_YOY
+python3 modules/ine_portugal.py CPI_YOY
+python3 modules/ine_portugal.py UNEMPLOYMENT_RATE
+python3 modules/ine_portugal.py TOURISM_OVERNIGHT_STAYS
+python3 modules/ine_portugal.py EXPORTS
+python3 modules/ine_portugal.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ine_portugal',
+    params: { indicator: 'GDP_GROWTH_YOY' }
+  })
+});
+```
+
+### ibge_brazil.py — IBGE Brazil (Instituto Brasileiro de Geografia e Estatística)
+
+- **Source:** IBGE — Brazil's geography and statistics institute (SIDRA aggregates API)
+- **API:** `https://servicodados.ibge.gov.br/api/v3/agregados`
+- **Protocol:** REST JSON (table/variable selection with classification filters)
+- **Auth:** None (open access)
+- **Freshness:** Monthly (IPCA, unemployment, industry, retail), Quarterly (GDP)
+- **Coverage:** Brazil (national)
+
+**Indicators (9):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `GDP_YOY` | GDP Growth YoY | National Accounts | Quarterly | % |
+| `GDP_QOQ` | GDP Growth QoQ (SA) | National Accounts | Quarterly | % |
+| `IPCA_MONTHLY` | IPCA Monthly Inflation | Prices | Monthly | % |
+| `IPCA_12M` | IPCA 12-Month Cumulative | Prices | Monthly | % |
+| `IPCA_YTD` | IPCA Year-to-Date | Prices | Monthly | % |
+| `IPCA_INDEX` | IPCA Price Index (Dec 1993=100) | Prices | Monthly | index |
+| `UNEMPLOYMENT` | PNAD Unemployment Rate (14+) | Labour Market | Monthly | % |
+| `INDUSTRIAL_PRODUCTION` | PIM-PF Industrial Index (2022=100) | Industry | Monthly | index |
+| `RETAIL_SALES` | PMC Broad Retail Sales YoY | Retail | Monthly | % |
+
+**CLI Examples:**
+```bash
+python3 modules/ibge_brazil.py GDP_YOY
+python3 modules/ibge_brazil.py IPCA_12M
+python3 modules/ibge_brazil.py UNEMPLOYMENT
+python3 modules/ibge_brazil.py INDUSTRIAL_PRODUCTION
+python3 modules/ibge_brazil.py gdp        # alias: GDP_YOY + GDP_QOQ
+python3 modules/ibge_brazil.py ipca       # alias: IPCA_MONTHLY + IPCA_12M
+python3 modules/ibge_brazil.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ibge_brazil',
+    params: { indicator: 'IPCA_12M' }
+  })
+});
+```
+
+### gdelt_global_events.py — GDELT Project (Global Database of Events, Language, and Tone)
+
+- **Source:** GDELT — the world's largest open database of human society, monitoring broadcast, print, and web news from nearly every country in 100+ languages
+- **API:** `https://api.gdeltproject.org/api/v2/doc/doc`
+- **Protocol:** REST JSON (query + mode parameters; supports timelinevol, timelinetone, artlist modes)
+- **Auth:** None (fully open, no key required, fair-use ~5s between requests)
+- **Freshness:** Real-time (updates every 15 minutes)
+- **Coverage:** Global (100+ languages, 35+ country-mapped FIPS codes)
+
+**Predefined Indicators (14):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `PROTEST_ACTIVITY_GLOBAL` | Global Protest Activity Index | Geopolitical Risk | Hourly | volume % |
+| `PROTEST_SENTIMENT` | Global Protest Sentiment | Geopolitical Risk | Hourly | tone score |
+| `MILITARY_ACTIVITY_GLOBAL` | Global Military Activity Index | Geopolitical Risk | Hourly | volume % |
+| `TERROR_THREAT_GLOBAL` | Global Terror Threat Index | Geopolitical Risk | Hourly | volume % |
+| `ARMED_CONFLICT_VOL` | Armed Conflict Media Volume | Geopolitical Risk | Hourly | volume % |
+| `INFLATION_MEDIA_VOL` | Inflation Media Coverage Volume | Economic Themes | Hourly | volume % |
+| `INFLATION_SENTIMENT` | Inflation Media Sentiment | Economic Themes | Hourly | tone score |
+| `INTEREST_RATE_MEDIA_VOL` | Interest Rate Media Volume | Economic Themes | Hourly | volume % |
+| `TRADE_MEDIA_VOL` | Trade Policy Media Volume | Economic Themes | Hourly | volume % |
+| `TRADE_SENTIMENT` | Trade Policy Sentiment | Economic Themes | Hourly | tone score |
+| `STOCKMARKET_MEDIA_VOL` | Stock Market Media Volume | Economic Themes | Hourly | volume % |
+| `STOCKMARKET_SENTIMENT` | Stock Market Media Sentiment | Economic Themes | Hourly | tone score |
+| `BANKRUPTCY_MEDIA_VOL` | Bankruptcy/Default Media Volume | Economic Themes | Hourly | volume % |
+| `SANCTIONS_MEDIA_VOL` | Sanctions Media Coverage Volume | Commodity/Disruption | Hourly | volume % |
+
+**Special Commands:**
+- `country_risk <CC>` — Composite geopolitical risk index (0–100) for any country (FIPS, ISO, or name)
+- `tension <CC1> <CC2>` — Bilateral tension score (0–100) between two countries
+- `topic "<query>"` — Media sentiment and volume for any keyword/topic
+- `articles "<query>"` — Full-text article search with metadata
+
+**CLI Examples:**
+```bash
+python3 modules/gdelt_global_events.py PROTEST_ACTIVITY_GLOBAL
+python3 modules/gdelt_global_events.py STOCKMARKET_SENTIMENT
+python3 modules/gdelt_global_events.py country_risk US
+python3 modules/gdelt_global_events.py country_risk CN
+python3 modules/gdelt_global_events.py tension US CN
+python3 modules/gdelt_global_events.py topic "central bank rate cut"
+python3 modules/gdelt_global_events.py articles "semiconductor tariff"
+python3 modules/gdelt_global_events.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'gdelt_global_events',
+    params: { indicator: 'PROTEST_ACTIVITY_GLOBAL' }
+  })
+});
+```
+
+### patentsview_uspto.py — USPTO Open Data Portal (PatentsView)
+
+- **Source:** United States Patent and Trademark Office (USPTO) Open Data Portal
+- **API:** `https://api.uspto.gov/api/v1`
+- **Protocol:** REST JSON (Lucene/Solr query syntax for patent application search)
+- **Auth:** API key required — set `USPTO_ODP_API_KEY` env var (free registration at https://data.uspto.gov/apis/getting-started)
+- **Rate Limit:** 45 requests/minute (automatic retry on 429)
+- **Freshness:** Daily (patent data updated daily on ODP)
+- **Coverage:** United States (all USPTO patent applications and grants)
+
+**Indicators (5):**
+
+| Key | Name | Category | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `PATENT_SEARCH` | Patent Application Search | Search | Daily | patents |
+| `PATENT_GRANTS_BY_ASSIGNEE` | Patent Grants by Assignee | Corporate IP | Daily | patents |
+| `TOP_ASSIGNEES` | Top Patent Assignees | Rankings | Daily | patents |
+| `TECH_TRENDS` | Technology Trend by CPC Class | Technology | Daily | patents |
+| `PATENT_DETAIL` | Single Patent Detail | Detail | On-demand | patent |
+
+**Supported Ticker-to-Assignee Mappings (35+):** AAPL→Apple, MSFT→Microsoft, GOOG→Google, AMZN→Amazon, META→Meta Platforms, NVDA→NVIDIA, TSLA→Tesla, IBM→IBM, INTC→Intel, QCOM→Qualcomm, AMD→AMD, PFE→Pfizer, JNJ→J&J, MRK→Merck, LLY→Eli Lilly, BA→Boeing, GE→GE, and more.
+
+**Named CPC Technology Classes (22):** G06N (AI/ML), G06F (Digital Computing), G06Q (Fintech), G06V (Computer Vision), H01L (Semiconductors), H04L (Telecom), H04W (Wireless), A61K (Pharma), A61B (Med Diagnostics), C12N (Genetic Engineering), H01M (Batteries), B60L (EVs), H02S (Solar Cells), F03D (Wind Power), and more.
+
+**CLI Examples:**
+```bash
+python3 modules/patentsview_uspto.py search "artificial intelligence"
+python3 modules/patentsview_uspto.py patent_grants_by_assignee NVDA
+python3 modules/patentsview_uspto.py patent_grants_by_assignee "Pfizer"
+python3 modules/patentsview_uspto.py tech_trends G06N      # AI & Machine Learning
+python3 modules/patentsview_uspto.py tech_trends H01L      # Semiconductors
+python3 modules/patentsview_uspto.py top_assignees
+python3 modules/patentsview_uspto.py detail 18123456
+python3 modules/patentsview_uspto.py tickers               # Show ticker→assignee map
+python3 modules/patentsview_uspto.py cpc_classes            # Show CPC class names
+python3 modules/patentsview_uspto.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'patentsview_uspto',
+    params: { indicator: 'PATENT_GRANTS_BY_ASSIGNEE', assignee: 'AAPL' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -2609,7 +2823,9 @@ yield_curve
 imf_enhanced
 oecd_enhanced                boe_iadb_enhanced             mnb_hungary
 eu_small_central_banks       eu_small_statistics
-... (1,068 total — run `ls modules/*.py | wc -l` to verify)
+ine_portugal                 ibge_brazil
+gdelt_global_events          patentsview_uspto
+... (1,072 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -2636,9 +2852,10 @@ eu_small_central_banks       eu_small_statistics
 | EDINET Japan | `EDINET_API_KEY` | Open | https://disclosure.edinet-fsa.go.jp |
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
+| USPTO ODP (PatentsView) | `USPTO_ODP_API_KEY` | 45/min | https://data.uspto.gov/apis/getting-started |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, and CNB Czech ARAD require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, and USPTO PatentsView require free registration.
 
 ---
 
-*1,068 modules — 33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 44 government/central bank/institutional modules — 885+ macro indicators — Updated 2026-04-01 — QuantClaw Data (DCC)*
+*1,072 modules — 34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 48 government/central bank/institutional/alt-data modules — 930+ macro & geopolitical indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

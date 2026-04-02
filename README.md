@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,068 Financial Data Modules
+# QuantClaw Data — 1,072 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,068 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,072 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,068 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,072 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,068** Python data modules
+- **1,072** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **48** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,068 modules)             │
+│  ├── Module browser (1,072 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,068 modules      │
+│  ├── Tool definitions for all 1,072 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,068 Python Modules                            │
+│  1,072 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks & International Institutions (Autobuilder Batches 1–12)
+### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–13)
 
-Forty-four modules covering 33 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Asia-Pacific, Middle East, Oceania, and international institutions with 885+ macroeconomic indicators from official government statistical offices, central banks, international institutions, and financial regulators:
+Forty-eight modules covering 34 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, South America, Asia-Pacific, Middle East, Oceania, and international institutions with 930+ macroeconomic and geopolitical indicators from official government statistical offices, central banks, international institutions, financial regulators, and global event databases:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -197,6 +197,10 @@ Forty-four modules covering 33 countries plus EU-wide and global data (190+ IMF 
 || `mnb_hungary` | Magyar Nemzeti Bank (MNB) | Hungary | `http://www.mnb.hu/arfolyamok.asmx` | MNB base rate (policy rate history), HUF FX crosses (EUR/USD/GBP/CHF/JPY/CZK/PLN/RON/SEK/CNY/TRY/CAD), CEE equal-weight basket (CZK+PLN+RON+HUF vs EUR), G4 basket (USD+EUR+GBP+JPY vs HUF) |
 || `eu_small_central_banks` | 9 EU Central Banks + ECB SDMX | BG, HR, CY, LV, LT, LU, MT, SK, SI | ECB: `https://data-api.ecb.europa.eu/service/data` + national APIs | HICP annual inflation for all 9 countries, MFI lending & deposit rates (household) for all 9, FX rates (EUR/USD/GBP/CHF) for BG/HR/LT/SK/SI from national central banks (BNB/HNB/Lietuvos bankas/NBS/BSI), Slovenia extras (domestic & EU inflation, ECB deposit/refi/marginal rates) |
 || `eu_small_statistics` | Eurostat (batch for 12 smaller EU NSOs) | BG, HR, CY, EL, HU, LV, LT, LU, MT, RO, SK, SI | `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data` | GDP (nominal/real/growth/per capita), CPI (overall YoY/food/energy/index level), unemployment rate (total + youth), employment rate, government debt & deficit (% GDP), GVA manufacturing, current account balance — all filterable by country |
+|| `ine_portugal` | INE (Instituto Nacional de Estatística) | Portugal | `https://www.ine.pt/ine/json_indicador/pindica.jsp` | GDP real growth YoY, GDP nominal, GDP per capita growth, CPI YoY, CPI index (2025=100), HICP YoY, unemployment rate, employed population, activity rate, tourism overnight stays, exports/imports of goods, trade coverage rate, construction cost index, construction cost YoY |
+|| `ibge_brazil` | IBGE (Instituto Brasileiro de Geografia e Estatística) | Brazil | `https://servicodados.ibge.gov.br/api/v3/agregados` | GDP YoY/QoQ growth, IPCA monthly/12M cumulative/YTD/index (Dec 1993=100), PNAD unemployment rate, PIM-PF industrial production index (2022=100), PMC broad retail sales YoY |
+|| `gdelt_global_events` | GDELT Project (Global Database of Events) | Global (100+ languages) | `https://api.gdeltproject.org/api/v2/doc/doc` | Protest/military/terror/armed conflict volume & sentiment, inflation/interest rate/trade/stock market/bankruptcy media coverage, sanctions media volume, country risk scores, bilateral tension scores, topic sentiment, article search |
+|| `patentsview_uspto` | USPTO Open Data Portal (PatentsView) | United States | `https://api.uspto.gov/api/v1` | Patent application search, patent grants by assignee (ticker-to-company mapping for 35+ tickers), top assignees ranking, technology trends by CPC class (22 named classes incl. AI/ML, semiconductors, pharma), single patent detail |
 
 #### Global Coverage Map
 
@@ -249,6 +253,10 @@ Forty-four modules covering 33 countries plus EU-wide and global data (190+ IMF 
 🇸🇮 Slovenia         — ECB SDMX + BSI (HICP, MFI rates, FX, domestic/EU inflation, ECB policy rates)
 🇬🇷 Greece           — Eurostat batch (GDP, CPI, unemployment, govt finance, trade)
 🌍 OECD (38 members) — OECD Enhanced (CLI, BCI/CCI, KEI, tax revenue, pensions, R&D/MSTI)
+🇵🇹 Portugal (ext)    — INE Statistics (GDP real/nominal/per capita, CPI/HICP, unemployment, tourism, trade, construction)
+🇧🇷 Brazil            — IBGE SIDRA (GDP YoY/QoQ, IPCA inflation, PNAD unemployment, PIM-PF industry, PMC retail)
+🌐 Global (events)    — GDELT (protest/military/terror/conflict/economic media volume & sentiment, country risk, bilateral tension)
+🇺🇸 US (patents)      — USPTO PatentsView (patent search, assignee filings, CPC tech trends, innovation intelligence)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -419,6 +427,48 @@ python3 modules/eu_small_statistics.py UNEMPLOYMENT_RATE EL
 python3 modules/eu_small_statistics.py GOV_DEBT HR
 python3 modules/eu_small_statistics.py CURRENT_ACCOUNT LT
 python3 modules/eu_small_statistics.py list
+# INE Portugal — National Statistics (Batch 13)
+python3 modules/ine_portugal.py GDP_GROWTH_YOY
+python3 modules/ine_portugal.py CPI_YOY
+python3 modules/ine_portugal.py HICP_YOY
+python3 modules/ine_portugal.py UNEMPLOYMENT_RATE
+python3 modules/ine_portugal.py TOURISM_OVERNIGHT_STAYS
+python3 modules/ine_portugal.py EXPORTS
+python3 modules/ine_portugal.py CONSTRUCTION_COST_INDEX
+python3 modules/ine_portugal.py list
+# IBGE Brazil — SIDRA Macro (Batch 13)
+python3 modules/ibge_brazil.py GDP_YOY
+python3 modules/ibge_brazil.py GDP_QOQ
+python3 modules/ibge_brazil.py IPCA_MONTHLY
+python3 modules/ibge_brazil.py IPCA_12M
+python3 modules/ibge_brazil.py UNEMPLOYMENT
+python3 modules/ibge_brazil.py INDUSTRIAL_PRODUCTION
+python3 modules/ibge_brazil.py RETAIL_SALES
+python3 modules/ibge_brazil.py gdp
+python3 modules/ibge_brazil.py ipca
+# GDELT Global Events — Geopolitical Risk (Batch 13)
+python3 modules/gdelt_global_events.py PROTEST_ACTIVITY_GLOBAL
+python3 modules/gdelt_global_events.py MILITARY_ACTIVITY_GLOBAL
+python3 modules/gdelt_global_events.py INFLATION_MEDIA_VOL
+python3 modules/gdelt_global_events.py STOCKMARKET_SENTIMENT
+python3 modules/gdelt_global_events.py SANCTIONS_MEDIA_VOL
+python3 modules/gdelt_global_events.py country_risk US
+python3 modules/gdelt_global_events.py country_risk CN
+python3 modules/gdelt_global_events.py tension US CN
+python3 modules/gdelt_global_events.py topic "central bank"
+python3 modules/gdelt_global_events.py articles "semiconductor tariff"
+python3 modules/gdelt_global_events.py list
+# USPTO PatentsView — Patent Innovation (Batch 13)
+python3 modules/patentsview_uspto.py search "artificial intelligence"
+python3 modules/patentsview_uspto.py patent_grants_by_assignee AAPL
+python3 modules/patentsview_uspto.py patent_grants_by_assignee NVDA
+python3 modules/patentsview_uspto.py tech_trends G06N
+python3 modules/patentsview_uspto.py tech_trends H01L
+python3 modules/patentsview_uspto.py top_assignees
+python3 modules/patentsview_uspto.py detail 18123456
+python3 modules/patentsview_uspto.py tickers
+python3 modules/patentsview_uspto.py cpc_classes
+python3 modules/patentsview_uspto.py list
 ```
 
 **REST API:**
@@ -523,6 +573,25 @@ GET /api/v1/eu-small-statistics?indicator=GDP_NOMINAL&geo=BG
 GET /api/v1/eu-small-statistics?indicator=CPI_YOY&geo=HU
 GET /api/v1/eu-small-statistics?indicator=UNEMPLOYMENT_RATE&geo=EL
 GET /api/v1/eu-small-statistics?indicator=GOV_DEBT&geo=HR
+GET /api/v1/ine-portugal?indicator=GDP_GROWTH_YOY
+GET /api/v1/ine-portugal?indicator=CPI_YOY
+GET /api/v1/ine-portugal?indicator=UNEMPLOYMENT_RATE
+GET /api/v1/ine-portugal?indicator=TOURISM_OVERNIGHT_STAYS
+GET /api/v1/ine-portugal?indicator=EXPORTS
+GET /api/v1/ibge-brazil?indicator=GDP_YOY
+GET /api/v1/ibge-brazil?indicator=IPCA_12M
+GET /api/v1/ibge-brazil?indicator=UNEMPLOYMENT
+GET /api/v1/ibge-brazil?indicator=INDUSTRIAL_PRODUCTION
+GET /api/v1/ibge-brazil?indicator=RETAIL_SALES
+GET /api/v1/gdelt-global-events?indicator=PROTEST_ACTIVITY_GLOBAL
+GET /api/v1/gdelt-global-events?indicator=MILITARY_ACTIVITY_GLOBAL
+GET /api/v1/gdelt-global-events?indicator=INFLATION_MEDIA_VOL
+GET /api/v1/gdelt-global-events?indicator=STOCKMARKET_SENTIMENT
+GET /api/v1/gdelt-global-events?indicator=SANCTIONS_MEDIA_VOL
+GET /api/v1/patentsview-uspto?indicator=PATENT_SEARCH&query=artificial+intelligence
+GET /api/v1/patentsview-uspto?indicator=PATENT_GRANTS_BY_ASSIGNEE&assignee=AAPL
+GET /api/v1/patentsview-uspto?indicator=TOP_ASSIGNEES
+GET /api/v1/patentsview-uspto?indicator=TECH_TRENDS&cpc_class=G06N
 ```
 
 **MCP Tool Call:**
@@ -1508,6 +1577,202 @@ const smallEuGdp = await fetch('http://localhost:3056/api/data/batch', {
 - 885+ indicators from official government, central bank, and international institution sources
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX), policy rates (incl. MNB base rate, BoE Bank Rate), interbank rates, monetary aggregates (incl. EA M1/M2/M3, UK M4/M4 lending growth), GDP (incl. EU-12 small state accounts), CPI/HICP/PPI/wholesale prices, unemployment (incl. by demographics, EU-12 youth), trade, housing prices, lending rates, mortgage rates (incl. UK SVR), credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus (Maastricht criteria for EU-12), fiscal accounts (IMF GFS, OECD REV tax structure), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. gilt ZC curve, GoC curve), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators (CLI/BCI/CCI), pension adequacy metrics (replacement rates, life expectancy), R&D expenditure (GERD/BERD/HERD), consumer credit, gilt yield curves
 
+#### Batch 13: Portugal Statistics, Brazil IBGE, GDELT Geopolitical Risk, USPTO PatentsView
+
+Batch 13 adds **4 new modules** expanding into South American macroeconomic data (Brazil), deeper Portuguese national statistics beyond the existing central bank module, real-time global geopolitical risk monitoring via the GDELT event database, and US patent innovation tracking via the USPTO Open Data Portal. This brings total coverage to **34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **48 government/institutional/regulatory/alt-data modules** and **930+ indicators**.
+
+**INE Portugal** (`ine_portugal`) — Instituto Nacional de Estatística:
+- GDP: real growth year-on-year (chained volume, Base 2021), nominal GDP at current prices (EUR), real GDP per capita annual growth rate
+- Consumer prices: CPI year-on-year rate (Base 2025), CPI index level (Base 2025=100), HICP year-on-year rate (Base 2025)
+- Labour market: unemployment rate (Series 2021, total population), employed population in thousands, activity rate of working-age population
+- Tourism: total overnight stays in tourist accommodation establishments (monthly)
+- Foreign trade: total exports of goods (EUR), total imports of goods (EUR), trade coverage rate (%)
+- Construction: new housing construction cost index (Base 2021), construction cost annual average change (%)
+- **15 indicators** across national accounts, prices, labour, tourism, trade, and construction
+- **Special commands:** `list` (all available indicators with metadata)
+- Multi-strategy API fetching: recent period codes → fallback to full dataset → dimension filtering in Python
+- API: `https://www.ine.pt/ine/json_indicador/pindica.jsp` (REST JSON, open access, no auth required)
+- Cache TTL: 24h (data updated monthly for CPI/tourism/construction, quarterly for GDP/labour, annually for trade)
+
+**IBGE Brazil** (`ibge_brazil`) — Instituto Brasileiro de Geografia e Estatística (SIDRA):
+- GDP: year-on-year quarterly growth rate vs same quarter previous year, quarter-on-quarter seasonally adjusted growth rate
+- Inflation (IPCA): monthly percentage change, 12-month rolling cumulative rate, year-to-date accumulation, IPCA price index level (December 1993=100)
+- Labour market: PNAD Contínua unemployment rate for population aged 14+ (monthly, from IBGE's continuous household survey)
+- Industrial production: PIM-PF seasonally adjusted general industry index (CNAE 2.0, Base 2022=100)
+- Retail sales: PMC broad retail sales volume, year-on-year monthly comparison
+- **9 indicators** across GDP, inflation, employment, industry, and retail — core Brazilian macro dashboard
+- **CLI aliases:** `gdp` (YoY+QoQ), `ipca` (monthly+12M), `inflation`, `unemployment`, `industry`, `retail`
+- API: `https://servicodados.ibge.gov.br/api/v3/agregados` (SIDRA REST JSON, open access, no auth required)
+- Cache TTL: 24h (data updated monthly for IPCA/PNAD/PIM-PF/PMC, quarterly for GDP)
+
+**GDELT Global Events** (`gdelt_global_events`) — GDELT Project DOC 2.0 API:
+- **Geopolitical risk indicators:** Global protest activity index, protest media sentiment, military activity index, terror threat index, armed conflict media volume — all as 7-day hourly time series with summary statistics (current, mean, median, min, max, std, 24h mean)
+- **Economic media indicators:** Inflation media coverage volume & sentiment, interest rate media volume, trade policy media volume & sentiment, stock market media volume & sentiment, bankruptcy/default media volume, sanctions media volume
+- **Country risk scoring:** Composite risk index (0–100 scale) for any of 35+ mapped countries, combining conflict volume Z-scores and sentiment tone — with risk interpretation (MINIMAL/LOW/MODERATE/HIGH/ELEVATED)
+- **Bilateral tension analysis:** Tension scores between any two countries based on cross-media tone analysis — measures how Country A's media covers Country B and vice versa (0–100 scale with MINIMAL to SEVERE interpretation)
+- **Topic sentiment:** Arbitrary keyword/topic tracking with volume + sentiment timelines + recent article extraction (e.g., "central bank", "tariffs", "semiconductor supply chain")
+- **Article search:** Full-text search across global news articles with metadata (title, URL, date, domain, language, source country)
+- **14 predefined indicators** + 4 special commands (country_risk, tension, topic, articles)
+- Country resolution: accepts FIPS codes, ISO 3166, or country names (automatic mapping)
+- API: `https://api.gdeltproject.org/api/v2/doc/doc` (REST JSON, fully open, no auth, fair-use ~5s between requests)
+- Cache TTL: 1h (data updates every 15 minutes)
+
+**PatentsView USPTO** (`patentsview_uspto`) — USPTO Open Data Portal:
+- **Patent search:** Full Lucene/Solr query syntax against USPTO patent applications (keyword, assignee, CPC class, date range)
+- **Patent grants by assignee:** Filing count and details for any company — supports 35+ ticker-to-assignee mappings (AAPL→Apple, MSFT→Microsoft, NVDA→NVIDIA, PFE→Pfizer, etc.), returns top CPC class distribution
+- **Top assignees:** Most active patent filers from recent filings with ranked leaderboard
+- **Technology trends by CPC class:** Patent activity for any of 22 named CPC classes (H01L=Semiconductors, G06N=AI/ML, A61K=Pharma, G06Q=Fintech, H01M=Batteries, B60L=EVs, C12N=Genetic Engineering, etc.) with top assignees per class
+- **Patent detail:** Full metadata for a single patent by application or grant number (title, assignee, CPC classes, filing date, grant date, status)
+- **5 indicators** covering patent search, corporate innovation pipelines, technology trends, and R&D tracking
+- **Special commands:** `search`, `patent_grants_by_assignee`, `tech_trends`, `top_assignees`, `detail`, `tickers`, `cpc_classes`, `list`
+- API: `https://api.uspto.gov/api/v1` (REST JSON, API key required — free registration at https://data.uspto.gov/apis/getting-started)
+- Rate limit: 45 requests/minute with automatic retry on 429
+- Cache TTL: 24h (patent data updated daily)
+
+**Example response — `ine_portugal` `GDP_GROWTH_YOY`:**
+```json
+{
+  "success": true,
+  "indicator": "GDP_GROWTH_YOY",
+  "name": "GDP Real Growth YoY (%)",
+  "description": "Gross domestic product, chained volume, year-on-year growth rate (Base 2021)",
+  "unit": "%",
+  "frequency": "quarterly",
+  "latest_value": 2.1,
+  "latest_period": "4th Quarter 2025",
+  "period_change": 0.3,
+  "period_change_pct": 16.67,
+  "data_points": [{"period": "4th Quarter 2025", "value": 2.1}, "..."],
+  "total_observations": 24,
+  "source": "INE Portugal (varcd=0013431)"
+}
+```
+
+**Example response — `ibge_brazil` `IPCA_12M`:**
+```json
+{
+  "success": true,
+  "indicator": "IPCA_12M",
+  "name": "IPCA 12-Month Cumulative (%)",
+  "description": "IPCA consumer price index, 12-month rolling accumulation",
+  "unit": "%",
+  "frequency": "monthly",
+  "latest_value": 5.48,
+  "latest_period": "2026-02",
+  "period_change": 0.12,
+  "period_change_pct": 2.24,
+  "data_points": [{"period": "2026-02", "value": 5.48}, "..."],
+  "total_observations": 24,
+  "source": "https://servicodados.ibge.gov.br/api/v3/agregados/1737/variaveis/2265"
+}
+```
+
+**Example response — `gdelt_global_events` `PROTEST_ACTIVITY_GLOBAL`:**
+```json
+{
+  "success": true,
+  "indicator": "PROTEST_ACTIVITY_GLOBAL",
+  "name": "Global Protest Activity Index",
+  "description": "Volume intensity of protest-related media coverage worldwide",
+  "unit": "volume %",
+  "frequency": "hourly",
+  "series": "timelinevol",
+  "summary": {
+    "current": 2.3456,
+    "mean_7d": 2.1234,
+    "median_7d": 2.0987,
+    "min_7d": 0.8765,
+    "max_7d": 4.5678,
+    "std_7d": 0.6543,
+    "mean_24h": 2.4567,
+    "latest_date": "20260402000000",
+    "data_points": 168
+  },
+  "timeline": [{"date": "20260401230000", "value": 2.3456}, "..."],
+  "source": "GDELT Project DOC 2.0 API"
+}
+```
+
+**Example — GDELT country risk index:**
+```bash
+python3 modules/gdelt_global_events.py country_risk CN
+# Returns: {"success": true, "country": "CH", "country_name": "China", "risk_score": 58.42, "risk_interpretation": "MODERATE — normal range of geopolitical activity", ...}
+python3 modules/gdelt_global_events.py tension US CN
+# Returns: {"success": true, "pair": "US-CH", "tension_score": 62.35, "tension_interpretation": "HIGH — predominantly negative bilateral coverage", ...}
+```
+
+**Example — PatentsView corporate innovation:**
+```bash
+python3 modules/patentsview_uspto.py patent_grants_by_assignee NVDA
+# Returns: {"success": true, "assignee": "NVIDIA", "total_filings": 15234, "top_cpc_classes": [{"cpc_class": "G06F", "name": "Digital Computing", "count": 12}, ...], ...}
+python3 modules/patentsview_uspto.py tech_trends G06N
+# Returns: {"success": true, "cpc_class": "G06N", "cpc_name": "AI & Machine Learning", "total_patents": 45678, "top_assignees_in_class": [...], ...}
+```
+
+**Batch MCP — Lusophone & Latin American Economy (New in Batch 13):**
+```typescript
+const lusophoneLatam = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ine_portugal', params: { indicator: 'GDP_GROWTH_YOY' } },
+      { tool: 'ine_portugal', params: { indicator: 'CPI_YOY' } },
+      { tool: 'ine_portugal', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'ibge_brazil', params: { indicator: 'GDP_YOY' } },
+      { tool: 'ibge_brazil', params: { indicator: 'IPCA_12M' } },
+      { tool: 'ibge_brazil', params: { indicator: 'UNEMPLOYMENT' } },
+      { tool: 'banco_de_portugal', params: { indicator: 'IR_LOANS_HOUSING' } },
+      { tool: 'banco_de_portugal', params: { indicator: 'BOP_CURRENT_ACCOUNT' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Global Geopolitical Risk Dashboard (New in Batch 13):**
+```typescript
+const geopoliticalRisk = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'gdelt_global_events', params: { indicator: 'PROTEST_ACTIVITY_GLOBAL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'MILITARY_ACTIVITY_GLOBAL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'TERROR_THREAT_GLOBAL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'INFLATION_MEDIA_VOL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'TRADE_MEDIA_VOL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'STOCKMARKET_SENTIMENT' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'SANCTIONS_MEDIA_VOL' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'BANKRUPTCY_MEDIA_VOL' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Innovation Intelligence: Patent Leaders vs R&D Spend (New in Batch 13):**
+```typescript
+const innovationIntel = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'patentsview_uspto', params: { indicator: 'PATENT_GRANTS_BY_ASSIGNEE', assignee: 'AAPL' } },
+      { tool: 'patentsview_uspto', params: { indicator: 'PATENT_GRANTS_BY_ASSIGNEE', assignee: 'MSFT' } },
+      { tool: 'patentsview_uspto', params: { indicator: 'PATENT_GRANTS_BY_ASSIGNEE', assignee: 'NVDA' } },
+      { tool: 'patentsview_uspto', params: { indicator: 'TECH_TRENDS', cpc_class: 'G06N' } },
+      { tool: 'patentsview_uspto', params: { indicator: 'TECH_TRENDS', cpc_class: 'H01L' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'RD_GERD_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'RD_GERD_DEU' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'RD_GERD_JPN' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 13:**
+- 48 government/central bank/regulatory/institutional/alt-data modules
+- 34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇪🇺 🌍 🌐
+- 930+ indicators from official government, central bank, international institution, geopolitical event, and patent innovation sources
+- New in Batch 13: Portuguese national accounts/prices/labour/tourism/trade/construction, Brazilian GDP/IPCA/unemployment/industrial production/retail sales, global geopolitical risk monitoring (protest/military/terror/conflict/economic media sentiment), US patent innovation intelligence (company filings, CPC technology trends, assignee rankings)
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX), policy rates (incl. MNB base rate, BoE Bank Rate), interbank rates, monetary aggregates (incl. EA M1/M2/M3, UK M4/M4 lending growth, Brazilian M2), GDP (incl. EU-12 small state accounts, Portuguese/Brazilian quarterly), CPI/HICP/IPCA/PPI/wholesale prices, unemployment (incl. by demographics, EU-12 youth, PNAD), trade, housing prices, construction costs, lending rates, mortgage rates (incl. UK SVR), credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts (IMF GFS, OECD REV), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism (incl. Portuguese overnight stays), automotive registrations, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators (CLI/BCI/CCI), pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment (inflation/trade/equity/sanctions/bankruptcy), patent innovation metrics (company IP portfolios, technology CPC trends, industrial production indices)
+
 ---
 
 ## MCP Server
@@ -1566,7 +1831,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,068 data modules gets an auto-generated REST endpoint:
+Each of the 1,072 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -1579,7 +1844,7 @@ Each of the 1,068 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,068 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,072 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -1605,7 +1870,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,068 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,072 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -1684,6 +1949,15 @@ screen --min-cap 10B --sector Technology
 | Eurostat Enhanced (JSON-stat) | No | Open (~100/hr) | EU27 government deficit/debt, fiscal revenue/spending, energy production/consumption/dependency, renewables share, GHG emissions by sector, environmental taxes, digital economy |
 | BIS Enhanced (SDMX v2) | No | Open | Global OTC derivatives outstanding, exchange-traded derivatives OI & turnover, FX/IR turnover surveys, international debt securities (5 countries), CPMI cashless payments & macro |
 | IMF Enhanced (DBnomics) | No | Open (rate-limited) | FAS financial access (ATMs, branches, mobile money for 190+ countries), FSI banking soundness (NPL, capital, ROA/ROE), CPIS portfolio investment, CDIS FDI positions, GFS government fiscal accounts (revenue, expenditure, tax, social benefits, interest, debt) |
+| OECD Enhanced (SDMX 3.0) | No | Open (~60/hr) | CLI leading indicators (6 countries), BCI/CCI confidence, KEI unemployment/CPI/GDP/interest rates, tax revenue structure (3 countries), pension replacement rates, R&D expenditure (GERD/BERD/HERD) |
+| BoE IADB Enhanced | No | Open | Gilt zero-coupon yields (5Y/10Y/20Y), Bank Rate, M4 outstanding & lending growth, mortgage SVR, consumer credit, GBP FX (4 crosses), Sterling EER |
+| MNB Hungary (SOAP) | No | Open | MNB base rate, HUF FX (12 currencies), CEE & G4 composite baskets |
+| EU Small Central Banks (ECB+national) | No | Open | HICP + MFI rates for 9 EU countries, FX from 5 national CBs, Slovenia extras |
+| EU Small Statistics (Eurostat) | No | Open (~100/hr) | GDP/CPI/unemployment/employment/govt debt/deficit for 12 smaller EU countries |
+| INE Portugal (JSON API) | No | Open | Portuguese GDP real/nominal/per capita, CPI/HICP, unemployment, tourism, exports/imports, trade coverage, construction costs |
+| IBGE Brazil (SIDRA API) | No | Open | Brazilian GDP YoY/QoQ, IPCA inflation (monthly/12M/YTD/index), PNAD unemployment, PIM-PF industrial production, PMC retail sales |
+| GDELT Project (DOC 2.0) | No | Open (fair use) | Global geopolitical risk: protest/military/terror/conflict/economic media volume & sentiment, country risk scoring, bilateral tension, topic tracking, article search |
+| USPTO ODP (PatentsView) | Yes (free) | 45/min | US patent search, grants by assignee (35+ ticker mappings), technology trends by CPC class, top assignees, patent detail |
 
 ---
 
@@ -1725,7 +1999,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,068 Python data modules
+├── modules/                          # 1,072 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -1772,7 +2046,16 @@ quantclaw-data/
 │   ├── eurostat_enhanced.py        # Eurostat Enhanced (govt finance, energy, emissions, digital)
 │   ├── bis_enhanced.py             # BIS Enhanced (derivatives, FX turnover, debt, payments)
 │   ├── imf_enhanced.py             # IMF Enhanced (FAS, FSI, CPIS, CDIS, GFS — 190+ countries)
-│   ├── ... (1,068 modules total)
+│   ├── oecd_enhanced.py            # OECD Enhanced (CLI, KEI, tax, pensions, R&D — 38 OECD members)
+│   ├── boe_iadb_enhanced.py        # Bank of England IADB (gilt yields, M4, FX, rates)
+│   ├── mnb_hungary.py              # MNB Hungary (base rate, HUF FX, CEE/G4 baskets)
+│   ├── eu_small_central_banks.py   # EU Small CBs (9 countries: BG/HR/CY/LV/LT/LU/MT/SK/SI)
+│   ├── eu_small_statistics.py      # EU Small Statistics (12 countries via Eurostat)
+│   ├── ine_portugal.py             # INE Portugal (GDP, CPI, labour, tourism, trade, construction)
+│   ├── ibge_brazil.py              # IBGE Brazil (GDP, IPCA, unemployment, industry, retail)
+│   ├── gdelt_global_events.py      # GDELT Global Events (geopolitical risk, media sentiment)
+│   ├── patentsview_uspto.py        # USPTO PatentsView (patent search, tech trends, assignees)
+│   ├── ... (1,072 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -1856,6 +2139,7 @@ EDINET_API_KEY=                      # EDINET Japan filings (free at https://dis
 FCA_API_KEY=                         # FCA UK Register (free at https://register.fca.org.uk/Developer/s/)
 FCA_API_EMAIL=                       # FCA UK Register signup email
 DNB_SUBSCRIPTION_KEY=                # DNB Netherlands Statistics (optional, public fallback available)
+USPTO_ODP_API_KEY=                   # USPTO Open Data Portal (free at https://data.uspto.gov/apis/getting-started)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -1904,4 +2188,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,068 modules • 48 phases • 33 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Euro Area + EU27 + BIS global + IMF global + OECD) • 44 government/central bank/institutional modules • 885+ macro indicators • The data layer powering the MoneyClawX ecosystem*
+*1,072 modules • 48 phases • 34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global) • 48 government/central bank/institutional/alt-data modules • 930+ macro & geopolitical indicators • The data layer powering the MoneyClawX ecosystem*
