@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,073 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,079 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -131,7 +131,21 @@
 | Automotive production | `inegi_mexico` (AUTO_PRODUCTION — total motor vehicle units, monthly, AMIA data), `statistics_austria` (NEW_CAR_REGISTRATIONS) |
 | Consumer confidence | `inegi_mexico` (CONSUMER_CONFIDENCE — INEGI/Banxico index), `cbs_netherlands`, `statistics_denmark`, `istat_italy` |
 | USMCA / NAFTA trade | `inegi_mexico` (Mexico), `statcan_canada` (Canada), `fred_enhanced` (US trade) |
-| Latin American macro | `inegi_mexico` (Mexico), `ibge_brazil` (Brazil) |
+| Latin American macro | `inegi_mexico` (Mexico), `ibge_brazil` (Brazil), `dane_colombia` (Colombia) |
+| South Korean macro | `kosis_korea` (GDP, CPI, unemployment, industrial production, exports, housing, semiconductors) |
+| Thai macro / rates | `bank_of_thailand` (policy rate, BIBOR, govt bonds, GDP, CPI, BoP, reserves, THB FX, banking) |
+| Colombian macro | `dane_colombia` (GDP, CPI, GEIH unemployment, industrial production, trade, PPI) |
+| LEI entity data | `gleif_lei` (global entity search, lookup, hierarchy, active/lapsed counts, country distributions) |
+| European patents | `epo_ops` (patent search, applicant filings, family members, EP register, IPC trends) |
+| US + EU patents | `patentsview_uspto` (USPTO), `epo_ops` (EPO OPS) — combined US/EU patent intelligence |
+| Earthquake / seismic | `usgs_earthquake` (M5+ global, PAGER alerts, hotspots: Taiwan/Japan/Chile/Turkey/California) |
+| Semiconductor data | `kosis_korea` (semiconductor production index), `patentsview_uspto` (H01L CPC tech trends), `epo_ops` (H01L IPC trends) |
+| Supply chain risk | `usgs_earthquake` (seismic hotspots), `gdelt_global_events` (geopolitical risk), `kosis_korea` (semi production) |
+| THB exchange rates | `bank_of_thailand` (THB/USD daily, THB end-of-period monthly FX) |
+| BIBOR rates | `bank_of_thailand` (Bangkok Interbank Offered Rate: 1W/3M/6M/1Y tenors) |
+| Thai bond yields | `bank_of_thailand` (1Y/5Y/10Y/20Y Thai government bonds) |
+| Colombian GDP | `dane_colombia` (GDP production approach, quarterly, COP bn via SDMX) |
+| Housing prices (Korea) | `kosis_korea` (nationwide apartment price index — monthly, critical for Korean household wealth) |
 
 ---
 
@@ -2698,6 +2712,296 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### gleif_lei.py — GLEIF LEI Registry (Global Legal Entity Identification)
+
+- **Source:** Global Legal Entity Identifier Foundation — the global LEI regulatory and operational framework
+- **API:** `https://api.gleif.org/api/v1`
+- **Protocol:** JSON:API (REST, paginated, filter-based queries)
+- **Auth:** None required (fully open, no rate limit documented)
+- **Freshness:** Daily (registry updated continuously; module cache 24h)
+- **Coverage:** Global — 100+ jurisdictions, 2M+ active LEIs
+
+**Indicators (10):**
+
+| Key | Name | Description |
+|-----|------|-------------|
+| `TOTAL_ACTIVE` | Total Active LEIs | Count of all entities with active/valid LEI status |
+| `TOTAL_LAPSED` | Total Lapsed LEIs | Count of expired/non-renewed registrations |
+| `US_ENTITIES` | US Entity Count | LEI-registered entities with legal address in US |
+| `GB_ENTITIES` | UK Entity Count | LEI-registered entities in United Kingdom |
+| `DE_ENTITIES` | Germany Entity Count | LEI-registered entities in Germany |
+| `JP_ENTITIES` | Japan Entity Count | LEI-registered entities in Japan |
+| `FR_ENTITIES` | France Entity Count | LEI-registered entities in France |
+| `CN_ENTITIES` | China Entity Count | LEI-registered entities in China |
+| `CA_ENTITIES` | Canada Entity Count | LEI-registered entities in Canada |
+| `LU_ENTITIES` | Luxembourg Entity Count | LEI-registered entities in Luxembourg |
+
+**Special Commands:** `search <name>` (fuzzy entity search), `lookup <lei>` (full entity details), `hierarchy <lei>` (parent/child relationships)
+
+**CLI Examples:**
+```bash
+python3 modules/gleif_lei.py TOTAL_ACTIVE
+python3 modules/gleif_lei.py US_ENTITIES
+python3 modules/gleif_lei.py search "Goldman Sachs"
+python3 modules/gleif_lei.py lookup 8I5DZWZKVSZI1NUHU748
+python3 modules/gleif_lei.py hierarchy 8I5DZWZKVSZI1NUHU748
+python3 modules/gleif_lei.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'gleif_lei',
+    params: { indicator: 'TOTAL_ACTIVE' }
+  })
+});
+```
+
+### bank_of_thailand.py — Bank of Thailand (BOT) Monetary & Macro Statistics
+
+- **Source:** Bank of Thailand — Thailand's central bank
+- **API:** `https://gateway.api.bot.or.th` (REST JSON, IBM API Connect gateway)
+- **Protocol:** REST JSON with `X-IBM-Client-Id` auth header; SDMX-style time series + dedicated FX endpoint
+- **Auth:** `BOT_API_KEY` required (free at https://apiportal.bot.or.th)
+- **Freshness:** Daily (FX rates, 1h cache), Monthly (rates/BoP/banking, 24h cache), Annual (GDP/CPI)
+- **Coverage:** Thailand
+
+**Indicators (27):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `POLICY_RATE` | BOT Policy Rate (1-Day Bilateral Repo) | Monthly | % |
+| `INTERBANK_OVERNIGHT` | Weighted Avg Overnight Interbank Rate | Monthly | % |
+| `REPO_1D` | 1-Day Private Repo Rate | Monthly | % |
+| `BIBOR_1W` | BIBOR 1-Week | Monthly | % |
+| `BIBOR_3M` | BIBOR 3-Month | Monthly | % |
+| `BIBOR_6M` | BIBOR 6-Month | Monthly | % |
+| `BIBOR_1Y` | BIBOR 1-Year | Monthly | % |
+| `BOND_1Y` | Thai Govt Bond Yield 1Y | Monthly | % |
+| `BOND_5Y` | Thai Govt Bond Yield 5Y | Monthly | % |
+| `BOND_10Y` | Thai Govt Bond Yield 10Y | Monthly | % |
+| `BOND_20Y` | Thai Govt Bond Yield 20Y | Monthly | % |
+| `CURRENT_ACCOUNT_USD` | Current Account Balance | Monthly | USD mn |
+| `INTL_RESERVES_USD` | International Reserves | Monthly | USD mn |
+| `FX_END_PERIOD` | THB/USD End-of-Period Monthly | Monthly | THB |
+| `NARROW_MONEY` | Narrow Money (M1) | Monthly | THB bn |
+| `BROAD_MONEY` | Broad Money Supply | Monthly | THB bn |
+| `GDP_REAL` | Real GDP | Annual | THB bn |
+| `GDP_REAL_YOY` | Real GDP Year-on-Year Growth | Annual | % |
+| `GDP_NOMINAL` | Nominal GDP | Annual | THB bn |
+| `HEADLINE_CPI` | Headline CPI Level | Annual | index |
+| `HEADLINE_CPI_YOY` | Headline CPI Year-on-Year | Annual | % |
+| `CORE_CPI` | Core CPI Level | Annual | index |
+| `CORE_CPI_YOY` | Core CPI Year-on-Year | Annual | % |
+| `CB_TOTAL_ASSETS` | Commercial Bank Total Assets | Monthly | THB bn |
+| `CB_LOANS_EX_IB` | Commercial Bank Loans excl. Interbank | Monthly | THB bn |
+| `CB_DEPOSITS_EX_IB` | Commercial Bank Deposits excl. Interbank | Monthly | THB bn |
+| `CB_LDR` | Commercial Bank Loan-to-Deposit Ratio | Monthly | % |
+
+**Special Commands:** `fx_rates` (daily THB exchange rates for major currencies)
+
+**CLI Examples:**
+```bash
+python3 modules/bank_of_thailand.py POLICY_RATE
+python3 modules/bank_of_thailand.py BIBOR_3M
+python3 modules/bank_of_thailand.py BOND_10Y
+python3 modules/bank_of_thailand.py GDP_REAL
+python3 modules/bank_of_thailand.py HEADLINE_CPI_YOY
+python3 modules/bank_of_thailand.py CURRENT_ACCOUNT_USD
+python3 modules/bank_of_thailand.py fx_rates
+python3 modules/bank_of_thailand.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bank_of_thailand',
+    params: { indicator: 'POLICY_RATE' }
+  })
+});
+```
+
+### dane_colombia.py — DANE Colombia (SDMX National Statistics)
+
+- **Source:** Departamento Administrativo Nacional de Estadística — Colombia's national statistics office
+- **API:** `https://sdmx.dane.gov.co/gateway/rest`
+- **Protocol:** SDMX 2.1 REST with SDMX-JSON 1.0 responses
+- **Auth:** None required (open access)
+- **Freshness:** Monthly (CPI, unemployment, IPI, trade, PPI), Quarterly (GDP), Annual (manufacturing survey)
+- **Coverage:** Colombia (national)
+
+**Indicators (7):**
+
+| Key | Name | Dataflow | Frequency | Unit |
+|-----|------|----------|-----------|------|
+| `GDP` | GDP Production Approach | PIB_PRODUCCION | Quarterly | COP bn |
+| `CPI` | Consumer Price Index | IPC | Monthly | index |
+| `UNEMPLOYMENT` | Unemployment Rate (GEIH) | GEIH | Monthly | % |
+| `INDUSTRIAL_PRODUCTION` | Industrial Production Index | EMM | Monthly | index |
+| `TRADE_BALANCE` | Trade Balance | BALANZA_COMERCIAL | Monthly | USD mn |
+| `PPI` | Producer Price Index | IPP | Monthly | index |
+| `ANNUAL_MANUFACTURING` | Annual Manufacturing Survey | EAM | Annual | COP mn |
+
+**CLI Examples:**
+```bash
+python3 modules/dane_colombia.py GDP
+python3 modules/dane_colombia.py CPI
+python3 modules/dane_colombia.py UNEMPLOYMENT
+python3 modules/dane_colombia.py INDUSTRIAL_PRODUCTION
+python3 modules/dane_colombia.py TRADE_BALANCE
+python3 modules/dane_colombia.py PPI
+python3 modules/dane_colombia.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'dane_colombia',
+    params: { indicator: 'GDP' }
+  })
+});
+```
+
+### epo_ops.py — European Patent Office (Open Patent Services)
+
+- **Source:** EPO — Europe's patent granting authority, covering worldwide patent data (DOCDB)
+- **API:** `https://ops.epo.org/3.2/rest-services` (OAuth2 token: `https://ops.epo.org/3.2/auth/accesstoken`)
+- **Protocol:** REST XML responses, OAuth2 client credentials flow
+- **Auth:** `EPO_CONSUMER_KEY` + `EPO_CONSUMER_SECRET` (free at https://developers.epo.org)
+- **Freshness:** On-demand (patents are static once published; 24h cache), Weekly (recent grants)
+- **Coverage:** Global — 100+ patent authorities (EP, WO, US, JP, CN, KR, etc.)
+
+**Indicators (6):**
+
+| Key | Name | Description |
+|-----|------|-------------|
+| `PATENT_SEARCH` | Patent Full-Text Search | Keyword search across titles and abstracts |
+| `APPLICANT_FILINGS` | Applicant/Company Filings | All patents from a specific applicant/organization |
+| `PATENT_FAMILY` | Patent Family Members | Cross-office family for any patent number |
+| `EP_REGISTER` | EP Register Status | Procedural status (grant, opposition, appeal) |
+| `IPC_TRENDS` | IPC Technology Filing Trends | Annual filing volume by IPC classification code |
+| `RECENT_GRANTS` | Recent EP Publications | Newly published European patents (~30-day window) |
+
+**CLI Examples:**
+```bash
+python3 modules/epo_ops.py PATENT_SEARCH "battery solid state"
+python3 modules/epo_ops.py APPLICANT_FILINGS "Samsung"
+python3 modules/epo_ops.py PATENT_FAMILY EP3456789
+python3 modules/epo_ops.py EP_REGISTER EP3456789
+python3 modules/epo_ops.py IPC_TRENDS H01M
+python3 modules/epo_ops.py RECENT_GRANTS
+python3 modules/epo_ops.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'epo_ops',
+    params: { indicator: 'IPC_TRENDS', ipc_class: 'H01M' }
+  })
+});
+```
+
+### usgs_earthquake.py — USGS Earthquake Hazards Program (FDSN Event Service)
+
+- **Source:** United States Geological Survey — FDSN Event Web Service
+- **API:** `https://earthquake.usgs.gov/fdsnws/event/1`
+- **Protocol:** REST GeoJSON (queries: `/query`, `/count`)
+- **Auth:** None required (fully open, public service)
+- **Freshness:** Near real-time (5-minute cache for active feeds), Daily (24h cache for historical/annual)
+- **Coverage:** Global seismicity + 5 regional economic hotspots (Taiwan, Japan, Chile, Turkey, California)
+
+**Indicators (10):**
+
+| Key | Name | Window | Min Mag | Cache |
+|-----|------|--------|---------|-------|
+| `SIGNIFICANT_GLOBAL` | M5.0+ Worldwide | 24h | 5.0 | 5 min |
+| `RECENT_M4` | M4.0+ Worldwide | 7 days | 4.0 | 5 min |
+| `PAGER_ALERTS` | PAGER Orange+ Alerts | 30 days | 4.5 | 5 min |
+| `HOTSPOT_TAIWAN` | Taiwan Semiconductor Zone (300 km) | 30 days | 3.0 | 5 min |
+| `HOTSPOT_JAPAN` | Japan/Tokyo Zone (500 km) | 30 days | 3.0 | 5 min |
+| `HOTSPOT_CHILE` | Chile/Santiago Mining Zone (800 km) | 30 days | 3.0 | 5 min |
+| `HOTSPOT_TURKEY` | Turkey/Istanbul Bosphorus (400 km) | 30 days | 3.0 | 5 min |
+| `HOTSPOT_CALIFORNIA` | California/Silicon Valley (300 km) | 30 days | 3.0 | 5 min |
+| `ANNUAL_M5_PLUS` | Annual M5+ Event Count | 1 year | 5.0 | 24h |
+| `FELT_REPORTS` | DYFI Widely Felt Events | 7 days | any | 5 min |
+
+**CLI Examples:**
+```bash
+python3 modules/usgs_earthquake.py SIGNIFICANT_GLOBAL
+python3 modules/usgs_earthquake.py RECENT_M4
+python3 modules/usgs_earthquake.py PAGER_ALERTS
+python3 modules/usgs_earthquake.py HOTSPOT_TAIWAN
+python3 modules/usgs_earthquake.py HOTSPOT_JAPAN
+python3 modules/usgs_earthquake.py HOTSPOT_CALIFORNIA
+python3 modules/usgs_earthquake.py ANNUAL_M5_PLUS
+python3 modules/usgs_earthquake.py FELT_REPORTS
+python3 modules/usgs_earthquake.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'usgs_earthquake',
+    params: { indicator: 'HOTSPOT_TAIWAN' }
+  })
+});
+```
+
+### kosis_korea.py — KOSIS South Korea (Statistics Korea / KOSTAT)
+
+- **Source:** Korean Statistical Information Service — South Korea's official statistics portal
+- **API:** `https://kosis.kr/openapi/Param/statisticsParameterData.do`
+- **Protocol:** REST JSON (query parameter-based)
+- **Auth:** `KOSIS_API_KEY` required (free at https://kosis.kr/openapi/, ~1,000 requests/day)
+- **Freshness:** Monthly (CPI, unemployment, IPI, exports, housing, semiconductors), Quarterly (GDP)
+- **Coverage:** South Korea (national)
+
+**Indicators (7):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP` | GDP by Expenditure (Current Prices) | Quarterly | KRW tn |
+| `CPI` | Consumer Price Index (2020=100) | Monthly | index |
+| `UNEMPLOYMENT` | Unemployment Rate (EAP Survey) | Monthly | % |
+| `INDUSTRIAL_PRODUCTION` | Mining & Manufacturing Production Index (2020=100) | Monthly | index |
+| `EXPORTS` | Merchandise Exports by Commodity/Country | Monthly | USD mn |
+| `HOUSING` | Nationwide Apartment Price Index | Monthly | index |
+| `SEMICONDUCTORS` | Semiconductor Production Index | Monthly | index |
+
+**CLI Examples:**
+```bash
+python3 modules/kosis_korea.py GDP
+python3 modules/kosis_korea.py CPI
+python3 modules/kosis_korea.py UNEMPLOYMENT
+python3 modules/kosis_korea.py INDUSTRIAL_PRODUCTION
+python3 modules/kosis_korea.py EXPORTS
+python3 modules/kosis_korea.py HOUSING
+python3 modules/kosis_korea.py SEMICONDUCTORS
+python3 modules/kosis_korea.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'kosis_korea',
+    params: { indicator: 'SEMICONDUCTORS' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -2883,7 +3187,9 @@ eu_small_central_banks       eu_small_statistics
 ine_portugal                 ibge_brazil
 gdelt_global_events          patentsview_uspto
 inegi_mexico
-... (1,073 total — run `ls modules/*.py | wc -l` to verify)
+gleif_lei                   bank_of_thailand              dane_colombia
+epo_ops                     usgs_earthquake               kosis_korea
+... (1,079 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -2912,9 +3218,12 @@ inegi_mexico
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 | USPTO ODP (PatentsView) | `USPTO_ODP_API_KEY` | 45/min | https://data.uspto.gov/apis/getting-started |
 | INEGI Mexico (BIE) | `INEGI_API_TOKEN` | Open | https://www.inegi.org.mx/app/desarrolladores/generatoken/Usuarios/token_Verify |
+| Bank of Thailand (BOT) | `BOT_API_KEY` | Open | https://apiportal.bot.or.th |
+| EPO Open Patent Services | `EPO_CONSUMER_KEY` + `EPO_CONSUMER_SECRET` | ~10/s | https://developers.epo.org |
+| KOSIS South Korea | `KOSIS_API_KEY` | ~1,000/day | https://kosis.kr/openapi/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, and INEGI Mexico require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, and KOSIS South Korea require free registration.
 
 ---
 
-*1,073 modules — 35 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 49 government/central bank/institutional/alt-data modules — 940+ macro & geopolitical indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,079 modules — 38 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 55 government/central bank/institutional/alt-data modules — 1,010+ macro, geopolitical, patent, seismic & entity indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
