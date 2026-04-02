@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,080 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,085 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,7 +12,7 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway`, `bank_of_thailand` |
 | Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway` |
 | Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal`, `ssb_norway` (LFS SA) |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
@@ -25,8 +25,8 @@
 | PLN exchange rates | `nbp_poland` (Table A mid, Table B exotic, Table C bid/ask, gold) |
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
-| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `bank_of_canada_valet` (GoC 2Y–30Y + RRB + T-bills), `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA) |
+| Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `bank_of_canada_valet` (GoC 2Y–30Y + RRB + T-bills), `norges_bank` (NO govt 3Y–10Y + T-bills 3M–12M), `bank_of_thailand` (TH 1Y–20Y), `treasury_curve`, `yield_curve` |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA), `norges_bank` (key policy rate, overnight lending, reserve rate), `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -48,6 +48,22 @@
 | Petroleum / oil data | `ssb_norway` (petroleum product deliveries, Norway), `eia_energy_data`, `baker_hughes_rig_count` |
 | Nordic macro comparison | `ssb_norway` (Norway), `scb_sweden` (Sweden), `statistics_denmark` (Denmark), `statistics_finland` (Finland) |
 | Gold price (PLN) | `nbp_poland` |
+| Gold price (MYR) | `bnm_malaysia` (Kijang Emas 1oz/½oz/¼oz buying/selling) |
+| NOK exchange rates | `norges_bank` (36 currency pairs vs NOK, I44/TWI trade-weighted indices) |
+| MYR exchange rates | `bnm_malaysia` (20+ currencies, buying/selling/middle rates) |
+| Norway central bank | `norges_bank` (policy rate, NOWA interbank, govt bond yields, T-bills, 36 FX pairs) |
+| Norway macro data | `ssb_norway` (GDP, CPI, unemployment, trade, housing, petroleum, industry) |
+| Malaysia central bank | `bnm_malaysia` (OPR, KLIBOR, Islamic interbank, MYR FX, Kijang Emas gold, bank rates) |
+| KLIBOR / Islamic rates | `bnm_malaysia` (KLIBOR O/N–12M, Islamic interbank O/N–12M) |
+| Fishing / maritime data | `global_fishing_watch` (fishing effort, vessel search, port visits, transshipment, IUU risk) |
+| Fire / wildfire data | `nasa_firms_fire` (satellite fire detection, country/hotspot/anomaly, commodity impact) |
+| R&D / research output | `openalex_research` (corporate R&D, topic trends, trending topics, country innovation) |
+| Pharma pipeline signals | `openalex_research` (Pfizer/Novartis/Roche R&D output, GLP-1/CRISPR/CAR-T trends) |
+| Tech R&D tracking | `openalex_research` (Google/Microsoft/NVIDIA/Samsung/TSMC publication output) |
+| Supply chain disruption | `nasa_firms_fire` (agricultural commodity fires), `global_fishing_watch` (seafood supply) |
+| ESG / sustainability | `nasa_firms_fire` (wildfire exposure), `global_fishing_watch` (IUU compliance), `eurostat_enhanced` (GHG/renewables) |
+| ASEAN monetary policy | `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo rate, BIBOR) |
+| Interbank reference rates | `norges_bank` (NOWA O/N + averages), `bnm_malaysia` (KLIBOR), `bank_of_thailand` (BIBOR), `cnb_czech` (PRIBOR), `banco_de_espana` (Euribor), `central_bank_ireland` (€STR + Euribor) |
 | Australian macro data | `abs_australia_sdmx` (GDP, CPI, labour force, BoP, retail trade, building approvals, trade), `rba_enhanced` (RBA cash rate, govt bonds, lending rates, AUD FX, credit growth, M3, GDP) |
 | UAE macro / FX | `uae_data` (CBUAE 76-currency FX, GDP, CPI, M2, reserves, trade) |
 | German statistics (ext) | `destatis_germany` (GENESIS GDP, CPI/HICP, employment, trade, IPI, PPI, construction) |
@@ -3060,6 +3076,268 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### norges_bank.py — Norges Bank SDMX (Central Bank of Norway)
+
+- **Source:** Norges Bank — Norway's central bank, manages the $1.7T+ Government Pension Fund Global (GPFG)
+- **API:** `https://data.norges-bank.no/api/data`
+- **Protocol:** SDMX REST 2.1 (SDMX-JSON), 5 dataflows: EXR, IR, SHORT_RATES, GOVT_GENERIC_RATES
+- **Auth:** None (fully open, no API key required)
+- **Freshness:** Daily (FX, NOWA, bonds), Per-decision (policy rate)
+- **Coverage:** Norway / NOK
+
+**Indicators (48):**
+
+| Key | Name | Frequency | Unit | Dataflow |
+|-----|------|-----------|------|----------|
+| `FX_USD_NOK` | USD/NOK Exchange Rate | Daily | NOK per USD | EXR |
+| `FX_EUR_NOK` | EUR/NOK Exchange Rate | Daily | NOK per EUR | EXR |
+| `FX_GBP_NOK` | GBP/NOK Exchange Rate | Daily | NOK per GBP | EXR |
+| `FX_SEK_NOK` | SEK/NOK Exchange Rate | Daily | NOK per 100 SEK | EXR |
+| `FX_DKK_NOK` | DKK/NOK Exchange Rate | Daily | NOK per 100 DKK | EXR |
+| `FX_CHF_NOK` | CHF/NOK Exchange Rate | Daily | NOK per CHF | EXR |
+| `FX_JPY_NOK` | JPY/NOK Exchange Rate | Daily | NOK per 100 JPY | EXR |
+| `FX_CAD_NOK` | CAD/NOK Exchange Rate | Daily | NOK per CAD | EXR |
+| `FX_AUD_NOK` | AUD/NOK Exchange Rate | Daily | NOK per AUD | EXR |
+| `FX_NZD_NOK` | NZD/NOK Exchange Rate | Daily | NOK per NZD | EXR |
+| `FX_CNY_NOK` | CNY/NOK Exchange Rate | Daily | NOK per CNY | EXR |
+| `FX_PLN_NOK` | PLN/NOK Exchange Rate | Daily | NOK per PLN | EXR |
+| `FX_HKD_NOK`–`FX_HRK_NOK` | 24 more FX pairs (HKD/SGD/KRW/TRY/INR/BRL/MXN/ZAR/THB/CZK/HUF/ISK/ILS/RON/TWD/PHP/IDR/MYR/PKR/VND/BDT/BGN/MMK/RUB/BYN/HRK) | Daily | NOK per unit | EXR |
+| `FX_XDR_NOK` | XDR/NOK (IMF SDR) Exchange Rate | Daily | NOK per XDR | EXR |
+| `I44_INDEX` | I44 Import-Weighted NOK Index (44 trading partners) | Daily | Index | EXR |
+| `TWI_INDEX` | TWI Trade-Weighted NOK Index | Daily | Index | EXR |
+| `POLICY_RATE` | Key Policy Rate (Sight Deposit Rate) | Daily | % p.a. | IR |
+| `OVERNIGHT_LENDING_RATE` | Overnight Lending Rate (D-loan, corridor ceiling) | Daily | % p.a. | IR |
+| `RESERVE_RATE` | Reserve Rate (corridor floor) | Daily | % p.a. | IR |
+| `NOWA` | NOWA Overnight Rate (primary NOK interbank reference) | Daily | % p.a. | SHORT_RATES |
+| `NOWA_AVG_1M` | NOWA 1-Month Compounded Average | Daily | % p.a. | SHORT_RATES |
+| `NOWA_AVG_3M` | NOWA 3-Month Compounded Average | Daily | % p.a. | SHORT_RATES |
+| `NOWA_AVG_6M` | NOWA 6-Month Compounded Average | Daily | % p.a. | SHORT_RATES |
+| `GOVT_BOND_3Y` | Norwegian Govt Bond Yield 3Y | Daily | % | GOVT_GENERIC_RATES |
+| `GOVT_BOND_5Y` | Norwegian Govt Bond Yield 5Y | Daily | % | GOVT_GENERIC_RATES |
+| `GOVT_BOND_7Y` | Norwegian Govt Bond Yield 7Y | Daily | % | GOVT_GENERIC_RATES |
+| `GOVT_BOND_10Y` | Norwegian Govt Bond Yield 10Y | Daily | % | GOVT_GENERIC_RATES |
+| `TBILL_3M` | Norwegian T-Bill Rate 3M | Daily | % | GOVT_GENERIC_RATES |
+| `TBILL_6M` | Norwegian T-Bill Rate 6M | Daily | % | GOVT_GENERIC_RATES |
+| `TBILL_12M` | Norwegian T-Bill Rate 12M | Daily | % | GOVT_GENERIC_RATES |
+
+**Batch commands:** `fx_all` (all 36+ FX pairs), `policy_rate` (rate corridor), `nowa` (term structure), `i44` (trade-weighted indices), `govt_bonds` (yield curve + T-bills)
+
+**CLI Examples:**
+```bash
+python3 modules/norges_bank.py FX_EUR_NOK
+python3 modules/norges_bank.py POLICY_RATE
+python3 modules/norges_bank.py NOWA
+python3 modules/norges_bank.py GOVT_BOND_10Y
+python3 modules/norges_bank.py fx EUR
+python3 modules/norges_bank.py fx_all
+python3 modules/norges_bank.py policy_rate
+python3 modules/norges_bank.py nowa
+python3 modules/norges_bank.py i44
+python3 modules/norges_bank.py govt_bonds
+python3 modules/norges_bank.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'norges_bank',
+    params: { indicator: 'FX_EUR_NOK' }
+  })
+});
+```
+
+### global_fishing_watch.py — Global Fishing Watch (Maritime Alt-Data)
+
+- **Source:** Global Fishing Watch — AIS + machine learning vessel tracking, 65,000+ fishing vessels
+- **API:** `https://gateway.api.globalfishingwatch.org/v3`
+- **Protocol:** REST (JSON/GeoJSON)
+- **Auth:** Bearer token (GFW_API_TOKEN — free registration)
+- **Rate Limit:** 100 requests/minute
+- **Freshness:** 6h (activity data), 24h (vessel identity)
+- **Coverage:** Global (all oceans, 200+ fishing nations)
+
+**Indicators (6):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GLOBAL_FISHING_EFFORT` | Global Fishing Effort by Flag State | Monthly | fishing hours |
+| `TOP_NATIONS_ACTIVITY` | Top 10 Fishing Nations Activity | Monthly | fishing hours |
+| `PORT_VISIT_EVENTS` | Port Visit Patterns (confidence-scored) | Event-based | events |
+| `TRANSSHIPMENT_ENCOUNTERS` | At-Sea Transshipment Events (IUU/sanctions risk) | Event-based | events |
+| `REGIONAL_FISHING_INTENSITY` | Regional Fishing Intensity (6 zones) | Monthly | fishing hours |
+| `FLEET_SIZE_BY_FLAG` | Fleet Size by Flag State & Gear Type | Monthly | vessel count |
+
+**Regions:** `west_africa`, `south_pacific`, `indian_ocean`, `north_atlantic`, `southeast_asia`, `east_pacific`
+
+**CLI Examples:**
+```bash
+python3 modules/global_fishing_watch.py effort_by_flag
+python3 modules/global_fishing_watch.py vessel_search "Hai Feng"
+python3 modules/global_fishing_watch.py port_visits
+python3 modules/global_fishing_watch.py encounters
+python3 modules/global_fishing_watch.py region south_pacific
+python3 modules/global_fishing_watch.py region west_africa
+python3 modules/global_fishing_watch.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'global_fishing_watch',
+    params: { indicator: 'GLOBAL_FISHING_EFFORT' }
+  })
+});
+```
+
+### nasa_firms_fire.py — NASA FIRMS (Satellite Fire Detection)
+
+- **Source:** NASA Fire Information for Resource Management System (FIRMS)
+- **API:** `https://firms.modaps.eosdis.nasa.gov/api`
+- **Protocol:** REST (CSV responses)
+- **Auth:** MAP_KEY (NASA_FIRMS_MAP_KEY — free registration), open archive fallback for 24h data
+- **Rate Limit:** 2,000 transactions/day (free tier)
+- **Freshness:** Near-real-time (<3h latency from satellite pass)
+- **Coverage:** Global (VIIRS Suomi NPP + NOAA-20 + MODIS, ~375m resolution)
+
+**Indicators (9):**
+
+| Key | Name | Query Type |
+|-----|------|------------|
+| `FIRES_USA_24H` | Active Fires — United States (24h) | Country |
+| `FIRES_BRA_24H` | Active Fires — Brazil (24h, Amazon deforestation) | Country |
+| `FIRES_IDN_24H` | Active Fires — Indonesia (24h, palm oil haze) | Country |
+| `FIRES_AUS_24H` | Active Fires — Australia (24h, bushfire season) | Country |
+| `FIRES_CAN_24H` | Active Fires — Canada (24h, boreal fires) | Country |
+| `FIRES_RUS_24H` | Active Fires — Russia (24h, Siberian fires) | Country |
+| `HOTSPOT_CALIFORNIA` | Fire Activity — California Wildfire Zone (500km radius) | Hotspot |
+| `HOTSPOT_AMAZON` | Fire Activity — Amazon Deforestation Zone (1500km radius) | Hotspot |
+| `HOTSPOT_SE_ASIA` | Fire Activity — Southeast Asian Haze Zone (1000km radius) | Hotspot |
+
+**Financial Hotspot Regions (8):** `california`, `amazon`, `southeast_asia`, `australia`, `canada`, `mediterranean`, `siberia`, `sub_saharan_africa`
+
+**CLI Examples:**
+```bash
+python3 modules/nasa_firms_fire.py country USA
+python3 modules/nasa_firms_fire.py country BRA 5
+python3 modules/nasa_firms_fire.py hotspot amazon
+python3 modules/nasa_firms_fire.py hotspot california
+python3 modules/nasa_firms_fire.py hotspot southeast_asia
+python3 modules/nasa_firms_fire.py anomaly
+python3 modules/nasa_firms_fire.py FIRES_USA_24H
+python3 modules/nasa_firms_fire.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'nasa_firms_fire',
+    params: { indicator: 'HOTSPOT_AMAZON' }
+  })
+});
+```
+
+### openalex_research.py — OpenAlex (Scholarly Research Intelligence)
+
+- **Source:** OpenAlex — free, open catalog of 250M+ scholarly works, 100K+ journals, 100M+ authors
+- **API:** `https://api.openalex.org`
+- **Protocol:** REST (JSON), cursor-paginated
+- **Auth:** None (polite pool with email for faster rate limits)
+- **Freshness:** Daily
+- **Coverage:** Global scholarly output (all scientific disciplines)
+
+**Indicators (11):**
+
+| Key | Name | Type | Frequency |
+|-----|------|------|-----------|
+| `PFIZER_RD` | Pfizer R&D Output (works/year) | Institution | Yearly |
+| `NOVARTIS_RD` | Novartis R&D Output (works/year) | Institution | Yearly |
+| `ROCHE_RD` | Roche R&D Output (works/year) | Institution | Yearly |
+| `GOOGLE_RD` | Google Research Output (works/year) | Institution | Yearly |
+| `MICROSOFT_RD` | Microsoft Research Output (works/year) | Institution | Yearly |
+| `NVIDIA_RD` | NVIDIA Research Output (works/year) | Institution | Yearly |
+| `TOPIC_MACHINE_LEARNING` | Machine Learning Publication Trend | Topic | Yearly |
+| `TOPIC_GLP1` | GLP-1 Drug Target Research Trend | Topic | Yearly |
+| `TOPIC_GENE_EDITING` | CRISPR Gene Editing Research Trend | Topic | Yearly |
+| `TOPIC_QUANTUM_COMPUTING` | Quantum Computing Research Trend | Topic | Yearly |
+| `TOPIC_SOLID_STATE_BATTERY` | Solid-State Battery Research Trend | Topic | Yearly |
+
+**Pre-configured Companies:** Pfizer (PFE), Novartis (NVS), Roche (RHHBY), Google (GOOGL), Microsoft (MSFT), NVIDIA (NVDA), Samsung (005930.KS), TSMC (TSM)
+
+**CLI Examples:**
+```bash
+python3 modules/openalex_research.py PFIZER_RD
+python3 modules/openalex_research.py TOPIC_MACHINE_LEARNING
+python3 modules/openalex_research.py institution pfizer
+python3 modules/openalex_research.py institution nvidia
+python3 modules/openalex_research.py topic "GLP-1 receptor agonist"
+python3 modules/openalex_research.py trending
+python3 modules/openalex_research.py company_compare pfizer novartis roche
+python3 modules/openalex_research.py country_innovation
+python3 modules/openalex_research.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'openalex_research',
+    params: { indicator: 'TOPIC_MACHINE_LEARNING' }
+  })
+});
+```
+
+### bnm_malaysia.py — Bank Negara Malaysia (BNM Central Bank)
+
+- **Source:** Bank Negara Malaysia — Malaysia's central bank, oversees one of the world's largest Islamic finance markets
+- **API:** `https://api.bnm.gov.my/public`
+- **Protocol:** REST (JSON), custom Accept header (`application/vnd.BNM.API.v1+json`)
+- **Auth:** None (fully open, no API key required)
+- **Freshness:** Daily (FX, interbank, gold), Per-decision (OPR), Periodic (base rates)
+- **Coverage:** Malaysia / MYR
+
+**Indicators (7):**
+
+| Key | Name | Frequency | Unit | Endpoint |
+|-----|------|-----------|------|----------|
+| `EXCHANGE_RATE` | MYR Exchange Rates (20+ currencies) | Daily | MYR | /exchange-rate |
+| `OPR` | Overnight Policy Rate (key policy rate) | Per-decision | % p.a. | /opr |
+| `INTERBANK_RATE` | KLIBOR Interbank Rates (O/N–12M) | Daily | % p.a. | /interest-rate |
+| `ISLAMIC_INTERBANK_RATE` | Islamic Interbank Money Market Rate | Daily | % p.a. | /islamic-interbank-rate |
+| `KIJANG_EMAS` | Kijang Emas Gold Price (1oz/½oz/¼oz) | Daily | MYR | /kijang-emas |
+| `BASE_RATE` | Bank Base & Lending Rates (all banks) | Periodic | % p.a. | /base-rate |
+| `CONSUMER_ALERT` | Consumer Financial Fraud Alerts | Periodic | N/A | /consumer-alert |
+
+**CLI Examples:**
+```bash
+python3 modules/bnm_malaysia.py exchange_rate
+python3 modules/bnm_malaysia.py exchange_rate USD
+python3 modules/bnm_malaysia.py opr
+python3 modules/bnm_malaysia.py opr 2025
+python3 modules/bnm_malaysia.py interbank
+python3 modules/bnm_malaysia.py islamic_rate
+python3 modules/bnm_malaysia.py kijang_emas
+python3 modules/bnm_malaysia.py base_rate
+python3 modules/bnm_malaysia.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bnm_malaysia',
+    params: { indicator: 'OPR' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -3247,7 +3525,7 @@ gdelt_global_events          patentsview_uspto
 inegi_mexico
 gleif_lei                   bank_of_thailand              dane_colombia
 epo_ops                     usgs_earthquake               kosis_korea
-... (1,080 total — run `ls modules/*.py | wc -l` to verify)
+... (1,085 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3279,9 +3557,11 @@ epo_ops                     usgs_earthquake               kosis_korea
 | Bank of Thailand (BOT) | `BOT_API_KEY` | Open | https://apiportal.bot.or.th |
 | EPO Open Patent Services | `EPO_CONSUMER_KEY` + `EPO_CONSUMER_SECRET` | ~10/s | https://developers.epo.org |
 | KOSIS South Korea | `KOSIS_API_KEY` | ~1,000/day | https://kosis.kr/openapi/ |
+| Global Fishing Watch | `GFW_API_TOKEN` | 100/min | https://globalfishingwatch.org/our-apis/ |
+| NASA FIRMS | `NASA_FIRMS_MAP_KEY` | 2,000/day | https://firms.modaps.eosdis.nasa.gov/api/map_key/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, and KOSIS South Korea require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, and NASA FIRMS require free registration.
 
 ---
 
-*1,080 modules — 39 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 56 government/central bank/institutional/alt-data modules — 1,020+ macro, geopolitical, patent, seismic & entity indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,085 modules — 40 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 61 government/central bank/institutional/alt-data modules — 1,100+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, & scholarly research indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

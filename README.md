@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,080 Financial Data Modules
+# QuantClaw Data — 1,085 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,080 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,085 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,080 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,085 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,080** Python data modules
+- **1,085** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,080 modules)             │
+│  ├── Module browser (1,085 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,080 modules      │
+│  ├── Tool definitions for all 1,085 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,080 Python Modules                            │
+│  1,085 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–16)
+### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–17)
 
-Fifty-six modules covering 39 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Central America, South America, Asia-Pacific, Southeast Asia, Middle East, Oceania, and international institutions with 1,020+ macroeconomic, geopolitical, patent, seismic, and entity-registry indicators from official government statistical offices, central banks, international institutions, financial regulators, global event databases, patent offices, and scientific agencies:
+Sixty-one modules covering 40 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Central America, South America, Asia-Pacific, Southeast Asia, Middle East, Oceania, and international institutions with 1,100+ macroeconomic, monetary, geopolitical, patent, seismic, entity-registry, maritime, satellite fire, and scholarly research indicators from official government statistical offices, central banks, international institutions, financial regulators, global event databases, patent offices, scientific agencies, satellite observation systems, and open research platforms:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -209,6 +209,11 @@ Fifty-six modules covering 39 countries plus EU-wide and global data (190+ IMF m
 || `usgs_earthquake` | USGS Earthquake Hazards Program | Global + regional hotspots | `https://earthquake.usgs.gov/fdsnws/event/1` | Significant global events (M5+), recent M4+ worldwide, PAGER alerts, regional hotspots (Taiwan/Japan/Chile/Turkey/California), annual M5+ count, DYFI felt reports |
 || `kosis_korea` | KOSIS — Statistics Korea (KOSTAT) | South Korea | `https://kosis.kr/openapi/Param/statisticsParameterData.do` | GDP by expenditure (quarterly), CPI all items (2020=100), unemployment rate, industrial production index, merchandise exports, housing price index, semiconductor production index |
 || `ssb_norway` | Statistics Norway (SSB) | Norway | `https://data.ssb.no/api/v0/en/table` | GDP (nominal/volume growth), CPI (index 2015=100/12-month rate), unemployment rate (SA), goods exports/imports, house price index (raw/SA), petroleum deliveries, industrial output, gross value added |
+|| `norges_bank` | Norges Bank (Central Bank of Norway) | Norway | `https://data.norges-bank.no/api/data` | NOK FX rates (36 currency pairs: USD/EUR/GBP/SEK/DKK/CHF/JPY/CAD/AUD/NZD/CNY/PLN/HKD/SGD/KRW/TRY/INR/BRL/MXN/ZAR/THB/CZK/HUF/ISK/ILS/RON/TWD/PHP/IDR/MYR/PKR/VND/BDT/BGN/MMK/RUB/BYN/HRK/XDR), trade-weighted NOK indices (I44 import-weighted + TWI), key policy rate (sight deposit), overnight lending rate, reserve rate, NOWA interbank reference rates (overnight/1M/3M/6M averages), Norwegian govt bond yields (3Y/5Y/7Y/10Y), T-bill rates (3M/6M/12M) |
+|| `global_fishing_watch` | Global Fishing Watch | Global (65,000+ vessels) | `https://gateway.api.globalfishingwatch.org/v3` | Global fishing effort by flag state (monthly hours), top fishing nations activity (CHN/IDN/TWN/JPN/KOR/ESP/PER/USA/NOR/RUS), port visit events (confidence-scored arrivals/departures), transshipment encounter events (IUU/sanctions risk), regional fishing intensity (West Africa/South Pacific/Indian Ocean/North Atlantic/SE Asia/East Pacific), fleet size by flag & gear type, vessel identity search (name/MMSI/IMO) |
+|| `nasa_firms_fire` | NASA FIRMS (Fire Information for Resource Management) | Global (satellite) | `https://firms.modaps.eosdis.nasa.gov/api` | NRT fire detections by country (USA/BRA/IDN/AUS/CAN/RUS, 24h–10d), financial hotspot fire monitoring (California wildfire/Amazon deforestation/SE Asian haze/Australian bushfire/Canadian boreal/Mediterranean/Siberian/Sub-Saharan burns), fire anomaly scores with commodity impact (soy/palm oil/wheat/lumber/insurance/carbon credits), VIIRS & MODIS satellite sources, fire radiative power (FRP), intensity levels |
+|| `openalex_research` | OpenAlex (Scholarly Research) | Global (250M+ works) | `https://api.openalex.org` | Corporate R&D output tracking (Pfizer/Novartis/Roche/Google/Microsoft/NVIDIA/Samsung/TSMC annual publications), research topic trends (machine learning/GLP-1/CRISPR/quantum computing/solid-state battery), trending research topics (30 keywords with YoY growth: LLM/CAR-T/mRNA/nuclear fusion/autonomous driving/digital twin/generative AI/etc.), institution comparison, country innovation rankings, citation analysis |
+|| `bnm_malaysia` | Bank Negara Malaysia (BNM) | Malaysia | `https://api.bnm.gov.my/public` | MYR exchange rates (20+ currencies, buying/selling/middle), Overnight Policy Rate (OPR history & decisions), KLIBOR interbank rates (overnight/1W/1M/3M/6M/12M), Islamic interbank money market rates, Kijang Emas gold prices (1oz/½oz/¼oz in MYR), bank base & lending rates (all Malaysian banks), consumer financial fraud alerts |
 
 #### Global Coverage Map
 
@@ -273,6 +278,11 @@ Fifty-six modules covering 39 countries plus EU-wide and global data (190+ IMF m
 🌐 Global (seismic)   — USGS Earthquake Hazards (significant events M5+, PAGER alerts, regional hotspots, felt reports — real-time 5min cache)
 🇰🇷 South Korea       — KOSIS Statistics Korea (GDP, CPI, unemployment, industrial production, exports, housing prices, semiconductor index)
 🇳🇴 Norway            — SSB Statistics Norway (GDP nom/growth, CPI index/12mo rate, unemployment SA, trade exports/imports, house prices, petroleum deliveries, industrial output, GVA)
+🇳🇴 Norway (ext)      — Norges Bank SDMX (36-currency NOK FX pairs, I44/TWI trade-weighted indices, key policy rate, NOWA interbank reference rates, govt bond yields 3Y–10Y, T-bills)
+🇲🇾 Malaysia          — BNM Bank Negara (MYR FX 20+ currencies, OPR policy rate, KLIBOR interbank, Islamic interbank rates, Kijang Emas gold, bank base/lending rates)
+🌊 Global (maritime)  — Global Fishing Watch (fishing effort by flag state, vessel identity, port visits, transshipment encounters, regional intensity — 65,000+ vessels, IUU risk)
+🔥 Global (satellite) — NASA FIRMS Fire Detection (NRT VIIRS/MODIS fire detections, 8 financial hotspot regions, commodity impact scoring, fire anomaly analysis — <3h latency)
+📚 Global (research)  — OpenAlex Scholarly Research (250M+ works, corporate R&D tracking, topic trends, trending research, country innovation rankings, citation analysis)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -563,6 +573,56 @@ python3 modules/ssb_norway.py PETROLEUM_DELIVERIES
 python3 modules/ssb_norway.py INDUSTRIAL_OUTPUT
 python3 modules/ssb_norway.py VALUE_ADDED
 python3 modules/ssb_norway.py list
+# Norges Bank — Central Bank of Norway (Batch 17)
+python3 modules/norges_bank.py FX_USD_NOK
+python3 modules/norges_bank.py FX_EUR_NOK
+python3 modules/norges_bank.py POLICY_RATE
+python3 modules/norges_bank.py NOWA
+python3 modules/norges_bank.py GOVT_BOND_10Y
+python3 modules/norges_bank.py TBILL_3M
+python3 modules/norges_bank.py fx EUR
+python3 modules/norges_bank.py fx_all
+python3 modules/norges_bank.py policy_rate
+python3 modules/norges_bank.py nowa
+python3 modules/norges_bank.py i44
+python3 modules/norges_bank.py govt_bonds
+python3 modules/norges_bank.py list
+# Global Fishing Watch — Maritime Alt-Data (Batch 17)
+python3 modules/global_fishing_watch.py effort_by_flag
+python3 modules/global_fishing_watch.py vessel_search "Hai Feng"
+python3 modules/global_fishing_watch.py port_visits
+python3 modules/global_fishing_watch.py encounters
+python3 modules/global_fishing_watch.py region south_pacific
+python3 modules/global_fishing_watch.py region west_africa
+python3 modules/global_fishing_watch.py list
+# NASA FIRMS — Satellite Fire Detection (Batch 17)
+python3 modules/nasa_firms_fire.py country USA
+python3 modules/nasa_firms_fire.py country BRA 5
+python3 modules/nasa_firms_fire.py hotspot amazon
+python3 modules/nasa_firms_fire.py hotspot california
+python3 modules/nasa_firms_fire.py hotspot southeast_asia
+python3 modules/nasa_firms_fire.py anomaly
+python3 modules/nasa_firms_fire.py FIRES_USA_24H
+python3 modules/nasa_firms_fire.py list
+# OpenAlex — Scholarly Research Intelligence (Batch 17)
+python3 modules/openalex_research.py PFIZER_RD
+python3 modules/openalex_research.py TOPIC_MACHINE_LEARNING
+python3 modules/openalex_research.py institution pfizer
+python3 modules/openalex_research.py institution nvidia
+python3 modules/openalex_research.py topic "GLP-1 receptor agonist"
+python3 modules/openalex_research.py trending
+python3 modules/openalex_research.py company_compare pfizer novartis roche
+python3 modules/openalex_research.py country_innovation
+python3 modules/openalex_research.py list
+# BNM Malaysia — Bank Negara Malaysia (Batch 17)
+python3 modules/bnm_malaysia.py exchange_rate
+python3 modules/bnm_malaysia.py exchange_rate USD
+python3 modules/bnm_malaysia.py opr
+python3 modules/bnm_malaysia.py interbank
+python3 modules/bnm_malaysia.py islamic_rate
+python3 modules/bnm_malaysia.py kijang_emas
+python3 modules/bnm_malaysia.py base_rate
+python3 modules/bnm_malaysia.py list
 ```
 
 **REST API:**
@@ -734,6 +794,24 @@ GET /api/v1/ssb-norway?indicator=PETROLEUM_DELIVERIES
 GET /api/v1/ssb-norway?indicator=HOUSE_PRICE_INDEX
 GET /api/v1/ssb-norway?indicator=TRADE_EXPORTS
 GET /api/v1/ssb-norway?indicator=INDUSTRIAL_OUTPUT
+GET /api/v1/norges-bank?indicator=FX_USD_NOK
+GET /api/v1/norges-bank?indicator=POLICY_RATE
+GET /api/v1/norges-bank?indicator=NOWA
+GET /api/v1/norges-bank?indicator=GOVT_BOND_10Y
+GET /api/v1/norges-bank?indicator=TBILL_3M
+GET /api/v1/global-fishing-watch?indicator=GLOBAL_FISHING_EFFORT
+GET /api/v1/global-fishing-watch?indicator=PORT_VISIT_EVENTS
+GET /api/v1/global-fishing-watch?indicator=TRANSSHIPMENT_ENCOUNTERS
+GET /api/v1/nasa-firms-fire?indicator=FIRES_USA_24H
+GET /api/v1/nasa-firms-fire?indicator=FIRES_BRA_24H
+GET /api/v1/nasa-firms-fire?indicator=HOTSPOT_AMAZON
+GET /api/v1/openalex-research?indicator=PFIZER_RD
+GET /api/v1/openalex-research?indicator=TOPIC_MACHINE_LEARNING
+GET /api/v1/openalex-research?indicator=NVIDIA_RD
+GET /api/v1/bnm-malaysia?indicator=EXCHANGE_RATE
+GET /api/v1/bnm-malaysia?indicator=OPR
+GET /api/v1/bnm-malaysia?indicator=INTERBANK_RATE
+GET /api/v1/bnm-malaysia?indicator=KIJANG_EMAS
 ```
 
 **MCP Tool Call:**
@@ -2407,7 +2485,284 @@ const nordicHousing = await fetch('http://localhost:3056/api/data/batch', {
 - 39 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇪🇺 🌍 🌐
 - 1,020+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, and national statistics sources
 - New in Batch 16: Norwegian national accounts (GDP nominal + real growth), consumer prices (CPI index 2015=100 + 12-month rate of change), labour market (LFS unemployment rate SA, ages 15-74), external trade (goods exports + imports in NOK), housing market (house price index raw + seasonally adjusted), petroleum product deliveries (unique energy sector indicator for Europe's largest oil exporter), industrial production (total output + gross value added) — the first Nordic oil-economy module, completing Scandinavian trilateral coverage (Sweden, Denmark, Norway)
-- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX, THB daily rates), policy rates (incl. MNB base rate, BoE Bank Rate, BOT repo rate), interbank rates (incl. BIBOR), monetary aggregates (incl. EA M1/M2/M3, UK M4, Thai M1/broad), GDP (incl. EU-12 small state, Portuguese/Brazilian/Mexican/Colombian/Thai/Korean/Norwegian quarterly/annual), CPI/HICP/IPCA/INPC/PPI/wholesale prices, unemployment (incl. by demographics, GEIH Colombia, ENOE Mexico, Korean EAP survey, Norwegian LFS SA), trade, housing prices (incl. Korean apartment index, Norwegian dwelling price index), construction costs, lending rates, mortgage rates, credit growth, MFI credit, cost of borrowing, banking FSIs (incl. Thai commercial bank balance sheet), gold, government debt/deficit/surplus, fiscal accounts, BoP (incl. Thai current account, Colombian trade balance), business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. Thai 1Y–20Y), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations & production, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators, pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment, patent innovation metrics (USPTO + EPO), consumer confidence, earthquake/seismic hazard monitoring, legal entity identification (GLEIF), semiconductor production indices, petroleum product deliveries
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX, THB daily rates, 36-pair NOK, 20+ MYR), policy rates (incl. MNB base rate, BoE Bank Rate, BOT repo rate, Norges Bank sight deposit, BNM OPR), interbank rates (incl. BIBOR, NOWA, KLIBOR, Islamic interbank), monetary aggregates (incl. EA M1/M2/M3, UK M4, Thai M1/broad), GDP (incl. EU-12 small state, Portuguese/Brazilian/Mexican/Colombian/Thai/Korean/Norwegian quarterly/annual), CPI/HICP/IPCA/INPC/PPI/wholesale prices, unemployment (incl. by demographics, GEIH Colombia, ENOE Mexico, Korean EAP survey, Norwegian LFS SA), trade, housing prices (incl. Korean apartment index, Norwegian dwelling price index), construction costs, lending rates, mortgage rates, credit growth, MFI credit, cost of borrowing, banking FSIs (incl. Thai commercial bank balance sheet), gold (incl. Kijang Emas MYR), government debt/deficit/surplus, fiscal accounts, BoP (incl. Thai current account, Colombian trade balance), business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves incl. Thai 1Y–20Y, Norwegian govt 3Y–10Y + T-bills 3M–12M), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism, automotive registrations & production, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators, pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment, patent innovation metrics (USPTO + EPO), consumer confidence, earthquake/seismic hazard monitoring, legal entity identification (GLEIF), semiconductor production indices, petroleum product deliveries, trade-weighted currency indices, maritime fishing effort/vessel tracking/transshipment risk, satellite fire detection/anomaly scoring/commodity impact, scholarly research output/R&D intelligence/trending topics, Islamic finance rates, bank base & lending rates
+
+#### Batch 17: Norway Central Bank, Malaysia Central Bank, Maritime Alt-Data, Satellite Fire Intelligence & Scholarly Research
+
+Batch 17 adds **5 new modules** spanning central bank monetary data, maritime alternative data, satellite-based commodity risk intelligence, and scholarly research analytics. This batch completes Norway's dual-module coverage (statistics + central bank), adds Malaysia as the first Southeast Asian central bank in the platform, and introduces three novel alternative data sources that connect physical-world observations (fishing, fire, research) to financial market signals. This brings total coverage to **40 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **61 government/institutional/regulatory/alt-data modules** and **1,100+ indicators**.
+
+**Norges Bank SDMX** (`norges_bank`) — Central Bank of Norway:
+- NOK FX exchange rates for **36 currency pairs**: USD, EUR, GBP, SEK, DKK, CHF, JPY, CAD, AUD, NZD, CNY, PLN, HKD, SGD, KRW, TRY, INR, BRL, MXN, ZAR, THB, CZK, HUF, ISK, ILS, RON, TWD, PHP, IDR, MYR, PKR, VND, BDT, BGN, MMK, RUB, BYN, HRK, XDR (IMF SDR) — daily spot rates
+- Trade-weighted NOK indices: I44 import-weighted index (44 trading partners) + TWI trade-weighted index
+- Key policy rate (sight deposit rate) — Norges Bank's primary monetary policy tool
+- Overnight lending rate (D-loan rate) — ceiling of the interest rate corridor
+- Reserve rate — floor of the interest rate corridor (deposits above quota)
+- NOWA (Norwegian Overnight Weighted Average) — primary NOK interbank reference rate
+- NOWA compounded averages: 1-month, 3-month, 6-month
+- Norwegian government bond yields: 3Y, 5Y, 7Y, 10Y
+- Norwegian treasury bill rates: 3M, 6M, 12M
+- **48 indicators** across 5 SDMX dataflows: EXR (exchange rates), IR (policy rates), SHORT_RATES (NOWA), GOVT_GENERIC_RATES (bonds + bills)
+- Protocol: SDMX REST 2.1 (SDMX-JSON), open access, no API key required
+- API: `https://data.norges-bank.no/api/data`
+- Cache: 1h (FX, NOWA), 24h (policy rates, bonds)
+- Batch commands: `fx_all`, `policy_rate`, `nowa`, `i44`, `govt_bonds`
+
+**Global Fishing Watch** (`global_fishing_watch`) — Maritime Vessel Tracking Alt-Data:
+- Global fishing effort by flag state (monthly aggregated fishing hours for 200+ fishing nations)
+- Top fishing nations activity tracking: CHN, IDN, TWN, JPN, KOR, ESP, PER, USA, NOR, RUS
+- Port visit events with confidence scoring (vessel arrivals/departures at major ports)
+- Transshipment encounter events — at-sea vessel meetings indicating potential IUU fishing or sanctions evasion
+- Regional fishing intensity for 6 key zones: West Africa (Gulf of Guinea), South Pacific, Indian Ocean, North Atlantic, Southeast Asia, East Pacific
+- Fleet size tracking by flag state and gear type
+- Vessel identity search by name, MMSI, or IMO number
+- Vessel detail: ownership, flag, type, gear, length, tonnage
+- Fishing event timelines per vessel
+- **6 indicators** + vessel search/detail endpoints
+- Protocol: REST (JSON/GeoJSON), Bearer token auth (GFW_API_TOKEN)
+- API: `https://gateway.api.globalfishingwatch.org/v3`
+- Rate limit: 100 requests/minute (free tier)
+- Cache: 6h (activity data), 24h (vessel identity)
+- **Financial relevance:** IUU fishing risk monitoring, sanctions compliance, seafood supply chain disruption, marine insurance underwriting, ESG due diligence, port activity as economic indicator
+
+**NASA FIRMS Fire Detection** (`nasa_firms_fire`) — Satellite-Based Active Fire Intelligence:
+- Near-real-time (NRT) fire detections from VIIRS (Suomi NPP & NOAA-20) and MODIS satellites
+- ~375m spatial resolution, <3 hour latency from satellite pass
+- Country-level fire monitoring: USA, Brazil, Indonesia, Australia, Canada, Russia + any ISO country code
+- **8 pre-configured financial hotspot regions** with commodity impact mapping:
+  - California wildfire zone → insurance stocks, utility liability, real estate
+  - Amazon deforestation burns → soy, cattle, carbon credits
+  - Southeast Asian haze (Indonesia/Malaysia) → palm oil supply disruption
+  - Australian bushfires → wheat, wool, insurance, tourism
+  - Canadian boreal fires → lumber, carbon credits, air quality
+  - Mediterranean fires (Greece/Turkey/Spain) → olive oil, wine, tourism
+  - Siberian fires (Russia) → carbon emissions, natural gas
+  - Sub-Saharan African savanna burns → cocoa, coffee, agriculture
+- Fire anomaly scoring with 5-day rolling baseline comparison (extreme/high/elevated/normal/below_normal)
+- Fire radiative power (FRP) analysis — measures fire energy output for intensity assessment
+- Fire statistics: count, avg/max brightness, avg/max/total FRP, high-confidence detections, day/night split
+- **9 indicators** across country and hotspot query types
+- Protocol: REST, CSV responses, MAP_KEY auth (free registration)
+- API: `https://firms.modaps.eosdis.nasa.gov/api`
+- Open archive fallback: 24h global data without API key
+- Rate limit: 2,000 transactions/day (free tier)
+- Cache: 1h (NRT country/hotspot), 24h (aggregate)
+- **Financial relevance:** Agricultural commodity pricing (wheat, soy, palm oil), insurance/reinsurance catastrophe modeling, supply chain disruption detection, carbon credit market signals, ESG wildfire exposure scoring
+
+**OpenAlex Scholarly Research** (`openalex_research`) — R&D Intelligence & Publication Analytics:
+- Tracks 250M+ scholarly works, 100K+ journals, 100M+ authors across all scientific disciplines
+- Corporate R&D output tracking with pre-configured mappings for 8 major companies:
+  - Pfizer (PFE), Novartis (NVS), Roche (RHHBY), Google (GOOGL), Microsoft (MSFT), NVIDIA (NVDA), Samsung (005930.KS), TSMC (TSM)
+- Annual publication count timelines with YoY growth rates per institution
+- Top-cited works per institution/topic with citation counts, DOI, journal, and topics
+- Topic/keyword publication trend analysis for any research area
+- **30 trending research keywords** tracked with YoY growth comparison:
+  - Large language model, GLP-1 receptor agonist, solid-state battery, quantum computing, CRISPR gene editing, CAR-T cell therapy, mRNA vaccine, nuclear fusion energy, autonomous driving, digital twin, federated learning, neuromorphic computing, perovskite solar cell, protein structure prediction, carbon capture, synthetic biology, PFAS remediation, robotic surgery, brain-computer interface, generative AI, antibody drug conjugate, small modular reactor, single-cell RNA sequencing, graph neural network, weight loss drug, humanoid robot, spatial computing, 6G wireless, biodegradable plastic, KRAS inhibitor
+- Head-to-head company R&D comparison (total works, citations, h-index, YoY growth)
+- Country-level innovation rankings (research output share by country)
+- Institution search and R&D profiles (by name or ROR ID)
+- **11 indicators** (6 corporate R&D + 5 topic trends)
+- Protocol: REST (JSON), no auth (polite pool with email for faster rate limits)
+- API: `https://api.openalex.org`
+- Cache: 24h
+- **Financial relevance:** Pharma pipeline intelligence (GLP-1, CRISPR, CAR-T publication surges precede clinical catalysts), semiconductor R&D tracking (NVIDIA/TSMC/Samsung output as AI capex proxy), technology trend detection for sector rotation, university-industry knowledge transfer signals
+
+**Bank Negara Malaysia** (`bnm_malaysia`) — Malaysia Central Bank:
+- MYR exchange rates against 20+ currencies with buying, selling, and middle rates (daily)
+- Overnight Policy Rate (OPR) — Malaysia's key monetary policy rate, equivalent to Fed Funds Rate
+- OPR decision history (by year, with change amounts and dates)
+- KLIBOR interbank rate term structure: overnight, 1 week, 1 month, 3 month, 6 month, 12 month
+- Islamic interbank money market rate — unique to Malaysia's Shariah-compliant financial system (one of the world's largest Islamic finance markets)
+- Kijang Emas gold prices in MYR (1oz, ½oz, ¼oz buying & selling + spread)
+- Bank base & lending rates for all Malaysian commercial banks (base rate, base lending rate, indicative effective lending rate)
+- Consumer financial fraud alerts (unauthorized financial entities)
+- **7 indicators** across monetary policy, FX, interbank, Islamic finance, gold, and lending
+- Protocol: REST (JSON), fully open — no API key required
+- API: `https://api.bnm.gov.my/public`
+- Cache: 1h (FX, interbank, gold), 24h (OPR, base rates)
+- **Financial relevance:** ASEAN monetary policy signals (OPR tracks regional rate environment), MYR FX for palm oil/commodity trade settlement, Islamic finance benchmark rates (critical for $4T+ global Shariah-compliant assets), Kijang Emas gold as central bank bullion pricing, banking system lending rates for credit condition assessment
+
+**Why Batch 17 matters for financial analysis:**
+- **Norway dual coverage complete:** Statistics Norway (SSB) provides macro data while Norges Bank provides the full monetary/FX toolkit — together they enable comprehensive analysis of the world's largest sovereign wealth fund manager ($1.7T GPFG), Europe's largest oil exporter, and the NOK currency
+- **First ASEAN central bank:** Bank Negara Malaysia adds Southeast Asian monetary policy signals and Islamic finance benchmarks to the platform — critical for the $4T+ global Shariah-compliant finance market and ASEAN commodity trade settlement
+- **Physical-to-financial alt-data bridge:** Global Fishing Watch, NASA FIRMS, and OpenAlex connect physical-world observations (maritime activity, satellite fire detection, research output) directly to tradeable market signals — a new category of alternative data
+- **Commodity supply chain intelligence:** Fire data directly impacts agricultural commodity pricing (palm oil, soy, wheat), fishing vessel data reveals seafood supply disruptions, and research trends signal pharma/tech pipeline shifts
+- **ESG & sanctions compliance:** Transshipment encounter data enables IUU fishing risk monitoring, fire anomaly data feeds wildfire ESG exposure scores, and research trends inform green technology investment theses
+
+**Example response — `norges_bank` `FX_EUR_NOK`:**
+```json
+{
+  "success": true,
+  "indicator": "FX_EUR_NOK",
+  "name": "EUR/NOK Exchange Rate",
+  "description": "Euro to Norwegian krone daily spot rate (most traded NOK pair)",
+  "unit": "NOK per EUR",
+  "frequency": "daily",
+  "latest_value": 11.5842,
+  "latest_period": "2026-04-01",
+  "period_change": -0.0231,
+  "period_change_pct": -0.1993,
+  "data_points": [{"period": "2026-04-01", "value": 11.5842}, {"period": "2026-03-31", "value": 11.6073}, "..."],
+  "total_observations": 260,
+  "source": "https://data.norges-bank.no/api/data/EXR/B.EUR.NOK.SP"
+}
+```
+
+**Example response — `norges_bank` `POLICY_RATE`:**
+```json
+{
+  "success": true,
+  "indicator": "POLICY_RATE",
+  "name": "Key Policy Rate (Sight Deposit Rate)",
+  "description": "Norges Bank key policy rate — the sight deposit rate, primary monetary policy tool",
+  "unit": "% p.a.",
+  "frequency": "daily",
+  "latest_value": 4.5,
+  "latest_period": "2026-04-01",
+  "period_change": 0.0,
+  "period_change_pct": 0.0,
+  "data_points": [{"period": "2026-04-01", "value": 4.5}, {"period": "2026-03-31", "value": 4.5}, "..."],
+  "total_observations": 260,
+  "source": "https://data.norges-bank.no/api/data/IR/B.KPRA.SD.R"
+}
+```
+
+**Example response — `bnm_malaysia` `OPR`:**
+```json
+{
+  "success": true,
+  "indicator": "OPR",
+  "name": "Overnight Policy Rate",
+  "description": "BNM key policy rate — equivalent to Fed Funds Rate for Malaysia",
+  "unit": "% p.a.",
+  "current_rate": 3.0,
+  "last_change": 0.0,
+  "last_decision_date": "2026-03-06",
+  "decisions": [{"date": "2026-03-06", "year": "2026", "opr_level": 3.0, "change": 0.0}, "..."],
+  "total_decisions": 7,
+  "source": "Bank Negara Malaysia"
+}
+```
+
+**Example response — `nasa_firms_fire` `hotspot amazon`:**
+```json
+{
+  "success": true,
+  "region": "amazon",
+  "hotspot_name": "Amazon Deforestation Burns (Brazil)",
+  "center": {"latitude": -5.0, "longitude": -55.0},
+  "radius_km": 1500,
+  "relevance": "Soy, cattle, carbon credits, deforestation policy",
+  "affected_commodities": ["soy", "cattle", "carbon_credits"],
+  "fire_count": 1247,
+  "avg_brightness": 334.8,
+  "max_brightness": 398.2,
+  "total_frp": 8923.4,
+  "high_confidence_count": 412,
+  "intensity_level": "very_high",
+  "fires": ["...first 100 fire detections with lat/lon/brightness/frp..."],
+  "source": "https://firms.modaps.eosdis.nasa.gov/api"
+}
+```
+
+**Example response — `openalex_research` `TOPIC_MACHINE_LEARNING`:**
+```json
+{
+  "success": true,
+  "indicator": "TOPIC_MACHINE_LEARNING",
+  "name": "Machine Learning Publication Trend",
+  "description": "Annual publication count for machine learning research",
+  "unit": "publications",
+  "frequency": "yearly",
+  "latest_value": 187432,
+  "latest_period": "2026",
+  "yoy_change": 24187,
+  "yoy_change_pct": 14.82,
+  "data_points": [{"period": "2026", "value": 187432}, {"period": "2025", "value": 163245}, "..."],
+  "total_observations": 6,
+  "source": "https://api.openalex.org"
+}
+```
+
+**Batch MCP — Nordic Monetary & FX Deep Dive (New in Batch 17):**
+```typescript
+const nordicMonetary = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'norges_bank', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'norges_bank', params: { indicator: 'FX_EUR_NOK' } },
+      { tool: 'norges_bank', params: { indicator: 'FX_USD_NOK' } },
+      { tool: 'norges_bank', params: { indicator: 'NOWA' } },
+      { tool: 'norges_bank', params: { indicator: 'GOVT_BOND_10Y' } },
+      { tool: 'norges_bank', params: { indicator: 'I44_INDEX' } },
+      { tool: 'ssb_norway', params: { indicator: 'GDP_GROWTH' } },
+      { tool: 'ssb_norway', params: { indicator: 'CPI_ANNUAL_RATE' } },
+      { tool: 'riksbank_sweden', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'danmarks_nationalbank', params: { indicator: 'DN_DISCOUNT_RATE' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — ASEAN & Asia-Pacific Central Banks (New in Batch 17):**
+```typescript
+const aseanRates = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'bnm_malaysia', params: { indicator: 'OPR' } },
+      { tool: 'bnm_malaysia', params: { indicator: 'INTERBANK_RATE' } },
+      { tool: 'bnm_malaysia', params: { indicator: 'EXCHANGE_RATE' } },
+      { tool: 'bank_of_thailand', params: { indicator: 'POLICY_RATE' } },
+      { tool: 'bank_of_thailand', params: { indicator: 'BIBOR_3M' } },
+      { tool: 'rba_enhanced', params: { indicator: 'F1_CASH_RATE_TARGET' } },
+      { tool: 'cbc_taiwan', params: { indicator: 'CBC_DISCOUNT_RATE' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Commodity Supply Chain Risk (New in Batch 17):**
+```typescript
+const commodityRisk = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'nasa_firms_fire', params: { indicator: 'FIRES_BRA_24H' } },
+      { tool: 'nasa_firms_fire', params: { indicator: 'FIRES_IDN_24H' } },
+      { tool: 'nasa_firms_fire', params: { indicator: 'HOTSPOT_AMAZON' } },
+      { tool: 'nasa_firms_fire', params: { indicator: 'HOTSPOT_SE_ASIA' } },
+      { tool: 'global_fishing_watch', params: { indicator: 'GLOBAL_FISHING_EFFORT' } },
+      { tool: 'global_fishing_watch', params: { indicator: 'TRANSSHIPMENT_ENCOUNTERS' } },
+      { tool: 'global_fishing_watch', params: { indicator: 'REGIONAL_FISHING_INTENSITY', region: 'west_africa' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Pharma R&D Pipeline Intelligence (New in Batch 17):**
+```typescript
+const pharmaRD = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'openalex_research', params: { indicator: 'PFIZER_RD' } },
+      { tool: 'openalex_research', params: { indicator: 'NOVARTIS_RD' } },
+      { tool: 'openalex_research', params: { indicator: 'ROCHE_RD' } },
+      { tool: 'openalex_research', params: { indicator: 'TOPIC_GLP1' } },
+      { tool: 'openalex_research', params: { indicator: 'TOPIC_GENE_EDITING' } },
+      { tool: 'patentsview_uspto', params: { indicator: 'SEARCH', query: 'GLP-1' } },
+      { tool: 'epo_ops', params: { indicator: 'PATENT_SEARCH', query: 'CRISPR gene therapy' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 17:**
+- 61 government/central bank/regulatory/institutional/alt-data modules
+- 40 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇪🇺 🌍 🌐 🌊 🔥 📚
+- 1,100+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, and scholarly research sources
+- New in Batch 17: Norges Bank SDMX (36-currency NOK FX, trade-weighted indices, policy rate corridor, NOWA interbank rates, govt bond yields 3Y–10Y, T-bill rates), Bank Negara Malaysia (MYR FX 20+, OPR, KLIBOR term structure, Islamic interbank rates, Kijang Emas gold, bank base/lending rates), Global Fishing Watch (fishing effort by flag state, vessel identity/search, port visits, transshipment encounters, regional intensity — IUU/sanctions risk), NASA FIRMS (NRT VIIRS/MODIS satellite fire detection for 8 financial hotspot regions with commodity impact scoring and anomaly analysis), OpenAlex (corporate R&D output tracking for 8 companies, topic publication trends for 30 trending keywords, country innovation rankings, citation analysis)
 
 ---
 
