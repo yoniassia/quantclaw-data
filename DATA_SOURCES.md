@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,072 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,073 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,9 +12,9 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal` |
 | Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls` |
-| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls` |
+| Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal` |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
 | Options data | `options_chain`, `options_flow`, `cboe_put_call`, `volatility_surface` |
@@ -125,6 +125,13 @@
 | Technology trends (CPC) | `patentsview_uspto` (tech_trends — G06N=AI/ML, H01L=semiconductors, A61K=pharma, G06Q=fintech, H01M=batteries, etc.) |
 | Industrial production (Brazil) | `ibge_brazil` (PIM-PF seasonally adjusted index, CNAE 2.0, Base 2022=100) |
 | Tourism (Portugal) | `ine_portugal` (TOURISM_OVERNIGHT_STAYS — monthly total in tourist accommodation) |
+| Mexican macro data | `inegi_mexico` (GDP quarterly, CPI, core inflation, unemployment, industrial production, exports/imports, consumer confidence, auto production) |
+| Mexican inflation / CPI | `inegi_mexico` (CPI headline INPC + CORE_INFLATION ex food & energy, monthly) |
+| Mexico trade / exports | `inegi_mexico` (EXPORTS + IMPORTS — merchandise trade in USD mn, monthly customs data) |
+| Automotive production | `inegi_mexico` (AUTO_PRODUCTION — total motor vehicle units, monthly, AMIA data), `statistics_austria` (NEW_CAR_REGISTRATIONS) |
+| Consumer confidence | `inegi_mexico` (CONSUMER_CONFIDENCE — INEGI/Banxico index), `cbs_netherlands`, `statistics_denmark`, `istat_italy` |
+| USMCA / NAFTA trade | `inegi_mexico` (Mexico), `statcan_canada` (Canada), `fred_enhanced` (US trade) |
+| Latin American macro | `inegi_mexico` (Mexico), `ibge_brazil` (Brazil) |
 
 ---
 
@@ -2641,6 +2648,56 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### inegi_mexico.py — INEGI Mexico (Banco de Información Económica)
+
+- **Source:** Instituto Nacional de Estadística y Geografía — Mexico's national statistics agency
+- **API:** `https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR`
+- **Protocol:** REST JSON/XML (BIE indicator endpoint pattern, INDICATOR/{id}/.../{token})
+- **Auth:** API token required — set `INEGI_API_TOKEN` or `INEGI_TOKEN` env var (free at https://www.inegi.org.mx/app/desarrolladores/generatoken/Usuarios/token_Verify)
+- **Freshness:** Monthly (CPI, core inflation, unemployment, industrial production, trade, consumer confidence, auto production), Quarterly (GDP)
+- **Coverage:** Mexico (national)
+
+**Indicators (9):**
+
+| Key | Name | Frequency | Unit |
+|-----|------|-----------|------|
+| `GDP_QUARTERLY` | GDP Quarterly Growth YoY (base 2018, SA) | Quarterly | % |
+| `CPI` | CPI Headline Inflation Monthly (INPC, base Jul 2018=100) | Monthly | % |
+| `CORE_INFLATION` | Core Inflation ex Food & Energy | Monthly | % |
+| `UNEMPLOYMENT` | National Unemployment Rate (ENOE survey) | Monthly | % |
+| `INDUSTRIAL_PRODUCTION` | Industrial Production Index (base 2018=100, SA) | Monthly | index |
+| `EXPORTS` | Merchandise Exports | Monthly | USD mn |
+| `IMPORTS` | Merchandise Imports | Monthly | USD mn |
+| `CONSUMER_CONFIDENCE` | Consumer Confidence Index (INEGI/Banxico, SA) | Monthly | index |
+| `AUTO_PRODUCTION` | Total Motor Vehicle Production | Monthly | units |
+
+**CLI Examples:**
+```bash
+python3 modules/inegi_mexico.py GDP_QUARTERLY
+python3 modules/inegi_mexico.py CPI
+python3 modules/inegi_mexico.py CORE_INFLATION
+python3 modules/inegi_mexico.py UNEMPLOYMENT
+python3 modules/inegi_mexico.py INDUSTRIAL_PRODUCTION
+python3 modules/inegi_mexico.py EXPORTS
+python3 modules/inegi_mexico.py CONSUMER_CONFIDENCE
+python3 modules/inegi_mexico.py AUTO_PRODUCTION
+python3 modules/inegi_mexico.py gdp          # alias: GDP_QUARTERLY
+python3 modules/inegi_mexico.py trade        # alias: EXPORTS + IMPORTS
+python3 modules/inegi_mexico.py inflation    # alias: CPI + CORE_INFLATION
+python3 modules/inegi_mexico.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'inegi_mexico',
+    params: { indicator: 'GDP_QUARTERLY' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -2825,7 +2882,8 @@ oecd_enhanced                boe_iadb_enhanced             mnb_hungary
 eu_small_central_banks       eu_small_statistics
 ine_portugal                 ibge_brazil
 gdelt_global_events          patentsview_uspto
-... (1,072 total — run `ls modules/*.py | wc -l` to verify)
+inegi_mexico
+... (1,073 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -2853,9 +2911,10 @@ gdelt_global_events          patentsview_uspto
 | FCA UK Register | `FCA_API_KEY` + `FCA_API_EMAIL` | Open | https://register.fca.org.uk/Developer/s/ |
 | DNB Netherlands | `DNB_SUBSCRIPTION_KEY` | Open (fallback) | Public fallback key available; custom key via DNB developer portal |
 | USPTO ODP (PatentsView) | `USPTO_ODP_API_KEY` | 45/min | https://data.uspto.gov/apis/getting-started |
+| INEGI Mexico (BIE) | `INEGI_API_TOKEN` | Open | https://www.inegi.org.mx/app/desarrolladores/generatoken/Usuarios/token_Verify |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, and USPTO PatentsView require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project) require **NO API key** for core data. DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, and INEGI Mexico require free registration.
 
 ---
 
-*1,072 modules — 34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 48 government/central bank/institutional/alt-data modules — 930+ macro & geopolitical indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,073 modules — 35 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 49 government/central bank/institutional/alt-data modules — 940+ macro & geopolitical indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

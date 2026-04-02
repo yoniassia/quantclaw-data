@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,072 Financial Data Modules
+# QuantClaw Data — 1,073 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,072 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,073 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,072 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,073 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,072** Python data modules
+- **1,073** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **48** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,072 modules)             │
+│  ├── Module browser (1,073 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,072 modules      │
+│  ├── Tool definitions for all 1,073 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,072 Python Modules                            │
+│  1,073 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -147,9 +147,9 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ### Intelligence & NLP
 `sec_nlp`, `earnings_transcripts`, `ai_research_reports`, `news_sentiment`, `ml_earnings_predictor`
 
-### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–13)
+### Government Statistics, Central Banks, International Institutions & Alt-Data (Autobuilder Batches 1–14)
 
-Forty-eight modules covering 34 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, South America, Asia-Pacific, Middle East, Oceania, and international institutions with 930+ macroeconomic and geopolitical indicators from official government statistical offices, central banks, international institutions, financial regulators, and global event databases:
+Forty-nine modules covering 35 countries plus EU-wide and global data (190+ IMF member nations, 38 OECD members) across Western Europe, Scandinavia, Central Europe, Alpine, Baltic, British Isles, Southeast Europe, Balkans, Mediterranean, North America, Central America, South America, Asia-Pacific, Middle East, Oceania, and international institutions with 940+ macroeconomic and geopolitical indicators from official government statistical offices, central banks, international institutions, financial regulators, and global event databases:
 
 | Module | Source | Country | API | Key Indicators |
 |--------|--------|---------|-----|----------------|
@@ -201,6 +201,7 @@ Forty-eight modules covering 34 countries plus EU-wide and global data (190+ IMF
 || `ibge_brazil` | IBGE (Instituto Brasileiro de Geografia e Estatística) | Brazil | `https://servicodados.ibge.gov.br/api/v3/agregados` | GDP YoY/QoQ growth, IPCA monthly/12M cumulative/YTD/index (Dec 1993=100), PNAD unemployment rate, PIM-PF industrial production index (2022=100), PMC broad retail sales YoY |
 || `gdelt_global_events` | GDELT Project (Global Database of Events) | Global (100+ languages) | `https://api.gdeltproject.org/api/v2/doc/doc` | Protest/military/terror/armed conflict volume & sentiment, inflation/interest rate/trade/stock market/bankruptcy media coverage, sanctions media volume, country risk scores, bilateral tension scores, topic sentiment, article search |
 || `patentsview_uspto` | USPTO Open Data Portal (PatentsView) | United States | `https://api.uspto.gov/api/v1` | Patent application search, patent grants by assignee (ticker-to-company mapping for 35+ tickers), top assignees ranking, technology trends by CPC class (22 named classes incl. AI/ML, semiconductors, pharma), single patent detail |
+|| `inegi_mexico` | INEGI (Banco de Información Económica) | Mexico | `https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR` | GDP quarterly growth, CPI headline inflation, core inflation (ex food & energy), unemployment rate, industrial production index, exports/imports of goods, consumer confidence index, automotive production volume |
 
 #### Global Coverage Map
 
@@ -257,6 +258,7 @@ Forty-eight modules covering 34 countries plus EU-wide and global data (190+ IMF
 🇧🇷 Brazil            — IBGE SIDRA (GDP YoY/QoQ, IPCA inflation, PNAD unemployment, PIM-PF industry, PMC retail)
 🌐 Global (events)    — GDELT (protest/military/terror/conflict/economic media volume & sentiment, country risk, bilateral tension)
 🇺🇸 US (patents)      — USPTO PatentsView (patent search, assignee filings, CPC tech trends, innovation intelligence)
+🇲🇽 Mexico            — INEGI BIE (GDP quarterly, CPI, core inflation, unemployment, industrial production, trade, consumer confidence, auto production)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -469,6 +471,17 @@ python3 modules/patentsview_uspto.py detail 18123456
 python3 modules/patentsview_uspto.py tickers
 python3 modules/patentsview_uspto.py cpc_classes
 python3 modules/patentsview_uspto.py list
+# Mexico — INEGI National Statistics (Batch 14)
+python3 modules/inegi_mexico.py GDP_QUARTERLY
+python3 modules/inegi_mexico.py CPI
+python3 modules/inegi_mexico.py CORE_INFLATION
+python3 modules/inegi_mexico.py UNEMPLOYMENT
+python3 modules/inegi_mexico.py INDUSTRIAL_PRODUCTION
+python3 modules/inegi_mexico.py EXPORTS
+python3 modules/inegi_mexico.py IMPORTS
+python3 modules/inegi_mexico.py CONSUMER_CONFIDENCE
+python3 modules/inegi_mexico.py AUTO_PRODUCTION
+python3 modules/inegi_mexico.py list
 ```
 
 **REST API:**
@@ -592,6 +605,14 @@ GET /api/v1/patentsview-uspto?indicator=PATENT_SEARCH&query=artificial+intellige
 GET /api/v1/patentsview-uspto?indicator=PATENT_GRANTS_BY_ASSIGNEE&assignee=AAPL
 GET /api/v1/patentsview-uspto?indicator=TOP_ASSIGNEES
 GET /api/v1/patentsview-uspto?indicator=TECH_TRENDS&cpc_class=G06N
+GET /api/v1/inegi-mexico?indicator=GDP_QUARTERLY
+GET /api/v1/inegi-mexico?indicator=CPI
+GET /api/v1/inegi-mexico?indicator=CORE_INFLATION
+GET /api/v1/inegi-mexico?indicator=UNEMPLOYMENT
+GET /api/v1/inegi-mexico?indicator=INDUSTRIAL_PRODUCTION
+GET /api/v1/inegi-mexico?indicator=EXPORTS
+GET /api/v1/inegi-mexico?indicator=CONSUMER_CONFIDENCE
+GET /api/v1/inegi-mexico?indicator=AUTO_PRODUCTION
 ```
 
 **MCP Tool Call:**
@@ -1773,6 +1794,136 @@ const innovationIntel = await fetch('http://localhost:3056/api/data/batch', {
 - New in Batch 13: Portuguese national accounts/prices/labour/tourism/trade/construction, Brazilian GDP/IPCA/unemployment/industrial production/retail sales, global geopolitical risk monitoring (protest/military/terror/conflict/economic media sentiment), US patent innovation intelligence (company filings, CPC technology trends, assignee rankings)
 - Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX), policy rates (incl. MNB base rate, BoE Bank Rate), interbank rates, monetary aggregates (incl. EA M1/M2/M3, UK M4/M4 lending growth, Brazilian M2), GDP (incl. EU-12 small state accounts, Portuguese/Brazilian quarterly), CPI/HICP/IPCA/PPI/wholesale prices, unemployment (incl. by demographics, EU-12 youth, PNAD), trade, housing prices, construction costs, lending rates, mortgage rates (incl. UK SVR), credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts (IMF GFS, OECD REV), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism (incl. Portuguese overnight stays), automotive registrations, investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators (CLI/BCI/CCI), pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment (inflation/trade/equity/sanctions/bankruptcy), patent innovation metrics (company IP portfolios, technology CPC trends, industrial production indices)
 
+#### Batch 14: Latin America Expansion — Mexico (INEGI)
+
+Batch 14 adds the **INEGI Mexico** module, expanding the platform into Central/North America's second-largest economy. Mexico is the 12th-largest economy globally and a critical trading partner for the United States — making INEGI data essential for cross-border trade analysis, nearshoring assessments, and Latin American macro monitoring. This brings total coverage to **35 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **49 government/institutional/regulatory/alt-data modules** and **940+ indicators**.
+
+**INEGI Mexico** (`inegi_mexico`) — Instituto Nacional de Estadística y Geografía:
+- GDP: quarterly growth rate vs same quarter previous year (constant 2018 prices, seasonally adjusted)
+- Consumer prices: headline CPI monthly rate (INPC, base Jul 2018=100), core inflation excluding food & energy (monthly)
+- Labour market: national unemployment rate from the Encuesta Nacional de Ocupación y Empleo (ENOE, monthly)
+- Industrial production: total manufacturing production index (base 2018=100, monthly, seasonally adjusted)
+- Foreign trade: total merchandise exports and imports in USD millions (monthly, from customs data)
+- Consumer confidence: INEGI/Banxico consumer confidence index (seasonally adjusted, monthly)
+- Automotive industry: total motor vehicle production units (monthly, from AMIA data via INEGI aggregation) — Mexico is the world's 7th-largest auto producer
+- **9 indicators** across GDP, prices, labour, industry, trade, sentiment, and automotive
+- **Special commands:** `list` (all available indicators with metadata)
+- **CLI aliases:** `gdp`, `inflation`, `trade`, `industry`, `auto`
+- API: `https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR` (BIE REST JSON/XML, requires free API token)
+- Auth: `INEGI_API_TOKEN` or `INEGI_TOKEN` environment variable (free at https://www.inegi.org.mx/app/desarrolladores/generatoken/Usuarios/token_Verify)
+- Cache TTL: 24h (data updated monthly for most indicators, quarterly for GDP)
+
+**Example response — `inegi_mexico` `GDP_QUARTERLY`:**
+```json
+{
+  "success": true,
+  "indicator": "GDP_QUARTERLY",
+  "name": "GDP Quarterly Growth (%)",
+  "description": "Real GDP year-on-year quarterly growth rate (base 2018, seasonally adjusted)",
+  "unit": "%",
+  "frequency": "quarterly",
+  "latest_value": 1.8,
+  "latest_period": "2025-Q4",
+  "period_change": -0.3,
+  "period_change_pct": -14.29,
+  "data_points": [{"period": "2025-Q4", "value": 1.8}, "..."],
+  "total_observations": 24,
+  "source": "INEGI BIE (indicator 493911)"
+}
+```
+
+**Example response — `inegi_mexico` `AUTO_PRODUCTION`:**
+```json
+{
+  "success": true,
+  "indicator": "AUTO_PRODUCTION",
+  "name": "Automotive Production (units)",
+  "description": "Total motor vehicle production in Mexico",
+  "unit": "units",
+  "frequency": "monthly",
+  "latest_value": 345678,
+  "latest_period": "2026-02",
+  "period_change": 12345,
+  "period_change_pct": 3.70,
+  "data_points": [{"period": "2026-02", "value": 345678}, "..."],
+  "total_observations": 24,
+  "source": "INEGI BIE (AMIA automotive)"
+}
+```
+
+**Example — Mexican macro dashboard:**
+```bash
+python3 modules/inegi_mexico.py list
+# Returns all 9 indicators with metadata, latest values, and data freshness
+python3 modules/inegi_mexico.py gdp
+# Returns: GDP_QUARTERLY latest value + 8-quarter history
+python3 modules/inegi_mexico.py trade
+# Returns: EXPORTS + IMPORTS latest values + 12-month history
+```
+
+**Batch MCP — NAFTA/USMCA Trade Partners Comparison (New in Batch 14):**
+```typescript
+const usmcaComparison = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'inegi_mexico', params: { indicator: 'GDP_QUARTERLY' } },
+      { tool: 'inegi_mexico', params: { indicator: 'CPI' } },
+      { tool: 'inegi_mexico', params: { indicator: 'UNEMPLOYMENT' } },
+      { tool: 'inegi_mexico', params: { indicator: 'EXPORTS' } },
+      { tool: 'statcan_canada', params: { indicator: 'GDP_REAL' } },
+      { tool: 'statcan_canada', params: { indicator: 'CPI_ALL_ITEMS' } },
+      { tool: 'statcan_canada', params: { indicator: 'UNEMPLOYMENT_RATE' } },
+      { tool: 'statcan_canada', params: { indicator: 'MERCHANDISE_EXPORTS' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Latin American Macro Dashboard (New in Batch 14):**
+```typescript
+const latamDashboard = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'inegi_mexico', params: { indicator: 'GDP_QUARTERLY' } },
+      { tool: 'inegi_mexico', params: { indicator: 'CPI' } },
+      { tool: 'inegi_mexico', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'ibge_brazil', params: { indicator: 'GDP_YOY' } },
+      { tool: 'ibge_brazil', params: { indicator: 'IPCA_12M' } },
+      { tool: 'ibge_brazil', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'inegi_mexico', params: { indicator: 'AUTO_PRODUCTION' } },
+      { tool: 'ibge_brazil', params: { indicator: 'RETAIL_SALES' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Global Auto Industry Tracker (New in Batch 14):**
+```typescript
+const autoIndustry = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'inegi_mexico', params: { indicator: 'AUTO_PRODUCTION' } },
+      { tool: 'statistics_austria', params: { indicator: 'NEW_CAR_REGISTRATIONS' } },
+      { tool: 'destatis_germany', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'estat_japan', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'istat_italy', params: { indicator: 'INDUSTRIAL_PRODUCTION' } },
+      { tool: 'inegi_mexico', params: { indicator: 'EXPORTS' } },
+      { tool: 'inegi_mexico', params: { indicator: 'INDUSTRIAL_PRODUCTION' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 14:**
+- 49 government/central bank/regulatory/institutional/alt-data modules
+- 35 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇪🇺 🌍 🌐
+- 940+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, and national statistics sources
+- New in Batch 14: Mexican national accounts (GDP quarterly), consumer prices (CPI headline + core), labour market (ENOE unemployment), industrial production, foreign trade (exports/imports), consumer confidence, automotive production — the first Central/North American developing economy module, enabling USMCA trade partner comparison and Latin American macro analysis alongside Brazil
+- Asset classes covered: FX rates (incl. 37-currency RON fixing, 26-pair CAD, 76-currency AED, HUF 12-pair, GBP 4-pair + EER, EU small-state FX), policy rates (incl. MNB base rate, BoE Bank Rate), interbank rates, monetary aggregates (incl. EA M1/M2/M3, UK M4/M4 lending growth, Brazilian M2), GDP (incl. EU-12 small state accounts, Portuguese/Brazilian/Mexican quarterly), CPI/HICP/IPCA/INPC/PPI/wholesale prices (incl. Mexican core inflation), unemployment (incl. by demographics, EU-12 youth, PNAD, ENOE), trade, housing prices, construction costs, lending rates, mortgage rates (incl. UK SVR), credit growth, MFI credit to households/NFCs, cost of borrowing indicators, banking FSIs, gold, government debt/deficit/surplus, fiscal accounts (IMF GFS, OECD REV), BoP, business surveys, IIP, financial accounts, securities filings, regulatory registers, construction, building approvals, retail trade, bond yields (sovereign yield curves), term premiums, income inequality, commodity indices, payment systems, insurance/pension balance sheets, tourism (incl. Portuguese overnight stays), automotive registrations & production (incl. Mexican auto output), investment (GFCF), OTC/exchange-traded derivatives, FX turnover surveys, international debt securities, energy/renewables/GHG/env taxes, digital economy, cashless payments, financial inclusion, banking soundness, portfolio/FDI investment, OECD leading indicators (CLI/BCI/CCI), pension adequacy, R&D expenditure, consumer credit, gilt yield curves, geopolitical risk scores, bilateral tension indices, media sentiment, patent innovation metrics, consumer confidence indices
+
 ---
 
 ## MCP Server
@@ -1831,7 +1982,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,072 data modules gets an auto-generated REST endpoint:
+Each of the 1,073 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -1844,7 +1995,7 @@ Each of the 1,072 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,072 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,073 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -1870,7 +2021,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,072 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,073 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -1999,7 +2150,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,072 Python data modules
+├── modules/                          # 1,073 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -2055,7 +2206,7 @@ quantclaw-data/
 │   ├── ibge_brazil.py              # IBGE Brazil (GDP, IPCA, unemployment, industry, retail)
 │   ├── gdelt_global_events.py      # GDELT Global Events (geopolitical risk, media sentiment)
 │   ├── patentsview_uspto.py        # USPTO PatentsView (patent search, tech trends, assignees)
-│   ├── ... (1,072 modules total)
+│   ├── ... (1,073 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -2140,6 +2291,7 @@ FCA_API_KEY=                         # FCA UK Register (free at https://register
 FCA_API_EMAIL=                       # FCA UK Register signup email
 DNB_SUBSCRIPTION_KEY=                # DNB Netherlands Statistics (optional, public fallback available)
 USPTO_ODP_API_KEY=                   # USPTO Open Data Portal (free at https://data.uspto.gov/apis/getting-started)
+INEGI_API_TOKEN=                     # INEGI Mexico BIE (free at https://www.inegi.org.mx/app/desarrolladores/generatoken/Usuarios/token_Verify)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -2188,4 +2340,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,072 modules • 48 phases • 34 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global) • 48 government/central bank/institutional/alt-data modules • 930+ macro & geopolitical indicators • The data layer powering the MoneyClawX ecosystem*
+*1,073 modules • 48 phases • 35 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global) • 49 government/central bank/institutional/alt-data modules • 940+ macro & geopolitical indicators • The data layer powering the MoneyClawX ecosystem*
