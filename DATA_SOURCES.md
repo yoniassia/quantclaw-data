@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,092 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,094 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -77,6 +77,17 @@
 | UK company search | `uk_companies_house` (5M+ companies, officers, filings, charges, insolvency, PSC) |
 | Beneficial ownership | `uk_companies_house` (PSC register — persons with significant control >25%) |
 | Corporate due diligence | `uk_companies_house` (company profile, officer history, filing history, charges, insolvency) |
+| Bank capital / solvency | `ecb_supervisory_banking` (CET1, Tier 1, total capital ratio, RWA density — 30 Euro Area countries) |
+| Bank NPL / asset quality | `ecb_supervisory_banking` (NPL ratio, NPE ratio, NPL coverage — quarterly) |
+| Bank profitability | `ecb_supervisory_banking` (ROE, ROA, cost-to-income ratio — Euro Area + 30 countries) |
+| Bank liquidity | `ecb_supervisory_banking` (LCR, NSFR, loan-to-deposit ratio) |
+| Global unemployment | `ilostat_labour` (ILO harmonized unemployment rate — 230+ countries, 1947–present) |
+| Youth unemployment | `ilostat_labour` (15–24 unemployment — political instability predictor — 230+ countries) |
+| Wage data (global) | `ilostat_labour` (average monthly earnings by sex/sector — local currency) |
+| Labour productivity | `ilostat_labour` (GDP per worker 2017 PPP $ — 230+ countries) |
+| Informal economy | `ilostat_labour` (informal employment rate, working poverty — EM risk indicator) |
+| Gender pay gap | `ilostat_labour` (gender wage gap % — ESG social pillar input) |
+| NEET rates | `ilostat_labour` (youth not in employment/education/training — 230+ countries) |
 | Norway macro data | `ssb_norway` (GDP, CPI, unemployment, trade, housing, petroleum, industry) |
 | Malaysia central bank | `bnm_malaysia` (OPR, KLIBOR, Islamic interbank, MYR FX, Kijang Emas gold, bank rates) |
 | KLIBOR / Islamic rates | `bnm_malaysia` (KLIBOR O/N–12M, Islamic interbank O/N–12M) |
@@ -3711,6 +3722,110 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### ecb_supervisory_banking.py — ECB Supervisory Banking Statistics (SSM/CBD2)
+
+- **Source:** European Central Bank — Single Supervisory Mechanism
+- **API Base:** `https://data-api.ecb.europa.eu/service`
+- **Protocol:** SDMX 2.1 REST (CSV format — bypasses WAF on JSON key paths)
+- **Dataflow:** CBD2 (Consolidated Banking Data)
+- **Auth:** None (fully public, no API key required)
+- **Refresh:** Quarterly (~3 month publication lag)
+- **Coverage:** Euro Area aggregate (U2) + 30 individual countries (AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK)
+- **Data freshness:** Quarterly
+- **Scope:** Aggregated prudential data for ~110 significant banking groups representing 82% of Euro Area banking assets
+
+| Indicator | Key | Category | Unit |
+|-----------|-----|----------|------|
+| CET1 Ratio | `CET1_RATIO` | Capital Adequacy | % |
+| Tier 1 Capital Ratio | `TIER1_RATIO` | Capital Adequacy | % |
+| Total Capital Ratio | `TOTAL_CAPITAL_RATIO` | Capital Adequacy | % |
+| RWA Density | `RWA_DENSITY` | Capital Adequacy | % |
+| NPL Ratio | `NPL_RATIO` | Asset Quality | % |
+| NPE Ratio | `NPE_RATIO` | Asset Quality | % |
+| NPL Coverage Ratio | `NPL_COVERAGE` | Asset Quality | % |
+| Return on Equity | `ROE` | Profitability | % |
+| Return on Assets | `ROA` | Profitability | % |
+| Cost-to-Income Ratio | `COST_TO_INCOME` | Profitability | % |
+| Liquidity Coverage Ratio | `LCR` | Liquidity | % |
+| Net Stable Funding Ratio | `NSFR` | Liquidity | % |
+| Loan-to-Deposit Ratio | `LOAN_TO_DEPOSIT` | Liquidity | % |
+| Leverage Ratio | `LEVERAGE_RATIO` | Capital Adequacy | ratio |
+
+**CLI Examples:**
+```bash
+python3 modules/ecb_supervisory_banking.py CET1_RATIO
+python3 modules/ecb_supervisory_banking.py CET1_RATIO DE
+python3 modules/ecb_supervisory_banking.py NPL_RATIO IT
+python3 modules/ecb_supervisory_banking.py ROE U2
+python3 modules/ecb_supervisory_banking.py LCR FR
+python3 modules/ecb_supervisory_banking.py LEVERAGE_RATIO
+python3 modules/ecb_supervisory_banking.py list
+```
+
+**MCP Example:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ecb_supervisory_banking',
+    params: { indicator: 'CET1_RATIO', country: 'U2' }
+  })
+});
+```
+
+### ilostat_labour.py — ILO ILOSTAT Global Labour Market Statistics
+
+- **Source:** International Labour Organization (ILO)
+- **API Base:** `https://sdmx.ilo.org/rest`
+- **Protocol:** SDMX 2.1 REST (SDMX-JSON format)
+- **Auth:** None (fully open access, no API key required)
+- **Refresh:** Annual and quarterly (ILO modelled estimates + national survey data)
+- **Coverage:** Global — 230+ countries and territories, data from 1947 to present
+- **Data freshness:** Annual (modelled estimates) / Quarterly (select indicators)
+- **Country codes:** Supports ISO-2 (US, UK, DE) auto-mapped to ISO-3 (USA, GBR, DEU) via built-in alias table (60+ pre-mapped codes)
+- **Disaggregation:** Sex (total/male/female), age groups (15+, 15–24, 25–54, 55–64), economic sectors (agriculture/industry/services)
+
+| Indicator | Key | Category | Unit | Frequency |
+|-----------|-----|----------|------|-----------|
+| Unemployment Rate | `UNEMPLOYMENT` | Labour Force | % | annual |
+| Youth Unemployment (15–24) | `YOUTH_UNEMPLOYMENT` | Labour Force | % | annual |
+| Participation Rate | `PARTICIPATION` | Labour Force | % | annual |
+| Employment by Sector | `EMPLOYMENT_BY_SECTOR` | Labour Force | thousands | annual |
+| Average Monthly Earnings | `WAGES` | Wages | local currency | annual |
+| Earnings by Sector | `WAGES_BY_SECTOR` | Wages | local currency | annual |
+| Labour Productivity | `PRODUCTIVITY` | Productivity | 2017 PPP $ | annual |
+| Working Poverty Rate | `WORKING_POVERTY` | Vulnerability | % | annual |
+| Informal Employment | `INFORMAL_EMPLOYMENT` | Vulnerability | % | annual |
+| NEET Rate | `NEET` | Vulnerability | % | annual |
+| Hours Worked per Week | `HOURS_WORKED` | Conditions | hours/week | annual |
+| Gender Pay Gap | `GENDER_PAY_GAP` | Conditions | % | annual |
+
+**CLI Examples:**
+```bash
+python3 modules/ilostat_labour.py UNEMPLOYMENT US
+python3 modules/ilostat_labour.py YOUTH_UNEMPLOYMENT EG
+python3 modules/ilostat_labour.py PARTICIPATION IN
+python3 modules/ilostat_labour.py WAGES DE
+python3 modules/ilostat_labour.py PRODUCTIVITY CN
+python3 modules/ilostat_labour.py WORKING_POVERTY NG
+python3 modules/ilostat_labour.py GENDER_PAY_GAP JP
+python3 modules/ilostat_labour.py INFORMAL_EMPLOYMENT BR
+python3 modules/ilostat_labour.py NEET ZA
+python3 modules/ilostat_labour.py EMPLOYMENT_BY_SECTOR TH
+python3 modules/ilostat_labour.py list
+```
+
+**MCP Example:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'ilostat_labour',
+    params: { indicator: 'UNEMPLOYMENT', country: 'US' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -3848,10 +3963,10 @@ const result = await fetch('http://localhost:3056/api/data', {
 
 ## Complete Module List
 
-All 1,092 modules in `modules/` directory, sorted alphabetically:
+All 1,094 modules in `modules/` directory, sorted alphabetically:
 
 <details>
-<summary>Click to expand full module list (1,092 modules)</summary>
+<summary>Click to expand full module list (1,094 modules)</summary>
 
 ```
 42matters_app_intelligence    aaii_sentiment               aaii_sentiment_survey
@@ -3904,7 +4019,8 @@ bcrp_peru
 entsoe_energy               opensanctions_api             psa_philippines
 tcmb_evds                   uk_companies_house
 faostat_api
-... (1,092 total — run `ls modules/*.py | wc -l` to verify)
+ecb_supervisory_banking     ilostat_labour
+... (1,094 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3944,8 +4060,8 @@ faostat_api
 | UK Companies House | `UK_COMPANIES_HOUSE_API_KEY` | 600/5min | https://developer.company-information.service.gov.uk/ |
 | UN FAOSTAT | `FAOSTAT_USERNAME` + `FAOSTAT_PASSWORD` | Open (1s polite delay) | https://www.fao.org/faostat/en/#developer-portal |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru, PSA Philippines) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, NASA FIRMS, ENTSO-E, OpenSanctions, TCMB Turkey, UK Companies House, and FAOSTAT require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru, PSA Philippines, ECB Supervisory Banking, ILO ILOSTAT Labour) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, NASA FIRMS, ENTSO-E, OpenSanctions, TCMB Turkey, UK Companies House, and FAOSTAT require free registration.
 
 ---
 
-*1,092 modules — 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members — 68 government/central bank/institutional/alt-data/compliance/agriculture modules — 1,195+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,094 modules — 43 countries + EU-wide + global + 245 FAOSTAT countries + 230+ ILO ILOSTAT countries + 190 IMF member nations + 38 OECD members + 30 ECB SSM banking jurisdictions — 70 government/central bank/institutional/alt-data/compliance/agriculture/labour modules — 1,220+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance, food/agriculture, banking-supervision & global-labour-market indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

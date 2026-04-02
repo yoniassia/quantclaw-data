@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,092 Financial Data Modules
+# QuantClaw Data — 1,094 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,092 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,094 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,092 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,094 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,092** Python data modules
+- **1,094** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,092 modules)             │
+│  ├── Module browser (1,094 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -84,11 +84,11 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 │  └── /api/dcc (natural language queries)         │
 ├─────────────────────────────────────────────────┤
 │  MCP Server (Model Context Protocol)             │
-│  ├── Tool definitions for all 1,092 modules      │
+│  ├── Tool definitions for all 1,094 modules      │
 │  ├── AI agent interface (AgentX, PICentral)      │
 │  └── callTool(), batchCall() patterns            │
 ├─────────────────────────────────────────────────┤
-│  1,092 Python Modules                            │
+│  1,094 Python Modules                            │
 │  ├── Each module = self-contained data fetcher   │
 │  ├── Standardized input/output interface         │
 │  ├── Built-in caching (file + memory)            │
@@ -3404,11 +3404,252 @@ const results = await fetch('http://localhost:3056/api/data/batch', {
 });
 ```
 
-**Coverage totals after Batch 20:**
-- 68 government/central bank/regulatory/institutional/alt-data/compliance/agriculture modules
-- 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇵🇪 🇹🇷 🇵🇭 🇪🇺 🌍 🌐 🌊 🔥 📚 ⚡ 🛡️ 🏢 🌾
-- 1,195+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture sources
-- New in Batch 20: UN FAOSTAT (29 pre-defined indicators + dynamic domain queries covering crop production/yields/area for 6 major commodities, livestock inventory for 3 species, trade quantities/values for 5 crops, producer prices for 4 crops, fertilizer use N/P/K, land use 3 categories, food security 2 indicators, agricultural emissions — 245 countries, 1961–present, 20,000+ total indicators available via domain query)
+#### Batch 21: ECB Supervisory Banking Statistics & ILO Global Labour Markets (Batch Final)
+
+Batch 21 (batch final) adds two major international institution modules — **ECB Supervisory Banking Statistics** (`ecb_supervisory_banking`) and **ILO ILOSTAT Labour** (`ilostat_labour`) — bringing QuantClaw Data to **1,094 total modules** and **70 government/institutional modules**. These two modules complete the platform's coverage of macro-financial stability and global labour market dynamics, adding **24 new indicators** (12 banking prudential + 12 labour market) and expanding country coverage to **230+ countries** (via ILO) and **30 Euro Area banking jurisdictions** (via ECB SSM data).
+
+**ECB Supervisory Banking Statistics** (`ecb_supervisory_banking`) — European Central Bank Single Supervisory Mechanism:
+- **Capital adequacy**: CET1 Ratio (`CET1_RATIO`), Tier 1 Capital Ratio (`TIER1_RATIO`), Total Capital Ratio / Solvency Ratio (`TOTAL_CAPITAL_RATIO`), Risk-Weighted Asset Density (`RWA_DENSITY`) — the core solvency metrics that determine whether European banks can withstand stress scenarios. CET1 is the single most important number in bank equity analysis; ECB minimum is 4.5% but most significant institutions target 12–14%
+- **Asset quality**: Non-Performing Loans Ratio (`NPL_RATIO`), Non-Performing Exposures Ratio (`NPE_RATIO`), NPL Coverage Ratio (`NPL_COVERAGE`) — credit risk indicators showing what fraction of bank loan books are impaired. Italian and Greek banks historically carried NPL ratios of 15–45% post-GFC; these ratios are leading indicators for bank recapitalizations and sovereign-bank doom loops
+- **Profitability**: Return on Equity (`ROE`), Return on Assets (`ROA`), Cost-to-Income Ratio (`COST_TO_INCOME`) — bank earnings efficiency metrics. European bank ROE has structurally lagged US peers (6–8% vs 12–15%) due to negative rates and fragmented markets; these metrics drive bank stock valuations (P/B multiples)
+- **Liquidity**: Liquidity Coverage Ratio (`LCR`), Net Stable Funding Ratio (`NSFR`), Loan-to-Deposit Ratio (`LOAN_TO_DEPOSIT`) — post-Basel III liquidity buffers measuring resilience to funding stress. LCR > 100% means the bank can survive 30 days of net outflows; NSFR measures structural funding stability over 1 year
+- **Leverage**: Leverage Ratio (`LEVERAGE_RATIO`) — total assets / equity, the non-risk-weighted leverage constraint. Basel III minimum is 3%; inversely related to bank safety
+- API base: `https://data-api.ecb.europa.eu/service`
+- Protocol: SDMX 2.1 REST (CSV format to bypass WAF restrictions on JSON key paths)
+- Dataflow: CBD2 (Consolidated Banking Data)
+- Auth: None (fully public, no API key required)
+- Refresh: Quarterly (~3 month publication lag from ECB)
+- Coverage: Euro Area aggregate (U2) + 30 individual countries (AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK)
+- Cache: 24h TTL (quarterly data, minimal staleness risk)
+- Rate limit: 0.3s polite request spacing
+
+**ILO ILOSTAT Labour** (`ilostat_labour`) — International Labour Organization Global Labour Statistics:
+- **Unemployment**: Unemployment Rate (`UNEMPLOYMENT`), Youth Unemployment Rate 15–24 (`YOUTH_UNEMPLOYMENT`) — ILO harmonized modelled estimates enabling cross-country comparison. Youth unemployment > 25% is a leading indicator for political instability (Arab Spring threshold analysis)
+- **Labour force**: Labour Force Participation Rate (`PARTICIPATION`), Employment by Sector — agriculture/industry/services (`EMPLOYMENT_BY_SECTOR`) — structural economic transition indicators. Falling agricultural share + rising services share is the classic development trajectory
+- **Wages & productivity**: Average Monthly Earnings (`WAGES`), Average Monthly Earnings by Sector (`WAGES_BY_SECTOR`), Labour Productivity — GDP per Worker in 2017 PPP $ (`PRODUCTIVITY`) — wage growth data for inflation forecasting and Phillips Curve analysis
+- **Vulnerability**: Working Poverty Rate under $2.15/day (`WORKING_POVERTY`), Informal Employment Rate (`INFORMAL_EMPLOYMENT`), NEET Rate — Youth Not in Employment/Education/Training (`NEET`) — development economics indicators for emerging market risk assessment and ESG social pillar scoring
+- **Working conditions**: Mean Weekly Hours Worked per Employee (`HOURS_WORKED`), Gender Pay Gap (`GENDER_PAY_GAP`) — labour market structural indicators for ESG/DEI analytics and regulatory compliance monitoring
+- API base: `https://sdmx.ilo.org/rest`
+- Protocol: SDMX 2.1 REST (SDMX-JSON format)
+- Auth: None (fully open access, no API key required)
+- Refresh: Annual and quarterly (ILO modelled estimates + national survey data)
+- Coverage: Global — 230+ countries and territories, data from 1947 to present
+- Country code resolution: supports ISO-2 (US, UK, DE) auto-mapped to ISO-3 (USA, GBR, DEU) via built-in alias table covering 60+ common codes
+- Dimension flexibility: sex disaggregation (total/male/female), age groups (15+, 15–24, 25–54, 55–64), economic sectors (agriculture/industry/services)
+- Cache: 24h TTL (annual data, minimal staleness risk)
+- Rate limit: 0.5s polite request spacing
+
+**Financial analysis use cases:**
+
+1. **European bank stress testing & equity analysis** — ECB Supervisory Banking data is the authoritative source for European bank health metrics used by equity analysts, credit rating agencies, and regulators. Tracking CET1 ratio trends across jurisdictions reveals which banking systems are building capital buffers vs. distributing dividends. A declining CET1 combined with rising NPL ratio is the classic early-warning signal for bank recapitalization risk — the pattern seen in Italian banks 2014–2017 and Greek banks 2012–2018. This data directly drives P/B valuations for European bank ETFs (SX7E, EUFN).
+
+2. **Sovereign-bank nexus monitoring** — Combining ECB banking data with Eurostat fiscal data and ECB Enhanced monetary data creates a complete sovereign-bank doom loop monitor. When government debt/GDP rises while bank NPL ratios climb and CET1 ratios fall, the reflexive feedback loop that nearly destroyed the Euro Area in 2011–2012 becomes visible. This is essential for European sovereign CDS and spread trading strategies.
+
+3. **Global labour market regime analysis** — ILO ILOSTAT data enables systematic comparison of labour market conditions across 230+ countries. Combining unemployment rates, wage growth, and productivity data with central bank rate decisions creates a global Phillips Curve monitor. Countries with falling unemployment + accelerating wages + low productivity growth are likely to face monetary tightening — a signal directly applicable to FX carry trade positioning and emerging market bond allocation.
+
+4. **Emerging market political risk** — Youth unemployment above 25% combined with high NEET rates and rising working poverty has historically preceded political instability events (Arab Spring, Latin American protests, Southeast Asian unrest). The ILO module provides these indicators across all developing economies, enabling systematic political risk scoring that feeds into sovereign risk premiums and EM equity allocation models.
+
+5. **ESG social pillar scoring** — Gender pay gap, informal employment rate, and working poverty data from ILOSTAT are core inputs for the social dimension of ESG ratings frameworks (SASB, GRI, UN PRI). Institutional investors managing $100T+ in ESG-integrated assets need country-level labour market data for portfolio-level social impact reporting.
+
+**Pre-defined ECB Supervisory Banking indicators (12):**
+
+| Indicator | Key | Category | Description |
+|-----------|-----|----------|-------------|
+| CET1 Ratio | `CET1_RATIO` | Capital Adequacy | Common Equity Tier 1 / risk-weighted assets (%) — core solvency |
+| Tier 1 Capital Ratio | `TIER1_RATIO` | Capital Adequacy | Tier 1 capital (CET1 + AT1) / risk-weighted assets (%) |
+| Total Capital Ratio | `TOTAL_CAPITAL_RATIO` | Capital Adequacy | Total own funds / total risk exposure (%) |
+| RWA Density | `RWA_DENSITY` | Capital Adequacy | Risk-weighted assets / total assets (%) — risk profile |
+| NPL Ratio | `NPL_RATIO` | Asset Quality | Gross NPLs / total gross loans (%) |
+| NPE Ratio | `NPE_RATIO` | Asset Quality | Gross non-performing exposures / total gross debt (%) |
+| NPL Coverage | `NPL_COVERAGE` | Asset Quality | Impairment provisions / gross NPLs (%) |
+| Return on Equity | `ROE` | Profitability | Net income / shareholders' equity (%) |
+| Return on Assets | `ROA` | Profitability | Net income / total assets (%) |
+| Cost-to-Income | `COST_TO_INCOME` | Profitability | Operating expenses / operating income (%) |
+| LCR | `LCR` | Liquidity | HQLA / 30-day net outflows (%) — short-term stress |
+| NSFR | `NSFR` | Liquidity | Available stable funding / required stable funding (%) |
+| Loan-to-Deposit | `LOAN_TO_DEPOSIT` | Liquidity | Total loans / total deposits (%) |
+| Leverage Ratio | `LEVERAGE_RATIO` | Capital Adequacy | Total assets / equity — non-risk-weighted leverage |
+
+**Pre-defined ILO ILOSTAT Labour indicators (12):**
+
+| Indicator | Key | Category | Description |
+|-----------|-----|----------|-------------|
+| Unemployment Rate | `UNEMPLOYMENT` | Labour Force | ILO harmonized unemployment rate by sex/age (%) |
+| Youth Unemployment | `YOUTH_UNEMPLOYMENT` | Labour Force | Unemployment rate ages 15–24 (%) — instability predictor |
+| Participation Rate | `PARTICIPATION` | Labour Force | Labour force / working-age population (%) |
+| Employment by Sector | `EMPLOYMENT_BY_SECTOR` | Labour Force | Employment in agriculture/industry/services (thousands) |
+| Average Earnings | `WAGES` | Wages | Average monthly earnings by sex (local currency) |
+| Earnings by Sector | `WAGES_BY_SECTOR` | Wages | Average monthly earnings by sector (local currency) |
+| Labour Productivity | `PRODUCTIVITY` | Productivity | GDP per worker (2017 PPP $) — output efficiency |
+| Working Poverty | `WORKING_POVERTY` | Vulnerability | Employed below $2.15/day PPP (%) — SDG 1.1.1 |
+| Informal Employment | `INFORMAL_EMPLOYMENT` | Vulnerability | Informal employment share (%) — SDG 8.3.1 |
+| NEET Rate | `NEET` | Vulnerability | Youth not in employment/education/training (%) |
+| Hours Worked | `HOURS_WORKED` | Conditions | Mean weekly hours per employee |
+| Gender Pay Gap | `GENDER_PAY_GAP` | Conditions | Gender wage gap all occupations (%) |
+
+**Example response — `ecb_supervisory_banking` `CET1_RATIO` (Euro Area):**
+```json
+{
+  "indicator": "CET1_RATIO",
+  "country": "U2",
+  "country_name": "Euro Area",
+  "name": "Common Equity Tier 1 (CET1) Ratio (%)",
+  "unit": "%",
+  "category": "capital_adequacy",
+  "data_points": 40,
+  "latest": {"date": "2025-Q3", "value": 15.85},
+  "previous": {"date": "2025-Q2", "value": 15.72},
+  "change": 0.13,
+  "min": {"date": "2015-Q1", "value": 12.70},
+  "max": {"date": "2025-Q3", "value": 15.85},
+  "source": "ECB Supervisory Banking Statistics (CBD2)",
+  "api_url": "https://data-api.ecb.europa.eu/service"
+}
+```
+
+**Example response — `ilostat_labour` `UNEMPLOYMENT` (United States):**
+```json
+{
+  "indicator": "UNEMPLOYMENT",
+  "country": "USA",
+  "name": "Unemployment Rate (%)",
+  "unit": "%",
+  "frequency": "annual",
+  "data_points": 33,
+  "latest": {"date": "2024", "value": 4.0},
+  "previous": {"date": "2023", "value": 3.6},
+  "change": 0.4,
+  "min": {"date": "2023", "value": 3.6},
+  "max": {"date": "2010", "value": 9.6},
+  "source": "ILO ILOSTAT (SDMX)",
+  "api_url": "https://sdmx.ilo.org/rest",
+  "disaggregation": {"sex": "SEX_T (total)", "age": "AGE_YTHADULT_YGE15 (15+)"}
+}
+```
+
+**CLI quick-start — ECB Supervisory Banking:**
+```bash
+python3 modules/ecb_supervisory_banking.py CET1_RATIO
+# Returns: Euro Area aggregate CET1 ratio (%) quarterly time series
+
+python3 modules/ecb_supervisory_banking.py CET1_RATIO DE
+# Returns: Germany CET1 ratio
+
+python3 modules/ecb_supervisory_banking.py NPL_RATIO IT
+# Returns: Italy NPL ratio — historically elevated post-GFC
+
+python3 modules/ecb_supervisory_banking.py ROE U2
+# Returns: Euro Area bank Return on Equity
+
+python3 modules/ecb_supervisory_banking.py LCR FR
+# Returns: France Liquidity Coverage Ratio
+
+python3 modules/ecb_supervisory_banking.py LEVERAGE_RATIO
+# Returns: Euro Area leverage ratio (assets/equity)
+
+python3 modules/ecb_supervisory_banking.py list
+# Returns: All 12 available indicators with descriptions
+```
+
+**CLI quick-start — ILO ILOSTAT Labour:**
+```bash
+python3 modules/ilostat_labour.py UNEMPLOYMENT US
+# Returns: United States unemployment rate (ILO harmonized) — annual series
+
+python3 modules/ilostat_labour.py YOUTH_UNEMPLOYMENT EG
+# Returns: Egypt youth unemployment — political risk indicator
+
+python3 modules/ilostat_labour.py PARTICIPATION IN
+# Returns: India labour force participation rate
+
+python3 modules/ilostat_labour.py WAGES DE
+# Returns: Germany average monthly earnings (EUR)
+
+python3 modules/ilostat_labour.py PRODUCTIVITY CN
+# Returns: China GDP per worker (2017 PPP $)
+
+python3 modules/ilostat_labour.py WORKING_POVERTY NG
+# Returns: Nigeria working poverty rate (< $2.15/day)
+
+python3 modules/ilostat_labour.py GENDER_PAY_GAP JP
+# Returns: Japan gender wage gap (%)
+
+python3 modules/ilostat_labour.py INFORMAL_EMPLOYMENT BR
+# Returns: Brazil informal employment rate
+
+python3 modules/ilostat_labour.py NEET ZA
+# Returns: South Africa NEET rate
+
+python3 modules/ilostat_labour.py EMPLOYMENT_BY_SECTOR TH
+# Returns: Thailand employment by sector (agriculture/industry/services)
+
+python3 modules/ilostat_labour.py list
+# Returns: All 12 available indicators with descriptions
+```
+
+**MCP batch call example — European Banking Stress Dashboard:**
+```typescript
+const response = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'CET1_RATIO', country: 'U2' } },
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'NPL_RATIO', country: 'IT' } },
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'NPL_RATIO', country: 'GR' } },
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'ROE', country: 'DE' } },
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'LCR', country: 'FR' } },
+      { tool: 'ecb_supervisory_banking', params: { indicator: 'COST_TO_INCOME', country: 'ES' } },
+      { tool: 'ecb_enhanced', params: { indicator: 'DEPOSIT_FACILITY_RATE' } },
+      { tool: 'eurostat_macro', params: { indicator: 'GOVT_DEBT_GDP' } }
+    ]
+  })
+});
+```
+
+**MCP batch call example — Global Labour Market & Phillips Curve Monitor:**
+```typescript
+const response = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ilostat_labour', params: { indicator: 'UNEMPLOYMENT', country: 'US' } },
+      { tool: 'ilostat_labour', params: { indicator: 'UNEMPLOYMENT', country: 'DE' } },
+      { tool: 'ilostat_labour', params: { indicator: 'WAGES', country: 'US' } },
+      { tool: 'ilostat_labour', params: { indicator: 'PRODUCTIVITY', country: 'CN' } },
+      { tool: 'ilostat_labour', params: { indicator: 'YOUTH_UNEMPLOYMENT', country: 'EG' } },
+      { tool: 'ilostat_labour', params: { indicator: 'WORKING_POVERTY', country: 'IN' } },
+      { tool: 'ilostat_labour', params: { indicator: 'GENDER_PAY_GAP', country: 'JP' } },
+      { tool: 'fred_enhanced', params: { indicator: 'FED_FUNDS_RATE' } },
+      { tool: 'ecb_enhanced', params: { indicator: 'MAIN_REFI_RATE' } }
+    ]
+  })
+});
+```
+
+**MCP batch call example — EM Political Risk Scoring (Labour + Geopolitical):**
+```typescript
+const response = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'ilostat_labour', params: { indicator: 'YOUTH_UNEMPLOYMENT', country: 'EG' } },
+      { tool: 'ilostat_labour', params: { indicator: 'NEET', country: 'ZA' } },
+      { tool: 'ilostat_labour', params: { indicator: 'WORKING_POVERTY', country: 'NG' } },
+      { tool: 'ilostat_labour', params: { indicator: 'INFORMAL_EMPLOYMENT', country: 'BR' } },
+      { tool: 'ilostat_labour', params: { indicator: 'UNEMPLOYMENT', country: 'TR' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'PROTEST', country: 'EG' } },
+      { tool: 'gdelt_global_events', params: { indicator: 'CONFLICT', country: 'NG' } },
+      { tool: 'opensanctions_api', params: { indicator: 'COUNTRY_EXPOSURE', country: 'TR' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 21 (Final):**
+- 70 government/central bank/regulatory/institutional/alt-data/compliance/agriculture/labour modules
+- 43 countries + EU-wide + global + 245 FAOSTAT countries + 230+ ILO ILOSTAT countries + 190 IMF member nations + 38 OECD members + 30 ECB SSM banking jurisdictions: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇵🇪 🇹🇷 🇵🇭 🇪🇺 🌍 🌐 🌊 🔥 📚 ⚡ 🛡️ 🏢 🌾 🏦 👷
+- 1,220+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance, food/agriculture, banking supervision & global labour market sources
+- New in Batch 21: ECB Supervisory Banking (12 indicators — CET1/Tier1/total capital ratios, NPL/NPE/coverage ratios, ROE/ROA/cost-to-income, LCR/NSFR/loan-to-deposit, leverage ratio + RWA density — 30 Euro Area countries, quarterly) + ILO ILOSTAT Labour (12 indicators — unemployment/youth unemployment, participation, employment by sector, wages/wages by sector, productivity, working poverty, informal employment, NEET, hours worked, gender pay gap — 230+ countries, 1947–present)
 
 ---
 
@@ -3468,7 +3709,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,092 data modules gets an auto-generated REST endpoint:
+Each of the 1,094 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -3481,7 +3722,7 @@ Each of the 1,092 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,092 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,094 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -3507,7 +3748,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,092 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,094 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -3610,6 +3851,8 @@ screen --min-cap 10B --sector Technology
 | BNM Malaysia (REST/JSON) | No | Open | MYR FX rates (20+ currencies), OPR policy rate, KLIBOR interbank rates (6 tenors), Islamic interbank rates, Kijang Emas gold prices, bank base & lending rates, consumer fraud alerts |
 | BCRP Peru (REST/JSON) | No | Open | BCRP reference rate, CPI Lima index & 12-month inflation, GDP quarterly (USD mn), PEN/USD FX (daily + monthly), copper/gold/silver/zinc mining production, exports/imports FOB, trade balance, international reserves, interbank rate |
 | UN FAOSTAT (REST/JWT) | Yes (free) | Open | Global crop production (wheat/rice/maize/soybeans/sugarcane/palm oil), crop yields & area harvested, livestock inventory (cattle/chicken/pigs), commodity trade (export/import qty & value), producer prices (USD/tonne), fertilizer use (N/P/K), land use (arable/agricultural/forest), food security (undernourishment, dietary supply adequacy), agricultural GHG emissions — 245 countries, 1961–present |
+| ECB Supervisory Banking (SDMX/CSV) | No | Open (quarterly) | CET1 ratio, Tier 1 capital ratio, total capital ratio, NPL ratio, NPE ratio, NPL coverage, ROE, ROA, cost-to-income, LCR, NSFR, loan-to-deposit, leverage ratio, RWA density — Euro Area aggregate + 30 individual countries (CBD2 dataflow) |
+| ILO ILOSTAT (SDMX-JSON) | No | Open (annual/quarterly) | Unemployment rate (harmonized), youth unemployment (15–24), labour force participation, employment by sector (agri/industry/services), average monthly earnings, earnings by sector, labour productivity (GDP per worker PPP), working poverty ($2.15/day), informal employment, NEET rate, hours worked, gender pay gap — 230+ countries, 1947–present |
 
 ---
 
@@ -3651,7 +3894,7 @@ cache/
 
 ```
 quantclaw-data/
-├── modules/                          # 1,092 Python data modules
+├── modules/                          # 1,094 Python data modules
 │   ├── prices.py                     # Stock prices (Yahoo Finance)
 │   ├── technicals.py                 # Technical analysis indicators
 │   ├── alpha_picker.py               # AI alpha scoring
@@ -3727,7 +3970,9 @@ quantclaw-data/
 │   ├── tcmb_evds.py                # TCMB Turkey (TRY FX rates, policy rate, CPI, money supply, current account, reserves)
 │   ├── uk_companies_house.py       # UK Companies House (company search/profile, officers, filings, charges, insolvency, PSC)
 │   ├── faostat_api.py              # UN FAOSTAT (crop production, trade, prices, fertilizers, land use, food security, emissions — 245 countries)
-│   ├── ... (1,092 modules total)
+│   ├── ecb_supervisory_banking.py  # ECB SSM Banking (CET1, NPL, ROE, LCR, NSFR, leverage — 30 Euro Area countries)
+│   ├── ilostat_labour.py           # ILO ILOSTAT Labour (unemployment, wages, productivity, poverty, NEET — 230+ countries)
+│   ├── ... (1,094 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -3873,4 +4118,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,092 modules • 49 phases • 43 countries + EU-wide + global + 245 FAOSTAT countries + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Turkey + Philippines + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research + ENTSO-E energy + OpenSanctions compliance + UK Companies House + UN FAOSTAT agriculture) • 68 government/central bank/institutional/alt-data/compliance/agriculture modules • 1,195+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance & food/agriculture indicators • The data layer powering the MoneyClawX ecosystem*
+*1,094 modules • 49 phases • 43 countries + EU-wide + global + 245 FAOSTAT countries + 230+ ILO ILOSTAT countries + 190 IMF member nations + 38 OECD members + 30 ECB SSM banking jurisdictions (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Turkey + Philippines + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research + ENTSO-E energy + OpenSanctions compliance + UK Companies House + UN FAOSTAT agriculture + ECB SSM banking + ILO ILOSTAT labour) • 70 government/central bank/institutional/alt-data/compliance/agriculture/labour modules • 1,220+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly, commodity-production, energy-market, sanctions-compliance, corporate-registry, remittance, food/agriculture, banking-supervision & global-labour-market indicators • The data layer powering the MoneyClawX ecosystem*
