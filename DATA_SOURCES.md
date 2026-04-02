@@ -1,6 +1,6 @@
 # QuantClaw Data Sources — Complete Reference for AI Agents
 
-> **1,085 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
+> **1,086 Python modules** across 9+ categories. Access via MCP tool calls, REST API, or direct CLI.
 > This file is THE reference for AI agents (claws) to know what data is available and how to get it.
 
 **Base URL:** `http://localhost:3055` (local) / `https://data.quantclaw.org` (production)
@@ -12,8 +12,8 @@
 
 | Query | Modules |
 |-------|---------|
-| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway`, `bank_of_thailand` |
-| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway` |
+| GDP data | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `rba_enhanced` (H1 real/nominal GDP), `uae_data`, `destatis_germany`, `ine_spain`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `eurostat_macro`, `inegi_mexico`, `ibge_brazil`, `ine_portugal`, `ssb_norway`, `bank_of_thailand`, `bcrp_peru` |
+| Inflation / CPI | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `nbb_belgium`, `abs_australia_sdmx`, `uae_data`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `ecb_enhanced` (EA HICP headline/core/food), `bls`, `ssb_norway`, `bcrp_peru` |
 | Unemployment | `fred_enhanced`, `insee_france`, `istat_italy`, `cbs_netherlands`, `statistics_denmark`, `scb_sweden`, `ons_uk`, `statcan_canada`, `estat_japan`, `cso_ireland`, `statistics_finland`, `abs_australia_sdmx`, `destatis_germany`, `ine_spain`, `statbel_belgium`, `statistics_austria`, `czso_czech`, `statistics_estonia`, `bls`, `inegi_mexico` (ENOE), `ibge_brazil` (PNAD), `ine_portugal`, `ssb_norway` (LFS SA) |
 | Stock price / quote | `prices`, `market_quote`, `alpha_picker`, `tiingo`, `polygon_io` |
 | Technical analysis | `technicals`, `breadth_indicators`, `momentum_factor_backtest` |
@@ -26,7 +26,10 @@
 | TWD exchange rates | `cbc_taiwan` (TWD/USD close, buy, sell) |
 | EUR exchange rates | `banque_de_france`, `riksbank_sweden`, `banco_de_portugal`, `ecb_fx_rates`, `alphavantage_fx` |
 | Bond yields | `bundesbank_sdmx`, `riksbank_sweden`, `danmarks_nationalbank`, `rba_enhanced` (AU 2Y–10Y + indexed), `bank_of_canada_valet` (GoC 2Y–30Y + RRB + T-bills), `norges_bank` (NO govt 3Y–10Y + T-bills 3M–12M), `bank_of_thailand` (TH 1Y–20Y), `treasury_curve`, `yield_curve` |
-| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA), `norges_bank` (key policy rate, overnight lending, reserve rate), `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo) |
+| Central bank rates | `bundesbank_sdmx` (ECB), `riksbank_sweden`, `bank_of_england`, `fed_policy`, `cbc_taiwan` (CBC), `central_bank_ireland` (ECB), `danmarks_nationalbank` (DN), `cnb_czech` (CNB 2W repo), `rba_enhanced` (RBA cash rate + intl comparison: Fed/BOJ/ECB/BOE/BOC), `bank_of_canada_valet` (BoC overnight, bank rate, CORRA), `norges_bank` (key policy rate, overnight lending, reserve rate), `bnm_malaysia` (OPR), `bank_of_thailand` (BOT repo), `bcrp_peru` (reference rate) |
+| Copper/mining data | `bcrp_peru` (copper, gold, silver, zinc production — Peru is #2 global copper producer) |
+| PEN exchange rates | `bcrp_peru` (PEN/USD daily interbank + monthly average) |
+| Peru macro | `bcrp_peru` (reference rate, CPI, GDP, FX, mining production, trade, reserves, interbank rate) |
 | Euribor rates | `banco_de_espana`, `central_bank_ireland` |
 | DKK exchange rates | `danmarks_nationalbank` (EUR/USD/GBP/JPY/CHF/NOK/SEK per DKK) |
 | Belgian macro / BoP | `nbb_belgium` (BoP, HICP, financial accounts, IIP, govt finance, business surveys) |
@@ -3338,6 +3341,57 @@ const result = await fetch('http://localhost:3056/api/data', {
 });
 ```
 
+### bcrp_peru.py — BCRP Central Bank of Peru
+
+- **Source:** Banco Central de Reserva del Perú — Peru's central bank, manages monetary policy for South America's 5th-largest economy and world's #2 copper producer
+- **API:** `https://estadisticas.bcrp.gob.pe/estadisticas/series/api`
+- **Auth:** None (fully open, no API key required)
+- **Rate Limits:** No documented limits (polite ~0.3s delay)
+- **Data Freshness:** Daily (FX), Monthly (macro, mining, trade), Quarterly (GDP)
+- **Coverage:** Peru (national)
+- **Indicators:**
+  - `REFERENCE_RATE` — BCRP monetary policy reference rate (% p.a., monthly, series PD04722MM)
+  - `CPI_INDEX` — CPI Lima Metropolitan index (Dec.2021=100, monthly, series PN38705PM)
+  - `CPI_INFLATION_12M` — CPI 12-month percentage change (%, monthly, series PN01273PM)
+  - `GDP` — Gross domestic product (millions USD, quarterly, series PN39029BQ)
+  - `FX_PEN_USD_DAILY` — PEN/USD interbank sell rate (daily, series PD04638PD)
+  - `FX_PEN_USD_MONTHLY` — PEN/USD monthly average (monthly, series PN01234PM)
+  - `COPPER_PRODUCTION` — Total copper production (metric tons fine content, monthly, series RD12951DM)
+  - `GOLD_PRODUCTION` — Total gold production (grams fine content, monthly, series RD12978DM)
+  - `SILVER_PRODUCTION` — Total silver production (kg fine content, monthly, series RD12996DM)
+  - `ZINC_PRODUCTION` — Total zinc production (metric tons fine content, monthly, series RD13029DM)
+  - `EXPORTS` — Total exports FOB (millions USD, monthly, series PN38714BM)
+  - `IMPORTS` — Total imports FOB (millions USD, monthly, series PN38718BM)
+  - `RESERVES` — International reserves net position (millions USD, monthly, series PN00027MM)
+  - `INTERBANK_RATE` — Average interbank overnight lending rate (% p.a., monthly, series PN07819NM)
+
+**CLI:**
+```bash
+python3 modules/bcrp_peru.py REFERENCE_RATE
+python3 modules/bcrp_peru.py CPI_INFLATION_12M
+python3 modules/bcrp_peru.py GDP
+python3 modules/bcrp_peru.py FX_PEN_USD_DAILY
+python3 modules/bcrp_peru.py COPPER_PRODUCTION
+python3 modules/bcrp_peru.py GOLD_PRODUCTION
+python3 modules/bcrp_peru.py SILVER_PRODUCTION
+python3 modules/bcrp_peru.py ZINC_PRODUCTION
+python3 modules/bcrp_peru.py EXPORTS
+python3 modules/bcrp_peru.py RESERVES
+python3 modules/bcrp_peru.py INTERBANK_RATE
+python3 modules/bcrp_peru.py list
+```
+
+**MCP Tool Call:**
+```typescript
+const result = await fetch('http://localhost:3056/api/data', {
+  method: 'POST',
+  body: JSON.stringify({
+    tool: 'bcrp_peru',
+    params: { indicator: 'COPPER_PRODUCTION' }
+  })
+});
+```
+
 ---
 
 ## Category 2: US Government & Federal Data
@@ -3525,7 +3579,10 @@ gdelt_global_events          patentsview_uspto
 inegi_mexico
 gleif_lei                   bank_of_thailand              dane_colombia
 epo_ops                     usgs_earthquake               kosis_korea
-... (1,085 total — run `ls modules/*.py | wc -l` to verify)
+ssb_norway                  norges_bank                   global_fishing_watch
+nasa_firms_fire             openalex_research             bnm_malaysia
+bcrp_peru
+... (1,086 total — run `ls modules/*.py | wc -l` to verify)
 ```
 
 </details>
@@ -3560,8 +3617,8 @@ epo_ops                     usgs_earthquake               kosis_korea
 | Global Fishing Watch | `GFW_API_TOKEN` | 100/min | https://globalfishingwatch.org/our-apis/ |
 | NASA FIRMS | `NASA_FIRMS_MAP_KEY` | 2,000/day | https://firms.modaps.eosdis.nasa.gov/api/map_key/ |
 
-Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, and NASA FIRMS require free registration.
+Most government statistics modules (Bundesbank, INSEE, ISTAT, CBS, DST, SCB, Riksbank, BdE, BPstat, ONS, StatCan, NBP Poland, CBC Taiwan, NBB Belgium, CBI Ireland, CSO Ireland, Statistics Finland, Danmarks Nationalbank, CNB Czech, ABS Australia, CBUAE/World Bank, RBA Australia, Bank of Canada Valet, INE Spain, BNR Romania, Statbel Belgium, Statistics Austria, CZSO Czech, Statistics Estonia, ECB Enhanced, Eurostat Enhanced, BIS Enhanced, IMF Enhanced, OECD Enhanced, BoE IADB Enhanced, MNB Hungary, EU Small Central Banks, EU Small Statistics, INE Portugal, IBGE Brazil, GDELT Project, DANE Colombia, USGS Earthquake, GLEIF LEI, Norges Bank, SSB Norway, BNM Malaysia, BCRP Peru) require **NO API key** for core data. OpenAlex uses polite-pool access (email-based, no key). DNB Netherlands includes a public fallback key. e-Stat Japan, Destatis GENESIS, EDINET Japan, FCA UK Register, CNB Czech ARAD, USPTO PatentsView, INEGI Mexico, Bank of Thailand, EPO OPS, KOSIS South Korea, Global Fishing Watch, and NASA FIRMS require free registration.
 
 ---
 
-*1,085 modules — 40 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 61 government/central bank/institutional/alt-data modules — 1,100+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, & scholarly research indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*
+*1,086 modules — 41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members — 62 government/central bank/institutional/alt-data modules — 1,115+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly research & commodity-production indicators — Updated 2026-04-02 — QuantClaw Data (DCC)*

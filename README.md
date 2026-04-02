@@ -1,7 +1,7 @@
-# QuantClaw Data — 1,085 Financial Data Modules
+# QuantClaw Data — 1,086 Financial Data Modules
 
 > The world's most comprehensive open financial data platform.
-> 1,085 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
+> 1,086 Python modules • MCP server • REST API • Natural Language Query • Terminal UI
 
 **Live:** https://data.quantclaw.org · **Port:** 3055 · **PM2:** quantclaw-data
 
@@ -30,10 +30,10 @@
 
 ## Overview
 
-QuantClaw Data is a massive financial data aggregation platform that unifies 1,085 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
+QuantClaw Data is a massive financial data aggregation platform that unifies 1,086 Python data modules behind a single API. It provides real-time and historical data across equities, options, fixed income, crypto, commodities, forex, macro, alternative data, and quantitative analytics. The platform serves as the data backbone for the entire MoneyClawX ecosystem (AgentX, TerminalX, PICentral, VIP Signals).
 
 **Key numbers:**
-- **1,085** Python data modules
+- **1,086** Python data modules
 - **9** data categories (Core Market, Derivatives, Alt Data, Multi-Asset, Quant, Fixed Income, Events, Intelligence, Infrastructure)
 - **49** completed development phases
 - **30+** external API integrations
@@ -71,7 +71,7 @@ QuantClaw Data is a massive financial data aggregation platform that unifies 1,0
 ┌─────────────────────────────────────────────────┐
 │  Terminal UI (Next.js)                           │
 │  ├── Draggable panel grid (TerminalGrid)        │
-│  ├── Module browser (1,085 modules)             │
+│  ├── Module browser (1,086 modules)             │
 │  ├── Chart panels (TradingView-style)           │
 │  ├── Ticker panels (real-time prices)           │
 │  ├── News panels                                │
@@ -214,6 +214,7 @@ Sixty-one modules covering 40 countries plus EU-wide and global data (190+ IMF m
 || `nasa_firms_fire` | NASA FIRMS (Fire Information for Resource Management) | Global (satellite) | `https://firms.modaps.eosdis.nasa.gov/api` | NRT fire detections by country (USA/BRA/IDN/AUS/CAN/RUS, 24h–10d), financial hotspot fire monitoring (California wildfire/Amazon deforestation/SE Asian haze/Australian bushfire/Canadian boreal/Mediterranean/Siberian/Sub-Saharan burns), fire anomaly scores with commodity impact (soy/palm oil/wheat/lumber/insurance/carbon credits), VIIRS & MODIS satellite sources, fire radiative power (FRP), intensity levels |
 || `openalex_research` | OpenAlex (Scholarly Research) | Global (250M+ works) | `https://api.openalex.org` | Corporate R&D output tracking (Pfizer/Novartis/Roche/Google/Microsoft/NVIDIA/Samsung/TSMC annual publications), research topic trends (machine learning/GLP-1/CRISPR/quantum computing/solid-state battery), trending research topics (30 keywords with YoY growth: LLM/CAR-T/mRNA/nuclear fusion/autonomous driving/digital twin/generative AI/etc.), institution comparison, country innovation rankings, citation analysis |
 || `bnm_malaysia` | Bank Negara Malaysia (BNM) | Malaysia | `https://api.bnm.gov.my/public` | MYR exchange rates (20+ currencies, buying/selling/middle), Overnight Policy Rate (OPR history & decisions), KLIBOR interbank rates (overnight/1W/1M/3M/6M/12M), Islamic interbank money market rates, Kijang Emas gold prices (1oz/½oz/¼oz in MYR), bank base & lending rates (all Malaysian banks), consumer financial fraud alerts |
+|| `bcrp_peru` | BCRP (Banco Central de Reserva del Perú) | Peru | `https://estadisticas.bcrp.gob.pe/estadisticas/series/api` | BCRP reference rate (monetary policy), CPI Lima Metropolitan (index Dec.2021=100), CPI 12-month inflation, GDP (millions USD quarterly), PEN/USD exchange rate (daily interbank + monthly average), copper production (metric tons fine), gold production (grams fine), silver production (kg fine), zinc production (metric tons fine), exports/imports FOB (millions USD), trade balance, international reserves (net, millions USD), interbank interest rate |
 
 #### Global Coverage Map
 
@@ -283,6 +284,7 @@ Sixty-one modules covering 40 countries plus EU-wide and global data (190+ IMF m
 🌊 Global (maritime)  — Global Fishing Watch (fishing effort by flag state, vessel identity, port visits, transshipment encounters, regional intensity — 65,000+ vessels, IUU risk)
 🔥 Global (satellite) — NASA FIRMS Fire Detection (NRT VIIRS/MODIS fire detections, 8 financial hotspot regions, commodity impact scoring, fire anomaly analysis — <3h latency)
 📚 Global (research)  — OpenAlex Scholarly Research (250M+ works, corporate R&D tracking, topic trends, trending research, country innovation rankings, citation analysis)
+🇵🇪 Peru              — BCRP Central Bank (reference rate, CPI/inflation, GDP, PEN/USD FX daily+monthly, copper/gold/silver/zinc mining production, trade balance, reserves, interbank rate)
 ```
 
 #### Usage Examples — Government Statistics Modules
@@ -623,6 +625,22 @@ python3 modules/bnm_malaysia.py islamic_rate
 python3 modules/bnm_malaysia.py kijang_emas
 python3 modules/bnm_malaysia.py base_rate
 python3 modules/bnm_malaysia.py list
+# BCRP Peru — Central Bank of Peru (Batch 18)
+python3 modules/bcrp_peru.py REFERENCE_RATE
+python3 modules/bcrp_peru.py CPI_INFLATION_12M
+python3 modules/bcrp_peru.py CPI_INDEX
+python3 modules/bcrp_peru.py GDP
+python3 modules/bcrp_peru.py FX_PEN_USD_DAILY
+python3 modules/bcrp_peru.py FX_PEN_USD_MONTHLY
+python3 modules/bcrp_peru.py COPPER_PRODUCTION
+python3 modules/bcrp_peru.py GOLD_PRODUCTION
+python3 modules/bcrp_peru.py SILVER_PRODUCTION
+python3 modules/bcrp_peru.py ZINC_PRODUCTION
+python3 modules/bcrp_peru.py EXPORTS
+python3 modules/bcrp_peru.py IMPORTS
+python3 modules/bcrp_peru.py RESERVES
+python3 modules/bcrp_peru.py INTERBANK_RATE
+python3 modules/bcrp_peru.py list
 ```
 
 **REST API:**
@@ -812,6 +830,14 @@ GET /api/v1/bnm-malaysia?indicator=EXCHANGE_RATE
 GET /api/v1/bnm-malaysia?indicator=OPR
 GET /api/v1/bnm-malaysia?indicator=INTERBANK_RATE
 GET /api/v1/bnm-malaysia?indicator=KIJANG_EMAS
+GET /api/v1/bcrp-peru?indicator=REFERENCE_RATE
+GET /api/v1/bcrp-peru?indicator=CPI_INFLATION_12M
+GET /api/v1/bcrp-peru?indicator=GDP
+GET /api/v1/bcrp-peru?indicator=FX_PEN_USD_DAILY
+GET /api/v1/bcrp-peru?indicator=COPPER_PRODUCTION
+GET /api/v1/bcrp-peru?indicator=GOLD_PRODUCTION
+GET /api/v1/bcrp-peru?indicator=EXPORTS
+GET /api/v1/bcrp-peru?indicator=RESERVES
 ```
 
 **MCP Tool Call:**
@@ -2764,6 +2790,156 @@ const pharmaRD = await fetch('http://localhost:3056/api/data/batch', {
 - 1,100+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, and scholarly research sources
 - New in Batch 17: Norges Bank SDMX (36-currency NOK FX, trade-weighted indices, policy rate corridor, NOWA interbank rates, govt bond yields 3Y–10Y, T-bill rates), Bank Negara Malaysia (MYR FX 20+, OPR, KLIBOR term structure, Islamic interbank rates, Kijang Emas gold, bank base/lending rates), Global Fishing Watch (fishing effort by flag state, vessel identity/search, port visits, transshipment encounters, regional intensity — IUU/sanctions risk), NASA FIRMS (NRT VIIRS/MODIS satellite fire detection for 8 financial hotspot regions with commodity impact scoring and anomaly analysis), OpenAlex (corporate R&D output tracking for 8 companies, topic publication trends for 30 trending keywords, country innovation rankings, citation analysis)
 
+#### Batch 18: South America Expansion — Peru (BCRP Central Bank)
+
+Batch 18 adds the **BCRP Peru** module (Banco Central de Reserva del Perú), expanding the platform into South America's fifth-largest economy and the world's second-largest copper producer. Peru is a critical link in the global metals & mining supply chain — its copper output directly influences commodity markets (CME copper futures), and the BCRP's monetary policy rate is a bellwether for Latin American rate cycles. The BCRP Statistics API provides 15,000+ time series with open access and no authentication required. This brings total coverage to **41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members**, with **62 government/institutional/regulatory/alt-data modules** and **1,115+ indicators**.
+
+**BCRP Peru** (`bcrp_peru`) — Banco Central de Reserva del Perú:
+- Monetary policy: BCRP reference rate (% p.a., monthly) — primary Peruvian policy tool, set by BCRP Board
+- Consumer prices: CPI Lima Metropolitan index (Dec.2021=100, monthly), CPI 12-month inflation rate (% change)
+- National accounts: GDP in millions of US dollars (quarterly)
+- Foreign exchange: PEN/USD interbank sell rate (daily), PEN/USD monthly average
+- Mining production: copper (metric tons fine content), gold (grams fine content), silver (kg fine content), zinc (metric tons fine content) — Peru is #2 copper, #4 silver, #7 gold, #3 zinc global producer
+- Trade: exports FOB (USD mn), imports FOB (USD mn), trade balance (derived)
+- Reserves: international reserves net position (millions USD, monthly)
+- Money market: interbank overnight lending rate (% p.a., monthly)
+- API base: `https://estadisticas.bcrp.gob.pe/estadisticas/series/api`
+- Auth: none (fully open, no API key required)
+- Rate limits: no documented limits (polite ~0.3s delay per request)
+
+**Why BCRP Peru matters for financial analysis:**
+
+Peru's economy is uniquely positioned at the intersection of commodity markets and Latin American monetary policy:
+
+1. **Copper supply bellwether** — Peru produces ~12% of global copper (2.7M+ tonnes/year), second only to Chile. BCRP copper production data leads LME/COMEX copper price movements by 1–3 months. A decline in Peruvian output signals tighter global supply and higher prices — directly impacting companies like Freeport-McMoRan (FCX), Southern Copper (SCCO), and BHP (BHP).
+
+2. **Precious metals signal** — Peru's gold and silver output feeds into physical market supply models. Monthly production data from BCRP is more granular and timelier than USGS/World Gold Council annual estimates, providing a proprietary edge for precious metals traders.
+
+3. **Latin American rate cycle leader** — The BCRP was one of the first EM central banks to begin hiking in 2021 and cutting in 2023, often leading Brazil (COPOM) and Mexico (Banxico) by 2–3 months. Tracking the BCRP reference rate provides early signals for broader LATAM rate expectations.
+
+4. **PEN/USD as copper proxy** — The Peruvian sol (PEN) is among the most commodity-sensitive currencies in LATAM. PEN/USD daily movements from BCRP correlate closely with copper price changes, making it a useful cross-check for commodity positioning.
+
+5. **Trade balance & reserves** — BCRP's monthly exports/imports data decomposes into traditional (mining) vs non-traditional categories. Combined with international reserves data, this enables monitoring of Peru's external vulnerability and current account sustainability — critical for EM sovereign credit assessment.
+
+**Example response — `bcrp_peru` `REFERENCE_RATE`:**
+```json
+{
+  "indicator": "REFERENCE_RATE",
+  "name": "BCRP Reference Rate (% p.a.)",
+  "latest_value": 5.75,
+  "latest_date": "2026-03",
+  "unit": "% p.a.",
+  "frequency": "monthly",
+  "history": [
+    {"date": "2025-07", "value": 5.75},
+    {"date": "2025-08", "value": 5.75},
+    {"date": "2025-09", "value": 5.50}
+  ],
+  "source": "BCRP Statistics (series PD04722MM)"
+}
+```
+
+**Example response — `bcrp_peru` `COPPER_PRODUCTION`:**
+```json
+{
+  "indicator": "COPPER_PRODUCTION",
+  "name": "Copper Production — Total (metric tons fine)",
+  "latest_value": 234567.0,
+  "latest_date": "2026-01",
+  "unit": "tm.f",
+  "frequency": "monthly",
+  "history": [
+    {"date": "2025-11", "value": 221345.0},
+    {"date": "2025-12", "value": 228901.0},
+    {"date": "2026-01", "value": 234567.0}
+  ],
+  "source": "BCRP Statistics (series RD12951DM)"
+}
+```
+
+**CLI quick-start:**
+```bash
+python3 modules/bcrp_peru.py list
+# Returns all 14 indicators with metadata, latest values, and data freshness
+python3 modules/bcrp_peru.py reference_rate
+# Returns: BCRP policy rate + 12-month history
+python3 modules/bcrp_peru.py copper
+# Returns: COPPER_PRODUCTION latest value + 12-month production history
+python3 modules/bcrp_peru.py fx
+# Returns: PEN/USD daily interbank rate + recent history
+python3 modules/bcrp_peru.py gdp
+# Returns: GDP quarterly (USD mn) + 8-quarter history
+python3 modules/bcrp_peru.py reserves
+# Returns: International reserves net position + 12-month history
+```
+
+**Batch MCP — Latin American Commodity Economy Dashboard (New in Batch 18):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'bcrp_peru', params: { indicator: 'REFERENCE_RATE' } },
+      { tool: 'bcrp_peru', params: { indicator: 'CPI_INFLATION_12M' } },
+      { tool: 'bcrp_peru', params: { indicator: 'GDP' } },
+      { tool: 'bcrp_peru', params: { indicator: 'FX_PEN_USD_DAILY' } },
+      { tool: 'bcrp_peru', params: { indicator: 'COPPER_PRODUCTION' } },
+      { tool: 'bcrp_peru', params: { indicator: 'GOLD_PRODUCTION' } },
+      { tool: 'bcrp_peru', params: { indicator: 'EXPORTS' } },
+      { tool: 'bcrp_peru', params: { indicator: 'RESERVES' } },
+      { tool: 'inegi_mexico', params: { indicator: 'GDP_QUARTERLY' } },
+      { tool: 'inegi_mexico', params: { indicator: 'CPI' } },
+      { tool: 'ibge_brazil', params: { indicator: 'GDP_YOY' } },
+      { tool: 'ibge_brazil', params: { indicator: 'IPCA_12M' } },
+      { tool: 'dane_colombia', params: { indicator: 'GDP' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Global Copper Supply Chain Monitor (New in Batch 18):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'bcrp_peru', params: { indicator: 'COPPER_PRODUCTION' } },
+      { tool: 'bcrp_peru', params: { indicator: 'ZINC_PRODUCTION' } },
+      { tool: 'bcrp_peru', params: { indicator: 'EXPORTS' } },
+      { tool: 'bcrp_peru', params: { indicator: 'FX_PEN_USD_DAILY' } },
+      { tool: 'usgs_earthquake', params: { indicator: 'HOTSPOT_CHILE' } },
+      { tool: 'kosis_korea', params: { indicator: 'IPI_TOTAL' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_USA' } },
+      { tool: 'oecd_enhanced', params: { indicator: 'CLI_DEU' } }
+    ]
+  })
+});
+```
+
+**Batch MCP — Latin American Central Bank Rate Cycle (New in Batch 18):**
+```typescript
+const results = await fetch('http://localhost:3056/api/data/batch', {
+  method: 'POST',
+  body: JSON.stringify({
+    calls: [
+      { tool: 'bcrp_peru', params: { indicator: 'REFERENCE_RATE' } },
+      { tool: 'bcrp_peru', params: { indicator: 'INTERBANK_RATE' } },
+      { tool: 'bcrp_peru', params: { indicator: 'CPI_INFLATION_12M' } },
+      { tool: 'banco_de_espana', params: { indicator: 'EURIBOR_12M' } },
+      { tool: 'dane_colombia', params: { indicator: 'CPI' } },
+      { tool: 'inegi_mexico', params: { indicator: 'CPI' } },
+      { tool: 'ibge_brazil', params: { indicator: 'IPCA_12M' } }
+    ]
+  })
+});
+```
+
+**Coverage totals after Batch 18:**
+- 62 government/central bank/regulatory/institutional/alt-data modules
+- 41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members: 🇩🇪 🇫🇷 🇮🇹 🇳🇱 🇩🇰 🇸🇪 🇪🇸 🇵🇹 🇬🇧 🇨🇦 🇯🇵 🇵🇱 🇹🇼 🇧🇪 🇮🇪 🇫🇮 🇨🇿 🇦🇺 🇦🇪 🇷🇴 🇦🇹 🇪🇪 🇭🇺 🇧🇬 🇭🇷 🇨🇾 🇱🇻 🇱🇹 🇱🇺 🇲🇹 🇸🇰 🇸🇮 🇬🇷 🇧🇷 🇲🇽 🇰🇷 🇹🇭 🇨🇴 🇳🇴 🇲🇾 🇵🇪 🇪🇺 🌍 🌐 🌊 🔥 📚
+- 1,115+ indicators from official government, central bank, international institution, geopolitical event, patent innovation, seismic hazard, entity registry, national statistics, maritime vessel tracking, satellite fire observation, scholarly research, and commodity production sources
+- New in Batch 18: BCRP Peru (reference rate/interbank rate, CPI index/12-month inflation, GDP quarterly USD, PEN/USD FX daily+monthly, copper/gold/silver/zinc mining production in fine content units, exports/imports FOB, trade balance, international reserves — open access, no API key, REST/JSON, 15,000+ series available)
+
 ---
 
 ## MCP Server
@@ -2822,7 +2998,7 @@ POST /api/data?tool={module_name}&params={json}
 ```
 
 ### Auto-Generated Endpoints
-Each of the 1,080 data modules gets an auto-generated REST endpoint:
+Each of the 1,086 data modules gets an auto-generated REST endpoint:
 ```
 /api/v1/prices?ticker=AAPL
 /api/v1/technicals?ticker=AAPL&indicators=rsi,macd
@@ -2835,7 +3011,7 @@ Each of the 1,080 data modules gets an auto-generated REST endpoint:
 
 ## Natural Language Queries (DCC)
 
-The Data Command Center (DCC) allows natural language queries against all 1,080 modules:
+The Data Command Center (DCC) allows natural language queries against all 1,086 modules:
 
 ### Architecture
 - `src/lib/nl-query-engine.ts` — Query understanding + module routing
@@ -2861,7 +3037,7 @@ The terminal UI uses a draggable grid layout with multiple panel types:
 
 | Panel | Description |
 |-------|-------------|
-| **ModuleBrowserPanel** | Browse and search all 1,080 modules by category |
+| **ModuleBrowserPanel** | Browse and search all 1,086 modules by category |
 | **DataModulePanel** | Execute a module and display results |
 | **ChartPanel** | TradingView-style candlestick/line charts |
 | **TickerPanel** | Real-time price ticker |
@@ -2957,6 +3133,12 @@ screen --min-cap 10B --sector Technology
 | USGS Earthquake Hazards (FDSN) | No | Open (real-time) | Global M5+ events, M4+ seismicity, PAGER damage alerts, regional hotspots (Taiwan/Japan/Chile/Turkey/California), annual counts, DYFI felt reports |
 | KOSIS South Korea (KOSTAT) | Yes (free key) | ~1,000/day | Korean GDP, CPI, unemployment, industrial production, exports, housing prices, semiconductor production index |
 | SSB Norway (PxWeb) | No | Open (no limit) | Norwegian GDP (nominal/growth), CPI (index 2015=100/12mo rate), unemployment (SA), goods exports/imports, house price index (raw/SA), petroleum deliveries, industrial output, gross value added |
+| Norges Bank (SDMX) | No | Open | 36-currency NOK FX pairs, trade-weighted NOK indices (I44/TWI), key policy rate, NOWA interbank reference rates, govt bond yields (3Y–10Y), T-bill rates (3M–12M) |
+| Global Fishing Watch (REST) | Yes (Bearer token) | 100/min (free) | Global fishing effort by flag state, top nations activity, port visit events, transshipment encounters, regional fishing intensity, fleet size, vessel identity search |
+| NASA FIRMS (REST/CSV) | Yes (free MAP_KEY) | 2,000/day (free) | NRT satellite fire detections by country (24h–10d), financial hotspot monitoring (8 regions), fire anomaly scores with commodity impact, VIIRS/MODIS sources, fire radiative power |
+| OpenAlex (REST/JSON) | No (polite email) | Open | Corporate R&D output (8 companies), research topic trends, trending keywords (30 topics with YoY growth), institution comparison, country innovation rankings, citation analysis |
+| BNM Malaysia (REST/JSON) | No | Open | MYR FX rates (20+ currencies), OPR policy rate, KLIBOR interbank rates (6 tenors), Islamic interbank rates, Kijang Emas gold prices, bank base & lending rates, consumer fraud alerts |
+| BCRP Peru (REST/JSON) | No | Open | BCRP reference rate, CPI Lima index & 12-month inflation, GDP quarterly (USD mn), PEN/USD FX (daily + monthly), copper/gold/silver/zinc mining production, exports/imports FOB, trade balance, international reserves, interbank rate |
 
 ---
 
@@ -3062,7 +3244,13 @@ quantclaw-data/
 │   ├── usgs_earthquake.py          # USGS Earthquake Hazards (real-time seismic events)
 │   ├── kosis_korea.py              # KOSIS South Korea (GDP, CPI, industry, semiconductors)
 │   ├── ssb_norway.py               # SSB Norway (GDP, CPI, unemployment, trade, house prices, petroleum, industry)
-│   ├── ... (1,080 modules total)
+│   ├── norges_bank.py              # Norges Bank (NOK FX 36 currencies, policy rate, NOWA, govt bonds, T-bills)
+│   ├── global_fishing_watch.py     # Global Fishing Watch (fishing effort, port visits, transshipment, vessel identity)
+│   ├── nasa_firms_fire.py          # NASA FIRMS (NRT satellite fire detections, commodity hotspots, anomaly scores)
+│   ├── openalex_research.py        # OpenAlex (corporate R&D output, topic trends, innovation rankings, citations)
+│   ├── bnm_malaysia.py             # BNM Malaysia (MYR FX, OPR, KLIBOR, Islamic rates, Kijang Emas gold, base rates)
+│   ├── bcrp_peru.py                # BCRP Peru (reference rate, CPI, GDP, PEN/USD FX, copper/gold/silver/zinc, trade, reserves)
+│   ├── ... (1,086 modules total)
 │   └── zillow_zhvi.py               # Zillow home values
 ├── src/
 │   ├── app/
@@ -3152,6 +3340,7 @@ BOT_API_KEY=                         # Bank of Thailand Gateway (free at https:/
 EPO_CONSUMER_KEY=                    # EPO Open Patent Services (free at https://developers.epo.org)
 EPO_CONSUMER_SECRET=                 # EPO OPS OAuth2 client secret
 KOSIS_API_KEY=                       # KOSIS South Korea (free at https://kosis.kr/openapi/)
+# BCRP Peru — no API key required (fully open at https://estadisticas.bcrp.gob.pe/estadisticas/series/api)
 
 # App
 ACCESS_CODE=QuantData2026!           # Login access code
@@ -3200,4 +3389,4 @@ NODE_OPTIONS="--max-old-space-size=2048" npm run build
 pm2 restart quantclaw-data
 ```
 
-*1,080 modules • 49 phases • 38 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global) • 55 government/central bank/institutional/alt-data modules • 1,010+ macro, geopolitical, patent, seismic & entity indicators • The data layer powering the MoneyClawX ecosystem*
+*1,086 modules • 49 phases • 41 countries + EU-wide + global + 190 IMF member nations + 38 OECD members (22 EU + UK + Canada + Japan + Poland + Taiwan + Ireland + Czech Republic + Australia + UAE + Romania + Austria + Estonia + Hungary + Bulgaria + Croatia + Cyprus + Latvia + Lithuania + Luxembourg + Malta + Slovakia + Slovenia + Greece + Brazil + Mexico + South Korea + Thailand + Colombia + Norway + Malaysia + Peru + Euro Area + EU27 + BIS global + IMF global + OECD + GDELT global + EPO global + USGS global + GLEIF global + GFW maritime + NASA satellite + OpenAlex research) • 62 government/central bank/institutional/alt-data modules • 1,115+ macro, monetary, geopolitical, patent, seismic, entity, maritime, satellite, scholarly & commodity-production indicators • The data layer powering the MoneyClawX ecosystem*
